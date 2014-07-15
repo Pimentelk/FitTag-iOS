@@ -7,6 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D0A53A81971997F0091FFCA /* InspirationCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */; };
+		2D0A53AC1971ABFF0091FFCA /* FindFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53AB1971ABFF0091FFCA /* FindFriendsViewController.m */; };
+		2D410F481973575C00CE2940 /* FitTagFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F471973575C00CE2940 /* FitTagFeedViewController.m */; };
+		2D410F4C1973581A00CE2940 /* FeedCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F4B1973581A00CE2940 /* FeedCollectionViewFlowLayout.m */; };
+		2D410F4F19735B5B00CE2940 /* FitTagNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F4E19735B5B00CE2940 /* FitTagNavigationBar.m */; };
+		2D410F5219735B7500CE2940 /* FitTagToolBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F5119735B7500CE2940 /* FitTagToolBar.m */; };
+		2D6E0224196A24A1004DC010 /* InterestFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D6E0223196A24A1004DC010 /* InterestFlowLayout.m */; };
+		2DAA63DE1957A51F003B1DDF /* UIView+FormScroll.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DAA63DD1957A51F003B1DDF /* UIView+FormScroll.m */; };
+		2DABDA03195DA48200379891 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DABDA02195DA48200379891 /* AssetsLibrary.framework */; };
+		2DABDA06195DC0E500379891 /* PhotoCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DABDA05195DC0E500379891 /* PhotoCellCollectionView.m */; };
+		2DABDA0A195DE15900379891 /* ImageCustomNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DABDA09195DE15900379891 /* ImageCustomNavigationBar.m */; };
+		2DABDA0D1960520800379891 /* CustomToolBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DABDA0C1960520800379891 /* CustomToolBar.m */; };
+		2DACD9751962D62200833C14 /* InterestCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD9741962D62200833C14 /* InterestCellCollectionView.m */; };
+		2DACD97819656F8900833C14 /* InterestCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD97719656F8900833C14 /* InterestCollectionViewFlowLayout.m */; };
+		2DACD97B196578DA00833C14 /* InspirationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD97A196578DA00833C14 /* InspirationViewController.m */; };
+		2DACE8141966FF7200154504 /* CollectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACE8131966FF7200154504 /* CollectionHeaderView.m */; };
+		2DBC6E5A195C783C008B5AD3 /* ImageCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBC6E59195C783C008B5AD3 /* ImageCollectionViewController.m */; };
+		2DBC6EA1195CBCE2008B5AD3 /* InterestsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBC6EA0195CBCE2008B5AD3 /* InterestsViewController.m */; };
 		2DD6914D1949AF5B00B59E75 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6914C1949AF5B00B59E75 /* Foundation.framework */; };
 		2DD6914F1949AF5B00B59E75 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6914E1949AF5B00B59E75 /* CoreGraphics.framework */; };
 		2DD691511949AF5B00B59E75 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691501949AF5B00B59E75 /* UIKit.framework */; };
@@ -14,13 +32,29 @@
 		2DD691591949AF5B00B59E75 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD691581949AF5B00B59E75 /* main.m */; };
 		2DD6915D1949AF5B00B59E75 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD6915C1949AF5B00B59E75 /* AppDelegate.m */; };
 		2DD691601949AF5B00B59E75 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2DD6915E1949AF5B00B59E75 /* Main.storyboard */; };
-		2DD691631949AF5B00B59E75 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD691621949AF5B00B59E75 /* ViewController.m */; };
 		2DD691651949AF5B00B59E75 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DD691641949AF5B00B59E75 /* Images.xcassets */; };
 		2DD6916C1949AF5B00B59E75 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6916B1949AF5B00B59E75 /* XCTest.framework */; };
 		2DD6916D1949AF5B00B59E75 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6914C1949AF5B00B59E75 /* Foundation.framework */; };
 		2DD6916E1949AF5B00B59E75 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691501949AF5B00B59E75 /* UIKit.framework */; };
 		2DD691761949AF5B00B59E75 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2DD691741949AF5B00B59E75 /* InfoPlist.strings */; };
 		2DD691781949AF5B00B59E75 /* FitTagTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD691771949AF5B00B59E75 /* FitTagTests.m */; };
+		2DD691821949AFA100B59E75 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691811949AFA100B59E75 /* Parse.framework */; };
+		2DD691871949B04F00B59E75 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691831949B04F00B59E75 /* AudioToolbox.framework */; };
+		2DD691881949B04F00B59E75 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691841949B04F00B59E75 /* CFNetwork.framework */; };
+		2DD691891949B04F00B59E75 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691851949B04F00B59E75 /* CoreLocation.framework */; };
+		2DD6918A1949B04F00B59E75 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691861949B04F00B59E75 /* libz.dylib */; };
+		2DD691901949B07C00B59E75 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6918B1949B07C00B59E75 /* MobileCoreServices.framework */; };
+		2DD691911949B07C00B59E75 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6918C1949B07C00B59E75 /* QuartzCore.framework */; };
+		2DD691921949B07C00B59E75 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6918D1949B07C00B59E75 /* Security.framework */; };
+		2DD691931949B07C00B59E75 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6918E1949B07C00B59E75 /* StoreKit.framework */; };
+		2DD691941949B07C00B59E75 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6918F1949B07C00B59E75 /* SystemConfiguration.framework */; };
+		2DD691981949B24300B59E75 /* FitTagConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD691971949B24300B59E75 /* FitTagConfigViewController.m */; };
+		2DD6919B1949B71B00B59E75 /* FitTagLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD6919A1949B71B00B59E75 /* FitTagLoginViewController.m */; };
+		2DD6919E1949B74400B59E75 /* FitTagSignupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD6919D1949B74400B59E75 /* FitTagSignupViewController.m */; };
+		2DD691A01949C7BA00B59E75 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6919F1949C7BA00B59E75 /* Social.framework */; };
+		2DD691A21949C7C700B59E75 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691A11949C7C700B59E75 /* Accounts.framework */; };
+		2DD691A41949C7E300B59E75 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691A31949C7E300B59E75 /* FacebookSDK.framework */; };
+		2DFE736C197316A700114541 /* FindFriendsFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DFE736B197316A700114541 /* FindFriendsFlowLayout.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +68,41 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2D0A53A61971997F0091FFCA /* InspirationCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspirationCellCollectionView.h; sourceTree = "<group>"; };
+		2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InspirationCellCollectionView.m; sourceTree = "<group>"; };
+		2D0A53AA1971ABFF0091FFCA /* FindFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindFriendsViewController.h; sourceTree = "<group>"; };
+		2D0A53AB1971ABFF0091FFCA /* FindFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindFriendsViewController.m; sourceTree = "<group>"; };
+		2D410F461973575C00CE2940 /* FitTagFeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FitTagFeedViewController.h; sourceTree = "<group>"; };
+		2D410F471973575C00CE2940 /* FitTagFeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FitTagFeedViewController.m; sourceTree = "<group>"; };
+		2D410F4A1973581A00CE2940 /* FeedCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedCollectionViewFlowLayout.h; sourceTree = "<group>"; };
+		2D410F4B1973581A00CE2940 /* FeedCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedCollectionViewFlowLayout.m; sourceTree = "<group>"; };
+		2D410F4D19735B5B00CE2940 /* FitTagNavigationBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FitTagNavigationBar.h; sourceTree = "<group>"; };
+		2D410F4E19735B5B00CE2940 /* FitTagNavigationBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FitTagNavigationBar.m; sourceTree = "<group>"; };
+		2D410F5019735B7500CE2940 /* FitTagToolBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FitTagToolBar.h; sourceTree = "<group>"; };
+		2D410F5119735B7500CE2940 /* FitTagToolBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FitTagToolBar.m; sourceTree = "<group>"; };
+		2D6E0222196A24A1004DC010 /* InterestFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterestFlowLayout.h; sourceTree = "<group>"; };
+		2D6E0223196A24A1004DC010 /* InterestFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterestFlowLayout.m; sourceTree = "<group>"; };
+		2DAA63DC1957A51F003B1DDF /* UIView+FormScroll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+FormScroll.h"; sourceTree = "<group>"; };
+		2DAA63DD1957A51F003B1DDF /* UIView+FormScroll.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+FormScroll.m"; sourceTree = "<group>"; };
+		2DABDA02195DA48200379891 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
+		2DABDA04195DC0E500379891 /* PhotoCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoCellCollectionView.h; sourceTree = "<group>"; };
+		2DABDA05195DC0E500379891 /* PhotoCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoCellCollectionView.m; sourceTree = "<group>"; };
+		2DABDA08195DE15900379891 /* ImageCustomNavigationBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageCustomNavigationBar.h; sourceTree = "<group>"; };
+		2DABDA09195DE15900379891 /* ImageCustomNavigationBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCustomNavigationBar.m; sourceTree = "<group>"; };
+		2DABDA0B1960520800379891 /* CustomToolBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomToolBar.h; sourceTree = "<group>"; };
+		2DABDA0C1960520800379891 /* CustomToolBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomToolBar.m; sourceTree = "<group>"; };
+		2DACD9731962D62200833C14 /* InterestCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterestCellCollectionView.h; sourceTree = "<group>"; };
+		2DACD9741962D62200833C14 /* InterestCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterestCellCollectionView.m; sourceTree = "<group>"; };
+		2DACD97619656F8900833C14 /* InterestCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterestCollectionViewFlowLayout.h; sourceTree = "<group>"; };
+		2DACD97719656F8900833C14 /* InterestCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterestCollectionViewFlowLayout.m; sourceTree = "<group>"; };
+		2DACD979196578DA00833C14 /* InspirationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspirationViewController.h; sourceTree = "<group>"; };
+		2DACD97A196578DA00833C14 /* InspirationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InspirationViewController.m; sourceTree = "<group>"; };
+		2DACE8121966FF7200154504 /* CollectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionHeaderView.h; sourceTree = "<group>"; };
+		2DACE8131966FF7200154504 /* CollectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionHeaderView.m; sourceTree = "<group>"; };
+		2DBC6E58195C783C008B5AD3 /* ImageCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageCollectionViewController.h; sourceTree = "<group>"; };
+		2DBC6E59195C783C008B5AD3 /* ImageCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCollectionViewController.m; sourceTree = "<group>"; };
+		2DBC6E9F195CBCE2008B5AD3 /* InterestsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterestsViewController.h; sourceTree = "<group>"; };
+		2DBC6EA0195CBCE2008B5AD3 /* InterestsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterestsViewController.m; sourceTree = "<group>"; };
 		2DD691491949AF5B00B59E75 /* FitTag.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitTag.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DD6914C1949AF5B00B59E75 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2DD6914E1949AF5B00B59E75 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -45,14 +114,33 @@
 		2DD6915B1949AF5B00B59E75 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2DD6915C1949AF5B00B59E75 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		2DD6915F1949AF5B00B59E75 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		2DD691611949AF5B00B59E75 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		2DD691621949AF5B00B59E75 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		2DD691641949AF5B00B59E75 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		2DD6916A1949AF5B00B59E75 /* FitTagTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FitTagTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DD6916B1949AF5B00B59E75 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		2DD691731949AF5B00B59E75 /* FitTagTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FitTagTests-Info.plist"; sourceTree = "<group>"; };
 		2DD691751949AF5B00B59E75 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		2DD691771949AF5B00B59E75 /* FitTagTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FitTagTests.m; sourceTree = "<group>"; };
+		2DD691811949AFA100B59E75 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
+		2DD691831949B04F00B59E75 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		2DD691841949B04F00B59E75 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		2DD691851949B04F00B59E75 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		2DD691861949B04F00B59E75 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		2DD6918B1949B07C00B59E75 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		2DD6918C1949B07C00B59E75 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		2DD6918D1949B07C00B59E75 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		2DD6918E1949B07C00B59E75 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		2DD6918F1949B07C00B59E75 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		2DD691961949B24300B59E75 /* FitTagConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FitTagConfigViewController.h; sourceTree = "<group>"; };
+		2DD691971949B24300B59E75 /* FitTagConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FitTagConfigViewController.m; sourceTree = "<group>"; };
+		2DD691991949B71B00B59E75 /* FitTagLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FitTagLoginViewController.h; sourceTree = "<group>"; };
+		2DD6919A1949B71B00B59E75 /* FitTagLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FitTagLoginViewController.m; sourceTree = "<group>"; };
+		2DD6919C1949B74400B59E75 /* FitTagSignupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FitTagSignupViewController.h; sourceTree = "<group>"; };
+		2DD6919D1949B74400B59E75 /* FitTagSignupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FitTagSignupViewController.m; sourceTree = "<group>"; };
+		2DD6919F1949C7BA00B59E75 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		2DD691A11949C7C700B59E75 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
+		2DD691A31949C7E300B59E75 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
+		2DFE736A197316A700114541 /* FindFriendsFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindFriendsFlowLayout.h; sourceTree = "<group>"; };
+		2DFE736B197316A700114541 /* FindFriendsFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindFriendsFlowLayout.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,8 +148,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DABDA03195DA48200379891 /* AssetsLibrary.framework in Frameworks */,
+				2DD691A21949C7C700B59E75 /* Accounts.framework in Frameworks */,
+				2DD691A01949C7BA00B59E75 /* Social.framework in Frameworks */,
+				2DD691901949B07C00B59E75 /* MobileCoreServices.framework in Frameworks */,
+				2DD691911949B07C00B59E75 /* QuartzCore.framework in Frameworks */,
+				2DD691921949B07C00B59E75 /* Security.framework in Frameworks */,
+				2DD691931949B07C00B59E75 /* StoreKit.framework in Frameworks */,
+				2DD691941949B07C00B59E75 /* SystemConfiguration.framework in Frameworks */,
+				2DD691871949B04F00B59E75 /* AudioToolbox.framework in Frameworks */,
+				2DD691881949B04F00B59E75 /* CFNetwork.framework in Frameworks */,
+				2DD691891949B04F00B59E75 /* CoreLocation.framework in Frameworks */,
+				2DD6918A1949B04F00B59E75 /* libz.dylib in Frameworks */,
 				2DD6914F1949AF5B00B59E75 /* CoreGraphics.framework in Frameworks */,
 				2DD691511949AF5B00B59E75 /* UIKit.framework in Frameworks */,
+				2DD691A41949C7E300B59E75 /* FacebookSDK.framework in Frameworks */,
+				2DD691821949AFA100B59E75 /* Parse.framework in Frameworks */,
 				2DD6914D1949AF5B00B59E75 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -79,6 +181,71 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2D0A53A91971A65F0091FFCA /* Custom Display Classes */ = {
+			isa = PBXGroup;
+			children = (
+				2DAA63DC1957A51F003B1DDF /* UIView+FormScroll.h */,
+				2DAA63DD1957A51F003B1DDF /* UIView+FormScroll.m */,
+				2DACE8121966FF7200154504 /* CollectionHeaderView.h */,
+				2DACE8131966FF7200154504 /* CollectionHeaderView.m */,
+				2DABDA04195DC0E500379891 /* PhotoCellCollectionView.h */,
+				2DABDA05195DC0E500379891 /* PhotoCellCollectionView.m */,
+				2DACD9731962D62200833C14 /* InterestCellCollectionView.h */,
+				2DACD9741962D62200833C14 /* InterestCellCollectionView.m */,
+				2D0A53A61971997F0091FFCA /* InspirationCellCollectionView.h */,
+				2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */,
+			);
+			name = "Custom Display Classes";
+			sourceTree = "<group>";
+		};
+		2D0A53AD1971AC240091FFCA /* FitTag Main Flow View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				2D410F461973575C00CE2940 /* FitTagFeedViewController.h */,
+				2D410F471973575C00CE2940 /* FitTagFeedViewController.m */,
+			);
+			name = "FitTag Main Flow View Controllers";
+			sourceTree = "<group>";
+		};
+		2D410F49197357E900CE2940 /* Flow Layouts */ = {
+			isa = PBXGroup;
+			children = (
+				2DFE736A197316A700114541 /* FindFriendsFlowLayout.h */,
+				2DFE736B197316A700114541 /* FindFriendsFlowLayout.m */,
+				2DACD97619656F8900833C14 /* InterestCollectionViewFlowLayout.h */,
+				2DACD97719656F8900833C14 /* InterestCollectionViewFlowLayout.m */,
+				2D6E0222196A24A1004DC010 /* InterestFlowLayout.h */,
+				2D6E0223196A24A1004DC010 /* InterestFlowLayout.m */,
+				2D410F4A1973581A00CE2940 /* FeedCollectionViewFlowLayout.h */,
+				2D410F4B1973581A00CE2940 /* FeedCollectionViewFlowLayout.m */,
+			);
+			name = "Flow Layouts";
+			sourceTree = "<group>";
+		};
+		2DABDA07195DE0F500379891 /* Custom Bars */ = {
+			isa = PBXGroup;
+			children = (
+				2DABDA08195DE15900379891 /* ImageCustomNavigationBar.h */,
+				2DABDA09195DE15900379891 /* ImageCustomNavigationBar.m */,
+				2DABDA0B1960520800379891 /* CustomToolBar.h */,
+				2DABDA0C1960520800379891 /* CustomToolBar.m */,
+				2D410F4D19735B5B00CE2940 /* FitTagNavigationBar.h */,
+				2D410F4E19735B5B00CE2940 /* FitTagNavigationBar.m */,
+				2D410F5019735B7500CE2940 /* FitTagToolBar.h */,
+				2D410F5119735B7500CE2940 /* FitTagToolBar.m */,
+			);
+			name = "Custom Bars";
+			sourceTree = "<group>";
+		};
+		2DBC6E57195C77FF008B5AD3 /* Camera Flow View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				2DBC6E58195C783C008B5AD3 /* ImageCollectionViewController.h */,
+				2DBC6E59195C783C008B5AD3 /* ImageCollectionViewController.m */,
+			);
+			name = "Camera Flow View Controllers";
+			sourceTree = "<group>";
+		};
 		2DD691401949AF5B00B59E75 = {
 			isa = PBXGroup;
 			children = (
@@ -101,6 +268,20 @@
 		2DD6914B1949AF5B00B59E75 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2DABDA02195DA48200379891 /* AssetsLibrary.framework */,
+				2DD691A31949C7E300B59E75 /* FacebookSDK.framework */,
+				2DD691A11949C7C700B59E75 /* Accounts.framework */,
+				2DD6919F1949C7BA00B59E75 /* Social.framework */,
+				2DD6918B1949B07C00B59E75 /* MobileCoreServices.framework */,
+				2DD6918C1949B07C00B59E75 /* QuartzCore.framework */,
+				2DD6918D1949B07C00B59E75 /* Security.framework */,
+				2DD6918E1949B07C00B59E75 /* StoreKit.framework */,
+				2DD6918F1949B07C00B59E75 /* SystemConfiguration.framework */,
+				2DD691831949B04F00B59E75 /* AudioToolbox.framework */,
+				2DD691841949B04F00B59E75 /* CFNetwork.framework */,
+				2DD691851949B04F00B59E75 /* CoreLocation.framework */,
+				2DD691861949B04F00B59E75 /* libz.dylib */,
+				2DD691811949AFA100B59E75 /* Parse.framework */,
 				2DD6914C1949AF5B00B59E75 /* Foundation.framework */,
 				2DD6914E1949AF5B00B59E75 /* CoreGraphics.framework */,
 				2DD691501949AF5B00B59E75 /* UIKit.framework */,
@@ -115,10 +296,14 @@
 				2DD6915B1949AF5B00B59E75 /* AppDelegate.h */,
 				2DD6915C1949AF5B00B59E75 /* AppDelegate.m */,
 				2DD6915E1949AF5B00B59E75 /* Main.storyboard */,
-				2DD691611949AF5B00B59E75 /* ViewController.h */,
-				2DD691621949AF5B00B59E75 /* ViewController.m */,
 				2DD691641949AF5B00B59E75 /* Images.xcassets */,
 				2DD691531949AF5B00B59E75 /* Supporting Files */,
+				2DABDA07195DE0F500379891 /* Custom Bars */,
+				2D0A53AD1971AC240091FFCA /* FitTag Main Flow View Controllers */,
+				2DD691951949B1EB00B59E75 /* FitTag Login Flow View Controllers */,
+				2D410F49197357E900CE2940 /* Flow Layouts */,
+				2D0A53A91971A65F0091FFCA /* Custom Display Classes */,
+				2DBC6E57195C77FF008B5AD3 /* Camera Flow View Controllers */,
 			);
 			path = FitTag;
 			sourceTree = "<group>";
@@ -150,6 +335,25 @@
 				2DD691741949AF5B00B59E75 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		2DD691951949B1EB00B59E75 /* FitTag Login Flow View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				2DD691961949B24300B59E75 /* FitTagConfigViewController.h */,
+				2DD691971949B24300B59E75 /* FitTagConfigViewController.m */,
+				2DD691991949B71B00B59E75 /* FitTagLoginViewController.h */,
+				2DD6919A1949B71B00B59E75 /* FitTagLoginViewController.m */,
+				2DD6919C1949B74400B59E75 /* FitTagSignupViewController.h */,
+				2DD6919D1949B74400B59E75 /* FitTagSignupViewController.m */,
+				2DBC6E9F195CBCE2008B5AD3 /* InterestsViewController.h */,
+				2DBC6EA0195CBCE2008B5AD3 /* InterestsViewController.m */,
+				2DACD979196578DA00833C14 /* InspirationViewController.h */,
+				2DACD97A196578DA00833C14 /* InspirationViewController.m */,
+				2D0A53AA1971ABFF0091FFCA /* FindFriendsViewController.h */,
+				2D0A53AB1971ABFF0091FFCA /* FindFriendsViewController.m */,
+			);
+			name = "FitTag Login Flow View Controllers";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -199,6 +403,9 @@
 				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = "___FULLUSERNAME___";
 				TargetAttributes = {
+					2DD691481949AF5B00B59E75 = {
+						DevelopmentTeam = AJ3ZB3S8QB;
+					};
 					2DD691691949AF5B00B59E75 = {
 						TestTargetID = 2DD691481949AF5B00B59E75;
 					};
@@ -249,9 +456,29 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DD691631949AF5B00B59E75 /* ViewController.m in Sources */,
+				2DABDA0A195DE15900379891 /* ImageCustomNavigationBar.m in Sources */,
+				2DD691981949B24300B59E75 /* FitTagConfigViewController.m in Sources */,
+				2DD6919B1949B71B00B59E75 /* FitTagLoginViewController.m in Sources */,
+				2D410F4C1973581A00CE2940 /* FeedCollectionViewFlowLayout.m in Sources */,
+				2D6E0224196A24A1004DC010 /* InterestFlowLayout.m in Sources */,
 				2DD6915D1949AF5B00B59E75 /* AppDelegate.m in Sources */,
+				2D410F4F19735B5B00CE2940 /* FitTagNavigationBar.m in Sources */,
+				2DACE8141966FF7200154504 /* CollectionHeaderView.m in Sources */,
+				2D0A53A81971997F0091FFCA /* InspirationCellCollectionView.m in Sources */,
+				2DACD97819656F8900833C14 /* InterestCollectionViewFlowLayout.m in Sources */,
+				2DAA63DE1957A51F003B1DDF /* UIView+FormScroll.m in Sources */,
+				2DBC6EA1195CBCE2008B5AD3 /* InterestsViewController.m in Sources */,
+				2DACD97B196578DA00833C14 /* InspirationViewController.m in Sources */,
+				2DABDA0D1960520800379891 /* CustomToolBar.m in Sources */,
 				2DD691591949AF5B00B59E75 /* main.m in Sources */,
+				2D0A53AC1971ABFF0091FFCA /* FindFriendsViewController.m in Sources */,
+				2DACD9751962D62200833C14 /* InterestCellCollectionView.m in Sources */,
+				2D410F5219735B7500CE2940 /* FitTagToolBar.m in Sources */,
+				2D410F481973575C00CE2940 /* FitTagFeedViewController.m in Sources */,
+				2DD6919E1949B74400B59E75 /* FitTagSignupViewController.m in Sources */,
+				2DFE736C197316A700114541 /* FindFriendsFlowLayout.m in Sources */,
+				2DABDA06195DC0E500379891 /* PhotoCellCollectionView.m in Sources */,
+				2DBC6E5A195C783C008B5AD3 /* ImageCollectionViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -376,10 +603,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FitTag/FitTag-Prefix.pch";
 				INFOPLIST_FILE = "FitTag/FitTag-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -389,10 +623,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FitTag/FitTag-Prefix.pch";
 				INFOPLIST_FILE = "FitTag/FitTag-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -456,6 +697,7 @@
 				2DD6917D1949AF5B00B59E75 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2DD6917E1949AF5B00B59E75 /* Build configuration list for PBXNativeTarget "FitTagTests" */ = {
 			isa = XCConfigurationList;
@@ -464,6 +706,7 @@
 				2DD691801949AF5B00B59E75 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

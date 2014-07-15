@@ -7,15 +7,43 @@
 //
 
 #import "AppDelegate.h"
+#import <Parse/Parse.h>
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    [Parse setApplicationId:@"jEEmn9WZDBZW7NknC004gjYtuoNtDfwMi85laGl5"
+                  clientKey:@"HiraM29g5HWmzaSWPoLOuAk4b9fQPoqii90kcsMI"];
+    [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+    
+    [PFFacebookUtils initializeFacebook];
+    [PFTwitterUtils initializeWithConsumerKey:@"oNqZ0kZQxrAEHeMggEvls5VdJ" consumerSecret: @"cvltCUyuouYILtFlsf05G1eA1C7J7ZCDUQkO5iawD9RRabnPte"];
+    
+    // Set default ACLs
+    PFACL *defaultACL = [PFACL ACL];
+    [defaultACL setPublicReadAccess:YES];
+    [PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
+    
     return YES;
 }
-							
+/*
+- (BOOL) application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+    return [PFFacebookUtils handleOpenURL:url ];
+}
+*/
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    //return [PFFacebookUtils handleOpenURL:url];
+    return [FBAppCall handleOpenURL:url sourceApplication:sourceApplication withSession:[PFFacebookUtils session]];
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    // Handle an interruption during the authorization flow, such as the user clicking the home button.
+    [FBSession.activeSession handleDidBecomeActive];
+}
+
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -31,11 +59,6 @@
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application
-{
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
