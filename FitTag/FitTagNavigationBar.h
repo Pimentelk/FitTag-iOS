@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface FitTagNavigationBar : UINavigationBar
-
+@property NSString *screenName;
 @end

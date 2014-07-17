@@ -12,20 +12,13 @@
 
 - (id)initWithFrame:(CGRect)frame
 {
+    NSLog(@"FitTagNavigationBar::initWithFrame");
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
+        [self setTitleTextAttributes: [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:NSForegroundColorAttributeName]];
+        [self setBarTintColor:[UIColor redColor]];
     }
     return self;
 }
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
-}
-*/
-
 @end

@@ -1,5 +1,5 @@
 //
-//  FitTagFeedViewController.h
+//  FeedViewController.h
 //  FitTag
 //
 //  Created by Kevin Pimentel on 7/13/14.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface FitTagFeedViewController : UICollectionViewController
+@interface FeedViewController : UICollectionViewController
 
 @end

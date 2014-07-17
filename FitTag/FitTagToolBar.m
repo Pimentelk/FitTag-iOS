@@ -7,6 +7,10 @@
 //
 
 #import "FitTagToolBar.h"
+#import "NotificationsViewController.h"
+#import "ProfileViewController.h"
+#import "SearchViewController.h"
+#import "OffersViewController.h"
 
 @implementation FitTagToolBar
 
@@ -27,11 +31,7 @@
     
     NSMutableArray *toolbarItems = [@[] mutableCopy];
     
-    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                                                   target:nil
-                                                                                   action:nil];
-    
-    [toolbarItems addObject:flexibleSpace];
+    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"notifications"]
                                                              style:UIBarButtonItemStyleBordered
                                                             target:self
@@ -51,7 +51,6 @@
                                                              style:UIBarButtonItemStyleBordered
                                                             target:self
                                                             action:@selector(viewOffers)]];
-    [toolbarItems addObject:flexibleSpace];
     
     [toolbar setTintColor:[UIColor colorWithRed:255.0/255.0
                                           green:0.0/255.0
@@ -68,21 +67,39 @@
 -(void)viewNotifications
 {
     NSLog(@"FitTagToolBar::viewNotifications");
+    
+    // Show the interests view controller
+    //NotificationsViewController *rootViewController = [[NotificationsViewController alloc] init];
+    //UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];    
+    //[self presentViewController:navController animated:YES completion:NULL];
 }
 
 -(void)viewSearch
 {
     NSLog(@"FitTagToolBar::viewSearch");
+    
+    // Show the search view controller
+    //SearchViewController *rootViewController = [[SearchViewController alloc] init];
+    //UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
+    
 }
 
 -(void)viewMyProfile
 {
     NSLog(@"FitTagToolBar::viewMyProfile");
+    
+    // Show the profile view controller
+    //ProfileViewController *rootViewController = [[ProfileViewController alloc] init];
+    //UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
 }
 
 -(void)viewOffers
 {
     NSLog(@"FitTagToolBar::viewOffers");
+    
+    // Show the offers view controller
+    //OffersViewController *rootViewController = [[OffersViewController alloc] init];
+    //UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
 }
 
 @end

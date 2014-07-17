@@ -1,18 +1,18 @@
 //
-//  FitTagFeedViewController.m
+//  SearchViewController.m
 //  FitTag
 //
-//  Created by Kevin Pimentel on 7/13/14.
+//  Created by Kevin Pimentel on 7/17/14.
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-#import "FitTagFeedViewController.h"
+#import "SearchViewController.h"
 
-@interface FitTagFeedViewController ()
+@interface SearchViewController ()
 
 @end
 
-@implementation FitTagFeedViewController
+@implementation SearchViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -26,10 +26,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    // Toolbar
-    [self.navigationController setToolbarHidden:NO animated:NO];
-
+    // Do any additional setup after loading the view.
 }
 
 - (void)didReceiveMemoryWarning

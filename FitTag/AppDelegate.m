@@ -8,11 +8,14 @@
 
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
+#import "FitTagConfigViewController.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    
     // Override point for customization after application launch.
     [Parse setApplicationId:@"jEEmn9WZDBZW7NknC004gjYtuoNtDfwMi85laGl5"
                   clientKey:@"HiraM29g5HWmzaSWPoLOuAk4b9fQPoqii90kcsMI"];
@@ -25,6 +28,10 @@
     PFACL *defaultACL = [PFACL ACL];
     [defaultACL setPublicReadAccess:YES];
     [PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
+    
+    self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[[FitTagConfigViewController alloc] init]];
+    self.window.backgroundColor = [UIColor whiteColor];
+    [self.window makeKeyAndVisible];
     
     return YES;
 }

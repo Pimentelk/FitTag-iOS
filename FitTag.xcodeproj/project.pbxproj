@@ -9,10 +9,14 @@
 /* Begin PBXBuildFile section */
 		2D0A53A81971997F0091FFCA /* InspirationCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */; };
 		2D0A53AC1971ABFF0091FFCA /* FindFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53AB1971ABFF0091FFCA /* FindFriendsViewController.m */; };
-		2D410F481973575C00CE2940 /* FitTagFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F471973575C00CE2940 /* FitTagFeedViewController.m */; };
+		2D410F481973575C00CE2940 /* FeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F471973575C00CE2940 /* FeedViewController.m */; };
 		2D410F4C1973581A00CE2940 /* FeedCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F4B1973581A00CE2940 /* FeedCollectionViewFlowLayout.m */; };
 		2D410F4F19735B5B00CE2940 /* FitTagNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F4E19735B5B00CE2940 /* FitTagNavigationBar.m */; };
 		2D410F5219735B7500CE2940 /* FitTagToolBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F5119735B7500CE2940 /* FitTagToolBar.m */; };
+		2D429A0B1977ED6000F8A9A0 /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A0A1977ED6000F8A9A0 /* ProfileViewController.m */; };
+		2D429A0E1977EE7700F8A9A0 /* SearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A0D1977EE7700F8A9A0 /* SearchViewController.m */; };
+		2D429A111977EE8F00F8A9A0 /* NotificationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A101977EE8F00F8A9A0 /* NotificationsViewController.m */; };
+		2D429A141977EE9E00F8A9A0 /* OffersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A131977EE9E00F8A9A0 /* OffersViewController.m */; };
 		2D6E0224196A24A1004DC010 /* InterestFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D6E0223196A24A1004DC010 /* InterestFlowLayout.m */; };
 		2DAA63DE1957A51F003B1DDF /* UIView+FormScroll.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DAA63DD1957A51F003B1DDF /* UIView+FormScroll.m */; };
 		2DABDA03195DA48200379891 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DABDA02195DA48200379891 /* AssetsLibrary.framework */; };
@@ -72,14 +76,22 @@
 		2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InspirationCellCollectionView.m; sourceTree = "<group>"; };
 		2D0A53AA1971ABFF0091FFCA /* FindFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindFriendsViewController.h; sourceTree = "<group>"; };
 		2D0A53AB1971ABFF0091FFCA /* FindFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindFriendsViewController.m; sourceTree = "<group>"; };
-		2D410F461973575C00CE2940 /* FitTagFeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FitTagFeedViewController.h; sourceTree = "<group>"; };
-		2D410F471973575C00CE2940 /* FitTagFeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FitTagFeedViewController.m; sourceTree = "<group>"; };
+		2D410F461973575C00CE2940 /* FeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedViewController.h; sourceTree = "<group>"; };
+		2D410F471973575C00CE2940 /* FeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedViewController.m; sourceTree = "<group>"; };
 		2D410F4A1973581A00CE2940 /* FeedCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedCollectionViewFlowLayout.h; sourceTree = "<group>"; };
 		2D410F4B1973581A00CE2940 /* FeedCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		2D410F4D19735B5B00CE2940 /* FitTagNavigationBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FitTagNavigationBar.h; sourceTree = "<group>"; };
 		2D410F4E19735B5B00CE2940 /* FitTagNavigationBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FitTagNavigationBar.m; sourceTree = "<group>"; };
 		2D410F5019735B7500CE2940 /* FitTagToolBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FitTagToolBar.h; sourceTree = "<group>"; };
 		2D410F5119735B7500CE2940 /* FitTagToolBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FitTagToolBar.m; sourceTree = "<group>"; };
+		2D429A091977ED6000F8A9A0 /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
+		2D429A0A1977ED6000F8A9A0 /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
+		2D429A0C1977EE7700F8A9A0 /* SearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchViewController.h; sourceTree = "<group>"; };
+		2D429A0D1977EE7700F8A9A0 /* SearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchViewController.m; sourceTree = "<group>"; };
+		2D429A0F1977EE8F00F8A9A0 /* NotificationsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationsViewController.h; sourceTree = "<group>"; };
+		2D429A101977EE8F00F8A9A0 /* NotificationsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationsViewController.m; sourceTree = "<group>"; };
+		2D429A121977EE9E00F8A9A0 /* OffersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OffersViewController.h; sourceTree = "<group>"; };
+		2D429A131977EE9E00F8A9A0 /* OffersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OffersViewController.m; sourceTree = "<group>"; };
 		2D6E0222196A24A1004DC010 /* InterestFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterestFlowLayout.h; sourceTree = "<group>"; };
 		2D6E0223196A24A1004DC010 /* InterestFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterestFlowLayout.m; sourceTree = "<group>"; };
 		2DAA63DC1957A51F003B1DDF /* UIView+FormScroll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+FormScroll.h"; sourceTree = "<group>"; };
@@ -201,8 +213,16 @@
 		2D0A53AD1971AC240091FFCA /* FitTag Main Flow View Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				2D410F461973575C00CE2940 /* FitTagFeedViewController.h */,
-				2D410F471973575C00CE2940 /* FitTagFeedViewController.m */,
+				2D410F461973575C00CE2940 /* FeedViewController.h */,
+				2D410F471973575C00CE2940 /* FeedViewController.m */,
+				2D429A091977ED6000F8A9A0 /* ProfileViewController.h */,
+				2D429A0A1977ED6000F8A9A0 /* ProfileViewController.m */,
+				2D429A0C1977EE7700F8A9A0 /* SearchViewController.h */,
+				2D429A0D1977EE7700F8A9A0 /* SearchViewController.m */,
+				2D429A0F1977EE8F00F8A9A0 /* NotificationsViewController.h */,
+				2D429A101977EE8F00F8A9A0 /* NotificationsViewController.m */,
+				2D429A121977EE9E00F8A9A0 /* OffersViewController.h */,
+				2D429A131977EE9E00F8A9A0 /* OffersViewController.m */,
 			);
 			name = "FitTag Main Flow View Controllers";
 			sourceTree = "<group>";
@@ -463,18 +483,22 @@
 				2D6E0224196A24A1004DC010 /* InterestFlowLayout.m in Sources */,
 				2DD6915D1949AF5B00B59E75 /* AppDelegate.m in Sources */,
 				2D410F4F19735B5B00CE2940 /* FitTagNavigationBar.m in Sources */,
+				2D429A111977EE8F00F8A9A0 /* NotificationsViewController.m in Sources */,
 				2DACE8141966FF7200154504 /* CollectionHeaderView.m in Sources */,
 				2D0A53A81971997F0091FFCA /* InspirationCellCollectionView.m in Sources */,
 				2DACD97819656F8900833C14 /* InterestCollectionViewFlowLayout.m in Sources */,
 				2DAA63DE1957A51F003B1DDF /* UIView+FormScroll.m in Sources */,
 				2DBC6EA1195CBCE2008B5AD3 /* InterestsViewController.m in Sources */,
+				2D429A141977EE9E00F8A9A0 /* OffersViewController.m in Sources */,
+				2D429A0E1977EE7700F8A9A0 /* SearchViewController.m in Sources */,
 				2DACD97B196578DA00833C14 /* InspirationViewController.m in Sources */,
 				2DABDA0D1960520800379891 /* CustomToolBar.m in Sources */,
 				2DD691591949AF5B00B59E75 /* main.m in Sources */,
 				2D0A53AC1971ABFF0091FFCA /* FindFriendsViewController.m in Sources */,
+				2D429A0B1977ED6000F8A9A0 /* ProfileViewController.m in Sources */,
 				2DACD9751962D62200833C14 /* InterestCellCollectionView.m in Sources */,
 				2D410F5219735B7500CE2940 /* FitTagToolBar.m in Sources */,
-				2D410F481973575C00CE2940 /* FitTagFeedViewController.m in Sources */,
+				2D410F481973575C00CE2940 /* FeedViewController.m in Sources */,
 				2DD6919E1949B74400B59E75 /* FitTagSignupViewController.m in Sources */,
 				2DFE736C197316A700114541 /* FindFriendsFlowLayout.m in Sources */,
 				2DABDA06195DC0E500379891 /* PhotoCellCollectionView.m in Sources */,

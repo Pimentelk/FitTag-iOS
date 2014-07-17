@@ -12,7 +12,7 @@
 #import "InterestsViewController.h"
 #import "InterestCollectionViewFlowLayout.h"
 #import "FeedCollectionViewFlowLayout.h"
-#import "FitTagFeedViewController.h"
+#import "FeedViewController.h"
 #import "FitTagToolBar.h"
 #import "FitTagNavigationBar.h"
 
@@ -91,7 +91,7 @@
             [layoutFlow setHeaderReferenceSize:CGSizeMake(320,80)];
             
             // Show the interests
-            FitTagFeedViewController *rootViewController = [[FitTagFeedViewController alloc] initWithCollectionViewLayout:layoutFlow];
+            FeedViewController *rootViewController = [[FeedViewController alloc] initWithCollectionViewLayout:layoutFlow];
             UINavigationController *navController = [[UINavigationController alloc] initWithNavigationBarClass:[FitTagNavigationBar class]
                                                                                                   toolbarClass:[FitTagToolBar class]];
             [navController setViewControllers:@[rootViewController] animated:NO];
