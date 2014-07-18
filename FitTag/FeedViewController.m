@@ -34,8 +34,10 @@
     [self.navigationItem setTitle: @"FEED"];
     [self.navigationItem setHidesBackButton:NO];
     [self.navigationController setNavigationBarHidden:NO animated:NO];
+    [self.navigationController.toolbar setDelegate:self];
     
     UIBarButtonItem *addFriends = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"add_contacts"] style:UIBarButtonItemStylePlain target:self action:@selector(addFriends)];
+    
     UIBarButtonItem *fitTag = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"fittag_button"] style:UIBarButtonItemStylePlain target:self action:@selector(fitTag)];
     
     [fitTag setTintColor:[UIColor whiteColor]];
@@ -47,7 +49,14 @@
     [self.collectionView setBackgroundColor:[UIColor whiteColor]];
 }
 
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
 
+
+#pragma mark - Navigation Bar
 - (void)fitTag
 {
     NSLog(@"FitTagFeedViewController::fitTag");
@@ -71,21 +80,25 @@
     [self presentViewController:navController animated:YES completion:NULL];
 }
 
-- (void)didReceiveMemoryWarning
+#pragma mark - Tool Bar
+-(void)viewNotifications
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    NSLog(@"FitTagFeedViewController::viewNotifications");
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+-(void)viewSearch
 {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    NSLog(@"FitTagFeedViewController::viewSearch");
 }
-*/
+
+-(void)viewMyProfile
+{
+    NSLog(@"FitTagFeedViewController::viewMyProfile");
+}
+
+-(void)viewOffers
+{
+    NSLog(@"FitTagFeedViewController::viewOffers");
+}
 
 @end

@@ -8,6 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
-@interface FitTagToolBar : UIToolbar
+@protocol FitTagToolBarDelegate <UIToolbarDelegate>
+@required
+-(void)viewNotifications;
+-(void)viewSearch;
+-(void)viewMyProfile;
+-(void)viewOffers;
+@end
 
+@interface FitTagToolBar : UIToolbar
+@property (weak, nonatomic) id <FitTagToolBarDelegate> delegate;
 @end

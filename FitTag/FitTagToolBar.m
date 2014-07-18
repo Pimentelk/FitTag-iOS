@@ -14,6 +14,8 @@
 
 @implementation FitTagToolBar
 
+@synthesize delegate;
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -35,22 +37,22 @@
     [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"notifications"]
                                                              style:UIBarButtonItemStyleBordered
                                                             target:self
-                                                            action:@selector(viewNotifications)]];
+                                                            action:@selector(didPressNotifications)]];
     [toolbarItems addObject:flexibleSpace];
     [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"search"]
                                                              style:UIBarButtonItemStyleBordered
                                                             target:self
-                                                            action:@selector(viewSearch)]];
+                                                            action:@selector(didPressSearch)]];
     [toolbarItems addObject:flexibleSpace];
     [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"myprofile"]
                                                              style:UIBarButtonItemStyleBordered
                                                             target:self
-                                                            action:@selector(viewMyProfile)]];
+                                                            action:@selector(didPressProfile)]];
     [toolbarItems addObject:flexibleSpace];
     [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"offers"]
                                                              style:UIBarButtonItemStyleBordered
                                                             target:self
-                                                            action:@selector(viewOffers)]];
+                                                            action:@selector(didPressOffers)]];
     
     [toolbar setTintColor:[UIColor colorWithRed:255.0/255.0
                                           green:0.0/255.0
@@ -64,42 +66,39 @@
     
 }
 
--(void)viewNotifications
+-(void)didPressNotifications
 {
-    NSLog(@"FitTagToolBar::viewNotifications");
-    
-    // Show the interests view controller
-    //NotificationsViewController *rootViewController = [[NotificationsViewController alloc] init];
-    //UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];    
-    //[self presentViewController:navController animated:YES completion:NULL];
+    //NSLog(@"FitTagToolBar::didPressNotifications");
+    if ([self.delegate respondsToSelector:@selector(viewNotifications)])
+    {
+        [self.delegate viewNotifications];
+    }
 }
 
--(void)viewSearch
+-(void)didPressSearch
 {
-    NSLog(@"FitTagToolBar::viewSearch");
-    
-    // Show the search view controller
-    //SearchViewController *rootViewController = [[SearchViewController alloc] init];
-    //UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
-    
+    //NSLog(@"FitTagToolBar::didPressSearch");
+    if ([self.delegate respondsToSelector:@selector(viewSearch)])
+    {
+        [self.delegate viewSearch];
+    }
 }
 
--(void)viewMyProfile
+-(void)didPressProfile
 {
-    NSLog(@"FitTagToolBar::viewMyProfile");
-    
-    // Show the profile view controller
-    //ProfileViewController *rootViewController = [[ProfileViewController alloc] init];
-    //UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
+    //NSLog(@"FitTagToolBar::didPressProfile");
+    if ([self.delegate respondsToSelector:@selector(viewMyProfile)])
+    {
+        [self.delegate viewMyProfile];
+    }
 }
 
--(void)viewOffers
+-(void)didPressOffers
 {
-    NSLog(@"FitTagToolBar::viewOffers");
-    
-    // Show the offers view controller
-    //OffersViewController *rootViewController = [[OffersViewController alloc] init];
-    //UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
+    //NSLog(@"FitTagToolBar::didPressOffers");
+    if ([self.delegate respondsToSelector:@selector(viewOffers)])
+    {
+        [self.delegate viewOffers];
+    }
 }
-
 @end

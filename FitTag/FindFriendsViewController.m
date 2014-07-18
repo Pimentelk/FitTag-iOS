@@ -8,6 +8,10 @@
 
 #import "FindFriendsViewController.h"
 #import "CollectionHeaderView.h"
+#import "FeedCollectionViewFlowLayout.h"
+#import "FeedViewController.h"
+#import "FitTagNavigationBar.h"
+#import "FitTagToolBar.h"
 
 @interface FindFriendsViewController ()
 
@@ -66,7 +70,22 @@
 
 - (void)submitUserInspiration
 {
+    FeedCollectionViewFlowLayout *layoutFlow = [[FeedCollectionViewFlowLayout alloc] init];
+    [layoutFlow setItemSize:CGSizeMake(320,320)];
+    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [layoutFlow setMinimumInteritemSpacing:0];
+    [layoutFlow setMinimumLineSpacing:0];
+    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,80)];
     
+    // Show the interests
+    FeedViewController *rootViewController = [[FeedViewController alloc] initWithCollectionViewLayout:layoutFlow];
+    UINavigationController *navController = [[UINavigationController alloc] initWithNavigationBarClass:[FitTagNavigationBar class]
+                                                                                          toolbarClass:[FitTagToolBar class]];
+    [navController setViewControllers:@[rootViewController] animated:NO];
+    
+    // Present the Interests View Controller
+    [self presentViewController:navController animated:YES completion:NULL];
 }
 
 - (void)didReceiveMemoryWarning

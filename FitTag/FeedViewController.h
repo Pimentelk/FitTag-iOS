@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FitTagToolBar.h"
 
-@interface FeedViewController : UICollectionViewController
+@interface FeedViewController : UICollectionViewController <FitTagToolBarDelegate>
 
 @end

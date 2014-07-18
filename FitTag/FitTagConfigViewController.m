@@ -92,8 +92,10 @@
             
             // Show the interests
             FeedViewController *rootViewController = [[FeedViewController alloc] initWithCollectionViewLayout:layoutFlow];
+            
             UINavigationController *navController = [[UINavigationController alloc] initWithNavigationBarClass:[FitTagNavigationBar class]
                                                                                                   toolbarClass:[FitTagToolBar class]];
+            
             [navController setViewControllers:@[rootViewController] animated:NO];
             
             // Present the Interests View Controller
