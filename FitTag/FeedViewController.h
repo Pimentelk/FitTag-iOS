@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import "FitTagToolBar.h"
 
-@interface FeedViewController : UICollectionViewController <FitTagToolBarDelegate>
-
+@interface FeedViewController : PFQueryTableViewController <FitTagToolBarDelegate>
+@property (nonatomic,retain) NSMutableArray *usersBeingFollowed;
+@property (nonatomic, assign, getter = isFirstLaunch) BOOL firstLaunch;
 @end

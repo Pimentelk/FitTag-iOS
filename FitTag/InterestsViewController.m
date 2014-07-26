@@ -34,7 +34,7 @@
     [super viewDidLoad];
     
     // Init Selected Interests Array
-    selectedInterests = [@[] mutableCopy];
+    selectedInterests = [NSMutableArray array];
     
     // View layout
     [self.view setBackgroundColor:[UIColor lightGrayColor]];
@@ -57,7 +57,7 @@
             NSLog(@"Successfully retrieved %d scores.", objects.count);
             // Do something with the found objects
             
-            NSMutableArray *tmpInterests = [@[] mutableCopy];
+            NSMutableArray *tmpInterests = [NSMutableArray array];
             
             for (PFObject *object in objects) {
                 
@@ -148,9 +148,9 @@
             
             // Fetch user matches
             //NSDate *date = [NSDate dateWithTimeIntervalSinceNow:-172800];
-            NSMutableArray *userPhoto = [@[] mutableCopy];
-            NSMutableArray *userId = [@[] mutableCopy];
-            NSMutableArray *userInterests = [@[] mutableCopy];
+            NSMutableArray *userPhoto = [NSMutableArray array];
+            NSMutableArray *userId = [NSMutableArray array];
+            NSMutableArray *userInterests = [NSMutableArray array];
 
             PFQuery *innerQuery = [PFQuery queryWithClassName:@"_User"];
             [innerQuery whereKey:@"interests" containedIn:self.interests];

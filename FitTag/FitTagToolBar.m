@@ -7,7 +7,7 @@
 //
 
 #import "FitTagToolBar.h"
-#import "NotificationsViewController.h"
+#import "FTActivityFeedViewController.h"
 #import "ProfileViewController.h"
 #import "SearchViewController.h"
 #import "OffersViewController.h"
@@ -20,9 +20,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        NSLog(@"FitTagToolBar::initWithFrame");
-        
-        
+        //NSLog(@"FitTagToolBar::initWithFrame");
     }
     return self;
 }
@@ -31,8 +29,9 @@
 {
     UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
     
-    NSMutableArray *toolbarItems = [@[] mutableCopy];
+    NSMutableArray *toolbarItems = [NSMutableArray array];
     
+    // Set toolbar buttons and spaces
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"notifications"]
                                                              style:UIBarButtonItemStyleBordered

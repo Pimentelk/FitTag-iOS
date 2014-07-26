@@ -6,12 +6,25 @@
 //  Copyright (c) 2014 ___FULLUSERNAME___. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "FTTabBarController.h"
 
-
-
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, NSURLConnectionDataDelegate, UITabBarControllerDelegate, PFLogInViewControllerDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
+@property (nonatomic, strong) FTTabBarController *tabBarController;
+@property (nonatomic, strong) UINavigationController *navController;
+
+@property (nonatomic, readonly) int networkStatus;
+
+- (BOOL)isParseReachable;
+- (void)presentLoginViewController;
+- (void)presentLoginViewControllerAnimated:(BOOL)animated;
+- (void)presentTabBarController;
+
+- (void)logOut;
+
+- (void)facebookRequestDidLoad:(id)result;
+- (void)facebookRequestDidFailWithError:(NSError *)error;
+
 @end
 

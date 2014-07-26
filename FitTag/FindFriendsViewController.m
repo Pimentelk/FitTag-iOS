@@ -79,7 +79,8 @@
     [layoutFlow setHeaderReferenceSize:CGSizeMake(320,80)];
     
     // Show the interests
-    FeedViewController *rootViewController = [[FeedViewController alloc] initWithCollectionViewLayout:layoutFlow];
+    //FeedViewController *rootViewController = [[FeedViewController alloc] initWithCollectionViewLayout:layoutFlow];
+    FeedViewController *rootViewController = [[FeedViewController alloc] initWithClassName:@"Tbl_follower"];
     UINavigationController *navController = [[UINavigationController alloc] initWithNavigationBarClass:[FitTagNavigationBar class]
                                                                                           toolbarClass:[FitTagToolBar class]];
     [navController setViewControllers:@[rootViewController] animated:NO];

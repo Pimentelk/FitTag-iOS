@@ -46,7 +46,52 @@
     [self.navigationItem setLeftBarButtonItem:addFriends];
     
     // Set Background
-    [self.collectionView setBackgroundColor:[UIColor whiteColor]];
+    [self.tableView setBackgroundColor:[UIColor whiteColor]];
+}
+
+- (PFQuery *)queryForTable
+{
+    if (![PFUser currentUser]) {
+        PFQuery *query = [PFQuery queryWithClassName:self.parseClassName];
+        [query setLimit:0];
+        return query;
+    }
+    
+    // Query for the friends the current user is following
+    PFQuery *followingActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
+    [followingActivitiesQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
+    
+    // Using the activities from the query above, we find all of the photos taken by
+    // the friends the current user is following
+    PFQuery *photosFromFollowedUsersQuery = [PFQuery queryWithClassName:self.parseClassName];
+    [photosFromFollowedUsersQuery whereKey:kFTPhotoUserKey matchesKey:kFTActivityToUserKey inQuery:followingActivitiesQuery];
+    [photosFromFollowedUsersQuery whereKeyExists:kFTPhotoPictureKey];
+    
+    // We create a second query for the current user's photos
+    PFQuery *photosFromCurrentUserQuery = [PFQuery queryWithClassName:self.parseClassName];
+    [photosFromCurrentUserQuery whereKey:kFTPhotoUserKey equalTo:[PFUser currentUser]];
+    [photosFromCurrentUserQuery whereKeyExists:kFTPhotoPictureKey];
+    
+    // We create a final compound query that will find all of the photos that were
+    // taken by the user's friends or by the user
+    PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects:photosFromFollowedUsersQuery, photosFromCurrentUserQuery, nil]];
+    [query includeKey:kFTPhotoUserKey];
+    [query orderByDescending:@"createdAt"];
+    
+    // A pull-to-refresh should always trigger a network request.
+    [query setCachePolicy:kPFCachePolicyNetworkOnly];
+    
+    // If no objects are loaded in memory, we look to the cache first to fill the table
+    // and then subsequently do a query against the network.
+    //
+    // If there is no network connection, we will hit the cache first.
+    /*
+    if (self.objects.count == 0 || ![[UIApplication sharedApplication].delegate performSelector:@selector(isParseReachable)]) {
+        [query setCachePolicy:kPFCachePolicyCacheThenNetwork];
+    }
+    */
+    return query;
 }
 
 - (void)didReceiveMemoryWarning
@@ -55,8 +100,8 @@
     // Dispose of any resources that can be recreated.
 }
 
-
 #pragma mark - Navigation Bar
+
 - (void)fitTag
 {
     NSLog(@"FitTagFeedViewController::fitTag");
@@ -81,6 +126,7 @@
 }
 
 #pragma mark - Tool Bar
+
 -(void)viewNotifications
 {
     NSLog(@"FitTagFeedViewController::viewNotifications");
