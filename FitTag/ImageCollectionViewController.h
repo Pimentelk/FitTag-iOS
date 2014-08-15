@@ -7,8 +7,11 @@
 //
 
 #import <AssetsLibrary/AssetsLibrary.h>
+#import "FTCameraToolBar.h"
 
-@interface ImageCollectionViewController : UICollectionViewController <UIImagePickerControllerDelegate,UINavigationControllerDelegate>
+@interface ImageCollectionViewController : UICollectionViewController <FTCameraToolBarDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,UIActionSheetDelegate>
+- (BOOL)shouldPresentPhotoCaptureController;
+@property (nonatomic,retain) NSMutableArray *usersBeingFollowed;
 @property (nonatomic, strong) NSArray *assets;
 @property (nonatomic, strong) void (^onCompletion)(id result);
 + (ALAssetsLibrary *)defaultAssetsLibrary;

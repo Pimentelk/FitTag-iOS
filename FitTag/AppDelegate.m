@@ -11,9 +11,9 @@
 #import "Reachability.h"
 #import "MBProgressHUD.h"
 #import "UIImage+ResizeAdditions.h"
-#import "FitTagConfigViewController.h"
+#import "FTConfigViewController.h"
 #import "FTActivityFeedViewController.h"
-#import "FeedViewController.h"
+#import "FTFeedViewController.h"
 #import "FTAccountViewController.h"
 #import "FTPhotoDetailsViewController.h"
 
@@ -23,8 +23,8 @@
     BOOL firstLaunch;
 }
 
-@property (nonatomic, strong) FeedViewController *homeViewController;
-@property (nonatomic, strong) FitTagConfigViewController *welcomeViewController;
+@property (nonatomic, strong) FTFeedViewController *homeViewController;
+@property (nonatomic, strong) FTConfigViewController *welcomeViewController;
 @property (nonatomic, strong) FTActivityFeedViewController *activityViewController;
 
 @property (nonatomic, strong) MBProgressHUD *hud;
@@ -41,9 +41,11 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
-    // Override point for customization after application launch.
+    // Parse initialization
     [Parse setApplicationId:@"9Cii0KKJr09vtACtVRSccu1BHGFJYR6c6XYkafb1"
                   clientKey:@"eJxD9HcQ5ZK8GPYxaMz4RkrOjo2mMtujGsgn1HZe"];
+    
+    // Track app open.
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     
     if (application.applicationIconBadgeNumber != 0) {
@@ -62,49 +64,131 @@
     // Use Reachability to monitor connectivity
     [self monitorReachability];
     
+    self.welcomeViewController = [[FTConfigViewController alloc] init];
+    
+    self.navController = [[UINavigationController alloc] initWithRootViewController:self.welcomeViewController];
+    self.navController.navigationBarHidden = YES;
+    
+    self.window.rootViewController = self.navController;
+    [self.window makeKeyAndVisible];
+    
+    [self handlePush:launchOptions];
+    
     [PFFacebookUtils initializeFacebook];
     [PFTwitterUtils initializeWithConsumerKey:@"oNqZ0kZQxrAEHeMggEvls5VdJ" consumerSecret: @"cvltCUyuouYILtFlsf05G1eA1C7J7ZCDUQkO5iawD9RRabnPte"];
     
-    
-    
     return YES;
 }
-/*
-- (BOOL) application:(UIApplication *)application handleOpenURL:(NSURL *)url {
-    return [PFFacebookUtils handleOpenURL:url ];
-}
-*/
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    //return [PFFacebookUtils handleOpenURL:url];
-    return [FBAppCall handleOpenURL:url sourceApplication:sourceApplication withSession:[PFFacebookUtils session]];
+    if ([self handleActionURL:url]) {
+        return YES;
+    }
+    
+    return [FBAppCall handleOpenURL:url
+                  sourceApplication:sourceApplication
+                        withSession:[PFFacebookUtils session]];
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    if (application.applicationIconBadgeNumber != 0) {
+        application.applicationIconBadgeNumber = 0;
+    }
+    
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    [currentInstallation setDeviceTokenFromData:deviceToken];
+    [currentInstallation saveInBackground];
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+	if (error.code != 3010) { // 3010 is for the iPhone Simulator
+        NSLog(@"Application failed to register for push notifications: %@", error);
+	}
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
+    
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+        // Track app opens due to a push notification being acknowledged while the app wasn't active.
+        [PFAnalytics trackAppOpenedWithRemoteNotificationPayload:userInfo];
+    }
+    
+    if ([PFUser currentUser]) {
+        if ([self.tabBarController viewControllers].count > FTActivityTabBarItemIndex) {
+            UITabBarItem *tabBarItem = [[self.tabBarController.viewControllers objectAtIndex:FTActivityTabBarItemIndex] tabBarItem];
+            
+            NSString *currentBadgeValue = tabBarItem.badgeValue;
+            
+            if (currentBadgeValue && currentBadgeValue.length > 0) {
+                NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+                NSNumber *badgeValue = [numberFormatter numberFromString:currentBadgeValue];
+                NSNumber *newBadgeValue = [NSNumber numberWithInt:[badgeValue intValue] + 1];
+                tabBarItem.badgeValue = [numberFormatter stringFromNumber:newBadgeValue];
+            } else {
+                tabBarItem.badgeValue = @"1";
+            }
+        }
+    }
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Handle an interruption during the authorization flow, such as the user clicking the home button.
-    [FBSession.activeSession handleDidBecomeActive];
+    //[FBSession.activeSession handleDidBecomeActive];
+    
+    // Clear badge and update installation, required for auto-incrementing badges.
+    if (application.applicationIconBadgeNumber != 0) {
+        application.applicationIconBadgeNumber = 0;
+        [[PFInstallation currentInstallation] saveInBackground];
+    }
+    
+    // Clears out all notifications from Notification Center.
+    [[UIApplication sharedApplication] cancelAllLocalNotifications];
+    application.applicationIconBadgeNumber = 1;
+    application.applicationIconBadgeNumber = 0;
+    
+    [FBAppCall handleDidBecomeActiveWithSession:[PFFacebookUtils session]];
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+#pragma mark - UITabBarControllerDelegate
+
+- (BOOL)tabBarController:(UITabBarController *)aTabBarController shouldSelectViewController:(UIViewController *)viewController {
+    // The empty UITabBarItem behind our Camera button should not load a view controller
+    return ![viewController isEqual:aTabBarController.viewControllers[FTEmptyTabBarItemIndex]];
 }
 
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+
+#pragma mark - PFLoginViewController
+
+- (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
+    // user has logged in - we need to fetch all of their Facebook data before we let them in
+    if (![self shouldProceedToMainInterface:user]) {
+        self.hud = [MBProgressHUD showHUDAddedTo:self.navController.presentedViewController.view animated:YES];
+        self.hud.labelText = NSLocalizedString(@"Loading", nil);
+        self.hud.dimBackground = YES;
+    }
+    
+    [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+        if (!error) {
+            [self facebookRequestDidLoad:result];
+        } else {
+            [self facebookRequestDidFailWithError:error];
+        }
+    }];
 }
 
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+#pragma mark - NSURLConnectionDataDelegate
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+    _data = [[NSMutableData alloc] init];
 }
 
-- (void)applicationWillTerminate:(UIApplication *)application
-{
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+    [_data appendData:data];
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    [FTUtility processFacebookProfilePictureData:_data];
 }
 
 #pragma mark - AppDelegate
@@ -128,7 +212,7 @@
 
 - (void)presentTabBarController {
     self.tabBarController = [[FTTabBarController alloc] init];
-    self.homeViewController = [[FeedViewController alloc] initWithStyle:UITableViewStylePlain];
+    self.homeViewController = [[FTFeedViewController alloc] initWithStyle:UITableViewStylePlain];
     [self.homeViewController setFirstLaunch:firstLaunch];
     self.activityViewController = [[FTActivityFeedViewController alloc] initWithStyle:UITableViewStylePlain];
     
@@ -168,36 +252,36 @@
 
 - (void)logOut {
     // clear cache
-    //[[FTCache sharedCache] clear];
+    [[FTCache sharedCache] clear];
     
     // clear NSUserDefaults
-    //[[NSUserDefaults standardUserDefaults] removeObjectForKey:kFTUserDefaultsCacheFacebookFriendsKey];
-    //[[NSUserDefaults standardUserDefaults] removeObjectForKey:kFTUserDefaultsActivityFeedViewControllerLastRefreshKey];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kFTUserDefaultsCacheFacebookFriendsKey];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kFTUserDefaultsActivityFeedViewControllerLastRefreshKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     // Unsubscribe from push notifications by removing the user association from the current installation.
     //[[PFInstallation currentInstallation] removeObjectForKey:kFTInstallationUserKey];
-    //[[PFInstallation currentInstallation] saveInBackground];
+    [[PFInstallation currentInstallation] saveInBackground];
     
     // Clear all caches
     [PFQuery clearAllCachedResults];
     
     // Log out
     [PFUser logOut];
-   
     
-    //[self setupRootView];
+    // clear out cached data, view controllers, etc
+    [self.navController popToRootViewControllerAnimated:NO];
+    
+    [self presentLoginViewController];
     
     self.homeViewController = nil;
-    //self.activityViewController = nil;
+    self.activityViewController = nil;
 }
 
 #pragma mark - ()
 
 - (void)setupAppearance {
-    self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[[FitTagConfigViewController alloc] init]];
-    self.window.backgroundColor = [UIColor whiteColor];
-    [self.window makeKeyAndVisible];
+    
 }
 
 - (void)monitorReachability {
@@ -220,6 +304,44 @@
     
     [hostReach startNotifier];
 }
+
+- (void)handlePush:(NSDictionary *)launchOptions {
+    
+    // If the app was launched in response to a push notification, we'll handle the payload here
+    NSDictionary *remoteNotificationPayload = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    if (remoteNotificationPayload) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:remoteNotificationPayload];
+        
+        if (![PFUser currentUser]) {
+            return;
+        }
+        
+        // If the push notification payload references a photo, we will attempt to push this view controller into view
+        NSString *photoObjectId = [remoteNotificationPayload objectForKey:kFTPushPayloadPhotoObjectIdKey];
+        if (photoObjectId && photoObjectId.length > 0) {
+            [self shouldNavigateToPhoto:[PFObject objectWithoutDataWithClassName:kFTPhotoClassKey objectId:photoObjectId]];
+            return;
+        }
+        
+        // If the push notification payload references a user, we will attempt to push their profile into view
+        NSString *fromObjectId = [remoteNotificationPayload objectForKey:kFTPushPayloadFromUserObjectIdKey];
+        if (fromObjectId && fromObjectId.length > 0) {
+            PFQuery *query = [PFUser query];
+            query.cachePolicy = kPFCachePolicyCacheElseNetwork;
+            [query getObjectInBackgroundWithId:fromObjectId block:^(PFObject *user, NSError *error) {
+                if (!error) {
+                    UINavigationController *homeNavigationController = self.tabBarController.viewControllers[FTFeedTabBarItemIndex];
+                    self.tabBarController.selectedViewController = homeNavigationController;
+                    
+                    FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
+                    accountViewController.user = (PFUser *)user;
+                    [homeNavigationController pushViewController:accountViewController animated:YES];
+                }
+            }];
+        }
+    }
+}
+
 
 - (void)autoFollowTimerFired:(NSTimer *)aTimer {
     [MBProgressHUD hideHUDForView:self.navController.presentedViewController.view animated:YES];

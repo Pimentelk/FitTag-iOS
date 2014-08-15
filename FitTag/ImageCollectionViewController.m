@@ -6,14 +6,18 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
+#import "FTCamViewController.h"
 #import "ImageCollectionViewController.h"
 #import "PhotoCellCollectionView.h"
 #import "ImageCustomNavigationBar.h"
+#import "FTEditPhotoViewController.h"
+#import "FTOverlayView.h"
 
 @interface ImageCollectionViewController ()<UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 @property (nonatomic, weak) UICollectionView *collectionView;
 @property (strong, nonatomic) UIImageView *imageView;
 @property (strong, nonatomic) UIBarButtonItem *backButton;
+@property (nonatomic,strong) UINavigationController *navController;
 @end
 
 @implementation ImageCollectionViewController
@@ -29,6 +33,7 @@
 }
 
 @synthesize backButton;
+@synthesize navController;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -49,23 +54,16 @@
     
     // NavigationBar & ToolBar
     [self.navigationController setNavigationBarHidden:NO animated:NO];
-    [self.navigationController setToolbarHidden:YES animated:NO];
+    [self.navigationController setToolbarHidden:NO animated:NO];
     [self.navigationItem setTitle: @"Camera Roll"];
     [self.navigationItem setHidesBackButton:TRUE];
-    
+    [self.navigationController.toolbar setDelegate:self];
+
     // Override the back idnicator
-    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"]
-                                                                      style:UIBarButtonItemStylePlain
-                                                                     target:self
-                                                                     action:@selector(hideCameraRoll)];
+    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(hideCameraRoll)];
     [cancelButton setTintColor:[UIColor whiteColor]];
     [self.navigationItem setLeftBarButtonItem:cancelButton];
-    
-    // Draw transparent overlay menu
-    UIView *overlay = [[UIView alloc] initWithFrame:CGRectMake(0.0f, (self.view.frame.size.height - 40.0f), self.view.frame.size.width, 60.0f)];
-    [overlay setBackgroundColor:[[UIColor redColor] colorWithAlphaComponent:0.6]];
-    [self.view addSubview:overlay];
-    
+        
     // Set up delegate and datasource
     [self.collectionView registerClass:[PhotoCellCollectionView class] forCellWithReuseIdentifier:@"PhotoCell"];
     [self.collectionView setDelegate: self];
@@ -109,21 +107,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
-{
-    NSLog(@"CameraImagePickerViewController::imagePickerController");
-    UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
-    [self.imageView setImage:image];
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
-{
-    [self dismissViewControllerAnimated:YES completion:NULL];
-}
-*/
-
 - (void)loadCamera{
     NSLog(@"loadCamera...");
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
@@ -146,38 +129,11 @@
     }
 }
 
-/*
-- (IBAction)selectPhoto:(UIButton *)sender {
-    
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.allowsEditing = YES;
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    
-    [self presentViewController:picker animated:YES completion:NULL];
-    
-    
-}
-
-- (IBAction)takePhoto:(UIButton *)sender {
-    
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.allowsEditing = YES;
-    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-    
-    [self presentViewController:picker animated:YES completion:NULL];
-    
-}
-*/
-
 - (void)hideCameraRoll
 {
     NSLog(@"hideCameraRoll");
     [self dismissViewControllerAnimated:YES completion:nil];
 }
-
-
 
 #pragma mark - collection view data source
 
@@ -219,15 +175,151 @@
     if (self.onCompletion){self.onCompletion(image);}
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+#pragma mark - UIImagePickerDelegate
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    
+    NSLog(@"FTFeedViewController::imagePickerControllerDidCancel");
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
-*/
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+    
+    [self dismissViewControllerAnimated:NO completion:nil];
+    
+    NSLog(@"FTFeedViewController::imagePickerController");
+    UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
+    
+    FTEditPhotoViewController *viewController = [[FTEditPhotoViewController alloc] initWithImage:image];
+    [viewController setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
+    
+    [self.navController setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
+    [self.navController pushViewController:viewController animated:NO];
+    
+    [self presentViewController:viewController animated:YES completion:nil];
+}
+
+#pragma mark - UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    
+    NSLog(@"FTFeedViewController::actionSheet");
+    if (buttonIndex == 0) {
+        [self shouldStartCameraController];
+    } else if (buttonIndex == 1) {
+        [self shouldStartPhotoLibraryPickerController];
+    }
+}
+
+#pragma mark - FTCameraToolBarDelegate
+
+- (void)showCameraPreview
+{
+    NSLog(@"FTFeedViewController::showCameraPreview");
+    
+    /*
+    BOOL cameraDeviceAvailable = [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
+    
+    if(cameraDeviceAvailable){
+        [self shouldStartCameraController];
+    }
+    */
+    
+    FTCamViewController *cameraViewController = [[FTCamViewController alloc] init];
+    [self.navigationController pushViewController:cameraViewController animated:YES];
+}
+
+#pragma mark - ()
+- (BOOL)shouldPresentPhotoCaptureController {
+    
+    NSLog(@"FTFeedViewController::shouldPresentPhotoCaptureController");
+    BOOL presentedPhotoCaptureController = [self shouldStartCameraController];
+    if (!presentedPhotoCaptureController) {
+        presentedPhotoCaptureController = [self shouldStartPhotoLibraryPickerController];
+    }
+    return presentedPhotoCaptureController;
+}
+
+- (BOOL)shouldStartCameraController {
+    
+    NSLog(@"FTFeedViewController::shouldStartCameraController");
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] == NO) {
+        return NO;
+    }
+    
+    UIImagePickerController *cameraUI = [[UIImagePickerController alloc] init];
+    
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]
+        && [[UIImagePickerController availableMediaTypesForSourceType:
+             UIImagePickerControllerSourceTypeCamera] containsObject:(NSString *)kUTTypeImage]) {
+        
+        cameraUI.mediaTypes = [NSArray arrayWithObject:(NSString *) kUTTypeImage];
+        cameraUI.sourceType = UIImagePickerControllerSourceTypeCamera;
+        cameraUI.modalPresentationStyle = UIModalPresentationCurrentContext;
+        cameraUI.cameraCaptureMode = UIImagePickerControllerCameraCaptureModePhoto;
+        
+        FTOverlayView *overlayView = [[FTOverlayView alloc] init];
+        cameraUI.cameraOverlayView = overlayView;
+
+        if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]) {
+            cameraUI.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+            
+        } else if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
+            cameraUI.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+        }
+        
+    } else {
+        return NO;
+    }
+    
+    cameraUI.allowsEditing = YES;
+    cameraUI.showsCameraControls = NO;
+    cameraUI.delegate = self;
+    cameraUI.navigationBarHidden = NO;
+    cameraUI.navigationBar.barStyle = UIBarStyleDefault;
+    
+    [self.navigationController presentViewController:cameraUI animated:YES completion:nil];
+    
+    return YES;
+}
+
+- (BOOL)shouldStartPhotoLibraryPickerController {
+    
+    NSLog(@"FTFeedViewController::shouldStartPhotoLibraryPickerController");
+    if (([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary] == NO
+         && [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum] == NO)) {
+        
+        return NO;
+    }
+    
+    UIImagePickerController *cameraUI = [[UIImagePickerController alloc] init];
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]
+        && [[UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypePhotoLibrary] containsObject:(NSString *)kUTTypeImage]) {
+        
+        cameraUI.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        cameraUI.mediaTypes = [NSArray arrayWithObject:(NSString *) kUTTypeImage];
+        
+    } else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum]
+               && [[UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeSavedPhotosAlbum] containsObject:(NSString *)kUTTypeImage]) {
+        
+        cameraUI.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+        cameraUI.mediaTypes = [NSArray arrayWithObject:(NSString *) kUTTypeImage];
+        
+    } else {
+        return NO;
+    }
+    
+    cameraUI.allowsEditing = YES;
+    cameraUI.delegate = self;
+    
+    [self presentViewController:cameraUI animated:YES completion:nil];
+    
+    return YES;
+}
+
+-(void)toggleCamera:(id)sender
+{
+    NSLog(@"FTFeedViewController::toggleCamera");
+    
+    
+}
 
 @end

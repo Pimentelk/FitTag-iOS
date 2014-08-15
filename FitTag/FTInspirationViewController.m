@@ -1,23 +1,22 @@
 //
-//  FindFriendsViewController.m
+//  InspirationViewController.m
 //  FitTag
 //
-//  Created by Kevin Pimentel on 7/12/14.
+//  Created by Kevin Pimentel on 7/3/14.
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-#import "FindFriendsViewController.h"
+#import "FTInspirationViewController.h"
 #import "CollectionHeaderView.h"
-#import "FeedCollectionViewFlowLayout.h"
-#import "FTFeedViewController.h"
-#import "FTNavigationBar.h"
-#import "FTToolBar.h"
+#import "InspirationCellCollectionView.h"
+#import "FindFriendsViewController.h"
+#import "FindFriendsFlowLayout.h"
 
-@interface FindFriendsViewController ()
+@interface FTInspirationViewController ()
 
 @end
 
-@implementation FindFriendsViewController
+@implementation FTInspirationViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -34,17 +33,20 @@
 
     // View layout
     [self.view setBackgroundColor:[UIColor lightGrayColor]];
-    [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"login_background_image_05"]]];
+    [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"login_background_image_07"]]];
     [self.collectionView setBackgroundColor:[[UIColor clearColor] colorWithAlphaComponent:0]];
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     [self.navigationController.navigationBar setBarTintColor:[UIColor redColor]];
     [self.navigationItem setTitleView: [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fittag_logo"]]];
-
+    
+    // Register Cell
+    [self.collectionView registerClass:[InspirationCellCollectionView class] forCellWithReuseIdentifier:@"MemberCell"];
+    
     // Register header
     [self.collectionView registerClass:[CollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView"];
     [self.collectionView setDelegate: self];
     [self.collectionView setDataSource: self];
-    
+        
     // Set collectionview frame
     [self.collectionView setFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, self.view.frame.size.height)];
     [self.collectionView setBackgroundColor:[[UIColor whiteColor] colorWithAlphaComponent:0.8]];
@@ -56,7 +58,7 @@
     // Label
     UILabel *nextMessage = [[UILabel alloc] initWithFrame:CGRectMake(10.0f, 8.0f, 280.0f, 30.0f)];
     nextMessage.numberOfLines = 0;
-    nextMessage.text = @"YOUR JOURNEY STARTS HERE";
+    nextMessage.text = @"SELECT AT LEAST 5 FOLLOWERS";
     nextMessage.backgroundColor = [UIColor clearColor];
     
     // Next button
@@ -66,33 +68,30 @@
     
     [self.navigationController.toolbar addSubview:nextMessage];
     [self.navigationController.toolbar addSubview:nextButton];
-}
-
-- (void)submitUserInspiration
-{
-    FeedCollectionViewFlowLayout *layoutFlow = [[FeedCollectionViewFlowLayout alloc] init];
-    [layoutFlow setItemSize:CGSizeMake(320,320)];
-    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [layoutFlow setMinimumInteritemSpacing:0];
-    [layoutFlow setMinimumLineSpacing:0];
-    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,80)];
     
-    // Show the interests
-    //FeedViewController *rootViewController = [[FeedViewController alloc] initWithCollectionViewLayout:layoutFlow];
-    FTFeedViewController *rootViewController = [[FTFeedViewController alloc] initWithClassName:@"Tbl_follower"];
-    UINavigationController *navController = [[UINavigationController alloc] initWithNavigationBarClass:[FTNavigationBar class]
-                                                                                          toolbarClass:[FTToolBar class]];
-    [navController setViewControllers:@[rootViewController] animated:NO];
-    
-    // Present the Interests View Controller
-    [self presentViewController:navController animated:YES completion:NULL];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)submitUserInspiration
+{
+    // Layout param
+    FindFriendsFlowLayout *layoutFlow = [[FindFriendsFlowLayout alloc] init];
+    [layoutFlow setItemSize:CGSizeMake(320,42)];
+    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [layoutFlow setMinimumInteritemSpacing:0];
+    [layoutFlow setMinimumLineSpacing:0];
+    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,32)];
+    
+    // Show the interests
+    FindFriendsViewController *rootViewController = [[FindFriendsViewController alloc] initWithCollectionViewLayout:layoutFlow];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
+    [self presentViewController:navController animated:YES completion:NULL];
 }
 
 #pragma mark - collection view data source
@@ -107,7 +106,7 @@
                                                                                      forIndexPath:indexPath];
         
         [headerView setFrame:CGRectMake(0.0f, 0.0f, 320.0f, 32.0f)];
-        [headerView.messageHeader setText:@"YOUR FRIENDS ALREADY ON FITTAG"];
+        [headerView.messageHeader setText:@"FIND THE PEOPLE THAT INSPIRE YOU"];
         [headerView.messageText setText:@""];
         
         reusableview = headerView;
@@ -122,5 +121,65 @@
     return reusableview;
 }
 
+- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    return self.usersToRecommend.count;
+}
+
+- (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    InspirationCellCollectionView *cell = (InspirationCellCollectionView *)[collectionView dequeueReusableCellWithReuseIdentifier:@"MemberCell" forIndexPath:indexPath];
+    
+    NSMutableArray *sharedInterests = [self intersect:self.interests withUser:[self.usersToRecommendInterests objectForKey:self.userKeys[indexPath.row]]];
+    NSString *interest = [[sharedInterests componentsJoinedByString:@"\r\n"] uppercaseString];
+
+    NSLog(@"Matching interests: %@",interest);
+    
+    if ([cell isKindOfClass:[InspirationCellCollectionView class]]) {
+        cell.backgroundColor = [UIColor clearColor];
+        cell.message.text = @"BECAUSE YOU HAVE INTEREST IN ";
+        cell.messageInterests.text = interest;
+        cell.imageFile = [self.usersToRecommend objectForKey:self.userKeys[indexPath.row]];
+    }
+    
+    return cell;
+}
+
+- (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
+{
+    return 0;
+}
+
+- (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
+{
+    return 0;
+}
+
+-(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    // When item is selected do something
+    InspirationCellCollectionView *cell = (InspirationCellCollectionView *)[collectionView cellForItemAtIndexPath:indexPath];
+    if(![cell isSelectedToggle]){
+        NSLog(@"Item selected");
+        cell.isSelectedToggle = YES;
+        cell.image = [UIImage imageNamed:@"user_selected"];
+    } else {
+        cell.isSelectedToggle = NO;
+        cell.imageFile = [self.usersToRecommend objectForKey:self.userKeys[indexPath.row]];
+    }
+}
+
+-(NSMutableArray *) intersect:(NSArray*)selected withUser:(NSArray*)interests
+{
+    NSMutableArray *sharedInterests = [@[] mutableCopy];
+    
+    for (NSObject *obj in selected)
+    {
+        if([interests containsObject:obj] && ![sharedInterests containsObject:obj])
+            [sharedInterests addObject:obj];
+    }
+    
+    return sharedInterests;
+}
 
 @end

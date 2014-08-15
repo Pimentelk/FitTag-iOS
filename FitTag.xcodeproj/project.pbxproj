@@ -9,14 +9,14 @@
 /* Begin PBXBuildFile section */
 		2D0A53A81971997F0091FFCA /* InspirationCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */; };
 		2D0A53AC1971ABFF0091FFCA /* FindFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53AB1971ABFF0091FFCA /* FindFriendsViewController.m */; };
-		2D410F481973575C00CE2940 /* FeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F471973575C00CE2940 /* FeedViewController.m */; };
+		2D410F481973575C00CE2940 /* FTFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F471973575C00CE2940 /* FTFeedViewController.m */; };
 		2D410F4C1973581A00CE2940 /* FeedCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F4B1973581A00CE2940 /* FeedCollectionViewFlowLayout.m */; };
-		2D410F4F19735B5B00CE2940 /* FitTagNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F4E19735B5B00CE2940 /* FitTagNavigationBar.m */; };
-		2D410F5219735B7500CE2940 /* FitTagToolBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F5119735B7500CE2940 /* FitTagToolBar.m */; };
-		2D429A0B1977ED6000F8A9A0 /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A0A1977ED6000F8A9A0 /* ProfileViewController.m */; };
-		2D429A0E1977EE7700F8A9A0 /* SearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A0D1977EE7700F8A9A0 /* SearchViewController.m */; };
+		2D410F4F19735B5B00CE2940 /* FTNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F4E19735B5B00CE2940 /* FTNavigationBar.m */; };
+		2D410F5219735B7500CE2940 /* FTToolBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F5119735B7500CE2940 /* FTToolBar.m */; };
+		2D429A0B1977ED6000F8A9A0 /* FTProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A0A1977ED6000F8A9A0 /* FTProfileViewController.m */; };
+		2D429A0E1977EE7700F8A9A0 /* FTSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A0D1977EE7700F8A9A0 /* FTSearchViewController.m */; };
 		2D429A111977EE8F00F8A9A0 /* FTActivityFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A101977EE8F00F8A9A0 /* FTActivityFeedViewController.m */; };
-		2D429A141977EE9E00F8A9A0 /* OffersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A131977EE9E00F8A9A0 /* OffersViewController.m */; };
+		2D429A141977EE9E00F8A9A0 /* FTOffersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A131977EE9E00F8A9A0 /* FTOffersViewController.m */; };
 		2D429A17197AD47000F8A9A0 /* FTConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A16197AD47000F8A9A0 /* FTConstants.m */; };
 		2D429A1B197AF37000F8A9A0 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A1A197AF37000F8A9A0 /* Reachability.m */; };
 		2D429A20197B2F4C00F8A9A0 /* FTTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A1F197B2F4C00F8A9A0 /* FTTabBarController.m */; };
@@ -27,6 +27,8 @@
 		2D429A30197B34DC00F8A9A0 /* TTTTimeIntervalFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A2F197B34DC00F8A9A0 /* TTTTimeIntervalFormatter.m */; };
 		2D429A33197B354600F8A9A0 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A32197B354600F8A9A0 /* UIImage+ImageEffects.m */; };
 		2D6E0224196A24A1004DC010 /* InterestFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D6E0223196A24A1004DC010 /* InterestFlowLayout.m */; };
+		2D9949731996905E000E321E /* FTOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D9949721996905E000E321E /* FTOverlayView.m */; };
+		2D9949761996A9B0000E321E /* FTCameraToolBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D9949751996A9B0000E321E /* FTCameraToolBar.m */; };
 		2DAA63DE1957A51F003B1DDF /* UIView+FormScroll.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DAA63DD1957A51F003B1DDF /* UIView+FormScroll.m */; };
 		2DABDA03195DA48200379891 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DABDA02195DA48200379891 /* AssetsLibrary.framework */; };
 		2DABDA06195DC0E500379891 /* PhotoCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DABDA05195DC0E500379891 /* PhotoCellCollectionView.m */; };
@@ -34,10 +36,11 @@
 		2DABDA0D1960520800379891 /* CustomToolBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DABDA0C1960520800379891 /* CustomToolBar.m */; };
 		2DACD9751962D62200833C14 /* InterestCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD9741962D62200833C14 /* InterestCellCollectionView.m */; };
 		2DACD97819656F8900833C14 /* InterestCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD97719656F8900833C14 /* InterestCollectionViewFlowLayout.m */; };
-		2DACD97B196578DA00833C14 /* InspirationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD97A196578DA00833C14 /* InspirationViewController.m */; };
+		2DACD97B196578DA00833C14 /* FTInspirationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD97A196578DA00833C14 /* FTInspirationViewController.m */; };
 		2DACE8141966FF7200154504 /* CollectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACE8131966FF7200154504 /* CollectionHeaderView.m */; };
 		2DBC6E5A195C783C008B5AD3 /* ImageCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBC6E59195C783C008B5AD3 /* ImageCollectionViewController.m */; };
-		2DBC6EA1195CBCE2008B5AD3 /* InterestsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBC6EA0195CBCE2008B5AD3 /* InterestsViewController.m */; };
+		2DBC6EA1195CBCE2008B5AD3 /* FTInterestsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBC6EA0195CBCE2008B5AD3 /* FTInterestsViewController.m */; };
+		2DC507CC199829940041A03D /* FTCamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC507CB199829940041A03D /* FTCamViewController.m */; };
 		2DD2B6551983FD0E00600A42 /* FTUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B6541983FD0E00600A42 /* FTUtility.m */; };
 		2DD2B6581983FD2C00600A42 /* FTCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B6571983FD2C00600A42 /* FTCache.m */; };
 		2DD2B6631984005300600A42 /* UIImage+AlphaAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B6621984005300600A42 /* UIImage+AlphaAdditions.m */; };
@@ -66,7 +69,6 @@
 		2DD691571949AF5B00B59E75 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2DD691551949AF5B00B59E75 /* InfoPlist.strings */; };
 		2DD691591949AF5B00B59E75 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD691581949AF5B00B59E75 /* main.m */; };
 		2DD6915D1949AF5B00B59E75 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD6915C1949AF5B00B59E75 /* AppDelegate.m */; };
-		2DD691601949AF5B00B59E75 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2DD6915E1949AF5B00B59E75 /* Main.storyboard */; };
 		2DD691651949AF5B00B59E75 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DD691641949AF5B00B59E75 /* Images.xcassets */; };
 		2DD6916C1949AF5B00B59E75 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6916B1949AF5B00B59E75 /* XCTest.framework */; };
 		2DD6916D1949AF5B00B59E75 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6914C1949AF5B00B59E75 /* Foundation.framework */; };
@@ -83,9 +85,9 @@
 		2DD691921949B07C00B59E75 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6918D1949B07C00B59E75 /* Security.framework */; };
 		2DD691931949B07C00B59E75 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6918E1949B07C00B59E75 /* StoreKit.framework */; };
 		2DD691941949B07C00B59E75 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6918F1949B07C00B59E75 /* SystemConfiguration.framework */; };
-		2DD691981949B24300B59E75 /* FitTagConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD691971949B24300B59E75 /* FitTagConfigViewController.m */; };
-		2DD6919B1949B71B00B59E75 /* FitTagLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD6919A1949B71B00B59E75 /* FitTagLoginViewController.m */; };
-		2DD6919E1949B74400B59E75 /* FitTagSignupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD6919D1949B74400B59E75 /* FitTagSignupViewController.m */; };
+		2DD691981949B24300B59E75 /* FTConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD691971949B24300B59E75 /* FTConfigViewController.m */; };
+		2DD6919B1949B71B00B59E75 /* FTLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD6919A1949B71B00B59E75 /* FTLoginViewController.m */; };
+		2DD6919E1949B74400B59E75 /* FTSignupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD6919D1949B74400B59E75 /* FTSignupViewController.m */; };
 		2DD691A01949C7BA00B59E75 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6919F1949C7BA00B59E75 /* Social.framework */; };
 		2DD691A21949C7C700B59E75 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691A11949C7C700B59E75 /* Accounts.framework */; };
 		2DD691A41949C7E300B59E75 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691A31949C7E300B59E75 /* FacebookSDK.framework */; };
@@ -107,22 +109,22 @@
 		2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InspirationCellCollectionView.m; sourceTree = "<group>"; };
 		2D0A53AA1971ABFF0091FFCA /* FindFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindFriendsViewController.h; sourceTree = "<group>"; };
 		2D0A53AB1971ABFF0091FFCA /* FindFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindFriendsViewController.m; sourceTree = "<group>"; };
-		2D410F461973575C00CE2940 /* FeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedViewController.h; sourceTree = "<group>"; };
-		2D410F471973575C00CE2940 /* FeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedViewController.m; sourceTree = "<group>"; };
+		2D410F461973575C00CE2940 /* FTFeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTFeedViewController.h; sourceTree = "<group>"; };
+		2D410F471973575C00CE2940 /* FTFeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTFeedViewController.m; sourceTree = "<group>"; };
 		2D410F4A1973581A00CE2940 /* FeedCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedCollectionViewFlowLayout.h; sourceTree = "<group>"; };
 		2D410F4B1973581A00CE2940 /* FeedCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedCollectionViewFlowLayout.m; sourceTree = "<group>"; };
-		2D410F4D19735B5B00CE2940 /* FitTagNavigationBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FitTagNavigationBar.h; sourceTree = "<group>"; };
-		2D410F4E19735B5B00CE2940 /* FitTagNavigationBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FitTagNavigationBar.m; sourceTree = "<group>"; };
-		2D410F5019735B7500CE2940 /* FitTagToolBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FitTagToolBar.h; sourceTree = "<group>"; };
-		2D410F5119735B7500CE2940 /* FitTagToolBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FitTagToolBar.m; sourceTree = "<group>"; };
-		2D429A091977ED6000F8A9A0 /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
-		2D429A0A1977ED6000F8A9A0 /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
-		2D429A0C1977EE7700F8A9A0 /* SearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchViewController.h; sourceTree = "<group>"; };
-		2D429A0D1977EE7700F8A9A0 /* SearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchViewController.m; sourceTree = "<group>"; };
+		2D410F4D19735B5B00CE2940 /* FTNavigationBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTNavigationBar.h; sourceTree = "<group>"; };
+		2D410F4E19735B5B00CE2940 /* FTNavigationBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTNavigationBar.m; sourceTree = "<group>"; };
+		2D410F5019735B7500CE2940 /* FTToolBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTToolBar.h; sourceTree = "<group>"; };
+		2D410F5119735B7500CE2940 /* FTToolBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTToolBar.m; sourceTree = "<group>"; };
+		2D429A091977ED6000F8A9A0 /* FTProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTProfileViewController.h; sourceTree = "<group>"; };
+		2D429A0A1977ED6000F8A9A0 /* FTProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTProfileViewController.m; sourceTree = "<group>"; };
+		2D429A0C1977EE7700F8A9A0 /* FTSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSearchViewController.h; sourceTree = "<group>"; };
+		2D429A0D1977EE7700F8A9A0 /* FTSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchViewController.m; sourceTree = "<group>"; };
 		2D429A0F1977EE8F00F8A9A0 /* FTActivityFeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTActivityFeedViewController.h; sourceTree = "<group>"; };
 		2D429A101977EE8F00F8A9A0 /* FTActivityFeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTActivityFeedViewController.m; sourceTree = "<group>"; };
-		2D429A121977EE9E00F8A9A0 /* OffersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OffersViewController.h; sourceTree = "<group>"; };
-		2D429A131977EE9E00F8A9A0 /* OffersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OffersViewController.m; sourceTree = "<group>"; };
+		2D429A121977EE9E00F8A9A0 /* FTOffersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTOffersViewController.h; sourceTree = "<group>"; };
+		2D429A131977EE9E00F8A9A0 /* FTOffersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTOffersViewController.m; sourceTree = "<group>"; };
 		2D429A15197AD47000F8A9A0 /* FTConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTConstants.h; sourceTree = "<group>"; };
 		2D429A16197AD47000F8A9A0 /* FTConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTConstants.m; sourceTree = "<group>"; };
 		2D429A19197AF37000F8A9A0 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
@@ -140,6 +142,10 @@
 		2D429A32197B354600F8A9A0 /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
 		2D6E0222196A24A1004DC010 /* InterestFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterestFlowLayout.h; sourceTree = "<group>"; };
 		2D6E0223196A24A1004DC010 /* InterestFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterestFlowLayout.m; sourceTree = "<group>"; };
+		2D9949711996905E000E321E /* FTOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTOverlayView.h; sourceTree = "<group>"; };
+		2D9949721996905E000E321E /* FTOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTOverlayView.m; sourceTree = "<group>"; };
+		2D9949741996A9AF000E321E /* FTCameraToolBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCameraToolBar.h; sourceTree = "<group>"; };
+		2D9949751996A9B0000E321E /* FTCameraToolBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCameraToolBar.m; sourceTree = "<group>"; };
 		2DAA63DC1957A51F003B1DDF /* UIView+FormScroll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+FormScroll.h"; sourceTree = "<group>"; };
 		2DAA63DD1957A51F003B1DDF /* UIView+FormScroll.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+FormScroll.m"; sourceTree = "<group>"; };
 		2DABDA02195DA48200379891 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
@@ -153,14 +159,16 @@
 		2DACD9741962D62200833C14 /* InterestCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterestCellCollectionView.m; sourceTree = "<group>"; };
 		2DACD97619656F8900833C14 /* InterestCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterestCollectionViewFlowLayout.h; sourceTree = "<group>"; };
 		2DACD97719656F8900833C14 /* InterestCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterestCollectionViewFlowLayout.m; sourceTree = "<group>"; };
-		2DACD979196578DA00833C14 /* InspirationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspirationViewController.h; sourceTree = "<group>"; };
-		2DACD97A196578DA00833C14 /* InspirationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InspirationViewController.m; sourceTree = "<group>"; };
+		2DACD979196578DA00833C14 /* FTInspirationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTInspirationViewController.h; sourceTree = "<group>"; };
+		2DACD97A196578DA00833C14 /* FTInspirationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTInspirationViewController.m; sourceTree = "<group>"; };
 		2DACE8121966FF7200154504 /* CollectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionHeaderView.h; sourceTree = "<group>"; };
 		2DACE8131966FF7200154504 /* CollectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionHeaderView.m; sourceTree = "<group>"; };
 		2DBC6E58195C783C008B5AD3 /* ImageCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageCollectionViewController.h; sourceTree = "<group>"; };
 		2DBC6E59195C783C008B5AD3 /* ImageCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCollectionViewController.m; sourceTree = "<group>"; };
-		2DBC6E9F195CBCE2008B5AD3 /* InterestsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterestsViewController.h; sourceTree = "<group>"; };
-		2DBC6EA0195CBCE2008B5AD3 /* InterestsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterestsViewController.m; sourceTree = "<group>"; };
+		2DBC6E9F195CBCE2008B5AD3 /* FTInterestsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTInterestsViewController.h; sourceTree = "<group>"; };
+		2DBC6EA0195CBCE2008B5AD3 /* FTInterestsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTInterestsViewController.m; sourceTree = "<group>"; };
+		2DC507CA199829940041A03D /* FTCamViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCamViewController.h; sourceTree = "<group>"; };
+		2DC507CB199829940041A03D /* FTCamViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCamViewController.m; sourceTree = "<group>"; };
 		2DD2B6531983FD0E00600A42 /* FTUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTUtility.h; sourceTree = "<group>"; };
 		2DD2B6541983FD0E00600A42 /* FTUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTUtility.m; sourceTree = "<group>"; };
 		2DD2B6561983FD2C00600A42 /* FTCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCache.h; sourceTree = "<group>"; };
@@ -215,7 +223,6 @@
 		2DD6915A1949AF5B00B59E75 /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 		2DD6915B1949AF5B00B59E75 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2DD6915C1949AF5B00B59E75 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		2DD6915F1949AF5B00B59E75 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2DD691641949AF5B00B59E75 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		2DD6916A1949AF5B00B59E75 /* FitTagTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FitTagTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DD6916B1949AF5B00B59E75 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -232,12 +239,12 @@
 		2DD6918D1949B07C00B59E75 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		2DD6918E1949B07C00B59E75 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		2DD6918F1949B07C00B59E75 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		2DD691961949B24300B59E75 /* FitTagConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FitTagConfigViewController.h; sourceTree = "<group>"; };
-		2DD691971949B24300B59E75 /* FitTagConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FitTagConfigViewController.m; sourceTree = "<group>"; };
-		2DD691991949B71B00B59E75 /* FitTagLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FitTagLoginViewController.h; sourceTree = "<group>"; };
-		2DD6919A1949B71B00B59E75 /* FitTagLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FitTagLoginViewController.m; sourceTree = "<group>"; };
-		2DD6919C1949B74400B59E75 /* FitTagSignupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FitTagSignupViewController.h; sourceTree = "<group>"; };
-		2DD6919D1949B74400B59E75 /* FitTagSignupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FitTagSignupViewController.m; sourceTree = "<group>"; };
+		2DD691961949B24300B59E75 /* FTConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTConfigViewController.h; sourceTree = "<group>"; };
+		2DD691971949B24300B59E75 /* FTConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTConfigViewController.m; sourceTree = "<group>"; };
+		2DD691991949B71B00B59E75 /* FTLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTLoginViewController.h; sourceTree = "<group>"; };
+		2DD6919A1949B71B00B59E75 /* FTLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTLoginViewController.m; sourceTree = "<group>"; };
+		2DD6919C1949B74400B59E75 /* FTSignupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSignupViewController.h; sourceTree = "<group>"; };
+		2DD6919D1949B74400B59E75 /* FTSignupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSignupViewController.m; sourceTree = "<group>"; };
 		2DD6919F1949C7BA00B59E75 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		2DD691A11949C7C700B59E75 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		2DD691A31949C7E300B59E75 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
@@ -306,8 +313,8 @@
 			children = (
 				2DD2B6871984167200600A42 /* FTPhotoTimelineViewController.h */,
 				2DD2B6881984167200600A42 /* FTPhotoTimelineViewController.m */,
-				2D410F461973575C00CE2940 /* FeedViewController.h */,
-				2D410F471973575C00CE2940 /* FeedViewController.m */,
+				2D410F461973575C00CE2940 /* FTFeedViewController.h */,
+				2D410F471973575C00CE2940 /* FTFeedViewController.m */,
 				2DD2B6841984164E00600A42 /* FTAccountViewController.h */,
 				2DD2B6851984164E00600A42 /* FTAccountViewController.m */,
 			);
@@ -341,10 +348,10 @@
 		2D429A1C197B2C0F00F8A9A0 /* First Login */ = {
 			isa = PBXGroup;
 			children = (
-				2DBC6E9F195CBCE2008B5AD3 /* InterestsViewController.h */,
-				2DBC6EA0195CBCE2008B5AD3 /* InterestsViewController.m */,
-				2DACD979196578DA00833C14 /* InspirationViewController.h */,
-				2DACD97A196578DA00833C14 /* InspirationViewController.m */,
+				2DBC6E9F195CBCE2008B5AD3 /* FTInterestsViewController.h */,
+				2DBC6EA0195CBCE2008B5AD3 /* FTInterestsViewController.m */,
+				2DACD979196578DA00833C14 /* FTInspirationViewController.h */,
+				2DACD97A196578DA00833C14 /* FTInspirationViewController.m */,
 			);
 			name = "First Login";
 			sourceTree = "<group>";
@@ -354,14 +361,13 @@
 			children = (
 				2D0A53AD1971AC240091FFCA /* Home */,
 				2DD2B65F1983FE1500600A42 /* Offers */,
-				2DD2B65E1983FE0500600A42 /* Find Friends */,
 				2DD2B65D1983FDF400600A42 /* Search */,
 				2DD2B65C1983FDE800600A42 /* Profile */,
-				2DD2B65B1983FDBE00600A42 /* Settings */,
 				2DD2B65A1983FDB800600A42 /* Detail */,
 				2DD2B6591983FDAC00600A42 /* Activity */,
 				2DD691951949B1EB00B59E75 /* Login */,
 				2DBC6E57195C77FF008B5AD3 /* Take Photo */,
+				2DD2B65B1983FDBE00600A42 /* JUNK */,
 				2DD2B69519841ACE00600A42 /* Settings */,
 				2D429A1E197B2F4C00F8A9A0 /* FTTabBarController.h */,
 				2D429A1F197B2F4C00F8A9A0 /* FTTabBarController.m */,
@@ -403,10 +409,12 @@
 				2DABDA09195DE15900379891 /* ImageCustomNavigationBar.m */,
 				2DABDA0B1960520800379891 /* CustomToolBar.h */,
 				2DABDA0C1960520800379891 /* CustomToolBar.m */,
-				2D410F4D19735B5B00CE2940 /* FitTagNavigationBar.h */,
-				2D410F4E19735B5B00CE2940 /* FitTagNavigationBar.m */,
-				2D410F5019735B7500CE2940 /* FitTagToolBar.h */,
-				2D410F5119735B7500CE2940 /* FitTagToolBar.m */,
+				2D410F4D19735B5B00CE2940 /* FTNavigationBar.h */,
+				2D410F4E19735B5B00CE2940 /* FTNavigationBar.m */,
+				2D410F5019735B7500CE2940 /* FTToolBar.h */,
+				2D410F5119735B7500CE2940 /* FTToolBar.m */,
+				2D9949741996A9AF000E321E /* FTCameraToolBar.h */,
+				2D9949751996A9B0000E321E /* FTCameraToolBar.m */,
 			);
 			name = "Custom Bars";
 			sourceTree = "<group>";
@@ -418,6 +426,8 @@
 				2DBC6E59195C783C008B5AD3 /* ImageCollectionViewController.m */,
 				2DD2B66B198402BB00600A42 /* FTEditPhotoViewController.h */,
 				2DD2B66C198402BB00600A42 /* FTEditPhotoViewController.m */,
+				2DC507CA199829940041A03D /* FTCamViewController.h */,
+				2DC507CB199829940041A03D /* FTCamViewController.m */,
 			);
 			name = "Take Photo";
 			sourceTree = "<group>";
@@ -440,18 +450,20 @@
 			name = Detail;
 			sourceTree = "<group>";
 		};
-		2DD2B65B1983FDBE00600A42 /* Settings */ = {
+		2DD2B65B1983FDBE00600A42 /* JUNK */ = {
 			isa = PBXGroup;
 			children = (
+				2D0A53AA1971ABFF0091FFCA /* FindFriendsViewController.h */,
+				2D0A53AB1971ABFF0091FFCA /* FindFriendsViewController.m */,
 			);
-			name = Settings;
+			name = JUNK;
 			sourceTree = "<group>";
 		};
 		2DD2B65C1983FDE800600A42 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
-				2D429A091977ED6000F8A9A0 /* ProfileViewController.h */,
-				2D429A0A1977ED6000F8A9A0 /* ProfileViewController.m */,
+				2D429A091977ED6000F8A9A0 /* FTProfileViewController.h */,
+				2D429A0A1977ED6000F8A9A0 /* FTProfileViewController.m */,
 			);
 			name = Profile;
 			sourceTree = "<group>";
@@ -459,26 +471,17 @@
 		2DD2B65D1983FDF400600A42 /* Search */ = {
 			isa = PBXGroup;
 			children = (
-				2D429A0C1977EE7700F8A9A0 /* SearchViewController.h */,
-				2D429A0D1977EE7700F8A9A0 /* SearchViewController.m */,
+				2D429A0C1977EE7700F8A9A0 /* FTSearchViewController.h */,
+				2D429A0D1977EE7700F8A9A0 /* FTSearchViewController.m */,
 			);
 			name = Search;
-			sourceTree = "<group>";
-		};
-		2DD2B65E1983FE0500600A42 /* Find Friends */ = {
-			isa = PBXGroup;
-			children = (
-				2D0A53AA1971ABFF0091FFCA /* FindFriendsViewController.h */,
-				2D0A53AB1971ABFF0091FFCA /* FindFriendsViewController.m */,
-			);
-			name = "Find Friends";
 			sourceTree = "<group>";
 		};
 		2DD2B65F1983FE1500600A42 /* Offers */ = {
 			isa = PBXGroup;
 			children = (
-				2D429A121977EE9E00F8A9A0 /* OffersViewController.h */,
-				2D429A131977EE9E00F8A9A0 /* OffersViewController.m */,
+				2D429A121977EE9E00F8A9A0 /* FTOffersViewController.h */,
+				2D429A131977EE9E00F8A9A0 /* FTOffersViewController.m */,
 			);
 			name = Offers;
 			sourceTree = "<group>";
@@ -567,6 +570,8 @@
 				2DD2B69719841B0600600A42 /* FTFindFriendsViewController.m */,
 				2DD2B69919841BC700600A42 /* FTSettingsActionSheetDelegate.h */,
 				2DD2B69A19841BC700600A42 /* FTSettingsActionSheetDelegate.m */,
+				2D9949711996905E000E321E /* FTOverlayView.h */,
+				2D9949721996905E000E321E /* FTOverlayView.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -638,7 +643,6 @@
 				2DD2B6541983FD0E00600A42 /* FTUtility.m */,
 				2DD2B6561983FD2C00600A42 /* FTCache.h */,
 				2DD2B6571983FD2C00600A42 /* FTCache.m */,
-				2DD6915E1949AF5B00B59E75 /* Main.storyboard */,
 				2DD691641949AF5B00B59E75 /* Images.xcassets */,
 				2DD691531949AF5B00B59E75 /* Supporting Files */,
 			);
@@ -677,12 +681,12 @@
 		2DD691951949B1EB00B59E75 /* Login */ = {
 			isa = PBXGroup;
 			children = (
-				2DD691961949B24300B59E75 /* FitTagConfigViewController.h */,
-				2DD691971949B24300B59E75 /* FitTagConfigViewController.m */,
-				2DD691991949B71B00B59E75 /* FitTagLoginViewController.h */,
-				2DD6919A1949B71B00B59E75 /* FitTagLoginViewController.m */,
-				2DD6919C1949B74400B59E75 /* FitTagSignupViewController.h */,
-				2DD6919D1949B74400B59E75 /* FitTagSignupViewController.m */,
+				2DD691961949B24300B59E75 /* FTConfigViewController.h */,
+				2DD691971949B24300B59E75 /* FTConfigViewController.m */,
+				2DD691991949B71B00B59E75 /* FTLoginViewController.h */,
+				2DD6919A1949B71B00B59E75 /* FTLoginViewController.m */,
+				2DD6919C1949B74400B59E75 /* FTSignupViewController.h */,
+				2DD6919D1949B74400B59E75 /* FTSignupViewController.m */,
 				2D429A1C197B2C0F00F8A9A0 /* First Login */,
 			);
 			name = Login;
@@ -769,7 +773,6 @@
 			files = (
 				2DD691651949AF5B00B59E75 /* Images.xcassets in Resources */,
 				2DD691571949AF5B00B59E75 /* InfoPlist.strings in Resources */,
-				2DD691601949AF5B00B59E75 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -792,8 +795,8 @@
 				2DD2B6801984100000600A42 /* FTBaseTextCell.m in Sources */,
 				2DD2B6861984164E00600A42 /* FTAccountViewController.m in Sources */,
 				2DD2B67D19840FB500600A42 /* FTActivityCell.m in Sources */,
-				2DD691981949B24300B59E75 /* FitTagConfigViewController.m in Sources */,
-				2DD6919B1949B71B00B59E75 /* FitTagLoginViewController.m in Sources */,
+				2DD691981949B24300B59E75 /* FTConfigViewController.m in Sources */,
+				2DD6919B1949B71B00B59E75 /* FTLoginViewController.m in Sources */,
 				2DD2B691198417D500600A42 /* FTLoadMoreCell.m in Sources */,
 				2DD2B68D1984170800600A42 /* FTPhotoHeaderView.m in Sources */,
 				2D410F4C1973581A00CE2940 /* FeedCollectionViewFlowLayout.m in Sources */,
@@ -802,7 +805,7 @@
 				2DD2B6A419841E0900600A42 /* FTImageView.m in Sources */,
 				2DD2B69B19841BC700600A42 /* FTSettingsActionSheetDelegate.m in Sources */,
 				2DD6915D1949AF5B00B59E75 /* AppDelegate.m in Sources */,
-				2D410F4F19735B5B00CE2940 /* FitTagNavigationBar.m in Sources */,
+				2D410F4F19735B5B00CE2940 /* FTNavigationBar.m in Sources */,
 				2DD2B6791984046B00600A42 /* FTProfileImageView.m in Sources */,
 				2D429A111977EE8F00F8A9A0 /* FTActivityFeedViewController.m in Sources */,
 				2DACE8141966FF7200154504 /* CollectionHeaderView.m in Sources */,
@@ -812,19 +815,22 @@
 				2DAA63DE1957A51F003B1DDF /* UIView+FormScroll.m in Sources */,
 				2DD2B669198400D800600A42 /* UIImage+RoundedCornerAdditions.m in Sources */,
 				2DD2B6581983FD2C00600A42 /* FTCache.m in Sources */,
-				2DBC6EA1195CBCE2008B5AD3 /* InterestsViewController.m in Sources */,
+				2DBC6EA1195CBCE2008B5AD3 /* FTInterestsViewController.m in Sources */,
 				2DD2B69E19841C3100600A42 /* FTFindFriendsCell.m in Sources */,
-				2D429A141977EE9E00F8A9A0 /* OffersViewController.m in Sources */,
-				2D429A0E1977EE7700F8A9A0 /* SearchViewController.m in Sources */,
-				2DACD97B196578DA00833C14 /* InspirationViewController.m in Sources */,
+				2D429A141977EE9E00F8A9A0 /* FTOffersViewController.m in Sources */,
+				2D9949731996905E000E321E /* FTOverlayView.m in Sources */,
+				2D429A0E1977EE7700F8A9A0 /* FTSearchViewController.m in Sources */,
+				2DACD97B196578DA00833C14 /* FTInspirationViewController.m in Sources */,
+				2D9949761996A9B0000E321E /* FTCameraToolBar.m in Sources */,
 				2DD2B694198418C300600A42 /* FTPhotoCell.m in Sources */,
 				2DABDA0D1960520800379891 /* CustomToolBar.m in Sources */,
 				2DD691591949AF5B00B59E75 /* main.m in Sources */,
 				2DD2B6A119841DB000600A42 /* FTSettingsButtonItem.m in Sources */,
 				2D0A53AC1971ABFF0091FFCA /* FindFriendsViewController.m in Sources */,
 				2D429A17197AD47000F8A9A0 /* FTConstants.m in Sources */,
-				2D429A0B1977ED6000F8A9A0 /* ProfileViewController.m in Sources */,
+				2D429A0B1977ED6000F8A9A0 /* FTProfileViewController.m in Sources */,
 				2DD2B69819841B0600600A42 /* FTFindFriendsViewController.m in Sources */,
+				2DC507CC199829940041A03D /* FTCamViewController.m in Sources */,
 				2DD2B6631984005300600A42 /* UIImage+AlphaAdditions.m in Sources */,
 				2DD2B676198403FC00600A42 /* FTPhotoDetailsFooterView.m in Sources */,
 				2D429A2D197B345300F8A9A0 /* MBProgressHUD.m in Sources */,
@@ -835,11 +841,11 @@
 				2DD2B666198400C000600A42 /* UIImage+ResizeAdditions.m in Sources */,
 				2D429A30197B34DC00F8A9A0 /* TTTTimeIntervalFormatter.m in Sources */,
 				2D429A33197B354600F8A9A0 /* UIImage+ImageEffects.m in Sources */,
-				2D410F5219735B7500CE2940 /* FitTagToolBar.m in Sources */,
-				2D410F481973575C00CE2940 /* FeedViewController.m in Sources */,
+				2D410F5219735B7500CE2940 /* FTToolBar.m in Sources */,
+				2D410F481973575C00CE2940 /* FTFeedViewController.m in Sources */,
 				2DD2B6891984167200600A42 /* FTPhotoTimelineViewController.m in Sources */,
 				2DD2B66D198402BB00600A42 /* FTEditPhotoViewController.m in Sources */,
-				2DD6919E1949B74400B59E75 /* FitTagSignupViewController.m in Sources */,
+				2DD6919E1949B74400B59E75 /* FTSignupViewController.m in Sources */,
 				2DFE736C197316A700114541 /* FindFriendsFlowLayout.m in Sources */,
 				2DABDA06195DC0E500379891 /* PhotoCellCollectionView.m in Sources */,
 				2DBC6E5A195C783C008B5AD3 /* ImageCollectionViewController.m in Sources */,
@@ -871,14 +877,6 @@
 				2DD691561949AF5B00B59E75 /* en */,
 			);
 			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		2DD6915E1949AF5B00B59E75 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				2DD6915F1949AF5B00B59E75 /* Base */,
-			);
-			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 		2DD691741949AF5B00B59E75 /* InfoPlist.strings */ = {

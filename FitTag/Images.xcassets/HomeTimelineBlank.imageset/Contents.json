@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "login_hex.png"
+      "filename" : "HomeTimelineBlank.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "login_hex-1.png"
+      "filename" : "HomeTimelineBlank@2x.png"
     }
   ],
   "info" : {

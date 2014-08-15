@@ -7,10 +7,11 @@
 //
 
 typedef enum {
-	FTNotificationsTabBarItemIndex = 0,
+	FTActivityTabBarItemIndex = 0,
 	FTSearchTabBarItemIndex = 1,
 	FTFeedTabBarItemIndex = 2,
     FTOffersTabBarItemIndex = 3,
+    FTEmptyTabBarItemIndex = 4
 } FTTabBarControllerViewControllerIndex;
 
 #pragma mark - NSUserDefaults

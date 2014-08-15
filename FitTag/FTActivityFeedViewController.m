@@ -62,11 +62,24 @@
     
     [super viewDidLoad];
     
-    UIView *texturedBackgroundView = [[UIView alloc] initWithFrame:self.view.bounds];
-    [texturedBackgroundView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"BackgroundLeather.png"]]];
-    self.tableView.backgroundView = texturedBackgroundView;
+    // Toolbar & Navigationbar Setup
+    [self.navigationController setToolbarHidden:NO animated:NO];
+    [self.navigationItem setTitle: @"Notifications"];
+    [self.navigationItem setHidesBackButton:NO];
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
     
-    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LogoNavigationBar.png"]];
+    UIBarButtonItem *returnHome = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"]
+                                                                   style:UIBarButtonItemStylePlain
+                                                                  target:self
+                                                                  action:@selector(returnHome)];
+    
+    UIBarButtonItem *fitTagPost = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"fittag_button"]
+                                                               style:UIBarButtonItemStylePlain
+                                                              target:self
+                                                              action:@selector(fitTagPost)];
+    
+    // Set Background
+    [self.tableView setBackgroundColor:[UIColor whiteColor]];
     
     // Add Settings button
     self.navigationItem.rightBarButtonItem = [[FTSettingsButtonItem alloc] initWithTarget:self action:@selector(settingsButtonAction:)];
@@ -75,19 +88,39 @@
     
     self.blankTimelineView = [[UIView alloc] initWithFrame:self.tableView.bounds];
     
+    /*
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     [button setBackgroundImage:[UIImage imageNamed:@"ActivityFeedBlank.png"] forState:UIControlStateNormal];
     [button setFrame:CGRectMake(24.0f, 113.0f, 271.0f, 140.0f)];
-    [button addTarget:self action:@selector(inviteFriendsButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [button addTarget:self
+               action:@selector(inviteFriendsButtonAction:)
+     forControlEvents:UIControlEventTouchUpInside];
+    
     [self.blankTimelineView addSubview:button];
+    */
     
     lastRefresh = [[NSUserDefaults standardUserDefaults] objectForKey:kFTUserDefaultsActivityFeedViewControllerLastRefreshKey];
+    
+    [fitTagPost setTintColor:[UIColor whiteColor]];
+    [returnHome setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setRightBarButtonItem:fitTagPost];
+    [self.navigationItem setLeftBarButtonItem:returnHome];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
     return UIStatusBarStyleLightContent;
 }
 
+- (void)fitTagPost
+{
+    NSLog(@"FitTagFeedViewController::fitTag");
+}
+
+- (void)returnHome
+{
+    NSLog(@"FitTagFeedViewController::addFriends");
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
 
 #pragma mark - UITableViewDelegate
 
