@@ -61,6 +61,7 @@
 - (NSNumber *)likeCountForPhoto:(PFObject *)photo {
     NSDictionary *attributes = [self attributesForPhoto:photo];
     if (attributes) {
+        //NSLog(@"likeCountForPhoto: %@",[attributes objectForKey:kFTPhotoAttributesLikeCountKey]);
         return [attributes objectForKey:kFTPhotoAttributesLikeCountKey];
     }
     
@@ -79,6 +80,7 @@
 - (NSArray *)likersForPhoto:(PFObject *)photo {
     NSDictionary *attributes = [self attributesForPhoto:photo];
     if (attributes) {
+        //NSLog(@"likersForPhoto: %@",[attributes objectForKey:kFTPhotoAttributesLikersKey]);
         return [attributes objectForKey:kFTPhotoAttributesLikersKey];
     }
     
@@ -95,6 +97,7 @@
 }
 
 - (void)setPhotoIsLikedByCurrentUser:(PFObject *)photo liked:(BOOL)liked {
+    //NSLog(@"setPhotoIsLikedByCurrentUser:(PFObject *) %@ liked:(BOOL) %hhd:",photo,liked);
     NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForPhoto:photo]];
     [attributes setObject:[NSNumber numberWithBool:liked] forKey:kFTPhotoAttributesIsLikedByCurrentUserKey];
     [self setAttributes:attributes forPhoto:photo];
@@ -118,6 +121,7 @@
 
 - (void)decrementLikerCountForPhoto:(PFObject *)photo {
     NSNumber *likerCount = [NSNumber numberWithInt:[[self likeCountForPhoto:photo] intValue] - 1];
+    //NSLog(@"likerCount: %@",likerCount);
     if ([likerCount intValue] < 0) {
         return;
     }

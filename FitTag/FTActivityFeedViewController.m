@@ -16,6 +16,7 @@
 #import "FTSettingsButtonItem.h"
 #import "FTFindFriendsViewController.h"
 #import "MBProgressHUD.h"
+#import "FTCamViewController.h"
 
 @interface FTActivityFeedViewController ()
 
@@ -63,27 +64,25 @@
     [super viewDidLoad];
     
     // Toolbar & Navigationbar Setup
-    [self.navigationController setToolbarHidden:NO animated:NO];
-    [self.navigationItem setTitle: @"Notifications"];
+    [self.navigationItem setTitle: @"NOTIFICATIONS"];
     [self.navigationItem setHidesBackButton:NO];
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     
-    UIBarButtonItem *returnHome = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"]
-                                                                   style:UIBarButtonItemStylePlain
-                                                                  target:self
-                                                                  action:@selector(returnHome)];
+    // Override the back idnicator
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(returnHome:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setLeftBarButtonItem:backIndicator];
     
-    UIBarButtonItem *fitTagPost = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"fittag_button"]
-                                                               style:UIBarButtonItemStylePlain
-                                                              target:self
-                                                              action:@selector(fitTagPost)];
+    // Load Camera
+    UIBarButtonItem *loadCamera = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"fittag_button"] style:UIBarButtonItemStylePlain target:self action:@selector(loadCamera:)];
+    [loadCamera setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setRightBarButtonItem:loadCamera];
     
     // Set Background
     [self.tableView setBackgroundColor:[UIColor whiteColor]];
     
     // Add Settings button
     self.navigationItem.rightBarButtonItem = [[FTSettingsButtonItem alloc] initWithTarget:self action:@selector(settingsButtonAction:)];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification:) name:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil];
     
     self.blankTimelineView = [[UIView alloc] initWithFrame:self.tableView.bounds];
@@ -101,25 +100,42 @@
     
     lastRefresh = [[NSUserDefaults standardUserDefaults] objectForKey:kFTUserDefaultsActivityFeedViewControllerLastRefreshKey];
     
-    [fitTagPost setTintColor:[UIColor whiteColor]];
-    [returnHome setTintColor:[UIColor whiteColor]];
-    [self.navigationItem setRightBarButtonItem:fitTagPost];
-    [self.navigationItem setLeftBarButtonItem:returnHome];
+    [loadCamera setTintColor:[UIColor whiteColor]];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setRightBarButtonItem:loadCamera];
+    [self.navigationItem setLeftBarButtonItem:backIndicator];
 }
 
-- (UIStatusBarStyle)preferredStatusBarStyle {
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [self.navigationController setToolbarHidden:NO];
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    
+    // Get the classname of the next view controller
+    NSUInteger numberOfViewControllersOnStack = [self.navigationController.viewControllers count];
+    UIViewController *parentViewController = self.navigationController.viewControllers[numberOfViewControllersOnStack-1];
+    Class parentVCClass = [parentViewController class];
+    NSString *className = NSStringFromClass(parentVCClass);
+    
+    if([className isEqual: @"FTCamViewController"]){
+        [self.navigationController setToolbarHidden:YES];
+    }
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle{
     return UIStatusBarStyleLightContent;
 }
 
-- (void)fitTagPost
-{
-    NSLog(@"FitTagFeedViewController::fitTag");
+- (void)loadCamera:(id)sender{
+    FTCamViewController *cameraViewController = [[FTCamViewController alloc] init];
+    [self.navigationController pushViewController:cameraViewController animated:YES];
 }
 
-- (void)returnHome
-{
-    NSLog(@"FitTagFeedViewController::addFriends");
-    [self dismissViewControllerAnimated:YES completion:NULL];
+- (void)returnHome:(id)sender{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - UITableViewDelegate
@@ -267,7 +283,6 @@
     return cell;
 }
 
-
 #pragma mark - FTActivityCellDelegate Methods
 
 - (void)cell:(FTActivityCell *)cellView didTapActivityButton:(PFObject *)activity {
@@ -302,7 +317,6 @@
         return nil;
     }
 }
-
 
 #pragma mark - ()
 

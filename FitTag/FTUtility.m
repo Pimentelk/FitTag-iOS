@@ -97,8 +97,10 @@
     [queryExistingLikes findObjectsInBackgroundWithBlock:^(NSArray *activities, NSError *error) {
         if (!error) {
             for (PFObject *activity in activities) {
-                [activity delete];
+                [activity deleteInBackground];
             }
+            
+            //NSLog(@"completionBlock = %@", completionBlock);
             
             if (completionBlock) {
                 completionBlock(YES,nil);

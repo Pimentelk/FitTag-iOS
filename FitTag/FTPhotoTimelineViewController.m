@@ -38,7 +38,6 @@
 - (id)initWithStyle:(UITableViewStyle)style {
     self = [super initWithStyle:style];
     if (self) {
-        
         self.outstandingSectionHeaderQueries = [NSMutableDictionary dictionary];
         
         // The className to query on
@@ -61,17 +60,12 @@
     return self;
 }
 
-
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     [super viewDidLoad];
-    
-    UIView *texturedBackgroundView = [[UIView alloc] initWithFrame:self.view.bounds];
-    texturedBackgroundView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"BackgroundLeather.png"]];
-    self.tableView.backgroundView = texturedBackgroundView;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidPublishPhoto:) name:FTTabBarControllerDidFinishEditingPhotoNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userFollowingChanged:) name:FTUtilityUserFollowingChangedNotification object:nil];
@@ -85,7 +79,7 @@
     [super viewDidAppear:animated];
     
     if (self.shouldReloadOnAppear) {
-        self.shouldReloadOnAppear = NO;
+        self.shouldReloadOnAppear = YES;
         [self loadObjects];
     }
 }
@@ -93,7 +87,6 @@
 - (UIStatusBarStyle)preferredStatusBarStyle {
     return UIStatusBarStyleLightContent;
 }
-
 
 #pragma mark - UITableViewDataSource
 
@@ -108,111 +101,17 @@
     return 1;
 }
 
-
 #pragma mark - UITableViewDelegate
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    if (section == self.objects.count) {
-        // Load More section
-        return nil;
-    }
-    
-    FTPhotoHeaderView *headerView = [self dequeueReusableSectionHeaderView];
-    
-    if (!headerView) {
-        headerView = [[FTPhotoHeaderView alloc] initWithFrame:CGRectMake( 0.0f, 0.0f, self.view.bounds.size.width, 44.0f) buttons:FTPhotoHeaderButtonsDefault];
-        headerView.delegate = self;
-        [self.reusableSectionHeaderViews addObject:headerView];
-    }
-    
-    PFObject *photo = [self.objects objectAtIndex:section];
-    [headerView setPhoto:photo];
-    headerView.tag = section;
-    [headerView.likeButton setTag:section];
-    
-    NSDictionary *attributesForPhoto = [[FTCache sharedCache] attributesForPhoto:photo];
-    
-    if (attributesForPhoto) {
-        [headerView setLikeStatus:[[FTCache sharedCache] isPhotoLikedByCurrentUser:photo]];
-        [headerView.likeButton setTitle:[[[FTCache sharedCache] likeCountForPhoto:photo] description] forState:UIControlStateNormal];
-        [headerView.commentButton setTitle:[[[FTCache sharedCache] commentCountForPhoto:photo] description] forState:UIControlStateNormal];
-        
-        if (headerView.likeButton.alpha < 1.0f || headerView.commentButton.alpha < 1.0f) {
-            [UIView animateWithDuration:0.200f animations:^{
-                headerView.likeButton.alpha = 1.0f;
-                headerView.commentButton.alpha = 1.0f;
-            }];
-        }
-    } else {
-        headerView.likeButton.alpha = 0.0f;
-        headerView.commentButton.alpha = 0.0f;
-        
-        @synchronized(self) {
-            // check if we can update the cache
-            NSNumber *outstandingSectionHeaderQueryStatus = [self.outstandingSectionHeaderQueries objectForKey:@(section)];
-            if (!outstandingSectionHeaderQueryStatus) {
-                PFQuery *query = [FTUtility queryForActivitiesOnPhoto:photo cachePolicy:kPFCachePolicyNetworkOnly];
-                [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                    @synchronized(self) {
-                        [self.outstandingSectionHeaderQueries removeObjectForKey:@(section)];
-                        
-                        if (error) {
-                            return;
-                        }
-                        
-                        NSMutableArray *likers = [NSMutableArray array];
-                        NSMutableArray *commenters = [NSMutableArray array];
-                        
-                        BOOL isLikedByCurrentUser = NO;
-                        
-                        for (PFObject *activity in objects) {
-                            if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeLike] && [activity objectForKey:kFTActivityFromUserKey]) {
-                                [likers addObject:[activity objectForKey:kFTActivityFromUserKey]];
-                            } else if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeComment] && [activity objectForKey:kFTActivityFromUserKey]) {
-                                [commenters addObject:[activity objectForKey:kFTActivityFromUserKey]];
-                            }
-                            
-                            if ([[[activity objectForKey:kFTActivityFromUserKey] objectId] isEqualToString:[[PFUser currentUser] objectId]]) {
-                                if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeLike]) {
-                                    isLikedByCurrentUser = YES;
-                                }
-                            }
-                        }
-                        
-                        [[FTCache sharedCache] setAttributesForPhoto:photo likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
-                        
-                        if (headerView.tag != section) {
-                            return;
-                        }
-                        
-                        [headerView setLikeStatus:[[FTCache sharedCache] isPhotoLikedByCurrentUser:photo]];
-                        [headerView.likeButton setTitle:[[[FTCache sharedCache] likeCountForPhoto:photo] description] forState:UIControlStateNormal];
-                        [headerView.commentButton setTitle:[[[FTCache sharedCache] commentCountForPhoto:photo] description] forState:UIControlStateNormal];
-                        
-                        if (headerView.likeButton.alpha < 1.0f || headerView.commentButton.alpha < 1.0f) {
-                            [UIView animateWithDuration:0.200f animations:^{
-                                headerView.likeButton.alpha = 1.0f;
-                                headerView.commentButton.alpha = 1.0f;
-                            }];
-                        }
-                    }
-                }];
-            }
-        }
-    }
-    
-    return headerView;
-}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     if (section == self.objects.count) {
         return 0.0f;
     }
-    return 44.0f;
+    return 0.0f;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake( 0.0f, 0.0f, self.tableView.bounds.size.width, 16.0f)];
+    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake( 0.0f, 0.0f, 0.0f, 0.0f)];
     return footerView;
 }
 
@@ -220,7 +119,7 @@
     if (section == self.objects.count) {
         return 0.0f;
     }
-    return 16.0f;
+    return 0.0f;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -228,12 +127,10 @@
         // Load More Section
         return 44.0f;
     }
-    
-    return 280.0f;
+    return 320.0f;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [super tableView:tableView didSelectRowAtIndexPath:indexPath];
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -244,14 +141,13 @@
     }
 }
 
-
 #pragma mark - PFQueryTableViewController
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 
 - (PFQuery *)queryForTable {
     if (![PFUser currentUser]) {
         PFQuery *query = [PFQuery queryWithClassName:self.parseClassName];
-        [query setLimit:0];
+        [query setLimit:100];
         return query;
     }
     
@@ -259,7 +155,7 @@
     [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
     [followingActivitiesQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
     followingActivitiesQuery.cachePolicy = kPFCachePolicyNetworkOnly;
-    followingActivitiesQuery.limit = 1000;
+    followingActivitiesQuery.limit = 100;
     
     PFQuery *photosFromFollowedUsersQuery = [PFQuery queryWithClassName:self.parseClassName];
     [photosFromFollowedUsersQuery whereKey:kFTPhotoUserKey matchesKey:kFTActivityToUserKey inQuery:followingActivitiesQuery];
@@ -283,29 +179,7 @@
     if (self.objects.count == 0 || ![[UIApplication sharedApplication].delegate performSelector:@selector(isParseReachable)]) {
         [query setCachePolicy:kPFCachePolicyCacheThenNetwork];
     }
-    
-    /*
-     This query will result in an error if the schema hasn't been set beforehand. While Parse usually handles this automatically, this is not the case for a compound query such as this one. The error thrown is:
-     
-     Error: bad special key: __type
-     
-     To set up your schema, you may post a photo with a caption. This will automatically set up the Photo and Activity classes needed by this query.
-     
-     You may also use the Data Browser at Parse.com to set up your classes in the following manner.
-     
-     Create a User class: "User" (if it does not exist)
-     
-     Create a Custom class: "Activity"
-     - Add a column of type pointer to "User", named "fromUser"
-     - Add a column of type pointer to "User", named "toUser"
-     - Add a string column "type"
-     
-     Create a Custom class: "Photo"
-     - Add a column of type pointer to "User", named "user"
-     
-     You'll notice that these correspond to each of the fields used by the preceding query.
-     */
-    
+        
     return query;
 }
 
@@ -321,6 +195,10 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath object:(PFObject *)object {
     static NSString *CellIdentifier = @"Cell";
     
+    //NSLog(@"FTPhotoTimelineViewController::Updating tableView:(UITableView *) %@ cellForRowAtIndexPath:(NSIndexPath *) %@ object:(PFObject *) %@",tableView,indexPath,object);
+    
+    NSLog(@"Object: %@",object[@"user"][@"displayName"]);
+    
     if (indexPath.section == self.objects.count) {
         // this behavior is normally handled by PFQueryTableViewController, but we are using sections for each object and we must handle this ourselves
         UITableViewCell *cell = [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
@@ -330,11 +208,77 @@
         
         if (cell == nil) {
             cell = [[FTPhotoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            cell.delegate = self;
             [cell.photoButton addTarget:self action:@selector(didTapOnPhotoAction:) forControlEvents:UIControlEventTouchUpInside];
         }
         
+        PFObject *photo = [self.objects objectAtIndex:indexPath.section];
+        [cell setPhoto:photo];
+        cell.tag = indexPath.section;
+        //[cell.likeButton setTag:indexPath.section];
+        [cell.likeCounter setTag:indexPath.section];
+        
+        NSDictionary *attributesForPhoto = [[FTCache sharedCache] attributesForPhoto:photo];
+        
+        if (attributesForPhoto) {
+            [cell setLikeStatus:[[FTCache sharedCache] isPhotoLikedByCurrentUser:photo]];
+            [cell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPhoto:photo] description] forState:UIControlStateNormal];
+            [cell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPhoto:photo] description] forState:UIControlStateNormal];
+            [cell.usernameRibbon setTitle:object[@"user"][@"displayName"] forState:UIControlStateNormal];
+        } else {
+            
+            @synchronized(self) {
+                // check if we can update the cache
+                NSNumber *outstandingSectionHeaderQueryStatus = [self.outstandingSectionHeaderQueries objectForKey:@(indexPath.section)];
+                if (!outstandingSectionHeaderQueryStatus) {
+                    PFQuery *query = [FTUtility queryForActivitiesOnPhoto:photo cachePolicy:kPFCachePolicyNetworkOnly];
+                    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                        @synchronized(self) {
+                            [self.outstandingSectionHeaderQueries removeObjectForKey:@(indexPath.section)];
+                            
+                            if (error) {
+                                NSLog(@"ERROR##: %@",error);
+                                return;
+                            }
+                            
+                            NSMutableArray *likers = [NSMutableArray array];
+                            NSMutableArray *commenters = [NSMutableArray array];
+                            
+                            BOOL isLikedByCurrentUser = NO;
+                            
+                            for (PFObject *activity in objects) {
+                                if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeLike] && [activity objectForKey:kFTActivityFromUserKey]) {
+                                    [likers addObject:[activity objectForKey:kFTActivityFromUserKey]];
+                                } else if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeComment] && [activity objectForKey:kFTActivityFromUserKey]) {
+                                    [commenters addObject:[activity objectForKey:kFTActivityFromUserKey]];
+                                }
+                                
+                                if ([[[activity objectForKey:kFTActivityFromUserKey] objectId] isEqualToString:[[PFUser currentUser] objectId]]) {
+                                    if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeLike]) {
+                                        isLikedByCurrentUser = YES;
+                                    }
+                                }
+                            }
+                            
+                            [[FTCache sharedCache] setAttributesForPhoto:photo likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+                            
+                            if (cell.tag != indexPath.section) {
+                                return;
+                            }
+                            
+                            [cell setLikeStatus:[[FTCache sharedCache] isPhotoLikedByCurrentUser:photo]];
+                            [cell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPhoto:photo] description] forState:UIControlStateNormal];
+                            [cell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPhoto:photo] description] forState:UIControlStateNormal];
+                            [cell.usernameRibbon setTitle:object[@"user"][@"displayName"] forState:UIControlStateNormal];
+                        }
+                    }];
+             
+                }
+            }
+        }
+        
         cell.photoButton.tag = indexPath.section;
-        cell.imageView.image = [UIImage imageNamed:@"PlaceholderPhoto.png"];
+        cell.imageView.image = [UIImage imageNamed:@"profilepic_icon"];
         
         if (object) {
             cell.imageView.file = [object objectForKey:kFTPhotoPictureKey];
@@ -363,11 +307,10 @@
     return cell;
 }
 
-
 #pragma mark - FTPhotoTimelineViewController
 
-- (FTPhotoHeaderView *)dequeueReusableSectionHeaderView {
-    for (FTPhotoHeaderView *sectionHeaderView in self.reusableSectionHeaderViews) {
+- (FTPhotoCell *)dequeueReusableSectionHeaderView {
+    for (FTPhotoCell *sectionHeaderView in self.reusableSectionHeaderViews) {
         if (!sectionHeaderView.superview) {
             // we found a section header that is no longer visible
             return sectionHeaderView;
@@ -376,29 +319,31 @@
     
     return nil;
 }
+ 
+#pragma mark - FTPhotoCellViewDelegate
 
-
-#pragma mark - FTPhotoHeaderViewDelegate
-
-- (void)photoHeaderView:(FTPhotoHeaderView *)photoHeaderView didTapUserButton:(UIButton *)button user:(PFUser *)user {
+- (void)photoCellView:(FTPhotoCell *)photoCellView didTapUserButton:(UIButton *)button user:(PFUser *)user {
     FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
     [accountViewController setUser:user];
     [self.navigationController pushViewController:accountViewController animated:YES];
 }
 
-- (void)photoHeaderView:(FTPhotoHeaderView *)photoHeaderView didTapLikePhotoButton:(UIButton *)button photo:(PFObject *)photo {
+- (void)photoCellView:(FTPhotoCell *)photoCellView didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter photo:(PFObject *)photo {
+    
+    //NSLog(@"FTPhotoTimelineViewController::Updating photoCellView:(FTPhotoCell *) %@ didTapLikePhotoButton:(UIButton *) %@ counter:(UIButton *) %@ photo:(PFObject *) %@",photoCellView,button,counter,photo);
+    
 	// Disable the button so users cannot send duplicate requests
-    [photoHeaderView shouldEnableLikeButton:NO];
+    [photoCellView shouldEnableLikeButton:NO];
     
     BOOL liked = !button.selected;
-    [photoHeaderView setLikeStatus:liked];
+    [photoCellView setLikeStatus:liked];
     
-    NSString *originalButtonTitle = button.titleLabel.text;
+    NSString *originalButtonTitle = counter.titleLabel.text;
     
     NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
     [numberFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"]];
     
-    NSNumber *likeCount = [numberFormatter numberFromString:button.titleLabel.text];
+    NSNumber *likeCount = [numberFormatter numberFromString:counter.titleLabel.text];
     if (liked) {
         likeCount = [NSNumber numberWithInt:[likeCount intValue] + 1];
         [[FTCache sharedCache] incrementLikerCountForPhoto:photo];
@@ -409,38 +354,65 @@
         [[FTCache sharedCache] decrementLikerCountForPhoto:photo];
     }
     
+    
     [[FTCache sharedCache] setPhotoIsLikedByCurrentUser:photo liked:liked];
     
-    [button setTitle:[numberFormatter stringFromNumber:likeCount] forState:UIControlStateNormal];
-    
+    [counter setTitle:[numberFormatter stringFromNumber:likeCount] forState:UIControlStateNormal];
+
     if (liked) {
         [FTUtility likePhotoInBackground:photo block:^(BOOL succeeded, NSError *error) {
-            FTPhotoHeaderView *actualHeaderView = (FTPhotoHeaderView *)[self tableView:self.tableView viewForHeaderInSection:button.tag];
-            [actualHeaderView shouldEnableLikeButton:YES];
-            [actualHeaderView setLikeStatus:succeeded];
+            FTPhotoCell *actualView = (FTPhotoCell *)[self tableView:self.tableView viewForHeaderInSection:counter.tag];
+            [actualView shouldEnableLikeButton:YES];
+            [actualView setLikeStatus:succeeded];
             
             if (!succeeded) {
-                [actualHeaderView.likeButton setTitle:originalButtonTitle forState:UIControlStateNormal];
+                //[actualView.likeButton setTitle:originalButtonTitle forState:UIControlStateNormal];
+                [actualView.likeCounter setTitle:originalButtonTitle forState:UIControlStateNormal];
+            }
+            
+            if (error) {
+                NSLog(@"ERROR###: %@",error);
             }
         }];
     } else {
+        // warnParseOperationOnMainThread()
         [FTUtility unlikePhotoInBackground:photo block:^(BOOL succeeded, NSError *error) {
-            FTPhotoHeaderView *actualHeaderView = (FTPhotoHeaderView *)[self tableView:self.tableView viewForHeaderInSection:button.tag];
-            [actualHeaderView shouldEnableLikeButton:YES];
-            [actualHeaderView setLikeStatus:!succeeded];
+            FTPhotoCell *actualView = (FTPhotoCell *)[self tableView:self.tableView viewForHeaderInSection:counter.tag];
+            [actualView shouldEnableLikeButton:YES];
+            [actualView setLikeStatus:!succeeded];
             
             if (!succeeded) {
-                [actualHeaderView.likeButton setTitle:originalButtonTitle forState:UIControlStateNormal];
+                //[actualView.likeButton setTitle:originalButtonTitle forState:UIControlStateNormal];
+                [actualView.likeCounter setTitle:originalButtonTitle forState:UIControlStateNormal];
             }
+            
+            if(error){
+                NSLog(@"ERROR###: %@",error);
+            }
+            
         }];
     }
 }
 
-- (void)photoHeaderView:(FTPhotoHeaderView *)photoHeaderView didTapCommentOnPhotoButton:(UIButton *)button  photo:(PFObject *)photo {
+- (void)photoCellView:(FTPhotoCell *)photoCellView didTapCommentOnPhotoButton:(UIButton *)button  photo:(PFObject *)photo {
     FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:photo];
     [self.navigationController pushViewController:photoDetailsVC animated:YES];
 }
 
+- (void)photoCellView:(FTPhotoCell *)photoCellView didTapMoreButton:(UIButton *)button photo:(PFObject *)photo{
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+                                                             delegate:self
+                                                    cancelButtonTitle:@"Cancel"
+                                               destructiveButtonTitle:nil
+                                                    otherButtonTitles:@"ReTag", @"Share on Facebook", @"Tweet", @"Report as Inappropriate",  nil];
+    [actionSheet showInView:self.view];
+}
+
+#pragma mark - UIActionSheetDelegate
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+    NSLog(@"You have pressed the %@ button", [actionSheet buttonTitleAtIndex:buttonIndex]);
+}
 
 #pragma mark - ()
 
@@ -482,10 +454,9 @@
 }
 
 - (void)userFollowingChanged:(NSNotification *)note {
-    NSLog(@"User following changed.");
+    //NSLog(@"User following changed.");
     self.shouldReloadOnAppear = YES;
 }
-
 
 - (void)didTapOnPhotoAction:(UIButton *)sender {
     PFObject *photo = [self.objects objectAtIndex:sender.tag];

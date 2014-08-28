@@ -18,7 +18,6 @@
 @synthesize profileImageView;
 @synthesize profileButton;
 
-
 #pragma mark - NSObject
 
 - (id)initWithFrame:(CGRect)frame {
@@ -31,20 +30,10 @@
         
         self.profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [self addSubview:self.profileButton];
-        
-        if (frame.size.width < 35.0f) {
-            self.borderImageview = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ShadowProfilePicture-29.png"]];
-        } else if (frame.size.width < 43.0f) {
-            self.borderImageview = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ShadowProfilePicture-35.png"]];
-        } else {
-            self.borderImageview = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ShadowProfilePicture-43.png"]];
-        }
-        
         [self addSubview:self.borderImageview];
     }
     return self;
 }
-
 
 #pragma mark - UIView
 
@@ -57,7 +46,6 @@
     self.profileButton.frame = CGRectMake( 0.0f, 0.0f, self.frame.size.width, self.frame.size.height);
 }
 
-
 #pragma mark - FTProfileImageView
 
 - (void)setFile:(PFFile *)file {
@@ -65,7 +53,7 @@
         return;
     }
     
-    self.profileImageView.image = [UIImage imageNamed:@"AvatarPlaceholder.png"];
+    self.profileImageView.image = [UIImage imageNamed:@"AvatarPlaceholder"];
     self.profileImageView.file = file;
     [self.profileImageView loadInBackground];
 }

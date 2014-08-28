@@ -6,6 +6,6 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-@interface FTProfileViewController : UICollectionViewController
+@interface FTProfileViewController : UIViewController
 
 @end

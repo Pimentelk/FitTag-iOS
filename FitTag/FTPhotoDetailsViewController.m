@@ -15,6 +15,7 @@
 #import "FTLoadMoreCell.h"
 #import "FTUtility.h"
 #import "MBProgressHUD.h"
+#import "FTCamViewController.h"
 
 enum ActionSheetTags {
     MainActionSheetTag = 0,
@@ -27,7 +28,7 @@ enum ActionSheetTags {
 @property (nonatomic, assign) BOOL likersQueryInProgress;
 @end
 
-static const CGFloat kFTCellInsetWidth = 20.0f;
+static const CGFloat kFTCellInsetWidth = 0.0f;
 
 @implementation FTPhotoDetailsViewController
 
@@ -71,12 +72,17 @@ static const CGFloat kFTCellInsetWidth = 20.0f;
     
     [super viewDidLoad];
     
-    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LogoNavigationBar.png"]];
+    [self.navigationItem setTitle:@"COMMENT"];
     
-    // Set table view properties
-    UIView *texturedBackgroundView = [[UIView alloc] initWithFrame:self.view.bounds];
-    texturedBackgroundView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"BackgroundLeather.png"]];
-    self.tableView.backgroundView = texturedBackgroundView;
+    // Override the back idnicator
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(hideCameraView:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setLeftBarButtonItem:backIndicator];
+    
+    // Load Camera
+    UIBarButtonItem *loadCamera = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"fittag_button"] style:UIBarButtonItemStylePlain target:self action:@selector(loadCamera:)];
+    [loadCamera setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setRightBarButtonItem:loadCamera];
     
     // Set table header
     self.headerView = [[FTPhotoDetailsHeaderView alloc] initWithFrame:[FTPhotoDetailsHeaderView rectForView] photo:self.photo];
@@ -90,6 +96,7 @@ static const CGFloat kFTCellInsetWidth = 20.0f;
     commentTextField.delegate = self;
     self.tableView.tableFooterView = footerView;
     
+    /*
     if (NSClassFromString(@"UIActivityViewController")) {
         // Use UIActivityViewController if it is available (iOS 6 +)
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(activityButtonAction:)];
@@ -97,6 +104,7 @@ static const CGFloat kFTCellInsetWidth = 20.0f;
         // Else we only want to show an action button if the user owns the photo and has permission to delete it.
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionButtonAction:)];
     }
+     */
     
     // Register to be notified when the keyboard will be shown to scroll the view
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
@@ -139,7 +147,6 @@ static const CGFloat kFTCellInsetWidth = 20.0f;
     // The pagination row
     return 44.0f;
 }
-
 
 #pragma mark - PFQueryTableViewController
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
@@ -253,6 +260,7 @@ static const CGFloat kFTCellInsetWidth = 20.0f;
 
 #pragma mark - UIActionSheetDelegate
 
+/*
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (actionSheet.tag == MainActionSheetTag) {
         if ([actionSheet destructiveButtonIndex] == buttonIndex) {
@@ -270,7 +278,7 @@ static const CGFloat kFTCellInsetWidth = 20.0f;
         }
     }
 }
-
+*/
 
 #pragma mark - UIScrollViewDelegate
 
@@ -292,6 +300,7 @@ static const CGFloat kFTCellInsetWidth = 20.0f;
     [self shouldPresentAccountViewForUser:user];
 }
 
+/*
 - (void)actionButtonAction:(id)sender {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] init];
     actionSheet.delegate = self;
@@ -320,9 +329,20 @@ static const CGFloat kFTCellInsetWidth = 20.0f;
         }
     }
 }
-
+*/
 
 #pragma mark - ()
+
+- (void)loadCamera:(id)sender
+{
+    FTCamViewController *cameraViewController = [[FTCamViewController alloc] init];
+    [self.navigationController pushViewController:cameraViewController animated:YES];
+}
+
+- (void)hideCameraView:(id)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
 
 - (void)showShareSheet {
     [[self.photo objectForKey:kFTPhotoPictureKey] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {

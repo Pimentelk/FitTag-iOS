@@ -10,7 +10,6 @@
 #import "FTUtility.h"
 
 @implementation FTLoadMoreCell
-
 @synthesize cellInsetWidth;
 @synthesize mainView;
 @synthesize separatorImageTop;
@@ -18,7 +17,6 @@
 @synthesize loadMoreImageView;
 @synthesize hideSeparatorTop;
 @synthesize hideSeparatorBottom;
-
 
 #pragma mark - NSObject
 
@@ -36,24 +34,14 @@
         self.accessoryType = UITableViewCellAccessoryNone;
         self.backgroundColor = [UIColor clearColor];
         
-        mainView = [[UIView alloc] initWithFrame:self.contentView.frame];
-        [mainView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"BackgroundComments.png"]]];
-        
         self.loadMoreImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"CellLoadMore.png"]];
         [mainView addSubview:self.loadMoreImageView];
-        
-        self.separatorImageTop = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"SeparatorComments.png"] resizableImageWithCapInsets:UIEdgeInsetsMake( 0.0f, 1.0f, 0.0f, 1.0f)]];
-        [mainView addSubview:separatorImageTop];
-        
-        self.separatorImageBottom = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"SeparatorComments.png"] resizableImageWithCapInsets:UIEdgeInsetsMake( 0.0f, 1.0f, 0.0f, 1.0f)]];
-        [mainView addSubview:separatorImageBottom];
         
         [self.contentView addSubview:mainView];
     }
     
     return self;
 }
-
 
 #pragma mark - UIView
 
@@ -77,7 +65,6 @@
         [FTUtility drawSideDropShadowForRect:mainView.frame inContext:UIGraphicsGetCurrentContext()];
     }
 }
-
 
 #pragma mark - FTLoadMoreCell
 

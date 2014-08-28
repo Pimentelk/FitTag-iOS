@@ -67,11 +67,12 @@ typedef enum {
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
-    UIView *texturedBackgroundView = [[UIView alloc] initWithFrame:self.view.bounds];
-    [texturedBackgroundView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"BackgroundLeather.png"]]];
-    self.tableView.backgroundView = texturedBackgroundView;
+    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fittag_logo"]];
     
-    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"TitleFindFriends.png"]];
+    // Override the back idnicator
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(returnHome:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setLeftBarButtonItem:backIndicator];
     
     if ([MFMailComposeViewController canSendMail] || [MFMessageComposeViewController canSendText]) {
         self.headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 67)];
@@ -112,6 +113,10 @@ typedef enum {
     }
 }
 
+- (void)returnHome:(id)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
 
 #pragma mark - PFQueryTableViewController
 

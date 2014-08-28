@@ -114,20 +114,15 @@
     // Set username placeholder text color
     if ([self.logInView.usernameField respondsToSelector:@selector(setAttributedPlaceholder:)]) {
         UIColor *color = [UIColor grayColor];
-        self.logInView.usernameField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"USERNAME"
-                                                                                             attributes:@{NSForegroundColorAttributeName: color}];
+        self.logInView.usernameField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"USERNAME" attributes:@{NSForegroundColorAttributeName: color}];
     } else {
         NSLog(@"Cannot set placeholder text's color, because deployment target is earlier than iOS 6.0");
         // TODO: Add fall-back code to set placeholder color.
     }
     // Regular username text color: black
-    [self.logInView bringSubviewToFront:self.logInView.usernameField];
+    //[self.logInView bringSubviewToFront:self.logInView.usernameField];
     [self.logInView.usernameField setTextAlignment:NSTextAlignmentLeft]; // align placeholder text left
-    [self.logInView.usernameField setTextColor:[UIColor colorWithRed:0.0f/255.0f
-                                                               green:0.0f/255.0f
-                                                                blue:0.0f/255.0f
-                                                               alpha:1.0]];
-    
+    [self.logInView.usernameField setTextColor:[UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0]];
     
     // Set password placeholder text color
     if ([self.logInView.passwordField respondsToSelector:@selector(setAttributedPlaceholder:)]) {
@@ -138,12 +133,9 @@
         // TODO: Add fall-back code to set placeholder color.
     }
     // Regular password text color: black
-    [self.logInView bringSubviewToFront:self.logInView.passwordField];
+    //[self.logInView bringSubviewToFront:self.logInView.passwordField];
     [self.logInView.passwordField setTextAlignment:NSTextAlignmentLeft]; // align placeholder text left
-    [self.logInView.passwordField setTextColor:[UIColor colorWithRed:0.0f/255.0f
-                                                               green:0.0f/255.0f
-                                                                blue:0.0f/255.0f
-                                                               alpha:1.0]];
+    [self.logInView.passwordField setTextColor:[UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0]];
     
     
     // Clear social external text

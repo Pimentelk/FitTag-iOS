@@ -15,6 +15,8 @@
 #import "FTFeedViewController.h"
 #import "FTToolBar.h"
 #import "FTNavigationBar.h"
+#import "FTHomeViewController.h"
+#import "UIImage+ResizeAdditions.h"
 
 @interface FTConfigViewController ()
 {
@@ -24,46 +26,108 @@
 @end
 
 @implementation FTConfigViewController
+@synthesize firstLaunch;
 
 #pragma mark - UIViewController
 
 - (void)viewWillAppear:(BOOL)animated {
     [self.navigationController setNavigationBarHidden:YES animated:animated];
     [super viewWillAppear:animated];
-    NSLog(@"FitTagConfigViewController::viewWillAppear");
-    if ([PFUser currentUser]) {
-        //self.welcomeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"Welcome %@!", nil), [[PFUser currentUser] username]];
-    } else {
-        //self.welcomeLabel.text = NSLocalizedString(@"Not logged in", nil);
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    NSLog(@"FitTagConfigViewController::viewDidAppear");
     //[PFUser logOut]; // For testing log out user.
-    // Check if user is logged in
-    if (![PFUser currentUser]) {
+    PFUser *user = [PFUser currentUser];
+    BOOL isLinkedToTwitter = [PFTwitterUtils isLinkedWithUser:[PFUser currentUser]];
+    BOOL isLinkedToFacebook = [PFFacebookUtils isLinkedWithUser:[PFUser currentUser]];
+    BOOL isFirstUserLogin = YES;
+    
+    if ([user objectForKey:@"lastLogin"]) {
+        isFirstUserLogin = NO;
+    }
+    
+    if(user){ // Is the user logged in
         
-        // Customize the Log In View Controller
-        logInViewController = [[FTLoginViewController alloc] init];
-        logInViewController.delegate = self;
-        logInViewController.facebookPermissions = @[@"friends_about_me"];
-        logInViewController.fields = PFLogInFieldsUsernameAndPassword | PFLogInFieldsTwitter | PFLogInFieldsFacebook | PFLogInFieldsSignUpButton | PFLogInFieldsPasswordForgotten | PFLogInFieldsLogInButton;
+        if(isFirstUserLogin){ // Is this his first launch
+            
+            if(isLinkedToFacebook){ // Is the user logged in via facebook
+                
+                [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *FBuser, NSError *error) {
+                    
+                    if (!error) {
+                        
+                        NSData* profileImageData = [NSData dataWithContentsOfURL:
+                                                    [NSURL URLWithString:
+                                                     [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=large&width=600&height=600",FBuser[@"id"]]]];
+                        
+                        // Get the data from facebook and put it into the user object
+                        user[@"firstname"]              = FBuser[@"first_name"];
+                        user[@"lastname"]               = FBuser[@"last_name"];
+                        user[@"displayName"]            = FBuser[@"name"];
+                        user[@"email"]                  = FBuser[@"email"];
+                        user[@"facebookId"]             = FBuser[@"id"];
+                        user[@"bio"]                    = @"WHAT MAKES YOU, YOU? (OPTIONAL)";
+                        user[@"profilePictureMedium"]   = [PFFile fileWithName:@"medium.jpeg" data:profileImageData];
+                        user[@"profilePictureSmall"]    = [PFFile fileWithName:@"small.png" data:profileImageData];
+                        user[@"lastLogin"]              = [NSDate date];
+                        
+                        [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                            if (error) {
+                                [user saveEventually];
+                                NSLog(@"error... %@", error);
+                            }
+                        }];
+                        
+                    } else {
+                        
+                        NSLog(@"Facebook Error: %@",error);
+                    }
+                }];
+                
+            }
+            
+            if(isLinkedToTwitter){ // Is the user logged via twitter
+                NSLog(@"isLinkedToTwitter");
+                
+                NSString * requestString = [NSString stringWithFormat:@"https://api.twitter.com/1.1/users/show.json?screen_name=%@", [PFTwitterUtils twitter].screenName];
+                NSURL *verify = [NSURL URLWithString:requestString];
+                NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:verify];
+                [[PFTwitterUtils twitter] signRequest:request];
+                NSURLResponse *response = nil;
+                NSError *error = nil;
+                NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+                
+                if (error == nil){
+                    NSDictionary* TWuser = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+                    NSString *profile_image_normal = TWuser[@"profile_image_url_https"];
+                    NSString *profile_image = [profile_image_normal stringByReplacingOccurrencesOfString:@"_normal" withString:@""];
+                    NSData *profileImageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:profile_image]];
+                    
+                    NSString *names = [TWuser objectForKey:@"name"];
+                    NSMutableArray *array = [NSMutableArray arrayWithArray:[names componentsSeparatedByString:@" "]];
+                    
+                    if ( array.count > 1){
+                        [user setObject:[array lastObject] forKey:@"lastname"];
+                        [array removeLastObject];
+                        [user setObject:[array componentsJoinedByString:@" "] forKey:@"firstname"];
+                    }
+                    
+                    user[@"displayName"]            = TWuser[@"name"];
+                    user[@"twitterId"]              = [NSString stringWithFormat:@"%@",TWuser[@"id"]];
+                    user[@"bio"]                    = @"WHAT MAKES YOU, YOU? (OPTIONAL)";
+                    user[@"profilePictureMedium"]   = [PFFile fileWithName:@"medium.jpeg" data:profileImageData];
+                    user[@"profilePictureSmall"]    = [PFFile fileWithName:@"small.png" data:profileImageData];
+                    user[@"lastLogin"]              = [NSDate date];
 
-        // Customize the Sign Up View Controller
-        signUpViewController = [[FTSignupViewController alloc] init];
-        signUpViewController.delegate = self;
-        signUpViewController.fields = PFSignUpFieldsDefault;
-        logInViewController.signUpController = signUpViewController;
-
-        // Present Log In View Controller
-        [self presentViewController:logInViewController animated:YES completion:NULL];        
-    } else {
-        
-        BOOL isFirstLogin = NO; // Check if user is first time logging in.
-        
-        if(isFirstLogin){ // Take user through the first time signin screens
+                    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                        if (error) {
+                            [user saveEventually];
+                            NSLog(@"error... %@", error);
+                        }
+                    }];
+                }
+            }
             
             InterestCollectionViewFlowLayout *layoutFlow = [[InterestCollectionViewFlowLayout alloc] init];
             [layoutFlow setItemSize:CGSizeMake(159.5,42)];
@@ -80,8 +144,8 @@
             // Present the Interests View Controller
             [self presentViewController:navController animated:YES completion:NULL];
             
-        } else { // Take user to the main feed screen
-
+        } else { // This is not the users first login
+            
             FeedCollectionViewFlowLayout *layoutFlow = [[FeedCollectionViewFlowLayout alloc] init];
             [layoutFlow setItemSize:CGSizeMake(320,320)];
             [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -91,35 +155,38 @@
             [layoutFlow setHeaderReferenceSize:CGSizeMake(320,80)];
             
             // Show the interests
-            //FeedViewController *rootViewController = [[FeedViewController alloc] initWithCollectionViewLayout:layoutFlow];
-            FTFeedViewController *rootViewController = [[FTFeedViewController alloc] initWithClassName:@"Tbl_follower"];
-            
-            UINavigationController *navController = [[UINavigationController alloc] initWithNavigationBarClass:[FTNavigationBar class]
-                                                                                                  toolbarClass:[FTToolBar class]];
-            
+            FTHomeViewController *rootViewController = [[FTHomeViewController alloc] initWithClassName:kFTPhotoClassKey];
+            UINavigationController *navController = [[UINavigationController alloc] initWithNavigationBarClass:[FTNavigationBar class] toolbarClass:[FTToolBar class]];
             [navController setViewControllers:@[rootViewController] animated:NO];
             
             // Present the Interests View Controller
             [self presentViewController:navController animated:YES completion:NULL];
             
         }
+        
+    } else {
+        
+        // Customize the Log In View Controller
+        logInViewController = [[FTLoginViewController alloc] init];
+        logInViewController.delegate = self;
+        logInViewController.facebookPermissions = @[@"email",@"public_profile",@"user_friends"];
+        logInViewController.fields = PFLogInFieldsUsernameAndPassword | PFLogInFieldsTwitter | PFLogInFieldsFacebook | PFLogInFieldsSignUpButton | PFLogInFieldsPasswordForgotten | PFLogInFieldsLogInButton;
+        
+        // Customize the Sign Up View Controller
+        signUpViewController = [[FTSignupViewController alloc] init];
+        signUpViewController.delegate = self;
+        signUpViewController.fields = PFSignUpFieldsDefault;
+        logInViewController.signUpController = signUpViewController;
+        
+        // Present Log In View Controller
+        [self presentViewController:logInViewController animated:YES completion:NULL];
+        
     }
 }
 
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
-- (void)viewDidLoad
-{
+- (void)viewDidLoad{
     [super viewDidLoad];
-    NSLog(@"viewDidAppear");
+    //NSLog(@"viewDidAppear");
     // Do any additional setup after loading the view.
 }
 
@@ -128,8 +195,7 @@
     [super viewWillDisappear:animated];
 }
 
-- (void)didReceiveMemoryWarning
-{
+- (void)didReceiveMemoryWarning{
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
@@ -138,30 +204,35 @@
 
 // Sent to the delegate to determine whether the log in request should be submitted to the server.
 - (BOOL)logInViewController:(PFLogInViewController *)logInController shouldBeginLogInWithUsername:(NSString *)username password:(NSString *)password {
-    NSLog(@"logInViewController shouldBeginLogInWithUsername");
+    //NSLog(@"logInViewController shouldBeginLogInWithUsername");
     if (username && password && username.length && password.length) {
         return YES;
     }
     
-    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Missing Information", nil) message:NSLocalizedString(@"Make sure you fill out all of the information!", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles:nil] show];
+    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Missing Information", nil)
+                                message:NSLocalizedString(@"Make sure you fill out all of the information!", nil)
+                               delegate:nil
+                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                      otherButtonTitles:nil] show];
+    
     return NO;
 }
 
 // Sent to the delegate when a PFUser is logged in.
 - (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
-    NSLog(@"logInViewController didLogInUser");
+    //NSLog(@"logInViewController didLogInUser");
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 // Sent to the delegate when the log in attempt fails.
 - (void)logInViewController:(PFLogInViewController *)logInController didFailToLogInWithError:(NSError *)error {
-    NSLog(@"logInViewController didFailToLogInWithError");
+    //NSLog(@"FTConfigViewController::logInViewController error: %@",error);
     NSLog(@"Failed to log in...");
 }
 
 // Sent to the delegate when the log in screen is dismissed.
 - (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController {
-    NSLog(@"logInViewControllerDidCancelLogIn logInController");
+    //NSLog(@"logInViewControllerDidCancelLogIn logInController");
     NSLog(@"User dismissed the logInViewController");
 }
 
@@ -169,8 +240,7 @@
 
 // Sent to the delegate to determine whether the sign up request should be submitted to the server.
 - (BOOL)signUpViewController:(PFSignUpViewController *)signUpController shouldBeginSignUp:(NSDictionary *)info {
-    
-    NSLog(@"signUpViewController ShouldBeginSignUp...My dictionary: %@ ", info);
+    //NSLog(@"signUpViewController ShouldBeginSignUp...My dictionary: %@ ", info);
     NSString *firstname = signUpViewController.firstname;
     NSString *lastname = signUpViewController.lastname;
     BOOL isPasswordConfirmed = signUpViewController.isPasswordConfirmed;
@@ -198,31 +268,46 @@
 
 // Sent to the delegate when a PFUser is signed up.
 - (void)signUpViewController:(PFSignUpViewController *)signUpController didSignUpUser:(PFUser *)user {
-    NSLog(@"signUpViewController didSignUpUser...user: %@ ", user);
+    //NSLog(@"signUpViewController didSignUpUser...user: %@ ", user);
     
-    if(user){
-        NSLog(@"User is logged in.");
-        user[@"firstname"] = signUpViewController.firstname;
-        user[@"lastname"] = signUpViewController.lastname;
+    if(user && [PFUser currentUser]){
+        
+        user[@"firstname"]      = signUpViewController.firstname;
+        user[@"lastname"]       = signUpViewController.lastname;
+        user[@"lastLogin"]      = [NSDate date];
+        user[@"displayName"]    = [NSString stringWithFormat:@"%@ %@",signUpViewController.firstname,signUpViewController.lastname];
         
         if(![signUpViewController.about isEqual:nil] && ![signUpViewController.about isEqual: @""]){
             user[@"bio"] = signUpViewController.about;
         } else {
             user[@"bio"] = @"Tell us about yourself(Optional)";
         }
-        //userData[@"coverPhoto"] = signUpViewController.coverPhoto;
         
-        NSLog(@"OBJECT: %@", user);
-
+        UIImage *resizedImage = [signUpViewController.coverPhoto resizedImageWithContentMode:UIViewContentModeScaleAspectFit
+                                                                                      bounds:CGSizeMake(560.0f, 560.0f)
+                                                                        interpolationQuality:kCGInterpolationHigh];
+        
+        UIImage *thumbImage = [signUpViewController.coverPhoto thumbnailImage:86.0f
+                                                            transparentBorder:0.0f
+                                                                 cornerRadius:10.0f
+                                                         interpolationQuality:kCGInterpolationDefault];
+        
+        // JPEG to decrease file size and enable faster uploads & downloads
+        NSData *imageData           = UIImageJPEGRepresentation(resizedImage, 0.8f);
+        NSData *thumbnailImageData  = UIImagePNGRepresentation(thumbImage);
+        
+        if (imageData || thumbnailImageData) {
+            user[@"profilePictureMedium"]   = [PFFile fileWithName:@"medium.jpeg" data:imageData];
+            user[@"profilePictureSmall"]    = [PFFile fileWithName:@"small.png" data:imageData];
+        }
+        
         [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            if (!error) {
-                NSLog(@"Error: saveEventually... %@", error);
+            if (error) {
                 [user saveEventually];
-            } else {
-                NSLog(@"Saving... %@", user);
+                NSLog(@"error... %@", error);
             }
         }];
-        
+
     } else {
         NSLog(@"User is NOT logged in.");
     }
@@ -238,14 +323,6 @@
 // Sent to the delegate when the sign up screen is dismissed.
 - (void)signUpViewControllerDidCancelSignUp:(PFSignUpViewController *)signUpController {
     NSLog(@"User dismissed the signUpViewController");
-}
-
-
-#pragma mark - ()
-
-- (IBAction)logOutButtonTapAction:(id)sender {
-    [PFUser logOut];
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end

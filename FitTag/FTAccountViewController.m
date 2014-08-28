@@ -31,33 +31,32 @@
         [NSException raise:NSInvalidArgumentException format:@"user cannot be nil"];
     }
     
-    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LogoNavigationBar.png"]];
+    [self.navigationItem setTitle: self.user[@"displayName"]];
+    [self.navigationItem setHidesBackButton:NO];
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
+    
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(returnHome:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setLeftBarButtonItem:backIndicator];
     
     self.headerView = [[UIView alloc] initWithFrame:CGRectMake( 0.0f, 0.0f, self.tableView.bounds.size.width, 222.0f)];
     [self.headerView setBackgroundColor:[UIColor clearColor]]; // should be clear, this will be the container for our avatar, photo count, follower count, following count, and so on
     
-    UIView *texturedBackgroundView = [[UIView alloc] initWithFrame:self.view.bounds];
-    [texturedBackgroundView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"BackgroundLeather.png"]]];
-    self.tableView.backgroundView = texturedBackgroundView;
+    UIImageView *profileHexagon = [self getProfileHexagon];
     
-    UIView *profilePictureBackgroundView = [[UIView alloc] initWithFrame:CGRectMake( 94.0f, 38.0f, 132.0f, 132.0f)];
-    [profilePictureBackgroundView setBackgroundColor:[UIColor darkGrayColor]];
+    UIView *profilePictureBackgroundView = [[UIView alloc] initWithFrame:CGRectMake( 94.0f, 38.0f, 132.0f, 142.0f)];
+    [profilePictureBackgroundView setBackgroundColor:[UIColor clearColor]];
     profilePictureBackgroundView.alpha = 0.0f;
-    CALayer *layer = [profilePictureBackgroundView layer];
-    layer.cornerRadius = 10.0f;
-    layer.masksToBounds = YES;
     [self.headerView addSubview:profilePictureBackgroundView];
     
-    PFImageView *profilePictureImageView = [[PFImageView alloc] initWithFrame:CGRectMake( 94.0f, 38.0f, 132.0f, 132.0f)];
+    PFImageView *profilePictureImageView = [[PFImageView alloc] init];
     [self.headerView addSubview:profilePictureImageView];
     [profilePictureImageView setContentMode:UIViewContentModeScaleAspectFill];
-    layer = [profilePictureImageView layer];
-    layer.cornerRadius = 10.0f;
-    layer.masksToBounds = YES;
+    profilePictureImageView.frame = profileHexagon.frame;
+    profilePictureImageView.layer.mask = profileHexagon.layer.mask;
     profilePictureImageView.alpha = 0.0f;
     UIImageView *profilePictureStrokeImageView = [[UIImageView alloc] initWithFrame:CGRectMake( 88.0f, 34.0f, 143.0f, 143.0f)];
     profilePictureStrokeImageView.alpha = 0.0f;
-    [profilePictureStrokeImageView setImage:[UIImage imageNamed:@"ProfilePictureStroke.png"]];
     [self.headerView addSubview:profilePictureStrokeImageView];
     
     
@@ -143,7 +142,7 @@
         }
     }];
     
-    [followerCountLabel setText:@"0 followers"];
+    [followerCountLabel setText:@"0 FOLLOWERS"];
     
     PFQuery *queryFollowerCount = [PFQuery queryWithClassName:kFTActivityClassKey];
     [queryFollowerCount whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
@@ -151,14 +150,14 @@
     [queryFollowerCount setCachePolicy:kPFCachePolicyCacheThenNetwork];
     [queryFollowerCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
-            [followerCountLabel setText:[NSString stringWithFormat:@"%d follower%@", number, number==1?@"":@"s"]];
+            [followerCountLabel setText:[NSString stringWithFormat:@"%d FOLLOWER%@", number, number==1?@"":@"S"]];
         }
     }];
     
-    NSDictionary *followingDictionary = [[PFUser currentUser] objectForKey:@"following"];
-    [followingCountLabel setText:@"0 following"];
+    NSDictionary *followingDictionary = [[PFUser currentUser] objectForKey:@"FOLLOWING"];
+    [followingCountLabel setText:@"0 FOLLOWING"];
     if (followingDictionary) {
-        [followingCountLabel setText:[NSString stringWithFormat:@"%lu following", (unsigned long)[[followingDictionary allValues] count]]];
+        [followingCountLabel setText:[NSString stringWithFormat:@"%lu FOLLOWING", (unsigned long)[[followingDictionary allValues] count]]];
     }
     
     PFQuery *queryFollowingCount = [PFQuery queryWithClassName:kFTActivityClassKey];
@@ -167,7 +166,7 @@
     [queryFollowingCount setCachePolicy:kPFCachePolicyCacheThenNetwork];
     [queryFollowingCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
-            [followingCountLabel setText:[NSString stringWithFormat:@"%d following", number]];
+            [followingCountLabel setText:[NSString stringWithFormat:@"%d FOLLOWING", number]];
         }
     }];
     
@@ -238,8 +237,51 @@
     return cell;
 }
 
-
 #pragma mark - ()
+
+- (UIImageView *)getProfileHexagon{
+    
+    UIImageView *imageView = [[UIImageView alloc] init];
+    imageView.frame = CGRectMake( 88.0f, 34.0f, 146.0f, 166.0f);
+    imageView.backgroundColor = [UIColor redColor];
+    
+    CGRect rect = CGRectMake( 94.0f, 38.0f, 140.0f, 160.0f);
+    
+    CAShapeLayer *hexagonMask = [CAShapeLayer layer];
+    CAShapeLayer *hexagonBorder = [CAShapeLayer layer];
+    hexagonBorder.frame = imageView.layer.bounds;
+    UIBezierPath *hexagonPath = [UIBezierPath bezierPath];
+    
+    CGFloat sideWidth = 2 * ( 0.5 * rect.size.width / 2 );
+    CGFloat lcolumn = rect.size.width - sideWidth;
+    CGFloat height = rect.size.height;
+    CGFloat ty = (rect.size.height - height) / 2;
+    CGFloat tmy = rect.size.height / 4;
+    CGFloat bmy = rect.size.height - tmy;
+    CGFloat by = rect.size.height;
+    CGFloat rightmost = rect.size.width;
+    
+    [hexagonPath moveToPoint:CGPointMake(lcolumn, ty)];
+    [hexagonPath addLineToPoint:CGPointMake(rightmost, tmy)];
+    [hexagonPath addLineToPoint:CGPointMake(rightmost, bmy)];
+    [hexagonPath addLineToPoint:CGPointMake(lcolumn, by)];
+    
+    [hexagonPath addLineToPoint:CGPointMake(0, bmy)];
+    [hexagonPath addLineToPoint:CGPointMake(0, tmy)];
+    [hexagonPath addLineToPoint:CGPointMake(lcolumn, ty)];
+    
+    hexagonMask.path = hexagonPath.CGPath;
+    
+    imageView.layer.mask = hexagonMask;
+    [imageView.layer addSublayer:hexagonBorder];
+    
+    return imageView;
+}
+
+- (void)returnHome:(id)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
 
 - (void)followButtonAction:(id)sender {
     UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];

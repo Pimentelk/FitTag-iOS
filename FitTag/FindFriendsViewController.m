@@ -81,8 +81,7 @@
     // Show the interests
     //FeedViewController *rootViewController = [[FeedViewController alloc] initWithCollectionViewLayout:layoutFlow];
     FTFeedViewController *rootViewController = [[FTFeedViewController alloc] initWithClassName:@"Tbl_follower"];
-    UINavigationController *navController = [[UINavigationController alloc] initWithNavigationBarClass:[FTNavigationBar class]
-                                                                                          toolbarClass:[FTToolBar class]];
+    UINavigationController *navController = [[UINavigationController alloc] initWithNavigationBarClass:[FTNavigationBar class] toolbarClass:[FTToolBar class]];
     [navController setViewControllers:@[rootViewController] animated:NO];
     
     // Present the Interests View Controller
@@ -102,9 +101,7 @@
     UICollectionReusableView *reusableview = nil;
     
     if (kind == UICollectionElementKindSectionHeader) {
-        CollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-                                                                              withReuseIdentifier:@"HeaderView"
-                                                                                     forIndexPath:indexPath];
+        CollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView" forIndexPath:indexPath];
         
         [headerView setFrame:CGRectMake(0.0f, 0.0f, 320.0f, 32.0f)];
         [headerView.messageHeader setText:@"YOUR FRIENDS ALREADY ON FITTAG"];

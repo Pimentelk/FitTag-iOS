@@ -7,20 +7,20 @@
 //
 
 #import "FTCamViewController.h"
-#import "ImageCollectionViewController.h"
+#import "FTCamRollViewController.h"
 #import "PhotoCellCollectionView.h"
 #import "ImageCustomNavigationBar.h"
 #import "FTEditPhotoViewController.h"
 #import "FTOverlayView.h"
 
-@interface ImageCollectionViewController ()<UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface FTCamRollViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 @property (nonatomic, weak) UICollectionView *collectionView;
 @property (strong, nonatomic) UIImageView *imageView;
 @property (strong, nonatomic) UIBarButtonItem *backButton;
 @property (nonatomic,strong) UINavigationController *navController;
 @end
 
-@implementation ImageCollectionViewController
+@implementation FTCamRollViewController
 
 + (ALAssetsLibrary *)defaultAssetsLibrary
 {
@@ -32,6 +32,7 @@
     return library;
 }
 
+@synthesize delegate;
 @synthesize backButton;
 @synthesize navController;
 
@@ -53,16 +54,13 @@
     self.collectionView.backgroundColor = [UIColor whiteColor];
     
     // NavigationBar & ToolBar
-    [self.navigationController setNavigationBarHidden:NO animated:NO];
-    [self.navigationController setToolbarHidden:NO animated:NO];
     [self.navigationItem setTitle: @"Camera Roll"];
     [self.navigationItem setHidesBackButton:TRUE];
-    [self.navigationController.toolbar setDelegate:self];
 
     // Override the back idnicator
-    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(hideCameraRoll)];
-    [cancelButton setTintColor:[UIColor whiteColor]];
-    [self.navigationItem setLeftBarButtonItem:cancelButton];
+    UIBarButtonItem *hideCameraRoll = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(hideCameraRoll:)];
+    [hideCameraRoll setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setLeftBarButtonItem:hideCameraRoll];
         
     // Set up delegate and datasource
     [self.collectionView registerClass:[PhotoCellCollectionView class] forCellWithReuseIdentifier:@"PhotoCell"];
@@ -72,7 +70,7 @@
     _assets = [@[] mutableCopy];
     __block NSMutableArray *tmpAssets = [@[] mutableCopy];
     
-    ALAssetsLibrary *assetsLibrary = [ImageCollectionViewController defaultAssetsLibrary];
+    ALAssetsLibrary *assetsLibrary = [FTCamRollViewController defaultAssetsLibrary];
     
     [assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
         [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
@@ -129,10 +127,9 @@
     }
 }
 
-- (void)hideCameraRoll
+- (void)hideCameraRoll:(id)sender
 {
-    NSLog(@"hideCameraRoll");
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - collection view data source
@@ -172,10 +169,14 @@
     ALAsset *asset = self.assets[indexPath.row];
     ALAssetRepresentation *defaultRep = [asset defaultRepresentation];
     UIImage *image = [UIImage imageWithCGImage:[defaultRep fullScreenImage] scale:[defaultRep scale] orientation:0];
-    if (self.onCompletion){self.onCompletion(image);}
+    
+    FTEditPhotoViewController *viewController = [[FTEditPhotoViewController alloc] initWithImage:image];
+    viewController.delegate = self;
+    [self.navigationController pushViewController:viewController animated:NO];
 }
 
 #pragma mark - UIImagePickerDelegate
+
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     
     NSLog(@"FTFeedViewController::imagePickerControllerDidCancel");
@@ -186,7 +187,6 @@
     
     [self dismissViewControllerAnimated:NO completion:nil];
     
-    NSLog(@"FTFeedViewController::imagePickerController");
     UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
     
     FTEditPhotoViewController *viewController = [[FTEditPhotoViewController alloc] initWithImage:image];
@@ -195,13 +195,12 @@
     [self.navController setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
     [self.navController pushViewController:viewController animated:NO];
     
-    [self presentViewController:viewController animated:YES completion:nil];
+    [self.navigationController pushViewController:viewController animated:NO];
 }
 
 #pragma mark - UIActionSheetDelegate
+
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    
-    NSLog(@"FTFeedViewController::actionSheet");
     if (buttonIndex == 0) {
         [self shouldStartCameraController];
     } else if (buttonIndex == 1) {
@@ -209,25 +208,8 @@
     }
 }
 
-#pragma mark - FTCameraToolBarDelegate
-
-- (void)showCameraPreview
-{
-    NSLog(@"FTFeedViewController::showCameraPreview");
-    
-    /*
-    BOOL cameraDeviceAvailable = [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
-    
-    if(cameraDeviceAvailable){
-        [self shouldStartCameraController];
-    }
-    */
-    
-    FTCamViewController *cameraViewController = [[FTCamViewController alloc] init];
-    [self.navigationController pushViewController:cameraViewController animated:YES];
-}
-
 #pragma mark - ()
+
 - (BOOL)shouldPresentPhotoCaptureController {
     
     NSLog(@"FTFeedViewController::shouldPresentPhotoCaptureController");
@@ -315,11 +297,9 @@
     return YES;
 }
 
--(void)toggleCamera:(id)sender
-{
-    NSLog(@"FTFeedViewController::toggleCamera");
-    
-    
+- (void)setCoverPhoto:(UIImage *)image Caption:(NSString *)caption;{
+    if ([delegate respondsToSelector:@selector(setCoverPhoto:Caption:)]){
+        [delegate setCoverPhoto:image Caption:caption];
+    }
 }
-
 @end

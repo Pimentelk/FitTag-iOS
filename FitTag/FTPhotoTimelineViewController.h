@@ -6,10 +6,10 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-#import "FTPhotoHeaderView.h"
+#import "FTPhotoCell.h"
 
-@interface FTPhotoTimelineViewController : PFQueryTableViewController <FTPhotoHeaderViewDelegate>
+@interface FTPhotoTimelineViewController : PFQueryTableViewController <FTPhotoCellDelegate, UIActionSheetDelegate>
 
-- (FTPhotoHeaderView *)dequeueReusableSectionHeaderView;
+- (FTPhotoCell *)dequeueReusableSectionHeaderView;
 
 @end

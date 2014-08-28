@@ -10,8 +10,8 @@
 #import "FTProfileImageView.h"
 #import "TTTTimeIntervalFormatter.h"
 
-#define baseHorizontalOffset 20.0f
-#define baseWidth 280.0f
+#define baseHorizontalOffset 0.0f
+#define baseWidth 320.0f
 
 #define horiBorderSpacing 6.0f
 #define horiMediumSpacing 8.0f
@@ -23,7 +23,7 @@
 #define nameHeaderX baseHorizontalOffset
 #define nameHeaderY 0.0f
 #define nameHeaderWidth baseWidth
-#define nameHeaderHeight 46.0f
+#define nameHeaderHeight 0.0f
 
 #define avatarImageX horiBorderSpacing
 #define avatarImageY vertBorderSpacing
@@ -31,7 +31,7 @@
 
 #define nameLabelX avatarImageX+avatarImageDim+horiMediumSpacing
 #define nameLabelY avatarImageY+vertSmallSpacing
-#define nameLabelMaxWidth 280.0f - (horiBorderSpacing+avatarImageDim+horiMediumSpacing+horiBorderSpacing)
+#define nameLabelMaxWidth 320.0f - (horiBorderSpacing+avatarImageDim+horiMediumSpacing+horiBorderSpacing)
 
 #define timeLabelX nameLabelX
 #define timeLabelMaxWidth nameLabelMaxWidth
@@ -39,12 +39,12 @@
 #define mainImageX baseHorizontalOffset
 #define mainImageY nameHeaderHeight
 #define mainImageWidth baseWidth
-#define mainImageHeight 280.0f
+#define mainImageHeight 320.0f
 
 #define likeBarX baseHorizontalOffset
 #define likeBarY nameHeaderHeight + mainImageHeight
 #define likeBarWidth baseWidth
-#define likeBarHeight 43.0f
+#define likeBarHeight 0.0f
 
 #define likeButtonX 9.0f
 #define likeButtonY 7.0f

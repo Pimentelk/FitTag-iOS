@@ -7,7 +7,7 @@
 //
 
 #import "FTCamViewController.h"
-#import "FTEditPhotoViewController.h"
+#import "FTCamRollViewController.h"
 
 static void * CapturingStillImageContext = &CapturingStillImageContext;
 static void * RecordingContext = &RecordingContext;
@@ -39,7 +39,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 
 @implementation FTCamViewController
 
-@synthesize toggleCamera, recordButton, takePicture, cameraOverlay, crosshairs;
+@synthesize toggleCamera, recordButton, takePicture, cameraOverlay, crosshairs, delegate;
 
 - (BOOL)isSessionRunningAndDeviceAuthorized
 {
@@ -55,12 +55,14 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 {
     [super viewDidLoad];
     
+    // Background color
+    [self.view setBackgroundColor:[UIColor blackColor]];
+    
     // Create the AVCaptureSession
 	AVCaptureSession *session = [[AVCaptureSession alloc] init];
 	[self setSession:session];
     
     // Setup the preview view
-    
 	[[self previewLayer] setSession:session];
     
     // Check for device authorization
@@ -71,10 +73,13 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     
     // NavigationBar & ToolBar
-    [self.navigationController.navigationBar setHidden:NO];
-    [self.navigationController.toolbar setHidden:YES];
     [self.navigationItem setTitle: @"TAG YOUR FIT"];
     [self.navigationItem setHidesBackButton:NO];
+    
+    // Override the back idnicator
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(hideCameraView:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setLeftBarButtonItem:backIndicator];
     
     // Camera Overlay
     cameraOverlay = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"camera_overlay"]];
@@ -87,7 +92,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     
     // Camera View
     UIView *liveView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, crosshairs.frame.size.width, crosshairs.frame.size.height + (cameraOverlay.frame.size.height * 2) - 2)];
-    [liveView setBackgroundColor:[UIColor blueColor]];
+    [liveView setBackgroundColor:[UIColor blackColor]];
     
     [self.previewLayer setFrame:CGRectMake(0, 0, liveView.frame.size.width, liveView.frame.size.height)];
     [liveView.layer addSublayer:self.previewLayer];
@@ -146,7 +151,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [recordButton setFrame:CGRectMake(250.0f, self.view.frame.size.height - 44.0f - 30, 44.0f, 39.0f)];
     [recordButton setBackgroundImage:[UIImage imageNamed:@"video_button"] forState:UIControlStateNormal];
-    [recordButton addTarget:self action:@selector(takVideo:) forControlEvents:UIControlEventTouchUpInside];
+    [recordButton addTarget:self action:@selector(toggleMovieRecording:) forControlEvents:UIControlEventTouchUpInside];
     [recordButton setTintColor:[UIColor grayColor]];
     [self.view addSubview:recordButton];
     
@@ -174,7 +179,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 			NSLog(@"%@", error);
 		}
 		
-        NSLog(@"videoDeviceInput::Can session add input? %hhd ",[session canAddInput:videoDeviceInput]);
+        //NSLog(@"videoDeviceInput::Can session add input? %hhd ",[session canAddInput:videoDeviceInput]);
 		if ([session canAddInput:videoDeviceInput])
 		{
 			[session addInput:videoDeviceInput];
@@ -197,14 +202,14 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 			NSLog(@"%@", error);
 		}
 		
-        NSLog(@"audioDeviceInput::Can session add input? %hhd ",[session canAddInput:audioDeviceInput]);
+        //NSLog(@"audioDeviceInput::Can session add input? %hhd ",[session canAddInput:audioDeviceInput]);
 		if ([session canAddInput:audioDeviceInput])
 		{
 			[session addInput:audioDeviceInput];
 		}
 		
 		AVCaptureMovieFileOutput *movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
-        NSLog(@"movieFileOutput::Can session add input? %hhd ",[session canAddOutput:movieFileOutput]);
+        //NSLog(@"movieFileOutput::Can session add input? %hhd ",[session canAddOutput:movieFileOutput]);
 		if ([session canAddOutput:movieFileOutput])
 		{
 			[session addOutput:movieFileOutput];
@@ -215,7 +220,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 		}
 		
 		AVCaptureStillImageOutput *stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
-        NSLog(@"stillImageOutput::Can session add input? %hhd ",[session canAddOutput:stillImageOutput]);
+        //NSLog(@"stillImageOutput::Can session add input? %hhd ",[session canAddOutput:stillImageOutput]);
 		if ([session canAddOutput:stillImageOutput])
 		{
 			[stillImageOutput setOutputSettings:@{AVVideoCodecKey : AVVideoCodecJPEG}];
@@ -267,25 +272,34 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     // Dispose of any resources that can be recreated.
 }
 
+- (void)hideCameraView:(id)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 -(void)toggleFlash:(id)sender
 {
     NSLog(@"FTOverlayView::toggleFlash");
-    
 }
 
 -(void)toggleCrosshairs:(id)sender
 {
-    NSLog(@"FTOverlayView::toggleCrosshairs");
-}
-
--(void)takVideo:(id)sender
-{
-    NSLog(@"FTOverlayView::takVideo");
+    if([crosshairs isHidden]){
+        [crosshairs setHidden:NO];
+    } else {
+        [crosshairs setHidden:YES];
+    }
 }
 
 -(void)cameraRoll:(id)sender
 {
-    NSLog(@"FTOverlayView::cameraRoll");
+    UICollectionViewFlowLayout *aFlowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [aFlowLayout setItemSize:CGSizeMake(104,104)];
+    [aFlowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+    
+    FTCamRollViewController *camRollViewController = [[FTCamRollViewController alloc] initWithCollectionViewLayout:aFlowLayout];
+    camRollViewController.delegate = (id)self;
+    [self.navigationController pushViewController:camRollViewController animated:YES];    
 }
 
 - (void)changeCamera:(id)sender
@@ -556,7 +570,9 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 - (void)toggleMovieRecording:(id)sender
 {
 	[[self recordButton] setEnabled:NO];
-	
+    CMTime maxDuration = CMTimeMakeWithSeconds(15, 50);
+	[[self movieFileOutput] setMaxRecordedDuration:maxDuration];
+    
 	dispatch_async([self sessionQueue], ^{
 		if (![[self movieFileOutput] isRecording])
 		{
@@ -603,12 +619,9 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 				UIImage *image = [[UIImage alloc] initWithData:imageData];
                 UIImage *croppedImage = [self squareImageFromImage:image scaledToSize:320.0f];
 				
-                //[self dismissViewControllerAnimated:NO completion:nil];
-                
                 FTEditPhotoViewController *viewController = [[FTEditPhotoViewController alloc] initWithImage:croppedImage];
-                UINavigationController *naviController = [[UINavigationController alloc] init];
-                [naviController setViewControllers:@[viewController] animated:NO];
-                [self presentViewController:naviController animated:YES completion:nil];
+                viewController.delegate = self;
+                [self.navigationController pushViewController:viewController animated:NO];
                 
                 //[viewController setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
                 //[self setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
@@ -658,5 +671,13 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 {
 	CGPoint devicePoint = [(AVCaptureVideoPreviewLayer *)[self previewLayer] captureDevicePointOfInterestForPoint:[gestureRecognizer locationInView:[gestureRecognizer view]]];
 	[self focusWithMode:AVCaptureFocusModeAutoFocus exposeWithMode:AVCaptureExposureModeAutoExpose atDevicePoint:devicePoint monitorSubjectAreaChange:YES];
+}
+
+#pragma mark - FTEditPhotoViewController
+
+- (void)setCoverPhoto:(UIImage *)image Caption:(NSString *)caption;{
+    if ([delegate respondsToSelector:@selector(setCoverPhoto:Caption:)]){
+        [delegate setCoverPhoto:image Caption:caption];
+    }
 }
 @end

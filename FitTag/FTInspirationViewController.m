@@ -64,21 +64,19 @@
     // Next button
     UIButton *nextButton = [[UIButton alloc] initWithFrame:CGRectMake((self.navigationController.toolbar.frame.size.width - 38.0f), 4.0f, 34.0f, 37.0f)];
     [nextButton setBackgroundImage:[UIImage imageNamed:@"signup_button"] forState:UIControlStateNormal];
-    [nextButton addTarget:self action:@selector(submitUserInspiration) forControlEvents:UIControlEventTouchDown];
+    [nextButton addTarget:self action:@selector(submitUserInspiration:) forControlEvents:UIControlEventTouchDown];
     
     [self.navigationController.toolbar addSubview:nextMessage];
     [self.navigationController.toolbar addSubview:nextButton];
     
 }
 
-- (void)didReceiveMemoryWarning
-{
+- (void)didReceiveMemoryWarning{
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
-- (void)submitUserInspiration
-{
+- (void)submitUserInspiration:(id)sender{
     // Layout param
     FindFriendsFlowLayout *layoutFlow = [[FindFriendsFlowLayout alloc] init];
     [layoutFlow setItemSize:CGSizeMake(320,42)];
@@ -96,15 +94,11 @@
 
 #pragma mark - collection view data source
 
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
-{
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath{
     UICollectionReusableView *reusableview = nil;
     
     if (kind == UICollectionElementKindSectionHeader) {
-        CollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-                                                                              withReuseIdentifier:@"HeaderView"
-                                                                                     forIndexPath:indexPath];
-        
+        CollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView" forIndexPath:indexPath];
         [headerView setFrame:CGRectMake(0.0f, 0.0f, 320.0f, 32.0f)];
         [headerView.messageHeader setText:@"FIND THE PEOPLE THAT INSPIRE YOU"];
         [headerView.messageText setText:@""];
@@ -121,20 +115,16 @@
     return reusableview;
 }
 
-- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
+- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
     return self.usersToRecommend.count;
 }
 
-- (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     InspirationCellCollectionView *cell = (InspirationCellCollectionView *)[collectionView dequeueReusableCellWithReuseIdentifier:@"MemberCell" forIndexPath:indexPath];
-    
     NSMutableArray *sharedInterests = [self intersect:self.interests withUser:[self.usersToRecommendInterests objectForKey:self.userKeys[indexPath.row]]];
     NSString *interest = [[sharedInterests componentsJoinedByString:@"\r\n"] uppercaseString];
 
     NSLog(@"Matching interests: %@",interest);
-    
     if ([cell isKindOfClass:[InspirationCellCollectionView class]]) {
         cell.backgroundColor = [UIColor clearColor];
         cell.message.text = @"BECAUSE YOU HAVE INTEREST IN ";
@@ -145,18 +135,15 @@
     return cell;
 }
 
-- (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
-{
+- (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section{
     return 0;
 }
 
-- (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
-{
+- (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section{
     return 0;
 }
 
--(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
+-(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     // When item is selected do something
     InspirationCellCollectionView *cell = (InspirationCellCollectionView *)[collectionView cellForItemAtIndexPath:indexPath];
     if(![cell isSelectedToggle]){
@@ -169,12 +156,10 @@
     }
 }
 
--(NSMutableArray *) intersect:(NSArray*)selected withUser:(NSArray*)interests
-{
+-(NSMutableArray *) intersect:(NSArray*)selected withUser:(NSArray*)interests{
+
     NSMutableArray *sharedInterests = [@[] mutableCopy];
-    
-    for (NSObject *obj in selected)
-    {
+    for (NSObject *obj in selected)    {
         if([interests containsObject:obj] && ![sharedInterests containsObject:obj])
             [sharedInterests addObject:obj];
     }

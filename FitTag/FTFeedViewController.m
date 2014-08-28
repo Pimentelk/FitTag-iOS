@@ -12,7 +12,7 @@
 #import "FTActivityFeedViewController.h"
 #import "FTNavigationBar.h"
 #import "FTSettingsActionSheetDelegate.h"
-#import "ImageCollectionViewController.h"
+#import "FTCamRollViewController.h"
 #import "ImageCustomNavigationBar.h"
 #import "FTCameraToolBar.h"
 
@@ -39,8 +39,10 @@
     
     UIBarButtonItem *addFriends = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"add_contacts"] style:UIBarButtonItemStylePlain target:self action:@selector(addFriends)];
     UIBarButtonItem *fitTagPost = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"fittag_button"] style:UIBarButtonItemStylePlain target:self action:@selector(fitTagPost:)];
+    
     [fitTagPost setTintColor:[UIColor whiteColor]];
     [addFriends setTintColor:[UIColor whiteColor]];
+    
     [self.navigationItem setRightBarButtonItem:fitTagPost];
     [self.navigationItem setLeftBarButtonItem:addFriends];
     
@@ -56,81 +58,12 @@
     [self.blankTimelineView addSubview:button];
 }
 
-#pragma mark - Navigation Bar
-
-- (void)fitTagPost:(id)sender
-{
-    
-    NSLog(@"FTFeedViewController::fitTagPost");
-    
-    UICollectionViewFlowLayout *aFlowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [aFlowLayout setItemSize:CGSizeMake(104,104)];
-    [aFlowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-    
-    ImageCollectionViewController *rootViewController = [[ImageCollectionViewController alloc] initWithCollectionViewLayout:aFlowLayout];
-    
-    UINavigationController *naviController = [[UINavigationController alloc] initWithNavigationBarClass:[ImageCustomNavigationBar class]
-                                                                                          toolbarClass:[FTCameraToolBar class]];
-    
-    [naviController setViewControllers:@[rootViewController] animated:NO];
-    
-    [self presentViewController:naviController animated:YES completion:NULL];
-    
-    rootViewController.onCompletion = ^(id result){
-        [naviController dismissViewControllerAnimated:YES completion:NULL];
-        NSLog(@"Image selected result: %@ ", result);
-    };
-}
-
-- (void)addFriends
-{
-    NSLog(@"FTFeedViewController::addFriends");
-    // Layout param
-    FindFriendsFlowLayout *layoutFlow = [[FindFriendsFlowLayout alloc] init];
-    [layoutFlow setItemSize:CGSizeMake(320,42)];
-    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [layoutFlow setMinimumInteritemSpacing:0];
-    [layoutFlow setMinimumLineSpacing:0];
-    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,32)];
-     
-    // Show the interests
-    FTFindFriendsViewController *detailViewController = [[FTFindFriendsViewController alloc] init];
-    [self.navigationController pushViewController:detailViewController animated:YES];
-}
-
-#pragma mark - Tool Bar
--(void)viewNotifications
-{
-    // Show Activity Feed
-    FTActivityFeedViewController *rootViewController = [[FTActivityFeedViewController alloc] init];
-    UINavigationController *naviController = [[UINavigationController alloc] initWithNavigationBarClass:[FTNavigationBar class]
-                                                                                          toolbarClass:[FTToolBar class]];
-    
-    [naviController setViewControllers:@[rootViewController] animated:NO];
-    
-    [self presentViewController:naviController animated:YES completion:NULL];
-}
-
--(void)viewSearch
-{
-    NSLog(@"FTFeedViewController::viewSearch");
-}
-
--(void)viewMyProfile
-{
-    NSLog(@"FTFeedViewController::viewMyProfile");
-}
-
--(void)viewOffers
-{
-    NSLog(@"FTFeedViewController::viewOffers");
-}
-
 #pragma mark - PFQueryTableViewController
 
 - (void)objectsDidLoad:(NSError *)error {
     [super objectsDidLoad:error];
+    
+    NSLog(@"objectsDidLoad: Error %@",error);
     
     if (self.objects.count == 0 && ![[self queryForTable] hasCachedResult] & !self.firstLaunch) {
         self.tableView.scrollEnabled = NO;
@@ -150,6 +83,7 @@
 }
 
 #pragma mark - ()
+
 - (void)settingsButtonAction:(id)sender {
     self.settingsActionSheetDelegate = [[FTSettingsActionSheetDelegate alloc] initWithNavigationController:self.navigationController];
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self.settingsActionSheetDelegate cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"My Profile",@"Find Friends",@"Log Out", nil];
@@ -162,5 +96,71 @@
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
+#pragma mark - Navigation Bar
+
+- (void)fitTagPost:(id)sender
+{
+    NSLog(@"FTFeedViewController::fitTagPost");
+    
+    UICollectionViewFlowLayout *aFlowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [aFlowLayout setItemSize:CGSizeMake(104,104)];
+    [aFlowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+    
+    FTCamRollViewController *rootViewController = [[FTCamRollViewController alloc] initWithCollectionViewLayout:aFlowLayout];
+    UINavigationController *naviController = [[UINavigationController alloc] initWithNavigationBarClass:[ImageCustomNavigationBar class] toolbarClass:[FTCameraToolBar class]];
+    
+    [naviController setViewControllers:@[rootViewController] animated:NO];
+    [self presentViewController:naviController animated:YES completion:NULL];
+    
+    /*
+    rootViewController.onCompletion = ^(id result){
+        [naviController dismissViewControllerAnimated:YES completion:NULL];
+        NSLog(@"Image selected result: %@ ", result);
+    };
+     */
+}
+
+- (void)addFriends
+{
+    NSLog(@"FTFeedViewController::addFriends");
+    // Layout param
+    FindFriendsFlowLayout *layoutFlow = [[FindFriendsFlowLayout alloc] init];
+    [layoutFlow setItemSize:CGSizeMake(320,42)];
+    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [layoutFlow setMinimumInteritemSpacing:0];
+    [layoutFlow setMinimumLineSpacing:0];
+    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,32)];
+    
+    // Show the interests
+    FTFindFriendsViewController *detailViewController = [[FTFindFriendsViewController alloc] init];
+    [self.navigationController pushViewController:detailViewController animated:YES];
+}
+
+#pragma mark - Toolbar
+
+-(void)viewNotifications:(id)sender
+{
+    // Show Activity Feed
+    FTActivityFeedViewController *rootViewController = [[FTActivityFeedViewController alloc] init];
+    UINavigationController *naviController = [[UINavigationController alloc] initWithNavigationBarClass:[FTNavigationBar class] toolbarClass:[FTToolBar class]];
+    [naviController setViewControllers:@[rootViewController] animated:NO];
+    [self presentViewController:naviController animated:YES completion:NULL];
+}
+
+-(void)viewSearch:(id)sender
+{
+    NSLog(@"FTFeedViewController::viewSearch");
+}
+
+-(void)viewMyProfile:(id)sender
+{
+    NSLog(@"FTFeedViewController::viewMyProfile");
+}
+
+-(void)viewOffers:(id)sender
+{
+    NSLog(@"FTFeedViewController::viewOffers");
+}
 
 @end

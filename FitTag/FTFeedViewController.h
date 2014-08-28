@@ -10,5 +10,5 @@
 #import "FTPhotoTimelineViewController.h"
 
 @interface FTFeedViewController : PFQueryTableViewController <FTToolBarDelegate>
-    @property (nonatomic, assign, getter = isFirstLaunch) BOOL firstLaunch;
+@property (nonatomic, assign, getter = isFirstLaunch) BOOL firstLaunch;
 @end

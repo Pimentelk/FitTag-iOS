@@ -13,7 +13,7 @@
 #import "UIImage+ResizeAdditions.h"
 #import "FTConfigViewController.h"
 #import "FTActivityFeedViewController.h"
-#import "FTFeedViewController.h"
+#import "FTHomeViewController.h"
 #import "FTAccountViewController.h"
 #import "FTPhotoDetailsViewController.h"
 
@@ -23,7 +23,7 @@
     BOOL firstLaunch;
 }
 
-@property (nonatomic, strong) FTFeedViewController *homeViewController;
+@property (nonatomic, strong) FTHomeViewController *homeViewController;
 @property (nonatomic, strong) FTConfigViewController *welcomeViewController;
 @property (nonatomic, strong) FTActivityFeedViewController *activityViewController;
 
@@ -212,7 +212,7 @@
 
 - (void)presentTabBarController {
     self.tabBarController = [[FTTabBarController alloc] init];
-    self.homeViewController = [[FTFeedViewController alloc] initWithStyle:UITableViewStylePlain];
+    self.homeViewController = [[FTHomeViewController alloc] initWithStyle:UITableViewStylePlain];
     [self.homeViewController setFirstLaunch:firstLaunch];
     self.activityViewController = [[FTActivityFeedViewController alloc] initWithStyle:UITableViewStylePlain];
     

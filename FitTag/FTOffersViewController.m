@@ -26,7 +26,17 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
+    [self.navigationItem setTitle: @"REWARDS"];
+    [self.navigationItem setHidesBackButton:NO];
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
+    
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(returnHome:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setLeftBarButtonItem:backIndicator];
+    
+    // Set Background
+    [self.view setBackgroundColor:[UIColor whiteColor]];
 }
 
 - (void)didReceiveMemoryWarning
@@ -35,4 +45,8 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)returnHome:(id)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
 @end

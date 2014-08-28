@@ -7,7 +7,7 @@
 //
 
 #import "FTCameraToolBar.h"
-#import "ImageCollectionViewController.h"
+#import "FTCamRollViewController.h"
 
 @implementation FTCameraToolBar
 

@@ -7,7 +7,6 @@
 //
 
 #import "FTPhotoDetailsFooterView.h"
-
 #import "FTUtility.h"
 
 @interface FTPhotoDetailsFooterView ()
@@ -20,7 +19,6 @@
 @synthesize mainView;
 @synthesize hideDropShadow;
 
-
 #pragma mark - NSObject
 
 - (id)initWithFrame:(CGRect)frame {
@@ -29,26 +27,37 @@
         // Initialization code
         self.backgroundColor = [UIColor clearColor];
         
-        mainView = [[UIView alloc] initWithFrame:CGRectMake( 20.0f, 0.0f, 280.0f, 51.0f)];
-        mainView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"BackgroundComments.png"]];
+        mainView = [[UIView alloc] initWithFrame:CGRectMake( 0.0f, 0.0f, 320.0f, 200.0f)];
+        mainView.backgroundColor = [UIColor whiteColor];
         [self addSubview:mainView];
         
-        UIImageView *messageIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"IconAddComment.png"]];
-        messageIcon.frame = CGRectMake( 9.0f, 17.0f, 19.0f, 17.0f);
-        [mainView addSubview:messageIcon];
-        
-        UIImageView *commentBox = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"TextFieldComment.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(5.0f, 10.0f, 5.0f, 10.0f)]];
-        commentBox.frame = CGRectMake(35.0f, 8.0f, 237.0f, 35.0f);
+        UIImageView *commentBox = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"comment_bar"]];
+        commentBox.frame = CGRectMake(0.0f, 0.0f, 320.0f, 43.0f);
         [mainView addSubview:commentBox];
         
-        commentField = [[UITextField alloc] initWithFrame:CGRectMake( 40.0f, 10.0f, 227.0f, 31.0f)];
-        commentField.font = [UIFont systemFontOfSize:14.0f];
-        commentField.placeholder = @"Add a comment";
+        UIImageView *commentBoxButton = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"send_button"]];
+        commentBoxButton.frame = CGRectMake(264.0f, 9.0f, 47.0f, 25.0f);
+        [commentBox addSubview:commentBoxButton];
+        
+        commentField = [[UITextField alloc] initWithFrame:CGRectMake( 5.0f, 0.0f, 320.0f, 31.0f)];
+        commentField.font = [UIFont systemFontOfSize:12.0f];
         commentField.returnKeyType = UIReturnKeySend;
         commentField.textColor = [UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f];
         commentField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         [commentField setValue:[UIColor colorWithRed:154.0f/255.0f green:146.0f/255.0f blue:138.0f/255.0f alpha:1.0f] forKeyPath:@"_placeholderLabel.textColor"]; // Are we allowed to modify private properties like this? -Héctor
         [mainView addSubview:commentField];
+        
+        /*
+        UIButton *facebookButton = [UIButton buttonWithType: UIButtonTypeCustom];
+        facebookButton.frame = CGRectMake(0.0f, 0.0f, 71.0f, 80.0f);
+        [facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook_button"] forState:UIControlStateNormal];
+        [mainView addSubview:facebookButton];
+        
+        UIButton *twitterButton = [UIButton buttonWithType: UIButtonTypeCustom];
+        twitterButton.frame = CGRectMake(0.0f, 0.0f, 71.0f, 80.0f);
+        [twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter_button"] forState:UIControlStateNormal];
+        [mainView addSubview:twitterButton];
+         */
     }
     return self;
 }

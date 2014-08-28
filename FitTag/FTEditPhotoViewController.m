@@ -7,7 +7,7 @@
 //
 
 #import "FTEditPhotoViewController.h"
-#import "FTPhotoDetailsFooterView.h"
+#import "FTPhotoPostDetailsFooterView.h"
 #import "UIImage+ResizeAdditions.h"
 
 @interface FTEditPhotoViewController ()
@@ -28,6 +28,7 @@
 @synthesize thumbnailFile;
 @synthesize fileUploadBackgroundTaskId;
 @synthesize photoPostBackgroundTaskId;
+@synthesize delegate;
 
 #pragma mark - NSObject
 
@@ -61,27 +62,29 @@
 - (void)loadView {
     self.scrollView = [[UIScrollView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
     self.scrollView.delegate = self;
-    self.scrollView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"BackgroundLeather.png"]];
+    self.scrollView.backgroundColor = [UIColor whiteColor];
     self.view = self.scrollView;
     
-    UIImageView *photoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20.0f, 42.0f, 280.0f, 280.0f)];
+    UIImageView *photoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
     [photoImageView setBackgroundColor:[UIColor blackColor]];
     [photoImageView setImage:self.image];
     [photoImageView setContentMode:UIViewContentModeScaleAspectFit];
     
+    /*
     CALayer *layer = photoImageView.layer;
     layer.masksToBounds = NO;
     layer.shadowRadius = 3.0f;
     layer.shadowOffset = CGSizeMake(0.0f, 2.0f);
     layer.shadowOpacity = 0.5f;
     layer.shouldRasterize = YES;
+    */
     
     [self.scrollView addSubview:photoImageView];
-    
-    CGRect footerRect = [FTPhotoDetailsFooterView rectForView];
+ 
+    CGRect footerRect = [FTPhotoPostDetailsFooterView rectForView];
     footerRect.origin.y = photoImageView.frame.origin.y + photoImageView.frame.size.height;
     
-    FTPhotoDetailsFooterView *footerView = [[FTPhotoDetailsFooterView alloc] initWithFrame:footerRect];
+    FTPhotoPostDetailsFooterView *footerView = [[FTPhotoPostDetailsFooterView alloc] initWithFrame:footerRect];
     self.commentTextField = footerView.commentField;
     self.commentTextField.delegate = self;
     [self.scrollView addSubview:footerView];
@@ -92,11 +95,16 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.navigationItem setHidesBackButton:YES];
+    // NavigationBar & ToolBar
+    [self.navigationController.navigationBar setHidden:NO];
+    [self.navigationController.toolbar setHidden:YES];
+    [self.navigationItem setTitle: @"TAG YOUR FIT"];
+    [self.navigationItem setHidesBackButton:NO];
     
-    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LogoNavigationBar.png"]];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStyleBordered target:self action:@selector(cancelButtonAction:)];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Publish" style:UIBarButtonItemStyleDone target:self action:@selector(doneButtonAction:)];
+    // Override the back idnicator
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(hideCameraView:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setLeftBarButtonItem:backIndicator];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
@@ -120,56 +128,51 @@
 
 #pragma mark - ()
 
+- (void)hideCameraView:(id)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 - (BOOL)shouldUploadImage:(UIImage *)anImage {
-    NSLog(@"FTEditPhotoViewController::shouldUploadImage %@",anImage);
+    
     UIImage *resizedImage = [anImage resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(560.0f, 560.0f) interpolationQuality:kCGInterpolationHigh];
     UIImage *thumbnailImage = [anImage thumbnailImage:86.0f transparentBorder:0.0f cornerRadius:10.0f interpolationQuality:kCGInterpolationDefault];
-    
-    NSLog(@"shouldUploadImage::resizedImage: %@",resizedImage);
-    NSLog(@"shouldUploadImage::thumbnailImage: %@",thumbnailImage);
     
     // JPEG to decrease file size and enable faster uploads & downloads
     NSData *imageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
     NSData *thumbnailImageData = UIImagePNGRepresentation(thumbnailImage);
-    
-    //NSLog(@"shouldUploadImage::imageData: %@",imageData);
-    //NSLog(@"shouldUploadImage::thumbnailImageData: %@",thumbnailImageData);
     
     if (!imageData || !thumbnailImageData) {
         return NO;
     }
     
     self.photoFile = [PFFile fileWithName:@"photo.jpeg" data:imageData];
-    self.self.thumbnailFile = [PFFile fileWithName:@"thumbnail.png" data:imageData];
+    self.thumbnailFile = [PFFile fileWithName:@"thumbnail.png" data:imageData];
     
-    //self.photoFile = [PFFile fileWithData:imageData];
-    //self.thumbnailFile = [PFFile fileWithData:thumbnailImageData];
-    
-    NSLog(@"shouldUploadImage::photoFile: %@",self.photoFile);
-    NSLog(@"shouldUploadImage::thumbnailFile: %@",self.thumbnailFile);
-    
-    // Request a background execution task to allow us to finish uploading the photo even if the app is backgrounded
-    self.fileUploadBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-        [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
-    }];
-    
-    [self.photoFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (succeeded) {
-            [self.thumbnailFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
-                
-                if (error) {
-                    NSLog(@"self.thumbnailFile saveInBackgroundWithBlock: %@", error);
-                }
-            }];
-        } else {
+    if ([PFUser currentUser]) {
+        // Request a background execution task to allow us to finish uploading the photo even if the app is backgrounded
+        self.fileUploadBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
-        }
+        }];
+    
+        [self.photoFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+                [self.thumbnailFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+                
+                    if (error) {
+                        NSLog(@"self.thumbnailFile saveInBackgroundWithBlock: %@", error);
+                    }
+                }];
+            } else {
+                [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+            }
         
-        if (error) {
-            NSLog(@"self.photoFile saveInBackgroundWithBlock: %@", error);
-        }
-    }];
+            if (error) {
+                NSLog(@"self.photoFile saveInBackgroundWithBlock: %@", error);
+            }
+        }];
+    }
     
     return YES;
 }
@@ -198,11 +201,6 @@
 
 - (void)doneButtonAction:(id)sender {
     NSLog(@"FTEditPhotoViewController::doneButtonAction");
-    NSDictionary *userInfo = [NSDictionary dictionary];
-    NSString *trimmedComment = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    if (trimmedComment.length != 0) {
-        userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment,kFTEditPhotoViewControllerUserInfoCommentKey,nil];
-    }
     
     // Make sure there were no errors creating the image files
     if (!self.photoFile || !self.thumbnailFile) {
@@ -211,78 +209,97 @@
         return;
     }
     
-    // both files have finished uploading
-    NSLog(@"doneButtonAction::self.photoFile.url: %@", self.photoFile.url);
-    NSLog(@"doneButtonAction::self.photoFile: %@",self.photoFile);
-    NSLog(@"doneButtonAction::self.thumbnailFile: %@",self.thumbnailFile);
+    if ([PFUser currentUser]) {
     
-    // create a photo object
-    PFObject *photo = [PFObject objectWithClassName:kFTPhotoClassKey];
-    [photo setObject:[PFUser currentUser] forKey:kFTPhotoUserKey];
-    [photo setObject:self.photoFile forKey:kFTPhotoPictureKey];
-    [photo setObject:self.thumbnailFile forKey:kFTPhotoThumbnailKey];
+        NSDictionary *userInfo = [NSDictionary dictionary];
+        NSString *trimmedComment = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     
-    NSLog(@"doneButtonAction::PFObject photo: %@",photo);
-    
-    // photos are public, but may only be modified by the user who uploaded them
-    PFACL *photoACL = [PFACL ACLWithUser:[PFUser currentUser]];
-    [photoACL setPublicReadAccess:YES];
-    photo.ACL = photoACL;
-    
-    NSLog(@"doneButtonAction::PFObject photoACL: %@",photoACL);
-    
-    // Request a background execution task to allow us to finish uploading the photo even if the app is backgrounded
-    self.photoPostBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-        [[UIApplication sharedApplication] endBackgroundTask:self.photoPostBackgroundTaskId];
-        NSLog(@"FTEditPhotoViewController::doneButtonAction::saveInBackgroundWithBlock - photoPostBackgroundTaskId");
-    }];
-    
-    // Save the Photo PFObject
-    [photo saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (succeeded) {
-            
-            NSLog(@"FTEditPhotoViewController::doneButtonAction::saveInBackgroundWithBlock - succeeded");
-            
-            [[FTCache sharedCache] setAttributesForPhoto:photo likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
-            
-            // userInfo might contain any caption which might have been posted by the uploader
-            if (userInfo) {
-                NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
-                
-                if (commentText && commentText.length != 0) {
-                    // create and save photo caption
-                    PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
-                    [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
-                    [comment setObject:photo forKey:kFTActivityPhotoKey];
-                    [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
-                    [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
-                    [comment setObject:commentText forKey:kFTActivityContentKey];
-                    
-                    PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];
-                    [ACL setPublicReadAccess:YES];
-                    comment.ACL = ACL;
-                    
-                    [comment saveEventually];
-                    [[FTCache sharedCache] incrementCommentCountForPhoto:photo];
-                }
-            } else {
-                [photo saveEventually];
-            }
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:FTTabBarControllerDidFinishEditingPhotoNotification object:photo];
-        } else {
+        if (trimmedComment.length != 0) {
+            userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment,kFTEditPhotoViewControllerUserInfoCommentKey,nil];
+        }
+        
+        /*
+        // Make sure there were no errors creating the image files
+        if (!self.photoFile || !self.thumbnailFile) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
             [alert show];
+            return;
         }
-        [[UIApplication sharedApplication] endBackgroundTask:self.photoPostBackgroundTaskId];
-    }];
+        */
+        
+        // both files have finished uploading
+  
+        // create a photo object
+        PFObject *photo = [PFObject objectWithClassName:kFTPhotoClassKey];
+        [photo setObject:[PFUser currentUser] forKey:kFTPhotoUserKey];
+        [photo setObject:self.photoFile forKey:kFTPhotoPictureKey];
+        [photo setObject:self.thumbnailFile forKey:kFTPhotoThumbnailKey];
     
-    // Dismiss this screen
-    [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
+        // photos are public, but may only be modified by the user who uploaded them
+        PFACL *photoACL = [PFACL ACLWithUser:[PFUser currentUser]];
+        [photoACL setPublicReadAccess:YES];
+        photo.ACL = photoACL;
+    
+        // Request a background execution task to allow us to finish uploading the photo even if the app is backgrounded
+        self.photoPostBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            [[UIApplication sharedApplication] endBackgroundTask:self.photoPostBackgroundTaskId];
+        }];
+    
+        // Save the Photo PFObject
+        [photo saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+            
+                [[FTCache sharedCache] setAttributesForPhoto:photo likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
+            
+                // userInfo might contain any caption which might have been posted by the uploader
+                if (userInfo) {
+                    NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
+                
+                    if (commentText && commentText.length != 0) {
+                        // create and save photo caption
+                        PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
+                        [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
+                        [comment setObject:photo forKey:kFTActivityPhotoKey];
+                        [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
+                        [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
+                        [comment setObject:commentText forKey:kFTActivityContentKey];
+                    
+                        PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];
+                        [ACL setPublicReadAccess:YES];
+                        comment.ACL = ACL;
+                    
+                        [comment saveEventually];
+                        [[FTCache sharedCache] incrementCommentCountForPhoto:photo];
+                    }
+                } else {
+                    [photo saveEventually];
+                }
+            
+                [[NSNotificationCenter defaultCenter] postNotificationName:FTTabBarControllerDidFinishEditingPhotoNotification object:photo];
+            } else {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
+                [alert show];
+            }
+            [[UIApplication sharedApplication] endBackgroundTask:self.photoPostBackgroundTaskId];
+        }];
+    
+        // Dismiss this screen
+        [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
+    } else {
+        NSString *caption = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        [self setCoverPhoto:self.image Caption:caption];
+        [self.navigationController dismissViewControllerAnimated:NO completion:nil];
+    }
 }
 
 - (void)cancelButtonAction:(id)sender {
     [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)setCoverPhoto:(UIImage *)photo Caption:(NSString *)caption{
+    if ([delegate respondsToSelector:@selector(setCoverPhoto:Caption:)]){
+        [delegate setCoverPhoto:photo Caption:caption];
+    }
 }
 
 @end

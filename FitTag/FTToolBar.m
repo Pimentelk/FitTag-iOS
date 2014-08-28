@@ -27,22 +27,22 @@
     [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"notifications"]
                                                              style:UIBarButtonItemStyleBordered
                                                             target:self
-                                                            action:@selector(didPressNotifications)]];
+                                                            action:@selector(didPressNotifications:)]];
     [toolbarItems addObject:flexibleSpace];
     [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"search"]
                                                              style:UIBarButtonItemStyleBordered
                                                             target:self
-                                                            action:@selector(didPressSearch)]];
+                                                            action:@selector(didPressSearch:)]];
     [toolbarItems addObject:flexibleSpace];
     [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"myprofile"]
                                                              style:UIBarButtonItemStyleBordered
                                                             target:self
-                                                            action:@selector(didPressProfile)]];
+                                                            action:@selector(didPressProfile:)]];
     [toolbarItems addObject:flexibleSpace];
     [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"offers"]
                                                              style:UIBarButtonItemStyleBordered
                                                             target:self
-                                                            action:@selector(didPressOffers)]];
+                                                            action:@selector(didPressOffers:)]];
     
     // Set the buttons color to red
     [toolbar setTintColor:[UIColor colorWithRed:255.0/255.0 green:0.0/255.0 blue:0.0/255.0 alpha:1.0]];
@@ -53,39 +53,39 @@
     
 }
 
--(void)didPressNotifications
+-(void)didPressNotifications:(id)sender
 {
     //NSLog(@"FitTagToolBar::didPressNotifications");
-    if ([self.delegate respondsToSelector:@selector(viewNotifications)])
+    if ([self.delegate respondsToSelector:@selector(viewNotifications:)])
     {
-        [self.delegate viewNotifications];
+        [self.delegate viewNotifications:sender];
     }
 }
 
--(void)didPressSearch
+-(void)didPressSearch:(id)sender
 {
     //NSLog(@"FitTagToolBar::didPressSearch");
-    if ([self.delegate respondsToSelector:@selector(viewSearch)])
+    if ([self.delegate respondsToSelector:@selector(viewSearch:)])
     {
-        [self.delegate viewSearch];
+        [self.delegate viewSearch:sender];
     }
 }
 
--(void)didPressProfile
+-(void)didPressProfile:(id)sender
 {
     //NSLog(@"FitTagToolBar::didPressProfile");
-    if ([self.delegate respondsToSelector:@selector(viewMyProfile)])
+    if ([self.delegate respondsToSelector:@selector(viewMyProfile:)])
     {
-        [self.delegate viewMyProfile];
+        [self.delegate viewMyProfile:sender];
     }
 }
 
--(void)didPressOffers
+-(void)didPressOffers:(id)sender
 {
     //NSLog(@"FitTagToolBar::didPressOffers");
-    if ([self.delegate respondsToSelector:@selector(viewOffers)])
+    if ([self.delegate respondsToSelector:@selector(viewOffers:)])
     {
-        [self.delegate viewOffers];
+        [self.delegate viewOffers:sender];
     }
 }
 @end

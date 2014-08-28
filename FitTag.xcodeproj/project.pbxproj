@@ -38,9 +38,11 @@
 		2DACD97819656F8900833C14 /* InterestCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD97719656F8900833C14 /* InterestCollectionViewFlowLayout.m */; };
 		2DACD97B196578DA00833C14 /* FTInspirationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD97A196578DA00833C14 /* FTInspirationViewController.m */; };
 		2DACE8141966FF7200154504 /* CollectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACE8131966FF7200154504 /* CollectionHeaderView.m */; };
-		2DBC6E5A195C783C008B5AD3 /* ImageCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBC6E59195C783C008B5AD3 /* ImageCollectionViewController.m */; };
+		2DBC6E5A195C783C008B5AD3 /* FTCamRollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBC6E59195C783C008B5AD3 /* FTCamRollViewController.m */; };
 		2DBC6EA1195CBCE2008B5AD3 /* FTInterestsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBC6EA0195CBCE2008B5AD3 /* FTInterestsViewController.m */; };
+		2DBEEE5719AB4F1E00AAD238 /* FTPhotoPostDetailsFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBEEE5619AB4F1E00AAD238 /* FTPhotoPostDetailsFooterView.m */; };
 		2DC507CC199829940041A03D /* FTCamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC507CB199829940041A03D /* FTCamViewController.m */; };
+		2DC507D5199FBE030041A03D /* FTHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC507D4199FBE030041A03D /* FTHomeViewController.m */; };
 		2DD2B6551983FD0E00600A42 /* FTUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B6541983FD0E00600A42 /* FTUtility.m */; };
 		2DD2B6581983FD2C00600A42 /* FTCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B6571983FD2C00600A42 /* FTCache.m */; };
 		2DD2B6631984005300600A42 /* UIImage+AlphaAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B6621984005300600A42 /* UIImage+AlphaAdditions.m */; };
@@ -70,11 +72,6 @@
 		2DD691591949AF5B00B59E75 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD691581949AF5B00B59E75 /* main.m */; };
 		2DD6915D1949AF5B00B59E75 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD6915C1949AF5B00B59E75 /* AppDelegate.m */; };
 		2DD691651949AF5B00B59E75 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DD691641949AF5B00B59E75 /* Images.xcassets */; };
-		2DD6916C1949AF5B00B59E75 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6916B1949AF5B00B59E75 /* XCTest.framework */; };
-		2DD6916D1949AF5B00B59E75 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6914C1949AF5B00B59E75 /* Foundation.framework */; };
-		2DD6916E1949AF5B00B59E75 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691501949AF5B00B59E75 /* UIKit.framework */; };
-		2DD691761949AF5B00B59E75 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2DD691741949AF5B00B59E75 /* InfoPlist.strings */; };
-		2DD691781949AF5B00B59E75 /* FitTagTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD691771949AF5B00B59E75 /* FitTagTests.m */; };
 		2DD691821949AFA100B59E75 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691811949AFA100B59E75 /* Parse.framework */; };
 		2DD691871949B04F00B59E75 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691831949B04F00B59E75 /* AudioToolbox.framework */; };
 		2DD691881949B04F00B59E75 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691841949B04F00B59E75 /* CFNetwork.framework */; };
@@ -93,16 +90,6 @@
 		2DD691A41949C7E300B59E75 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691A31949C7E300B59E75 /* FacebookSDK.framework */; };
 		2DFE736C197316A700114541 /* FindFriendsFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DFE736B197316A700114541 /* FindFriendsFlowLayout.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		2DD6916F1949AF5B00B59E75 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2DD691411949AF5B00B59E75 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 2DD691481949AF5B00B59E75;
-			remoteInfo = FitTag;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		2D0A53A61971997F0091FFCA /* InspirationCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspirationCellCollectionView.h; sourceTree = "<group>"; };
@@ -163,12 +150,16 @@
 		2DACD97A196578DA00833C14 /* FTInspirationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTInspirationViewController.m; sourceTree = "<group>"; };
 		2DACE8121966FF7200154504 /* CollectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionHeaderView.h; sourceTree = "<group>"; };
 		2DACE8131966FF7200154504 /* CollectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionHeaderView.m; sourceTree = "<group>"; };
-		2DBC6E58195C783C008B5AD3 /* ImageCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageCollectionViewController.h; sourceTree = "<group>"; };
-		2DBC6E59195C783C008B5AD3 /* ImageCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCollectionViewController.m; sourceTree = "<group>"; };
+		2DBC6E58195C783C008B5AD3 /* FTCamRollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCamRollViewController.h; sourceTree = "<group>"; };
+		2DBC6E59195C783C008B5AD3 /* FTCamRollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCamRollViewController.m; sourceTree = "<group>"; };
 		2DBC6E9F195CBCE2008B5AD3 /* FTInterestsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTInterestsViewController.h; sourceTree = "<group>"; };
 		2DBC6EA0195CBCE2008B5AD3 /* FTInterestsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTInterestsViewController.m; sourceTree = "<group>"; };
+		2DBEEE5519AB4F1E00AAD238 /* FTPhotoPostDetailsFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTPhotoPostDetailsFooterView.h; sourceTree = "<group>"; };
+		2DBEEE5619AB4F1E00AAD238 /* FTPhotoPostDetailsFooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTPhotoPostDetailsFooterView.m; sourceTree = "<group>"; };
 		2DC507CA199829940041A03D /* FTCamViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCamViewController.h; sourceTree = "<group>"; };
 		2DC507CB199829940041A03D /* FTCamViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCamViewController.m; sourceTree = "<group>"; };
+		2DC507D3199FBE030041A03D /* FTHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTHomeViewController.h; sourceTree = "<group>"; };
+		2DC507D4199FBE030041A03D /* FTHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTHomeViewController.m; sourceTree = "<group>"; };
 		2DD2B6531983FD0E00600A42 /* FTUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTUtility.h; sourceTree = "<group>"; };
 		2DD2B6541983FD0E00600A42 /* FTUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTUtility.m; sourceTree = "<group>"; };
 		2DD2B6561983FD2C00600A42 /* FTCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCache.h; sourceTree = "<group>"; };
@@ -224,7 +215,6 @@
 		2DD6915B1949AF5B00B59E75 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2DD6915C1949AF5B00B59E75 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		2DD691641949AF5B00B59E75 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		2DD6916A1949AF5B00B59E75 /* FitTagTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FitTagTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DD6916B1949AF5B00B59E75 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		2DD691731949AF5B00B59E75 /* FitTagTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FitTagTests-Info.plist"; sourceTree = "<group>"; };
 		2DD691751949AF5B00B59E75 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -280,16 +270,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2DD691671949AF5B00B59E75 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				2DD6916C1949AF5B00B59E75 /* XCTest.framework in Frameworks */,
-				2DD6916E1949AF5B00B59E75 /* UIKit.framework in Frameworks */,
-				2DD6916D1949AF5B00B59E75 /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -313,10 +293,8 @@
 			children = (
 				2DD2B6871984167200600A42 /* FTPhotoTimelineViewController.h */,
 				2DD2B6881984167200600A42 /* FTPhotoTimelineViewController.m */,
-				2D410F461973575C00CE2940 /* FTFeedViewController.h */,
-				2D410F471973575C00CE2940 /* FTFeedViewController.m */,
-				2DD2B6841984164E00600A42 /* FTAccountViewController.h */,
-				2DD2B6851984164E00600A42 /* FTAccountViewController.m */,
+				2DC507D3199FBE030041A03D /* FTHomeViewController.h */,
+				2DC507D4199FBE030041A03D /* FTHomeViewController.m */,
 			);
 			name = Home;
 			sourceTree = "<group>";
@@ -422,8 +400,8 @@
 		2DBC6E57195C77FF008B5AD3 /* Take Photo */ = {
 			isa = PBXGroup;
 			children = (
-				2DBC6E58195C783C008B5AD3 /* ImageCollectionViewController.h */,
-				2DBC6E59195C783C008B5AD3 /* ImageCollectionViewController.m */,
+				2DBC6E58195C783C008B5AD3 /* FTCamRollViewController.h */,
+				2DBC6E59195C783C008B5AD3 /* FTCamRollViewController.m */,
 				2DD2B66B198402BB00600A42 /* FTEditPhotoViewController.h */,
 				2DD2B66C198402BB00600A42 /* FTEditPhotoViewController.m */,
 				2DC507CA199829940041A03D /* FTCamViewController.h */,
@@ -453,6 +431,10 @@
 		2DD2B65B1983FDBE00600A42 /* JUNK */ = {
 			isa = PBXGroup;
 			children = (
+				2D429A091977ED6000F8A9A0 /* FTProfileViewController.h */,
+				2D429A0A1977ED6000F8A9A0 /* FTProfileViewController.m */,
+				2D410F461973575C00CE2940 /* FTFeedViewController.h */,
+				2D410F471973575C00CE2940 /* FTFeedViewController.m */,
 				2D0A53AA1971ABFF0091FFCA /* FindFriendsViewController.h */,
 				2D0A53AB1971ABFF0091FFCA /* FindFriendsViewController.m */,
 			);
@@ -462,8 +444,8 @@
 		2DD2B65C1983FDE800600A42 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
-				2D429A091977ED6000F8A9A0 /* FTProfileViewController.h */,
-				2D429A0A1977ED6000F8A9A0 /* FTProfileViewController.m */,
+				2DD2B6841984164E00600A42 /* FTAccountViewController.h */,
+				2DD2B6851984164E00600A42 /* FTAccountViewController.m */,
 			);
 			name = Profile;
 			sourceTree = "<group>";
@@ -525,6 +507,8 @@
 				2DD2B6721984039500600A42 /* FTPhotoDetailsHeaderView.m */,
 				2DD2B674198403FC00600A42 /* FTPhotoDetailsFooterView.h */,
 				2DD2B675198403FC00600A42 /* FTPhotoDetailsFooterView.m */,
+				2DBEEE5519AB4F1E00AAD238 /* FTPhotoPostDetailsFooterView.h */,
+				2DBEEE5619AB4F1E00AAD238 /* FTPhotoPostDetailsFooterView.m */,
 			);
 			name = PhotoDetailsViews;
 			sourceTree = "<group>";
@@ -590,7 +574,6 @@
 			isa = PBXGroup;
 			children = (
 				2DD691491949AF5B00B59E75 /* FitTag.app */,
-				2DD6916A1949AF5B00B59E75 /* FitTagTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -712,24 +695,6 @@
 			productReference = 2DD691491949AF5B00B59E75 /* FitTag.app */;
 			productType = "com.apple.product-type.application";
 		};
-		2DD691691949AF5B00B59E75 /* FitTagTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 2DD6917E1949AF5B00B59E75 /* Build configuration list for PBXNativeTarget "FitTagTests" */;
-			buildPhases = (
-				2DD691661949AF5B00B59E75 /* Sources */,
-				2DD691671949AF5B00B59E75 /* Frameworks */,
-				2DD691681949AF5B00B59E75 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				2DD691701949AF5B00B59E75 /* PBXTargetDependency */,
-			);
-			name = FitTagTests;
-			productName = FitTagTests;
-			productReference = 2DD6916A1949AF5B00B59E75 /* FitTagTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -741,9 +706,6 @@
 				TargetAttributes = {
 					2DD691481949AF5B00B59E75 = {
 						DevelopmentTeam = AJ3ZB3S8QB;
-					};
-					2DD691691949AF5B00B59E75 = {
-						TestTargetID = 2DD691481949AF5B00B59E75;
 					};
 				};
 			};
@@ -761,7 +723,6 @@
 			projectRoot = "";
 			targets = (
 				2DD691481949AF5B00B59E75 /* FitTag */,
-				2DD691691949AF5B00B59E75 /* FitTagTests */,
 			);
 		};
 /* End PBXProject section */
@@ -773,14 +734,6 @@
 			files = (
 				2DD691651949AF5B00B59E75 /* Images.xcassets in Resources */,
 				2DD691571949AF5B00B59E75 /* InfoPlist.strings in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2DD691681949AF5B00B59E75 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				2DD691761949AF5B00B59E75 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -818,6 +771,7 @@
 				2DBC6EA1195CBCE2008B5AD3 /* FTInterestsViewController.m in Sources */,
 				2DD2B69E19841C3100600A42 /* FTFindFriendsCell.m in Sources */,
 				2D429A141977EE9E00F8A9A0 /* FTOffersViewController.m in Sources */,
+				2DBEEE5719AB4F1E00AAD238 /* FTPhotoPostDetailsFooterView.m in Sources */,
 				2D9949731996905E000E321E /* FTOverlayView.m in Sources */,
 				2D429A0E1977EE7700F8A9A0 /* FTSearchViewController.m in Sources */,
 				2DACD97B196578DA00833C14 /* FTInspirationViewController.m in Sources */,
@@ -829,6 +783,7 @@
 				2D0A53AC1971ABFF0091FFCA /* FindFriendsViewController.m in Sources */,
 				2D429A17197AD47000F8A9A0 /* FTConstants.m in Sources */,
 				2D429A0B1977ED6000F8A9A0 /* FTProfileViewController.m in Sources */,
+				2DC507D5199FBE030041A03D /* FTHomeViewController.m in Sources */,
 				2DD2B69819841B0600600A42 /* FTFindFriendsViewController.m in Sources */,
 				2DC507CC199829940041A03D /* FTCamViewController.m in Sources */,
 				2DD2B6631984005300600A42 /* UIImage+AlphaAdditions.m in Sources */,
@@ -848,27 +803,11 @@
 				2DD6919E1949B74400B59E75 /* FTSignupViewController.m in Sources */,
 				2DFE736C197316A700114541 /* FindFriendsFlowLayout.m in Sources */,
 				2DABDA06195DC0E500379891 /* PhotoCellCollectionView.m in Sources */,
-				2DBC6E5A195C783C008B5AD3 /* ImageCollectionViewController.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2DD691661949AF5B00B59E75 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				2DD691781949AF5B00B59E75 /* FitTagTests.m in Sources */,
+				2DBC6E5A195C783C008B5AD3 /* FTCamRollViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		2DD691701949AF5B00B59E75 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 2DD691481949AF5B00B59E75 /* FitTag */;
-			targetProxy = 2DD6916F1949AF5B00B59E75 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		2DD691551949AF5B00B59E75 /* InfoPlist.strings */ = {
@@ -1000,46 +939,6 @@
 			};
 			name = Release;
 		};
-		2DD6917F1949AF5B00B59E75 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/FitTag.app/FitTag";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "FitTag/FitTag-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = "FitTagTests/FitTagTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = xctest;
-			};
-			name = Debug;
-		};
-		2DD691801949AF5B00B59E75 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/FitTag.app/FitTag";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "FitTag/FitTag-Prefix.pch";
-				INFOPLIST_FILE = "FitTagTests/FitTagTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = xctest;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1057,15 +956,6 @@
 			buildConfigurations = (
 				2DD6917C1949AF5B00B59E75 /* Debug */,
 				2DD6917D1949AF5B00B59E75 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		2DD6917E1949AF5B00B59E75 /* Build configuration list for PBXNativeTarget "FitTagTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				2DD6917F1949AF5B00B59E75 /* Debug */,
-				2DD691801949AF5B00B59E75 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

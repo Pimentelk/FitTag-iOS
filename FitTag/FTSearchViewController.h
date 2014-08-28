@@ -6,6 +6,6 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-@interface FTSearchViewController : UICollectionViewController
+@interface FTSearchViewController : UIViewController
 
 @end

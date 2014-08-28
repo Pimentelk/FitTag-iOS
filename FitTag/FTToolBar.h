@@ -8,10 +8,10 @@
 
 @protocol FTToolBarDelegate <UIToolbarDelegate>
 @required
--(void)viewNotifications;
--(void)viewSearch;
--(void)viewMyProfile;
--(void)viewOffers;
+-(void)viewNotifications:(id)sender;
+-(void)viewSearch:(id)sender;
+-(void)viewMyProfile:(id)sender;
+-(void)viewOffers:(id)sender;
 @end
 
 @interface FTToolBar : UIToolbar

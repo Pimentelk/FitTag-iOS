@@ -55,12 +55,12 @@ static TTTTimeIntervalFormatter *timeFormatter;
         self.hasActivityImage = NO; //No until one is set
         
         self.activityImageView = [[FTProfileImageView alloc] init];
-        [self.activityImageView setBackgroundColor:[UIColor clearColor]];
+        [self.activityImageView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"profilepic_icon"]]];
         [self.activityImageView setOpaque:YES];
         [self.mainView addSubview:self.activityImageView];
         
         self.activityImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [self.activityImageButton setBackgroundColor:[UIColor clearColor]];
+        [self.activityImageButton setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"profilepic_icon"]]];
         [self.activityImageButton addTarget:self action:@selector(didTapActivityButton:) forControlEvents:UIControlEventTouchUpInside];
         [self.mainView addSubview:self.activityImageButton];
     }
