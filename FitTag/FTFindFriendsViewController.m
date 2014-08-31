@@ -66,8 +66,12 @@ typedef enum {
     [super viewDidLoad];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
     self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fittag_logo"]];
+    
+    [self.tableView setBackgroundColor:[UIColor clearColor]];
+    [self.tableView setOpaque: NO];
+    [self.view setBackgroundColor:[UIColor lightGrayColor]];
+    [self.tableView setBackgroundView:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"login_background_image_05"]]];
     
     // Override the back idnicator
     UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(returnHome:)];
@@ -75,8 +79,10 @@ typedef enum {
     [self.navigationItem setLeftBarButtonItem:backIndicator];
     
     if ([MFMailComposeViewController canSendMail] || [MFMessageComposeViewController canSendText]) {
-        self.headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 67)];
-        [self.headerView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"BackgroundFindFriendsCell.png"]]];
+        
+        self.headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 40)];
+        
+        /*
         UIButton *clearButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [clearButton setBackgroundColor:[UIColor clearColor]];
         [clearButton addTarget:self action:@selector(inviteFriendsButtonAction:) forControlEvents:UIControlEventTouchUpInside];
@@ -95,9 +101,8 @@ typedef enum {
         [inviteLabel setTextColor:[UIColor colorWithRed:87.0f/255.0f green:72.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
         [inviteLabel setBackgroundColor:[UIColor clearColor]];
         [self.headerView addSubview:inviteLabel];
-        UIImageView *separatorImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"SeparatorTimeline.png"]];
-        [separatorImage setFrame:CGRectMake(0, self.headerView.frame.size.height-2, 320, 2)];
-        [self.headerView addSubview:separatorImage];
+        */
+        
         [self.tableView setTableHeaderView:self.headerView];
     }
 }
@@ -137,8 +142,8 @@ typedef enum {
     */
     
     // Combine the two queries with an OR
-    //PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects:friendsQuery, parseEmployeeQuery, nil]];
-    //query.cachePolicy = kPFCachePolicyNetworkOnly;
+    PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects:friendsQuery, nil]];
+    query.cachePolicy = kPFCachePolicyNetworkOnly;
     
     if (self.objects.count == 0) {
         friendsQuery.cachePolicy = kPFCachePolicyCacheThenNetwork;

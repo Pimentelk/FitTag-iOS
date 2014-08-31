@@ -128,8 +128,8 @@
 
 - (void)loadCamera:(id)sender
 {
-    FTCamViewController *cameraViewController = [[FTCamViewController alloc] init];
-    [self.navigationController pushViewController:cameraViewController animated:YES];
+    FTCamViewController *camViewController = [[FTCamViewController alloc] init];
+    [self.navigationController pushViewController:camViewController animated:YES];
 }
 
 - (void)addFriends:(id)sender

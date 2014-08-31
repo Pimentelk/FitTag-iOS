@@ -38,9 +38,10 @@
 		2DACD97819656F8900833C14 /* InterestCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD97719656F8900833C14 /* InterestCollectionViewFlowLayout.m */; };
 		2DACD97B196578DA00833C14 /* FTInspirationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD97A196578DA00833C14 /* FTInspirationViewController.m */; };
 		2DACE8141966FF7200154504 /* CollectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACE8131966FF7200154504 /* CollectionHeaderView.m */; };
+		2DAF5BA119B2A28E00E5E10B /* FTEditVideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF5BA019B2A28E00E5E10B /* FTEditVideoViewController.m */; };
 		2DBC6E5A195C783C008B5AD3 /* FTCamRollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBC6E59195C783C008B5AD3 /* FTCamRollViewController.m */; };
 		2DBC6EA1195CBCE2008B5AD3 /* FTInterestsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBC6EA0195CBCE2008B5AD3 /* FTInterestsViewController.m */; };
-		2DBEEE5719AB4F1E00AAD238 /* FTPhotoPostDetailsFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBEEE5619AB4F1E00AAD238 /* FTPhotoPostDetailsFooterView.m */; };
+		2DBEEE5719AB4F1E00AAD238 /* FTPostDetailsFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBEEE5619AB4F1E00AAD238 /* FTPostDetailsFooterView.m */; };
 		2DC507CC199829940041A03D /* FTCamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC507CB199829940041A03D /* FTCamViewController.m */; };
 		2DC507D5199FBE030041A03D /* FTHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC507D4199FBE030041A03D /* FTHomeViewController.m */; };
 		2DD2B6551983FD0E00600A42 /* FTUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B6541983FD0E00600A42 /* FTUtility.m */; };
@@ -150,12 +151,14 @@
 		2DACD97A196578DA00833C14 /* FTInspirationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTInspirationViewController.m; sourceTree = "<group>"; };
 		2DACE8121966FF7200154504 /* CollectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionHeaderView.h; sourceTree = "<group>"; };
 		2DACE8131966FF7200154504 /* CollectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionHeaderView.m; sourceTree = "<group>"; };
+		2DAF5B9F19B2A28E00E5E10B /* FTEditVideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTEditVideoViewController.h; sourceTree = "<group>"; };
+		2DAF5BA019B2A28E00E5E10B /* FTEditVideoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTEditVideoViewController.m; sourceTree = "<group>"; };
 		2DBC6E58195C783C008B5AD3 /* FTCamRollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCamRollViewController.h; sourceTree = "<group>"; };
 		2DBC6E59195C783C008B5AD3 /* FTCamRollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCamRollViewController.m; sourceTree = "<group>"; };
 		2DBC6E9F195CBCE2008B5AD3 /* FTInterestsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTInterestsViewController.h; sourceTree = "<group>"; };
 		2DBC6EA0195CBCE2008B5AD3 /* FTInterestsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTInterestsViewController.m; sourceTree = "<group>"; };
-		2DBEEE5519AB4F1E00AAD238 /* FTPhotoPostDetailsFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTPhotoPostDetailsFooterView.h; sourceTree = "<group>"; };
-		2DBEEE5619AB4F1E00AAD238 /* FTPhotoPostDetailsFooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTPhotoPostDetailsFooterView.m; sourceTree = "<group>"; };
+		2DBEEE5519AB4F1E00AAD238 /* FTPostDetailsFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTPostDetailsFooterView.h; sourceTree = "<group>"; };
+		2DBEEE5619AB4F1E00AAD238 /* FTPostDetailsFooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTPostDetailsFooterView.m; sourceTree = "<group>"; };
 		2DC507CA199829940041A03D /* FTCamViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCamViewController.h; sourceTree = "<group>"; };
 		2DC507CB199829940041A03D /* FTCamViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCamViewController.m; sourceTree = "<group>"; };
 		2DC507D3199FBE030041A03D /* FTHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTHomeViewController.h; sourceTree = "<group>"; };
@@ -337,6 +340,7 @@
 		2D429A1D197B2D2600F8A9A0 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				2DD31E0219AF4F41000A6D2D /* Friends */,
 				2D0A53AD1971AC240091FFCA /* Home */,
 				2DD2B65F1983FE1500600A42 /* Offers */,
 				2DD2B65D1983FDF400600A42 /* Search */,
@@ -406,6 +410,8 @@
 				2DD2B66C198402BB00600A42 /* FTEditPhotoViewController.m */,
 				2DC507CA199829940041A03D /* FTCamViewController.h */,
 				2DC507CB199829940041A03D /* FTCamViewController.m */,
+				2DAF5B9F19B2A28E00E5E10B /* FTEditVideoViewController.h */,
+				2DAF5BA019B2A28E00E5E10B /* FTEditVideoViewController.m */,
 			);
 			name = "Take Photo";
 			sourceTree = "<group>";
@@ -507,8 +513,8 @@
 				2DD2B6721984039500600A42 /* FTPhotoDetailsHeaderView.m */,
 				2DD2B674198403FC00600A42 /* FTPhotoDetailsFooterView.h */,
 				2DD2B675198403FC00600A42 /* FTPhotoDetailsFooterView.m */,
-				2DBEEE5519AB4F1E00AAD238 /* FTPhotoPostDetailsFooterView.h */,
-				2DBEEE5619AB4F1E00AAD238 /* FTPhotoPostDetailsFooterView.m */,
+				2DBEEE5519AB4F1E00AAD238 /* FTPostDetailsFooterView.h */,
+				2DBEEE5619AB4F1E00AAD238 /* FTPostDetailsFooterView.m */,
 			);
 			name = PhotoDetailsViews;
 			sourceTree = "<group>";
@@ -550,14 +556,21 @@
 		2DD2B69519841ACE00600A42 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				2DD2B69619841B0600600A42 /* FTFindFriendsViewController.h */,
-				2DD2B69719841B0600600A42 /* FTFindFriendsViewController.m */,
 				2DD2B69919841BC700600A42 /* FTSettingsActionSheetDelegate.h */,
 				2DD2B69A19841BC700600A42 /* FTSettingsActionSheetDelegate.m */,
 				2D9949711996905E000E321E /* FTOverlayView.h */,
 				2D9949721996905E000E321E /* FTOverlayView.m */,
 			);
 			name = Settings;
+			sourceTree = "<group>";
+		};
+		2DD31E0219AF4F41000A6D2D /* Friends */ = {
+			isa = PBXGroup;
+			children = (
+				2DD2B69619841B0600600A42 /* FTFindFriendsViewController.h */,
+				2DD2B69719841B0600600A42 /* FTFindFriendsViewController.m */,
+			);
+			name = Friends;
 			sourceTree = "<group>";
 		};
 		2DD691401949AF5B00B59E75 = {
@@ -746,6 +759,7 @@
 			files = (
 				2DABDA0A195DE15900379891 /* ImageCustomNavigationBar.m in Sources */,
 				2DD2B6801984100000600A42 /* FTBaseTextCell.m in Sources */,
+				2DAF5BA119B2A28E00E5E10B /* FTEditVideoViewController.m in Sources */,
 				2DD2B6861984164E00600A42 /* FTAccountViewController.m in Sources */,
 				2DD2B67D19840FB500600A42 /* FTActivityCell.m in Sources */,
 				2DD691981949B24300B59E75 /* FTConfigViewController.m in Sources */,
@@ -771,7 +785,7 @@
 				2DBC6EA1195CBCE2008B5AD3 /* FTInterestsViewController.m in Sources */,
 				2DD2B69E19841C3100600A42 /* FTFindFriendsCell.m in Sources */,
 				2D429A141977EE9E00F8A9A0 /* FTOffersViewController.m in Sources */,
-				2DBEEE5719AB4F1E00AAD238 /* FTPhotoPostDetailsFooterView.m in Sources */,
+				2DBEEE5719AB4F1E00AAD238 /* FTPostDetailsFooterView.m in Sources */,
 				2D9949731996905E000E321E /* FTOverlayView.m in Sources */,
 				2D429A0E1977EE7700F8A9A0 /* FTSearchViewController.m in Sources */,
 				2DACD97B196578DA00833C14 /* FTInspirationViewController.m in Sources */,

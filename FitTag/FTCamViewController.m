@@ -8,6 +8,7 @@
 
 #import "FTCamViewController.h"
 #import "FTCamRollViewController.h"
+#import "FTEditVideoViewController.h"
 
 static void * CapturingStillImageContext = &CapturingStillImageContext;
 static void * RecordingContext = &RecordingContext;
@@ -21,6 +22,11 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 @property (nonatomic, weak) UIButton *takePicture;
 @property (nonatomic) UIImageView *crosshairs;
 @property (nonatomic) UIImageView *cameraOverlay;
+@property (nonatomic) UIButton *toggleFlash;
+
+// Track flash mode
+@property (nonatomic) NSArray *flashImages;
+@property (nonatomic) NSString *currentFlashMode;
 
 // Session management.
 @property (nonatomic) dispatch_queue_t sessionQueue; // Communicate with the session and other session objects on this queue.
@@ -39,20 +45,17 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 
 @implementation FTCamViewController
 
-@synthesize toggleCamera, recordButton, takePicture, cameraOverlay, crosshairs, delegate;
+@synthesize toggleCamera, recordButton, takePicture, cameraOverlay, crosshairs, delegate, toggleFlash, flashImages, currentFlashMode;
 
-- (BOOL)isSessionRunningAndDeviceAuthorized
-{
+- (BOOL)isSessionRunningAndDeviceAuthorized{
 	return [[self session] isRunning] && [self isDeviceAuthorized];
 }
 
-+ (NSSet *)keyPathsForValuesAffectingSessionRunningAndDeviceAuthorized
-{
++ (NSSet *)keyPathsForValuesAffectingSessionRunningAndDeviceAuthorized{
 	return [NSSet setWithObjects:@"session.running", @"deviceAuthorized", nil];
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad{
     [super viewDidLoad];
     
     // Background color
@@ -81,17 +84,21 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     [backIndicator setTintColor:[UIColor whiteColor]];
     [self.navigationItem setLeftBarButtonItem:backIndicator];
     
+    float previewHeight = self.view.frame.size.height * .65;
+    float navigationBarHeight = self.navigationController.navigationBar.frame.size.height;
+    
     // Camera Overlay
     cameraOverlay = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"camera_overlay"]];
-    [cameraOverlay setFrame:CGRectMake(0.0f, self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y - 1.0f, 320.0f, 33.0f)];
+    [cameraOverlay setFrame:CGRectMake(0.0f,navigationBarHeight, 320.0f, 33.0f)];
     [self.view addSubview:cameraOverlay];
     
     // Add crosshairs
     crosshairs = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"crosshairs"]];
-    [crosshairs setFrame:CGRectMake(0.0f, cameraOverlay.frame.size.height, 320.0f, 249.0f)];
+    [crosshairs setFrame:CGRectMake(0.0f,33.0f, 320.0f, previewHeight-66.0f)];
     
     // Camera View
-    UIView *liveView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, crosshairs.frame.size.width, crosshairs.frame.size.height + (cameraOverlay.frame.size.height * 2) - 2)];
+    UIView *liveView = [[UIView alloc] initWithFrame:CGRectMake(0.0f,0.0f,320.0f,previewHeight)];
+    //[liveView setBackgroundColor:[UIColor blueColor]];
     [liveView setBackgroundColor:[UIColor blackColor]];
     
     [self.previewLayer setFrame:CGRectMake(0, 0, liveView.frame.size.width, liveView.frame.size.height)];
@@ -105,8 +112,9 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     [container addSubview:crosshairs];
     [liveView sendSubviewToBack:container];
     [self.view bringSubviewToFront:cameraOverlay];
+    
     // Camera Overlay
-    UIView *cameraBarOverlay = [[UIView alloc] initWithFrame:CGRectMake(0.0f, crosshairs.frame.size.height + cameraOverlay.frame.size.height + cameraOverlay.frame.origin.y - 1.0f, 320.0f, 33.0f)];
+    UIView *cameraBarOverlay = [[UIView alloc] initWithFrame:CGRectMake(0.0f,previewHeight+11, 320.0f, 33.0f)];
     [cameraBarOverlay setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"camera_overlay"]]];
     [self.view addSubview:cameraBarOverlay];
     
@@ -118,10 +126,13 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     [toggleCamera setTintColor:[UIColor grayColor]];
     [toggleCamera setTranslatesAutoresizingMaskIntoConstraints:NO];
     
+    flashImages = @[@"auto_flash",@"flash",@"no_flash"];
+    currentFlashMode = @"auto_flash";
+    
     // Toggle Flash
-    UIButton *toggleFlash = [UIButton buttonWithType:UIButtonTypeCustom];
+    toggleFlash = [UIButton buttonWithType:UIButtonTypeCustom];
     [toggleFlash setFrame:CGRectMake(250.0f, 4.0f, 15.0f, 24.0f)];
-    [toggleFlash setBackgroundImage:[UIImage imageNamed:@"flash"] forState:UIControlStateNormal];
+    [toggleFlash setImage:[UIImage imageNamed:@"auto_flash"] forState:UIControlStateNormal];
     [toggleFlash addTarget:self action:@selector(toggleFlash:) forControlEvents:UIControlEventTouchUpInside];
     [toggleFlash setTintColor:[UIColor grayColor]];
     [toggleFlash setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -141,7 +152,12 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     
     // Take picture
     takePicture = [UIButton buttonWithType:UIButtonTypeCustom];
-    [takePicture setFrame:CGRectMake((self.view.frame.size.width - 74.0f)/2, self.view.frame.size.height - 74.0f - 15, 74.0f, 74.0f)];
+    [takePicture setFrame:CGRectMake((self.view.frame.size.width - 74.0f)/2,
+                                     [self getTopPaddingNavigationBarHeight:navigationBarHeight
+                                                              previewHeight:previewHeight
+                                                              elementHeight:74.0f
+                                                                frameHeight:self.view.frame.size.height], 74.0f, 74.0f)];
+    
     [takePicture setBackgroundImage:[UIImage imageNamed:@"take_picture"] forState:UIControlStateNormal];
     [takePicture addTarget:self action:@selector(snapStillImage:) forControlEvents:UIControlEventTouchUpInside];
     [takePicture setTintColor:[UIColor grayColor]];
@@ -149,7 +165,11 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     
     // Take Video
     recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [recordButton setFrame:CGRectMake(250.0f, self.view.frame.size.height - 44.0f - 30, 44.0f, 39.0f)];
+    [recordButton setFrame:CGRectMake(250.0f, [self getTopPaddingNavigationBarHeight:navigationBarHeight
+                                                                       previewHeight:previewHeight
+                                                                       elementHeight:39.0f
+                                                                         frameHeight:self.view.frame.size.height], 44.0f, 39.0f)];
+    
     [recordButton setBackgroundImage:[UIImage imageNamed:@"video_button"] forState:UIControlStateNormal];
     [recordButton addTarget:self action:@selector(toggleMovieRecording:) forControlEvents:UIControlEventTouchUpInside];
     [recordButton setTintColor:[UIColor grayColor]];
@@ -157,7 +177,11 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     
     // Go to camera roll
     UIButton *cameraRoll = [UIButton buttonWithType:UIButtonTypeCustom];
-    [cameraRoll setFrame:CGRectMake(40.0f, self.view.frame.size.height - 44.0f - 30, 44.0f, 50.0f)];
+    [cameraRoll setFrame:CGRectMake(40.0f, [self getTopPaddingNavigationBarHeight:navigationBarHeight
+                                                                    previewHeight:previewHeight
+                                                                    elementHeight:50.0f
+                                                                      frameHeight:self.view.frame.size.height], 44.0f, 50.0f)];
+    
     [cameraRoll setBackgroundImage:[UIImage imageNamed:@"camera_roll"] forState:UIControlStateNormal];
     [cameraRoll addTarget:self action:@selector(cameraRoll:) forControlEvents:UIControlEventTouchUpInside];
     [cameraRoll setTintColor:[UIColor grayColor]];
@@ -174,14 +198,12 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 		AVCaptureDevice *videoDevice = [FTCamViewController deviceWithMediaType:AVMediaTypeVideo preferringPosition:AVCaptureDevicePositionBack];
 		AVCaptureDeviceInput *videoDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
 		
-		if (error)
-		{
+		if (error) {
 			NSLog(@"%@", error);
 		}
 		
         //NSLog(@"videoDeviceInput::Can session add input? %hhd ",[session canAddInput:videoDeviceInput]);
-		if ([session canAddInput:videoDeviceInput])
-		{
+		if ([session canAddInput:videoDeviceInput])	{
 			[session addInput:videoDeviceInput];
 			[self setVideoDeviceInput:videoDeviceInput];
             
@@ -197,21 +219,16 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 		AVCaptureDevice *audioDevice = [[AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio] firstObject];
 		AVCaptureDeviceInput *audioDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:audioDevice error:&error];
 		
-		if (error)
-		{
+		if (error) {
 			NSLog(@"%@", error);
 		}
 		
-        //NSLog(@"audioDeviceInput::Can session add input? %hhd ",[session canAddInput:audioDeviceInput]);
-		if ([session canAddInput:audioDeviceInput])
-		{
+		if ([session canAddInput:audioDeviceInput]) {
 			[session addInput:audioDeviceInput];
 		}
 		
 		AVCaptureMovieFileOutput *movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
-        //NSLog(@"movieFileOutput::Can session add input? %hhd ",[session canAddOutput:movieFileOutput]);
-		if ([session canAddOutput:movieFileOutput])
-		{
+		if ([session canAddOutput:movieFileOutput]) {
 			[session addOutput:movieFileOutput];
 			AVCaptureConnection *connection = [movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
 			if ([connection isVideoStabilizationSupported])
@@ -220,9 +237,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 		}
 		
 		AVCaptureStillImageOutput *stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
-        //NSLog(@"stillImageOutput::Can session add input? %hhd ",[session canAddOutput:stillImageOutput]);
-		if ([session canAddOutput:stillImageOutput])
-		{
+		if ([session canAddOutput:stillImageOutput]) {
 			[stillImageOutput setOutputSettings:@{AVVideoCodecKey : AVVideoCodecJPEG}];
 			[session addOutput:stillImageOutput];
 			[self setStillImageOutput:stillImageOutput];
@@ -231,8 +246,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 	});
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
 	dispatch_async([self sessionQueue], ^{
 		[self addObserver:self forKeyPath:@"sessionRunningAndDeviceAuthorized" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:SessionRunningAndDeviceAuthorizedContext];
 		[self addObserver:self forKeyPath:@"stillImageOutput.capturingStillImage" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:CapturingStillImageContext];
@@ -245,15 +259,14 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 			dispatch_async([strongSelf sessionQueue], ^{
 				// Manually restarting the session since it must have been stopped due to an error.
 				[[strongSelf session] startRunning];
-				[[strongSelf recordButton] setTitle:NSLocalizedString(@"Record", @"Recording button record title") forState:UIControlStateNormal];
+				[[strongSelf recordButton] setTitle:NSLocalizedString(@"", @"Recording button record title") forState:UIControlStateNormal];
 			});
 		}]];
 		[[self session] startRunning];
 	});
 }
 
-- (void)viewDidDisappear:(BOOL)animated
-{
+- (void)viewDidDisappear:(BOOL)animated {
 	dispatch_async([self sessionQueue], ^{
 		[[self session] stopRunning];
 		
@@ -266,33 +279,58 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 	});
 }
 
-- (void)didReceiveMemoryWarning
-{
+- (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
-- (void)hideCameraView:(id)sender
-{
+- (void)hideCameraView:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
--(void)toggleFlash:(id)sender
-{
-    NSLog(@"FTOverlayView::toggleFlash");
+-(void)toggleFlash:(id)sender {
+    
+    NSNumber *index;
+    
+    for (NSString *string in flashImages) {
+        if ([string isEqualToString:currentFlashMode]) {
+            index = [NSNumber numberWithInteger:[flashImages indexOfObject:string]];
+        }
+    }
+    
+    if ([flashImages count] == [index integerValue] + 1) {
+        currentFlashMode = [flashImages objectAtIndex:0];
+        [toggleFlash setImage:[UIImage imageNamed:[flashImages objectAtIndex:0]] forState:UIControlStateNormal];
+    } else {
+        currentFlashMode = [flashImages objectAtIndex:[index integerValue] + 1];
+        [toggleFlash setImage:[UIImage imageNamed:[flashImages objectAtIndex:[index integerValue]+1]] forState:UIControlStateNormal];
+    }
+    
+    switch ([index integerValue] + 1) {
+        case 0:
+            [FTCamViewController setFlashMode:AVCaptureFlashModeAuto forDevice:[[self videoDeviceInput] device]];
+            break;
+        case 1:
+            [FTCamViewController setFlashMode:AVCaptureFlashModeOn forDevice:[[self videoDeviceInput] device]];
+            break;
+        case 2:
+            [FTCamViewController setFlashMode:AVCaptureFlashModeOff forDevice:[[self videoDeviceInput] device]];
+            break;
+        default:
+            [FTCamViewController setFlashMode:AVCaptureFlashModeAuto forDevice:[[self videoDeviceInput] device]];
+            break;
+    }
 }
 
--(void)toggleCrosshairs:(id)sender
-{
-    if([crosshairs isHidden]){
+-(void)toggleCrosshairs:(id)sender {
+    if([crosshairs isHidden]) {
         [crosshairs setHidden:NO];
     } else {
         [crosshairs setHidden:YES];
     }
 }
 
--(void)cameraRoll:(id)sender
-{
+-(void)cameraRoll:(id)sender {
     UICollectionViewFlowLayout *aFlowLayout = [[UICollectionViewFlowLayout alloc] init];
     [aFlowLayout setItemSize:CGSizeMake(104,104)];
     [aFlowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -302,8 +340,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     [self.navigationController pushViewController:camRollViewController animated:YES];    
 }
 
-- (void)changeCamera:(id)sender
-{
+- (void)changeCamera:(id)sender {
 	[[self toggleCamera] setEnabled:NO];
 	[[self recordButton] setEnabled:NO];
 	[[self takePicture] setEnabled:NO];
@@ -313,8 +350,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 		AVCaptureDevicePosition preferredPosition = AVCaptureDevicePositionUnspecified;
 		AVCaptureDevicePosition currentPosition = [currentVideoDevice position];
 		
-		switch (currentPosition)
-		{
+		switch (currentPosition) {
 			case AVCaptureDevicePositionUnspecified:
 				preferredPosition = AVCaptureDevicePositionBack;
 				break;
@@ -330,10 +366,9 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 		AVCaptureDeviceInput *videoDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:nil];
 		
 		[[self session] beginConfiguration];
-		
 		[[self session] removeInput:[self videoDeviceInput]];
-		if ([[self session] canAddInput:videoDeviceInput])
-		{
+        
+		if ([[self session] canAddInput:videoDeviceInput]) {
 			[[NSNotificationCenter defaultCenter] removeObserver:self name:AVCaptureDeviceSubjectAreaDidChangeNotification object:currentVideoDevice];
 			
 			[FTCamViewController setFlashMode:AVCaptureFlashModeAuto forDevice:videoDevice];
@@ -341,9 +376,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 			
 			[[self session] addInput:videoDeviceInput];
 			[self setVideoDeviceInput:videoDeviceInput];
-		}
-		else
-		{
+		} else {
 			[[self session] addInput:[self videoDeviceInput]];
 		}
 		
@@ -359,91 +392,96 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 
 #pragma mark File Output Delegate
 
-- (void)captureOutput:(AVCaptureFileOutput *)captureOutput didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL fromConnections:(NSArray *)connections error:(NSError *)error
-{
+- (void)captureOutput:(AVCaptureFileOutput *)captureOutput didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL fromConnections:(NSArray *)connections error:(NSError *)error{
+    
 	if (error)
-		NSLog(@"%@", error);
+		NSLog(@"captureOutput: %@", error);
 	
 	[self setLockInterfaceRotation:NO];
 	
+    NSLog(@"captureOutput = %@",captureOutput);
+    
 	// Note the backgroundRecordingID for use in the ALAssetsLibrary completion handler to end the background task associated with this recording. This allows a new recording to be started, associated with a new UIBackgroundTaskIdentifier, once the movie file output's -isRecording is back to NO — which happens sometime after this method returns.
 	UIBackgroundTaskIdentifier backgroundRecordingID = [self backgroundRecordingID];
 	[self setBackgroundRecordingID:UIBackgroundTaskInvalid];
 	
-	[[[ALAssetsLibrary alloc] init] writeVideoAtPathToSavedPhotosAlbum:outputFileURL completionBlock:^(NSURL *assetURL, NSError *error) {
+    [[[ALAssetsLibrary alloc] init] writeVideoAtPathToSavedPhotosAlbum:outputFileURL completionBlock:^(NSURL *assetURL, NSError *error) {
 		if (error)
-			NSLog(@"%@", error);
+			NSLog(@"writeVideoAtPathToSavedPhotosAlbum: %@", error);
 		
 		[[NSFileManager defaultManager] removeItemAtURL:outputFileURL error:nil];
 		
 		if (backgroundRecordingID != UIBackgroundTaskInvalid)
 			[[UIApplication sharedApplication] endBackgroundTask:backgroundRecordingID];
 	}];
+    
+    NSData *videodata = [NSData dataWithContentsOfURL:outputFileURL];
+    
+    FTEditVideoViewController *videoViewController = [[FTEditVideoViewController alloc] initWithVideo:videodata];
+    videoViewController.delegate = self;
+    [self.navigationController pushViewController:videoViewController animated:NO];
 }
 
 #pragma mark Actions
 
-- (void)subjectAreaDidChange:(NSNotification *)notification
-{
-	CGPoint devicePoint = CGPointMake(.5, .5);
+- (void)subjectAreaDidChange:(NSNotification *)notification {
+    CGPoint devicePoint = CGPointMake(.5, .5);
 	[self focusWithMode:AVCaptureFocusModeContinuousAutoFocus exposeWithMode:AVCaptureExposureModeContinuousAutoExposure atDevicePoint:devicePoint monitorSubjectAreaChange:NO];
 }
 
 #pragma mark Device Configuration
 
-- (void)focusWithMode:(AVCaptureFocusMode)focusMode exposeWithMode:(AVCaptureExposureMode)exposureMode atDevicePoint:(CGPoint)point monitorSubjectAreaChange:(BOOL)monitorSubjectAreaChange
-{
+- (void)focusWithMode:(AVCaptureFocusMode)focusMode exposeWithMode:(AVCaptureExposureMode)exposureMode atDevicePoint:(CGPoint)point monitorSubjectAreaChange:(BOOL)monitorSubjectAreaChange {
+    
 	dispatch_async([self sessionQueue], ^{
 		AVCaptureDevice *device = [[self videoDeviceInput] device];
 		NSError *error = nil;
-		if ([device lockForConfiguration:&error])
-		{
-			if ([device isFocusPointOfInterestSupported] && [device isFocusModeSupported:focusMode])
-			{
+        
+		if ([device lockForConfiguration:&error]) {
+			
+            if ([device isFocusPointOfInterestSupported] && [device isFocusModeSupported:focusMode]) {
 				[device setFocusMode:focusMode];
 				[device setFocusPointOfInterest:point];
 			}
-			if ([device isExposurePointOfInterestSupported] && [device isExposureModeSupported:exposureMode])
-			{
+            
+			if ([device isExposurePointOfInterestSupported] && [device isExposureModeSupported:exposureMode]) {
 				[device setExposureMode:exposureMode];
 				[device setExposurePointOfInterest:point];
 			}
-			[device setSubjectAreaChangeMonitoringEnabled:monitorSubjectAreaChange];
+			
+            [device setSubjectAreaChangeMonitoringEnabled:monitorSubjectAreaChange];
 			[device unlockForConfiguration];
-		}
-		else
-		{
+            
+		} else {
 			NSLog(@"%@", error);
 		}
 	});
  }
 
-+ (void)setFlashMode:(AVCaptureFlashMode)flashMode forDevice:(AVCaptureDevice *)device
-{
-	if ([device hasFlash] && [device isFlashModeSupported:flashMode])
-	{
++ (void)setFlashMode:(AVCaptureFlashMode)flashMode forDevice:(AVCaptureDevice *)device {
+    
+	if ([device hasFlash] && [device isFlashModeSupported:flashMode]) {
+
 		NSError *error = nil;
-		if ([device lockForConfiguration:&error])
-		{
+		
+        if ([device lockForConfiguration:&error]) {
 			[device setFlashMode:flashMode];
 			[device unlockForConfiguration];
+		} else {
+			NSLog(@" setFlashMode: %@", error);
 		}
-		else
-		{
-			NSLog(@"%@", error);
-		}
-	}
+	} else {
+        NSLog(@" Device does not have flash or flash is not supported.");
+    }
 }
 
-+ (AVCaptureDevice *)deviceWithMediaType:(NSString *)mediaType preferringPosition:(AVCaptureDevicePosition)position
-{
++ (AVCaptureDevice *)deviceWithMediaType:(NSString *)mediaType preferringPosition:(AVCaptureDevicePosition)position {
+    
 	NSArray *devices = [AVCaptureDevice devicesWithMediaType:mediaType];
 	AVCaptureDevice *captureDevice = [devices firstObject];
 	
-	for (AVCaptureDevice *device in devices)
-	{
-		if ([device position] == position)
-		{
+	for (AVCaptureDevice *device in devices) {
+		if ([device position] == position) {
 			captureDevice = device;
 			break;
 		}
@@ -454,8 +492,8 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 
 #pragma mark UI
 
-- (void)runStillImageCaptureAnimation
-{
+- (void)runStillImageCaptureAnimation {
+    
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[[self previewLayer] setOpacity:0.0];
 		[UIView animateWithDuration:.25 animations:^{
@@ -464,18 +502,15 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 	});
 }
 
-- (void)checkDeviceAuthorizationStatus
-{
+- (void)checkDeviceAuthorizationStatus {
+    
 	NSString *mediaType = AVMediaTypeVideo;
 	
 	[AVCaptureDevice requestAccessForMediaType:mediaType completionHandler:^(BOOL granted) {
-		if (granted)
-		{
+		if (granted){
 			//Granted access to mediaType
 			[self setDeviceAuthorized:YES];
-		}
-		else
-		{
+		} else {
 			//Not granted access to mediaType
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[[[UIAlertView alloc] initWithTitle:@"AVCam!"
@@ -489,97 +524,80 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 	}];
 }
 
-- (BOOL)prefersStatusBarHidden
-{
+- (BOOL)prefersStatusBarHidden {
 	return YES;
 }
 
-- (BOOL)shouldAutorotate
-{
+- (BOOL)shouldAutorotate {
 	// Disable autorotation of the interface when recording is in progress.
 	return ![self lockInterfaceRotation];
 }
 
-- (NSUInteger)supportedInterfaceOrientations
-{
+- (NSUInteger)supportedInterfaceOrientations {
 	return UIInterfaceOrientationMaskAll;
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
 	[[(AVCaptureVideoPreviewLayer *)[self previewLayer] connection] setVideoOrientation:(AVCaptureVideoOrientation)toInterfaceOrientation];
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if (context == CapturingStillImageContext)
-	{
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    
+	if (context == CapturingStillImageContext) {
+        
 		BOOL isCapturingStillImage = [change[NSKeyValueChangeNewKey] boolValue];
 		
-		if (isCapturingStillImage)
-		{
+		if (isCapturingStillImage){
 			[self runStillImageCaptureAnimation];
 		}
-	}
-	else if (context == RecordingContext)
-	{
+	} else if (context == RecordingContext) {
+        
 		BOOL isRecording = [change[NSKeyValueChangeNewKey] boolValue];
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
-			if (isRecording)
-			{
+			if (isRecording){
 				[[self toggleCamera] setEnabled:NO];
-				[[self recordButton] setTitle:NSLocalizedString(@"Stop", @"Recording button stop title") forState:UIControlStateNormal];
+				[[self recordButton] setTitle:NSLocalizedString(@"", @"Recording button stop title") forState:UIControlStateNormal];
 				[[self recordButton] setEnabled:YES];
-			}
-			else
-			{
+			} else {
 				[[self toggleCamera] setEnabled:YES];
-				[[self recordButton] setTitle:NSLocalizedString(@"Record", @"Recording button record title") forState:UIControlStateNormal];
+				[[self recordButton] setTitle:NSLocalizedString(@"", @"Recording button record title") forState:UIControlStateNormal];
 				[[self recordButton] setEnabled:YES];
 			}
 		});
-	}
-	else if (context == SessionRunningAndDeviceAuthorizedContext)
-	{
+	} else if (context == SessionRunningAndDeviceAuthorizedContext) {
 		BOOL isRunning = [change[NSKeyValueChangeNewKey] boolValue];
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
-			if (isRunning)
-			{
+			if (isRunning) {
 				[[self toggleCamera] setEnabled:YES];
 				[[self recordButton] setEnabled:YES];
 				[[self takePicture] setEnabled:YES];
-			}
-			else
-			{
+			} else {
 				[[self toggleCamera] setEnabled:NO];
 				[[self recordButton] setEnabled:NO];
 				[[self takePicture] setEnabled:NO];
 			}
 		});
-	}
-	else
-	{
+	} else {
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	}
 }
 
 #pragma mark Actions
 
-- (void)toggleMovieRecording:(id)sender
-{
+- (void)toggleMovieRecording:(id)sender {
+    
 	[[self recordButton] setEnabled:NO];
     CMTime maxDuration = CMTimeMakeWithSeconds(15, 50);
 	[[self movieFileOutput] setMaxRecordedDuration:maxDuration];
     
 	dispatch_async([self sessionQueue], ^{
-		if (![[self movieFileOutput] isRecording])
-		{
+		if (![[self movieFileOutput] isRecording]) {
+            
 			[self setLockInterfaceRotation:YES];
 			
-			if ([[UIDevice currentDevice] isMultitaskingSupported])
-			{
+			if ([[UIDevice currentDevice] isMultitaskingSupported])	{
 				// Setup background task. This is needed because the captureOutput:didFinishRecordingToOutputFileAtURL: callback is not received until AVCam returns to the foreground unless you request background execution time. This also ensures that there will be time to write the file to the assets library when AVCam is backgrounded. To conclude this background execution, -endBackgroundTask is called in -recorder:recordingDidFinishToOutputFileURL:error: after the recorded file has been saved.
 				[self setBackgroundRecordingID:[[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil]];
 			}
@@ -589,20 +607,24 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 			
 			// Turning OFF flash for video recording
 			[FTCamViewController setFlashMode:AVCaptureFlashModeOff forDevice:[[self videoDeviceInput] device]];
+            [toggleFlash setImage:[UIImage imageNamed:[flashImages objectAtIndex:2]] forState:UIControlStateNormal];
+            currentFlashMode = [flashImages objectAtIndex:2];
 			
+            NSLog(@"Start recording to a temporary file");
+            
 			// Start recording to a temporary file.
 			NSString *outputFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[@"movie" stringByAppendingPathExtension:@"mov"]];
+            NSLog(@"NSTemporaryDirectory called");
 			[[self movieFileOutput] startRecordingToOutputFileURL:[NSURL fileURLWithPath:outputFilePath] recordingDelegate:self];
-		}
-		else
-		{
+            NSLog(@"startRecordingToOutputFileURL");
+		} else	{
 			[[self movieFileOutput] stopRecording];
 		}
 	});
 }
 
-- (void)snapStillImage:(id)sender
-{
+- (void)snapStillImage:(id)sender {
+    
 	dispatch_async([self sessionQueue], ^{
 		// Update the orientation on the still image output video connection before capturing.
 		[[[self stillImageOutput] connectionWithMediaType:AVMediaTypeVideo] setVideoOrientation:[[(AVCaptureVideoPreviewLayer *)[self previewLayer] connection] videoOrientation]];
@@ -613,8 +635,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 		// Capture a still image.
 		[[self stillImageOutput] captureStillImageAsynchronouslyFromConnection:[[self stillImageOutput] connectionWithMediaType:AVMediaTypeVideo] completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error) {
 			
-			if (imageDataSampleBuffer)
-			{
+			if (imageDataSampleBuffer) {
 				NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
 				UIImage *image = [[UIImage alloc] initWithData:imageData];
                 UIImage *croppedImage = [self squareImageFromImage:image scaledToSize:320.0f];
@@ -633,6 +654,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 }
 
 - (UIImage *)squareImageFromImage:(UIImage *)image scaledToSize:(CGFloat)newSize {
+    
     CGAffineTransform scaleTransform;
     CGPoint origin;
     
@@ -667,15 +689,21 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     return image;
 }
 
-- (void)focusAndExposeTap:(UIGestureRecognizer *)gestureRecognizer
-{
+- (void)focusAndExposeTap:(UIGestureRecognizer *)gestureRecognizer {
 	CGPoint devicePoint = [(AVCaptureVideoPreviewLayer *)[self previewLayer] captureDevicePointOfInterestForPoint:[gestureRecognizer locationInView:[gestureRecognizer view]]];
 	[self focusWithMode:AVCaptureFocusModeAutoFocus exposeWithMode:AVCaptureExposureModeAutoExpose atDevicePoint:devicePoint monitorSubjectAreaChange:YES];
 }
 
+- (NSInteger) getTopPaddingNavigationBarHeight:(NSInteger)navBar
+                                 previewHeight:(NSInteger)preview
+                                 elementHeight:(NSInteger)element
+                                   frameHeight:(NSInteger)frame{
+    return preview + ((((navBar + frame) - preview) - element) / 2);
+}
+
 #pragma mark - FTEditPhotoViewController
 
-- (void)setCoverPhoto:(UIImage *)image Caption:(NSString *)caption;{
+- (void)setCoverPhoto:(UIImage *)image Caption:(NSString *)caption {
     if ([delegate respondsToSelector:@selector(setCoverPhoto:Caption:)]){
         [delegate setCoverPhoto:image Caption:caption];
     }

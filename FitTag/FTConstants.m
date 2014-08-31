@@ -8,8 +8,8 @@
 
 #import "FTConstants.h"
 
-NSString *const kFTUserDefaultsActivityFeedViewControllerLastRefreshKey    = @"com.parse.Anypic.userDefaults.activityFeedViewController.lastRefresh";
-NSString *const kFTUserDefaultsCacheFacebookFriendsKey                     = @"com.parse.Anypic.userDefaults.cache.facebookFriends";
+NSString *const kFTUserDefaultsActivityFeedViewControllerLastRefreshKey    = @"com.fittag.userDefaults.activityFeedViewController.lastRefresh";
+NSString *const kFTUserDefaultsCacheFacebookFriendsKey                     = @"com.fittag.userDefaults.cache.facebookFriends";
 
 
 #pragma mark - Launch URLs
@@ -19,20 +19,22 @@ NSString *const kFTLaunchURLHostTakePicture = @"camera";
 
 #pragma mark - NSNotification
 
-NSString *const FTAppDelegateApplicationDidReceiveRemoteNotification           = @"com.parse.Anypic.appDelegate.applicationDidReceiveRemoteNotification";
-NSString *const FTUtilityUserFollowingChangedNotification                      = @"com.parse.Anypic.utility.userFollowingChanged";
-NSString *const FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification     = @"com.parse.Anypic.utility.userLikedUnlikedPhotoCallbackFinished";
-NSString *const FTUtilityDidFinishProcessingProfilePictureNotification         = @"com.parse.Anypic.utility.didFinishProcessingProfilePictureNotification";
-NSString *const FTTabBarControllerDidFinishEditingPhotoNotification            = @"com.parse.Anypic.tabBarController.didFinishEditingPhoto";
-NSString *const FTTabBarControllerDidFinishImageFileUploadNotification         = @"com.parse.Anypic.tabBarController.didFinishImageFileUploadNotification";
-NSString *const FTPhotoDetailsViewControllerUserDeletedPhotoNotification       = @"com.parse.Anypic.photoDetailsViewController.userDeletedPhoto";
-NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification  = @"com.parse.Anypic.photoDetailsViewController.userLikedUnlikedPhotoInDetailsViewNotification";
-NSString *const FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification   = @"com.parse.Anypic.photoDetailsViewController.userCommentedOnPhotoInDetailsViewNotification";
+NSString *const FTAppDelegateApplicationDidReceiveRemoteNotification           = @"com.fittag.appDelegate.applicationDidReceiveRemoteNotification";
+NSString *const FTUtilityUserFollowingChangedNotification                      = @"com.fittag.utility.userFollowingChanged";
+NSString *const FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification     = @"com.fittag.utility.userLikedUnlikedPhotoCallbackFinished";
+NSString *const FTUtilityDidFinishProcessingProfilePictureNotification         = @"com.fittag.utility.didFinishProcessingProfilePictureNotification";
+NSString *const FTTabBarControllerDidFinishEditingPhotoNotification            = @"com.fittag.tabBarController.didFinishEditingPhoto";
+NSString *const FTTabBarControllerDidFinishImageFileUploadNotification         = @"com.fittag.tabBarController.didFinishImageFileUploadNotification";
+NSString *const FTPhotoDetailsViewControllerUserDeletedPhotoNotification       = @"com.fittag.photoDetailsViewController.userDeletedPhoto";
+NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification  = @"com.fittag.photoDetailsViewController.userLikedUnlikedPhotoInDetailsViewNotification";
+NSString *const FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification   = @"com.fittag.photoDetailsViewController.userCommentedOnPhotoInDetailsViewNotification";
 
 
 #pragma mark - User Info Keys
 NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey = @"liked";
+NSString *const FTVideoDetailsViewControllerUserLikedUnlikedVideoNotificationUserInfoLikedKey = @"liked";
 NSString *const kFTEditPhotoViewControllerUserInfoCommentKey = @"comment";
+NSString *const kFTEditVideoViewControllerUserInfoCommentKey = @"comment";
 
 #pragma mark - Installation Class
 
@@ -70,6 +72,24 @@ NSString *const kFTUserProfilePicMediumKey                     = @"profilePictur
 NSString *const kFTUserFacebookFriendsKey                      = @"facebookFriends";
 NSString *const kFTUserAlreadyAutoFollowedFacebookFriendsKey   = @"userAlreadyAutoFollowedFacebookFriends";
 
+#pragma mark - PFObject Video Class
+// Class key
+NSString *const kFTVideoClassKey = @"Video";
+
+// Field keys
+NSString *const kFTVideoImageKey             = @"image";
+NSString *const kFTVideoKey                  = @"video";
+NSString *const kFTVideoUserKey              = @"user";
+NSString *const kFTVideoOpenGraphIDKey       = @"fbOpenGraphID";
+
+#pragma mark - Cached Video Attributes
+// keys
+NSString *const kFTVideoAttributesIsLikedByCurrentUserKey   = @"isLikedByCurrentUser";
+NSString *const kFTVideoAttributesLikeCountKey              = @"likeCount";
+NSString *const kFTVideoAttributesLikersKey                 = @"likers";
+NSString *const kFTVideoAttributesCommentCountKey           = @"commentCount";
+NSString *const kFTVideoAttributesCommentersKey             = @"commenters";
+
 #pragma mark - Photo Class
 // Class key
 NSString *const kFTPhotoClassKey = @"Photo";
@@ -92,6 +112,7 @@ NSString *const kFTPhotoAttributesCommentersKey           = @"commenters";
 #pragma mark - Cached User Attributes
 // keys
 NSString *const kFTUserAttributesPhotoCountKey                 = @"photoCount";
+NSString *const kFTUserAttributesVideoCountKey                 = @"videoCount";
 NSString *const kFTUserAttributesIsFollowedByCurrentUserKey    = @"isFollowedByCurrentUser";
 
 

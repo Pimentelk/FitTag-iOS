@@ -37,8 +37,9 @@ extern NSString *const FTPhotoDetailsViewControllerUserCommentedOnPhotoNotificat
 
 #pragma mark - User Info Keys
 extern NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey;
+extern NSString *const FTVideoDetailsViewControllerUserLikedUnlikedVideoNotificationUserInfoLikedKey;
 extern NSString *const kFTEditPhotoViewControllerUserInfoCommentKey;
-
+extern NSString *const kFTEditVideoViewControllerUserInfoCommentKey;
 
 #pragma mark - Installation Class
 
@@ -73,6 +74,23 @@ extern NSString *const kFTUserProfilePicMediumKey;
 extern NSString *const kFTUserFacebookFriendsKey;
 extern NSString *const kFTUserAlreadyAutoFollowedFacebookFriendsKey;
 
+#pragma mark - PFObject Video Class
+// Class key
+extern NSString *const kFTVideoClassKey;
+
+// Field keys
+extern NSString *const kFTVideoImageKey;
+extern NSString *const kFTVideoKey;
+extern NSString *const kFTVideoUserKey;
+extern NSString *const kFTVideoOpenGraphIDKey;
+
+#pragma mark - Cached Video Attributes
+// keys
+extern NSString *const kFTVideoAttributesIsLikedByCurrentUserKey;
+extern NSString *const kFTVideoAttributesLikeCountKey;
+extern NSString *const kFTVideoAttributesLikersKey;
+extern NSString *const kFTVideoAttributesCommentCountKey;
+extern NSString *const kFTVideoAttributesCommentersKey;
 
 #pragma mark - PFObject Photo Class
 // Class key
@@ -96,6 +114,7 @@ extern NSString *const kFTPhotoAttributesCommentersKey;
 #pragma mark - Cached User Attributes
 // keys
 extern NSString *const kFTUserAttributesPhotoCountKey;
+extern NSString *const kFTUserAttributesVideoCountKey;
 extern NSString *const kFTUserAttributesIsFollowedByCurrentUserKey;
 
 

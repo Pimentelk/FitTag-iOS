@@ -160,13 +160,25 @@
     PFQuery *photosFromFollowedUsersQuery = [PFQuery queryWithClassName:self.parseClassName];
     [photosFromFollowedUsersQuery whereKey:kFTPhotoUserKey matchesKey:kFTActivityToUserKey inQuery:followingActivitiesQuery];
     [photosFromFollowedUsersQuery whereKeyExists:kFTPhotoPictureKey];
+
+    /* Load videos from followed users */
+    PFQuery *videosFromFollowedUsersQuery = [PFQuery queryWithClassName:self.parseClassName];
+    [videosFromFollowedUsersQuery whereKey:kFTVideoUserKey matchesKey:kFTActivityToUserKey inQuery:followingActivitiesQuery];
+    [videosFromFollowedUsersQuery whereKeyExists:kFTVideoKey];
     
     PFQuery *photosFromCurrentUserQuery = [PFQuery queryWithClassName:self.parseClassName];
     [photosFromCurrentUserQuery whereKey:kFTPhotoUserKey equalTo:[PFUser currentUser]];
     [photosFromCurrentUserQuery whereKeyExists:kFTPhotoPictureKey];
     
-    PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects:photosFromFollowedUsersQuery, photosFromCurrentUserQuery, nil]];
+    /* Load current users videos */
+    PFQuery *videosFromCurrentUserQuery = [PFQuery queryWithClassName:self.parseClassName];
+    [videosFromCurrentUserQuery whereKey:kFTVideoUserKey equalTo:[PFUser currentUser]];
+    [videosFromCurrentUserQuery whereKeyExists:kFTVideoKey];
+    
+    PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects:photosFromFollowedUsersQuery, videosFromFollowedUsersQuery,
+                                                                              photosFromCurrentUserQuery, videosFromCurrentUserQuery, nil]];
     [query includeKey:kFTPhotoUserKey];
+    [query includeKey:kFTVideoUserKey];
     [query orderByDescending:@"createdAt"];
     
     // A pull-to-refresh should always trigger a network request.
@@ -197,8 +209,6 @@
     
     //NSLog(@"FTPhotoTimelineViewController::Updating tableView:(UITableView *) %@ cellForRowAtIndexPath:(NSIndexPath *) %@ object:(PFObject *) %@",tableView,indexPath,object);
     
-    NSLog(@"Object: %@",object[@"user"][@"displayName"]);
-    
     if (indexPath.section == self.objects.count) {
         // this behavior is normally handled by PFQueryTableViewController, but we are using sections for each object and we must handle this ourselves
         UITableViewCell *cell = [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
@@ -215,7 +225,6 @@
         PFObject *photo = [self.objects objectAtIndex:indexPath.section];
         [cell setPhoto:photo];
         cell.tag = indexPath.section;
-        //[cell.likeButton setTag:indexPath.section];
         [cell.likeCounter setTag:indexPath.section];
         
         NSDictionary *attributesForPhoto = [[FTCache sharedCache] attributesForPhoto:photo];

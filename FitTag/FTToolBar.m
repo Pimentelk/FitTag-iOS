@@ -53,38 +53,26 @@
     
 }
 
--(void)didPressNotifications:(id)sender
-{
-    //NSLog(@"FitTagToolBar::didPressNotifications");
-    if ([self.delegate respondsToSelector:@selector(viewNotifications:)])
-    {
+-(void)didPressNotifications:(id)sender{
+    if ([self.delegate respondsToSelector:@selector(viewNotifications:)]){
         [self.delegate viewNotifications:sender];
     }
 }
 
--(void)didPressSearch:(id)sender
-{
-    //NSLog(@"FitTagToolBar::didPressSearch");
-    if ([self.delegate respondsToSelector:@selector(viewSearch:)])
-    {
+-(void)didPressSearch:(id)sender{
+    if ([self.delegate respondsToSelector:@selector(viewSearch:)]){
         [self.delegate viewSearch:sender];
     }
 }
 
--(void)didPressProfile:(id)sender
-{
-    //NSLog(@"FitTagToolBar::didPressProfile");
-    if ([self.delegate respondsToSelector:@selector(viewMyProfile:)])
-    {
+-(void)didPressProfile:(id)sender{
+    if ([self.delegate respondsToSelector:@selector(viewMyProfile:)]){
         [self.delegate viewMyProfile:sender];
     }
 }
 
--(void)didPressOffers:(id)sender
-{
-    //NSLog(@"FitTagToolBar::didPressOffers");
-    if ([self.delegate respondsToSelector:@selector(viewOffers:)])
-    {
+-(void)didPressOffers:(id)sender{
+    if ([self.delegate respondsToSelector:@selector(viewOffers:)]){
         [self.delegate viewOffers:sender];
     }
 }

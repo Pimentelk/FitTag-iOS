@@ -104,7 +104,7 @@
                                                self.avatarImageView.frame.origin.y + 10,88.0f, 20.0f);
         
         [self.usernameRibbon addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [self.usernameRibbon setTitle:@"@fittag" forState:UIControlStateNormal];
+        [self.usernameRibbon setTitle:@"" forState:UIControlStateNormal];
         [self.usernameRibbon.titleLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:10]];
         self.usernameRibbon.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
         self.usernameRibbon.contentEdgeInsets = UIEdgeInsetsMake(0, 5, 0, 0);

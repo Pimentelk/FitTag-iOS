@@ -8,10 +8,11 @@
 
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "FTEditPhotoViewController.h"
+#import "FTEditVideoViewController.h"
 
 @protocol FTCamViewControllerDelegate;
 
-@interface FTCamViewController : UIViewController <FTEditPhotoViewControllerDelegate>
+@interface FTCamViewController : UIViewController <FTEditPhotoViewControllerDelegate,FTEditVideoViewControllerDelegate>
 @property (nonatomic,weak) id <FTCamViewControllerDelegate> delegate;
 @property (nonatomic) AVCaptureVideoPreviewLayer *previewLayer;
 @end

@@ -6,9 +6,10 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-@protocol FTEditPhotoViewControllerDelegate;
+#import "FTPostDetailsFooterView.h"
 
-@interface FTEditPhotoViewController : UIViewController <UITextFieldDelegate, UIScrollViewDelegate>
+@protocol FTEditPhotoViewControllerDelegate;
+@interface FTEditPhotoViewController : UIViewController <UITextFieldDelegate,UIScrollViewDelegate,FTPostDetailsFooterViewDelegate>
 
 @property (nonatomic,weak) id <FTEditPhotoViewControllerDelegate> delegate;
 - (id)initWithImage:(UIImage *)aImage;

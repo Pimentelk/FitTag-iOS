@@ -124,11 +124,9 @@
             // Save selected interests here...
             user[@"interests"] = selectedInterests;
             [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                if (!error) {
+                if (error) {
                     NSLog(@"Error: saveEventually... %@", error);
                     [user saveEventually];
-                } else {
-                    NSLog(@"Saving... %@", user);
                 }
             }];
             
@@ -185,6 +183,7 @@
                     
                     // Present the Interests View Controller
                     [self presentViewController:navController animated:YES completion:NULL];
+                    
                 } else {
                     // Log details of the failure
                     NSLog(@"Error: %@ %@", error, [error userInfo]);

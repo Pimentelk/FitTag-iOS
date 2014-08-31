@@ -9,6 +9,7 @@
 #import "FTInspirationViewController.h"
 #import "CollectionHeaderView.h"
 #import "InspirationCellCollectionView.h"
+#import "FTFindFriendsViewController.h"
 #import "FindFriendsViewController.h"
 #import "FindFriendsFlowLayout.h"
 
@@ -78,6 +79,7 @@
 
 - (void)submitUserInspiration:(id)sender{
     // Layout param
+    // Layout param
     FindFriendsFlowLayout *layoutFlow = [[FindFriendsFlowLayout alloc] init];
     [layoutFlow setItemSize:CGSizeMake(320,42)];
     [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -87,8 +89,8 @@
     [layoutFlow setHeaderReferenceSize:CGSizeMake(320,32)];
     
     // Show the interests
-    FindFriendsViewController *rootViewController = [[FindFriendsViewController alloc] initWithCollectionViewLayout:layoutFlow];
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
+    FindFriendsViewController *findFriendsViewContoller = [[FindFriendsViewController alloc] initWithCollectionViewLayout:layoutFlow];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:findFriendsViewContoller];
     [self presentViewController:navController animated:YES completion:NULL];
 }
 
@@ -101,14 +103,12 @@
         CollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView" forIndexPath:indexPath];
         [headerView setFrame:CGRectMake(0.0f, 0.0f, 320.0f, 32.0f)];
         [headerView.messageHeader setText:@"FIND THE PEOPLE THAT INSPIRE YOU"];
-        [headerView.messageText setText:@""];
-        
+        [headerView.messageText setText:@""];        
         reusableview = headerView;
     }
     
     if (kind == UICollectionElementKindSectionFooter) {
         UICollectionReusableView *footerview = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"FooterView" forIndexPath:indexPath];
-        
         reusableview = footerview;
     }
     

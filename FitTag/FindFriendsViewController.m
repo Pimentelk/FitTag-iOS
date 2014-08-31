@@ -9,6 +9,7 @@
 #import "FindFriendsViewController.h"
 #import "CollectionHeaderView.h"
 #import "FeedCollectionViewFlowLayout.h"
+#import "FTHomeViewController.h"
 #import "FTFeedViewController.h"
 #import "FTNavigationBar.h"
 #import "FTToolBar.h"
@@ -80,7 +81,7 @@
     
     // Show the interests
     //FeedViewController *rootViewController = [[FeedViewController alloc] initWithCollectionViewLayout:layoutFlow];
-    FTFeedViewController *rootViewController = [[FTFeedViewController alloc] initWithClassName:@"Tbl_follower"];
+    FTHomeViewController *rootViewController = [[FTHomeViewController alloc] initWithClassName:@"Tbl_follower"];
     UINavigationController *navController = [[UINavigationController alloc] initWithNavigationBarClass:[FTNavigationBar class] toolbarClass:[FTToolBar class]];
     [navController setViewControllers:@[rootViewController] animated:NO];
     

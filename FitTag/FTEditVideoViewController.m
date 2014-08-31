@@ -6,31 +6,26 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-#import "FTEditPhotoViewController.h"
+#import "FTEditVideoViewController.h"
 #import "UIImage+ResizeAdditions.h"
 
-@interface FTEditPhotoViewController ()
+@interface FTEditVideoViewController ()
 @property (nonatomic, strong) UIScrollView *scrollView;
-@property (nonatomic, strong) UIImage *image;
-@property (nonatomic, strong) NSString *videoURL;
+@property (nonatomic, strong) NSData *video;
 @property (nonatomic, strong) UITextField *commentTextField;
 @property (nonatomic, strong) UITextField *tagTextField;
 @property (nonatomic, assign) UIBackgroundTaskIdentifier fileUploadBackgroundTaskId;
-@property (nonatomic, assign) UIBackgroundTaskIdentifier photoPostBackgroundTaskId;
+@property (nonatomic, assign) UIBackgroundTaskIdentifier videoPostBackgroundTaskId;
 @property (nonatomic, assign) NSInteger scrollViewHeight;
-@property (nonatomic, strong) PFFile *photoFile;
-@property (nonatomic, strong) PFFile *thumbnailFile;
+@property (nonatomic, strong) PFFile *videoFile;
+@property (nonatomic, strong) PFFile *imageFile;
 @end
 
-@implementation FTEditPhotoViewController
+@implementation FTEditVideoViewController
 @synthesize scrollView;
-@synthesize image;
 @synthesize commentTextField;
-@synthesize photoFile;
-@synthesize thumbnailFile;
 @synthesize fileUploadBackgroundTaskId;
-@synthesize photoPostBackgroundTaskId;
-@synthesize delegate;
+@synthesize videoPostBackgroundTaskId;
 @synthesize tagTextField;
 @synthesize scrollViewHeight;
 
@@ -41,16 +36,17 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
-- (id)initWithImage:(UIImage *)aImage {
+- (id)initWithVideo:(NSData *)aVideo {
+    NSLog(@"FTEditVideoViewController::initWithVideo:");
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
-        if (!aImage) {
+        if (!aVideo) {
             return nil;
         }
         
-        self.image = aImage;
+        self.video = aVideo;
         self.fileUploadBackgroundTaskId = UIBackgroundTaskInvalid;
-        self.photoPostBackgroundTaskId = UIBackgroundTaskInvalid;
+        self.videoPostBackgroundTaskId = UIBackgroundTaskInvalid;
     }
     return self;
 }
@@ -63,29 +59,21 @@
 #pragma mark - UIViewController
 
 - (void)loadView {
+    NSLog(@"FTEditVideoViewController::loadView");
     self.scrollView = [[UIScrollView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
     self.scrollView.delegate = self;
     self.scrollView.backgroundColor = [UIColor whiteColor];
     self.view = self.scrollView;
     
-    UIImageView *photoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
-    [photoImageView setBackgroundColor:[UIColor blackColor]];
-    [photoImageView setImage:self.image];
-    [photoImageView setContentMode:UIViewContentModeScaleAspectFit];
+    UIImageView *videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
+    [videoImageView setBackgroundColor:[UIColor blackColor]];
+    //[photoImageView setImage:self.video];
+    [videoImageView setContentMode:UIViewContentModeScaleAspectFit];
     
-    /*
-    CALayer *layer = photoImageView.layer;
-    layer.masksToBounds = NO;
-    layer.shadowRadius = 3.0f;
-    layer.shadowOffset = CGSizeMake(0.0f, 2.0f);
-    layer.shadowOpacity = 0.5f;
-    layer.shouldRasterize = YES;
-    */
+    [self.scrollView addSubview:videoImageView];
     
-    [self.scrollView addSubview:photoImageView];
- 
     CGRect footerRect = [FTPostDetailsFooterView rectForView];
-    footerRect.origin.y = photoImageView.frame.origin.y + photoImageView.frame.size.height;
+    footerRect.origin.y = videoImageView.frame.origin.y + videoImageView.frame.size.height;
     
     FTPostDetailsFooterView *footerView = [[FTPostDetailsFooterView alloc] initWithFrame:footerRect];
     self.commentTextField = footerView.commentField;
@@ -95,7 +83,7 @@
     footerView.delegate = self;
     [self.scrollView addSubview:footerView];
     
-    scrollViewHeight = photoImageView.frame.origin.y + photoImageView.frame.size.height + footerView.frame.size.height;
+    scrollViewHeight = videoImageView.frame.origin.y + videoImageView.frame.size.height + footerView.frame.size.height;
     
     [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, scrollViewHeight)];
 }
@@ -117,12 +105,12 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     
-    [self shouldUploadImage:self.image];
+    [self shouldUploadVideo:self.video];
 }
 
 #pragma mark - UITextFieldDelegate
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {    
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
     return YES;
 }
@@ -154,43 +142,27 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (BOOL)shouldUploadImage:(UIImage *)anImage {
-    
-    UIImage *resizedImage = [anImage resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(560.0f, 560.0f) interpolationQuality:kCGInterpolationHigh];
-    UIImage *thumbnailImage = [anImage thumbnailImage:86.0f transparentBorder:0.0f cornerRadius:10.0f interpolationQuality:kCGInterpolationDefault];
-    
-    // JPEG to decrease file size and enable faster uploads & downloads
-    NSData *imageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
-    NSData *thumbnailImageData = UIImagePNGRepresentation(thumbnailImage);
-    
-    if (!imageData || !thumbnailImageData) {
+- (BOOL)shouldUploadVideo:(NSData *)aVideo {
+    NSLog(@"FTEditVideoViewController::shouldUploadVideo:");
+    if(!aVideo){
         return NO;
     }
     
-    self.photoFile = [PFFile fileWithName:@"photo.jpeg" data:imageData];
-    self.thumbnailFile = [PFFile fileWithName:@"thumbnail.png" data:imageData];
+    self.videoFile = [PFFile fileWithName:@"video.mov" data:aVideo];
     
     if ([PFUser currentUser]) {
-        // Request a background execution task to allow us to finish uploading the photo even if the app is backgrounded
+        // Request a background execution task to allow us to finish uploading the video even if the app is backgrounded
         self.fileUploadBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
         }];
-    
-        [self.photoFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            if (succeeded) {
-                [self.thumbnailFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                    [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
-                
-                    if (error) {
-                        NSLog(@"self.thumbnailFile saveInBackgroundWithBlock: %@", error);
-                    }
-                }];
-            } else {
+        
+        [self.videoFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if(!succeeded){
                 [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
             }
-        
-            if (error) {
-                NSLog(@"self.photoFile saveInBackgroundWithBlock: %@", error);
+            
+            if(error){
+                NSLog(@"self.videoFile saveInBackgroundWithBlock: %@", error);
             }
         }];
     }
@@ -219,60 +191,86 @@
 }
 
 - (void)doneButtonAction:(id)sender {
-    
+    NSLog(@"FTEditVideoViewController::doneButtonAction:%@",sender);
     // Make sure there were no errors creating the image files
-    if (!self.photoFile || !self.thumbnailFile) {
+    if (!self.videoFile){
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
         [alert show];
         return;
     }
     
     if ([PFUser currentUser]) {
-    
+        
         NSDictionary *userInfo = [NSDictionary dictionary];
         NSString *trimmedComment = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    
+        
         if (trimmedComment.length != 0) {
-            userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment,kFTEditPhotoViewControllerUserInfoCommentKey,nil];
+            userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment,kFTEditVideoViewControllerUserInfoCommentKey,nil];
         }
+        
+        // create a video object
+        PFObject *video = [PFObject objectWithClassName:kFTVideoClassKey];
+        [video setObject:[PFUser currentUser] forKey:kFTVideoUserKey];
+        //[video setObject:self.imageFile forKey:kFTVideoImageKey];
+        [video setObject:self.videoFile forKey:kFTVideoKey];
+        
+        // photos are public, but may only be modified by the user who uploaded them
+        PFACL *videoACL = [PFACL ACLWithUser:[PFUser currentUser]];
+        [videoACL setPublicReadAccess:YES];
+        video.ACL = videoACL;
+        
+        // Request a background execution task to allow us to finish uploading the photo even if the app is backgrounded
+        self.videoPostBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            [[UIApplication sharedApplication] endBackgroundTask:self.videoPostBackgroundTaskId];
+        }];
+
+        // Save the video PFObject
+        [video saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+                [[FTCache sharedCache] setAttributesForVideo:video likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
+                
+                // userInfo might contain any caption which might have been posted by the uploader
+                if (userInfo) {
+                    NSString *commentText = [userInfo objectForKey:kFTEditVideoViewControllerUserInfoCommentKey];
+                    
+                    if (commentText && commentText.length != 0) {
+                        // create and save photo caption
+                        PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
+                        [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
+                        [comment setObject:video forKey:kFTActivityPhotoKey];
+                        [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
+                        [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
+                        [comment setObject:commentText forKey:kFTActivityContentKey];
+                        
+                        PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];
+                        [ACL setPublicReadAccess:YES];
+                        comment.ACL = ACL;
+                        
+                        [comment saveEventually];
+                        [[FTCache sharedCache] incrementCommentCountForVideo:video];
+                    }
+                }
+                [[NSNotificationCenter defaultCenter] postNotificationName:FTTabBarControllerDidFinishEditingPhotoNotification object:video];
+            } else {
+                [[[UIAlertView alloc] initWithTitle:@"Couldn't post your video"
+                                            message:nil
+                                           delegate:nil
+                                  cancelButtonTitle:nil
+                                  otherButtonTitles:@"Dismiss", nil] show];
+            }
+        }];
+        
         
         /*
-        // Make sure there were no errors creating the image files
-        if (!self.photoFile || !self.thumbnailFile) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
-            [alert show];
-            return;
-        }
-        */
-        
-        // both files have finished uploading
-  
-        // create a photo object
-        PFObject *photo = [PFObject objectWithClassName:kFTPhotoClassKey];
-        [photo setObject:[PFUser currentUser] forKey:kFTPhotoUserKey];
-        [photo setObject:self.photoFile forKey:kFTPhotoPictureKey];
-        [photo setObject:self.thumbnailFile forKey:kFTPhotoThumbnailKey];
-    
-        // photos are public, but may only be modified by the user who uploaded them
-        PFACL *photoACL = [PFACL ACLWithUser:[PFUser currentUser]];
-        [photoACL setPublicReadAccess:YES];
-        photo.ACL = photoACL;
-    
-        // Request a background execution task to allow us to finish uploading the photo even if the app is backgrounded
-        self.photoPostBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            [[UIApplication sharedApplication] endBackgroundTask:self.photoPostBackgroundTaskId];
-        }];
-    
-        // Save the Photo PFObject
         [photo saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
-            
+                
                 [[FTCache sharedCache] setAttributesForPhoto:photo likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
-            
+                
                 // userInfo might contain any caption which might have been posted by the uploader
                 if (userInfo) {
                     NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
-                
+                    
                     if (commentText && commentText.length != 0) {
                         // create and save photo caption
                         PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
@@ -281,44 +279,39 @@
                         [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
                         [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
                         [comment setObject:commentText forKey:kFTActivityContentKey];
-                    
+                        
                         PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];
                         [ACL setPublicReadAccess:YES];
                         comment.ACL = ACL;
-                    
+                        
                         [comment saveEventually];
                         [[FTCache sharedCache] incrementCommentCountForPhoto:photo];
                     }
                 } else {
                     [photo saveEventually];
                 }
-            
+                
                 [[NSNotificationCenter defaultCenter] postNotificationName:FTTabBarControllerDidFinishEditingPhotoNotification object:photo];
             } else {
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
                 [alert show];
             }
-            [[UIApplication sharedApplication] endBackgroundTask:self.photoPostBackgroundTaskId];
+            [[UIApplication sharedApplication] endBackgroundTask:self.videoPostBackgroundTaskId];
         }];
-    
+        */
+        
         // Dismiss this screen
         [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
         
     } else {
-        NSString *caption = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        [self setCoverPhoto:self.image Caption:caption];
+        //NSString *caption = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        //[self setCoverPhoto:self.video Caption:caption];
         [self.navigationController dismissViewControllerAnimated:NO completion:nil];
     }
 }
 
 - (void)cancelButtonAction:(id)sender {
     [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)setCoverPhoto:(UIImage *)photo Caption:(NSString *)caption{
-    if ([delegate respondsToSelector:@selector(setCoverPhoto:Caption:)]){
-        [delegate setCoverPhoto:photo Caption:caption];
-    }
 }
 
 @end

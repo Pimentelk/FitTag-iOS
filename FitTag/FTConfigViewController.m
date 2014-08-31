@@ -47,8 +47,28 @@
         isFirstUserLogin = NO;
     }
     
+    // Testing
+    /*
+    if(user){
+    InterestCollectionViewFlowLayout *layoutFlow = [[InterestCollectionViewFlowLayout alloc] init];
+    [layoutFlow setItemSize:CGSizeMake(159.5,42)];
+    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [layoutFlow setMinimumInteritemSpacing:0];
+    [layoutFlow setMinimumLineSpacing:0];
+    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,80)];
+    
+    // Show the interests
+    FTInterestsViewController *rootViewController = [[FTInterestsViewController alloc] initWithCollectionViewLayout:layoutFlow];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
+    
+    // Present the Interests View Controller
+    [self presentViewController:navController animated:YES completion:NULL];
+    }
+    */
+    
     if(user){ // Is the user logged in
-        
+     
         if(isFirstUserLogin){ // Is this his first launch
             
             if(isLinkedToFacebook){ // Is the user logged in via facebook
@@ -128,6 +148,7 @@
                     }];
                 }
             }
+            
             
             InterestCollectionViewFlowLayout *layoutFlow = [[InterestCollectionViewFlowLayout alloc] init];
             [layoutFlow setItemSize:CGSizeMake(159.5,42)];
