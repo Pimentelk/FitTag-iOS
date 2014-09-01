@@ -27,6 +27,7 @@ extern NSString *const kFTLaunchURLHostTakePicture;
 extern NSString *const FTAppDelegateApplicationDidReceiveRemoteNotification;
 extern NSString *const FTUtilityUserFollowingChangedNotification;
 extern NSString *const FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification;
+extern NSString *const FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification;
 extern NSString *const FTUtilityDidFinishProcessingProfilePictureNotification;
 extern NSString *const FTTabBarControllerDidFinishEditingPhotoNotification;
 extern NSString *const FTTabBarControllerDidFinishImageFileUploadNotification;
@@ -56,6 +57,7 @@ extern NSString *const kFTActivityFromUserKey;
 extern NSString *const kFTActivityToUserKey;
 extern NSString *const kFTActivityContentKey;
 extern NSString *const kFTActivityPhotoKey;
+extern NSString *const kFTActivityVideoKey;
 
 // Type values
 extern NSString *const kFTActivityTypeLike;
@@ -63,6 +65,8 @@ extern NSString *const kFTActivityTypeFollow;
 extern NSString *const kFTActivityTypeComment;
 extern NSString *const kFTActivityTypeJoined;
 
+#pragma mark - PFObject Post Class
+extern NSString *const kFTPostClassName;
 
 #pragma mark - PFObject User Class
 // Field keys

@@ -150,6 +150,8 @@
     
     self.videoFile = [PFFile fileWithName:@"video.mov" data:aVideo];
     
+    NSLog(@"Video Length: %lu",(unsigned long)[self.video length]);
+    
     if ([PFUser currentUser]) {
         // Request a background execution task to allow us to finish uploading the video even if the app is backgrounded
         self.fileUploadBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
@@ -211,7 +213,6 @@
         // create a video object
         PFObject *video = [PFObject objectWithClassName:kFTVideoClassKey];
         [video setObject:[PFUser currentUser] forKey:kFTVideoUserKey];
-        //[video setObject:self.imageFile forKey:kFTVideoImageKey];
         [video setObject:self.videoFile forKey:kFTVideoKey];
         
         // photos are public, but may only be modified by the user who uploaded them
@@ -223,7 +224,8 @@
         self.videoPostBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             [[UIApplication sharedApplication] endBackgroundTask:self.videoPostBackgroundTaskId];
         }];
-
+        
+        NSLog(@"Save the video PFObject");
         // Save the video PFObject
         [video saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
@@ -237,7 +239,7 @@
                         // create and save photo caption
                         PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
                         [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
-                        [comment setObject:video forKey:kFTActivityPhotoKey];
+                        [comment setObject:video forKey:kFTActivityVideoKey];
                         [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
                         [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
                         [comment setObject:commentText forKey:kFTActivityContentKey];
@@ -252,6 +254,8 @@
                 }
                 [[NSNotificationCenter defaultCenter] postNotificationName:FTTabBarControllerDidFinishEditingPhotoNotification object:video];
             } else {
+                NSLog(@"Error: %@",error);
+                
                 [[[UIAlertView alloc] initWithTitle:@"Couldn't post your video"
                                             message:nil
                                            delegate:nil
@@ -259,46 +263,6 @@
                                   otherButtonTitles:@"Dismiss", nil] show];
             }
         }];
-        
-        
-        /*
-        [photo saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            if (succeeded) {
-                
-                [[FTCache sharedCache] setAttributesForPhoto:photo likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
-                
-                // userInfo might contain any caption which might have been posted by the uploader
-                if (userInfo) {
-                    NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
-                    
-                    if (commentText && commentText.length != 0) {
-                        // create and save photo caption
-                        PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
-                        [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
-                        [comment setObject:photo forKey:kFTActivityPhotoKey];
-                        [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
-                        [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
-                        [comment setObject:commentText forKey:kFTActivityContentKey];
-                        
-                        PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];
-                        [ACL setPublicReadAccess:YES];
-                        comment.ACL = ACL;
-                        
-                        [comment saveEventually];
-                        [[FTCache sharedCache] incrementCommentCountForPhoto:photo];
-                    }
-                } else {
-                    [photo saveEventually];
-                }
-                
-                [[NSNotificationCenter defaultCenter] postNotificationName:FTTabBarControllerDidFinishEditingPhotoNotification object:photo];
-            } else {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
-                [alert show];
-            }
-            [[UIApplication sharedApplication] endBackgroundTask:self.videoPostBackgroundTaskId];
-        }];
-        */
         
         // Dismiss this screen
         [self.parentViewController dismissViewControllerAnimated:YES completion:nil];

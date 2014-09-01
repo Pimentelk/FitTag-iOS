@@ -22,6 +22,7 @@ NSString *const kFTLaunchURLHostTakePicture = @"camera";
 NSString *const FTAppDelegateApplicationDidReceiveRemoteNotification           = @"com.fittag.appDelegate.applicationDidReceiveRemoteNotification";
 NSString *const FTUtilityUserFollowingChangedNotification                      = @"com.fittag.utility.userFollowingChanged";
 NSString *const FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification     = @"com.fittag.utility.userLikedUnlikedPhotoCallbackFinished";
+NSString *const FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification     = @"com.fittag.utility.userLikedUnlikedVideoCallbackFinished";
 NSString *const FTUtilityDidFinishProcessingProfilePictureNotification         = @"com.fittag.utility.didFinishProcessingProfilePictureNotification";
 NSString *const FTTabBarControllerDidFinishEditingPhotoNotification            = @"com.fittag.tabBarController.didFinishEditingPhoto";
 NSString *const FTTabBarControllerDidFinishImageFileUploadNotification         = @"com.fittag.tabBarController.didFinishImageFileUploadNotification";
@@ -50,7 +51,8 @@ NSString *const kFTActivityTypeKey        = @"type";
 NSString *const kFTActivityFromUserKey    = @"fromUser";
 NSString *const kFTActivityToUserKey      = @"toUser";
 NSString *const kFTActivityContentKey     = @"content";
-NSString *const kFTActivityPhotoKey       = @"photo";
+NSString *const kFTActivityPhotoKey       = @"post";
+NSString *const kFTActivityVideoKey       = @"post";
 
 // Type values
 NSString *const kFTActivityTypeLike       = @"like";
@@ -72,9 +74,12 @@ NSString *const kFTUserProfilePicMediumKey                     = @"profilePictur
 NSString *const kFTUserFacebookFriendsKey                      = @"facebookFriends";
 NSString *const kFTUserAlreadyAutoFollowedFacebookFriendsKey   = @"userAlreadyAutoFollowedFacebookFriends";
 
+#pragma mark - PFObject Post Class
+NSString *const kFTPostClassName = @"Post";
+
 #pragma mark - PFObject Video Class
 // Class key
-NSString *const kFTVideoClassKey = @"Video";
+NSString *const kFTVideoClassKey = @"Post";
 
 // Field keys
 NSString *const kFTVideoImageKey             = @"image";
@@ -92,7 +97,7 @@ NSString *const kFTVideoAttributesCommentersKey             = @"commenters";
 
 #pragma mark - Photo Class
 // Class key
-NSString *const kFTPhotoClassKey = @"Photo";
+NSString *const kFTPhotoClassKey = @"Post";
 
 // Field keys
 NSString *const kFTPhotoPictureKey         = @"image";

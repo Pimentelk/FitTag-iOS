@@ -54,7 +54,6 @@
 }
 
 - (void)setAttributesForVideo:(PFObject *)video likers:(NSArray *)likers commenters:(NSArray *)commenters likedByCurrentUser:(BOOL)likedByCurrentUser {
-    NSLog(@"FTCache::setAttributesForVideo:");
     NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                 [NSNumber numberWithBool:likedByCurrentUser],kFTVideoAttributesIsLikedByCurrentUserKey,
                                 @([likers count]),kFTVideoAttributesLikeCountKey,
@@ -193,7 +192,6 @@
 
 - (void)decrementLikerCountForPhoto:(PFObject *)photo {
     NSNumber *likerCount = [NSNumber numberWithInt:[[self likeCountForPhoto:photo] intValue] - 1];
-    //NSLog(@"likerCount: %@",likerCount);
     if ([likerCount intValue] < 0) {
         return;
     }
@@ -347,7 +345,6 @@
 #pragma mark - ()
 
 - (void)setAttributes:(NSDictionary *)attributes forVideo:(PFObject *)video {
-    NSLog(@"FTCache::setAttributes:forVideo:");
     NSString *key = [self keyForVideo:video];
     [self.cache setObject:attributes forKey:key];
 }

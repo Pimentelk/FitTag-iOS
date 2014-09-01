@@ -398,28 +398,41 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 		NSLog(@"captureOutput: %@", error);
 	
 	[self setLockInterfaceRotation:NO];
-	
-    NSLog(@"captureOutput = %@",captureOutput);
     
 	// Note the backgroundRecordingID for use in the ALAssetsLibrary completion handler to end the background task associated with this recording. This allows a new recording to be started, associated with a new UIBackgroundTaskIdentifier, once the movie file output's -isRecording is back to NO — which happens sometime after this method returns.
 	UIBackgroundTaskIdentifier backgroundRecordingID = [self backgroundRecordingID];
 	[self setBackgroundRecordingID:UIBackgroundTaskInvalid];
 	
+    if (backgroundRecordingID != UIBackgroundTaskInvalid)
+        [[UIApplication sharedApplication] endBackgroundTask:backgroundRecordingID];
+    
+    /*
     [[[ALAssetsLibrary alloc] init] writeVideoAtPathToSavedPhotosAlbum:outputFileURL completionBlock:^(NSURL *assetURL, NSError *error) {
 		if (error)
 			NSLog(@"writeVideoAtPathToSavedPhotosAlbum: %@", error);
 		
-		[[NSFileManager defaultManager] removeItemAtURL:outputFileURL error:nil];
-		
+        [[NSFileManager defaultManager] removeItemAtURL:outputFileURL error:nil];
+     
 		if (backgroundRecordingID != UIBackgroundTaskInvalid)
 			[[UIApplication sharedApplication] endBackgroundTask:backgroundRecordingID];
 	}];
+    */
     
     NSData *videodata = [NSData dataWithContentsOfURL:outputFileURL];
     
-    FTEditVideoViewController *videoViewController = [[FTEditVideoViewController alloc] initWithVideo:videodata];
-    videoViewController.delegate = self;
-    [self.navigationController pushViewController:videoViewController animated:NO];
+    if ([videodata length] > 10485760) {
+        [[[UIAlertView alloc] initWithTitle:@"Couldn't post your video, too large."
+                                    message:nil
+                                   delegate:nil
+                          cancelButtonTitle:nil
+                          otherButtonTitles:@"Dismiss", nil] show];
+    } else {
+        FTEditVideoViewController *videoViewController = [[FTEditVideoViewController alloc] initWithVideo:videodata];
+        videoViewController.delegate = self;
+        [self.navigationController pushViewController:videoViewController animated:NO];
+    }
+    
+    [[NSFileManager defaultManager] removeItemAtURL:outputFileURL error:nil];
 }
 
 #pragma mark Actions

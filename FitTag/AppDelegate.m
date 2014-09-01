@@ -480,6 +480,7 @@
             }
             
             [user saveEventually];
+            
         } else {
             NSLog(@"No user session found. Forcing logOut.");
             [self logOut];

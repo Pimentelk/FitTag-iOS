@@ -16,7 +16,6 @@ typedef enum {
 } FTPhotoCellButtons;
 
 @class PFImageView;
-//@interface FTPhotoCell : PFTableViewCell
 @protocol FTPhotoCellDelegate;
 
 @interface FTPhotoCell : PFTableViewCell

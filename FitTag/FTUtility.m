@@ -88,6 +88,126 @@
     
 }
 
++ (void)likeVideoInBackground:(id)video block:(void (^)(BOOL succeeded, NSError *error))completionBlock{
+    PFQuery *queryExistingLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [queryExistingLikes whereKey:kFTActivityVideoKey equalTo:video];
+    [queryExistingLikes whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
+    [queryExistingLikes whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
+    [queryExistingLikes setCachePolicy:kPFCachePolicyNetworkOnly];
+    [queryExistingLikes findObjectsInBackgroundWithBlock:^(NSArray *activities, NSError *error) {
+        if (!error) {
+            for (PFObject *activity in activities) {
+                [activity delete];
+            }
+        }
+        
+        // proceed to creating new like
+        PFObject *likeActivity = [PFObject objectWithClassName:kFTActivityClassKey];
+        [likeActivity setObject:kFTActivityTypeLike forKey:kFTActivityTypeKey];
+        [likeActivity setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
+        [likeActivity setObject:[video objectForKey:kFTVideoUserKey] forKey:kFTActivityToUserKey];
+        [likeActivity setObject:video forKey:kFTActivityVideoKey];
+        
+        PFACL *likeACL = [PFACL ACLWithUser:[PFUser currentUser]];
+        [likeACL setPublicReadAccess:YES];
+        [likeACL setWriteAccess:YES forUser:[video objectForKey:kFTVideoUserKey]];
+        likeActivity.ACL = likeACL;
+        
+        [likeActivity saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if (completionBlock) {
+                completionBlock(succeeded,error);
+            }
+            
+            // refresh cache
+            PFQuery *query = [FTUtility queryForActivitiesOnVideo:video cachePolicy:kPFCachePolicyNetworkOnly];
+            [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                if (!error) {
+                    
+                    NSMutableArray *likers = [NSMutableArray array];
+                    NSMutableArray *commenters = [NSMutableArray array];
+                    
+                    BOOL isLikedByCurrentUser = NO;
+                    
+                    for (PFObject *activity in objects) {
+                        if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeLike] && [activity objectForKey:kFTActivityFromUserKey]) {
+                            [likers addObject:[activity objectForKey:kFTActivityFromUserKey]];
+                        } else if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeComment] && [activity objectForKey:kFTActivityFromUserKey]) {
+                            [commenters addObject:[activity objectForKey:kFTActivityFromUserKey]];
+                        }
+                        
+                        if ([[[activity objectForKey:kFTActivityFromUserKey] objectId] isEqualToString:[[PFUser currentUser] objectId]]) {
+                            if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeLike]) {
+                                isLikedByCurrentUser = YES;
+                            }
+                        }
+                    }
+                    
+                    [[FTCache sharedCache] setAttributesForVideo:video likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+                }
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification object:video userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:succeeded] forKey:FTVideoDetailsViewControllerUserLikedUnlikedVideoNotificationUserInfoLikedKey]];
+            }];
+            
+        }];
+    }];
+}
+
++ (void)unlikeVideoInBackground:(id)video block:(void (^)(BOOL succeeded, NSError *error))completionBlock{
+    PFQuery *queryExistingLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [queryExistingLikes whereKey:kFTActivityVideoKey equalTo:video];
+    [queryExistingLikes whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
+    [queryExistingLikes whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
+    [queryExistingLikes setCachePolicy:kPFCachePolicyNetworkOnly];
+    [queryExistingLikes findObjectsInBackgroundWithBlock:^(NSArray *activities, NSError *error) {
+        if (!error) {
+            for (PFObject *activity in activities) {
+                [activity deleteInBackground];
+            }
+            
+            //NSLog(@"completionBlock = %@", completionBlock);
+            
+            if (completionBlock) {
+                completionBlock(YES,nil);
+            }
+            
+            // refresh cache
+            PFQuery *query = [FTUtility queryForActivitiesOnVideo:video cachePolicy:kPFCachePolicyNetworkOnly];
+            [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                if (!error) {
+                    
+                    NSMutableArray *likers = [NSMutableArray array];
+                    NSMutableArray *commenters = [NSMutableArray array];
+                    
+                    BOOL isLikedByCurrentUser = NO;
+                    
+                    for (PFObject *activity in objects) {
+                        if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeLike]) {
+                            [likers addObject:[activity objectForKey:kFTActivityFromUserKey]];
+                        } else if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeComment]) {
+                            [commenters addObject:[activity objectForKey:kFTActivityFromUserKey]];
+                        }
+                        
+                        if ([[[activity objectForKey:kFTActivityFromUserKey] objectId] isEqualToString:[[PFUser currentUser] objectId]]) {
+                            if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeLike]) {
+                                isLikedByCurrentUser = YES;
+                            }
+                        }
+                    }
+                    
+                    [[FTCache sharedCache] setAttributesForVideo:video likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+                }
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification object:video userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:FTVideoDetailsViewControllerUserLikedUnlikedVideoNotificationUserInfoLikedKey]];
+            }];
+            
+        } else {
+            if (completionBlock) {
+                completionBlock(NO,error);
+            }
+        }
+    }];
+}
+
 + (void)unlikePhotoInBackground:(id)photo block:(void (^)(BOOL succeeded, NSError *error))completionBlock {
     PFQuery *queryExistingLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
     [queryExistingLikes whereKey:kFTActivityPhotoKey equalTo:photo];
@@ -328,6 +448,22 @@
     return query;
 }
 
++ (PFQuery *)queryForActivitiesOnVideo:(PFObject *)video cachePolicy:(PFCachePolicy)cachePolicy {
+    PFQuery *queryLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [queryLikes whereKey:kFTActivityVideoKey equalTo:video];
+    [queryLikes whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
+    
+    PFQuery *queryComments = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [queryComments whereKey:kFTActivityVideoKey equalTo:video];
+    [queryComments whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeComment];
+    
+    PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects:queryLikes,queryComments,nil]];
+    [query setCachePolicy:cachePolicy];
+    [query includeKey:kFTActivityFromUserKey];
+    [query includeKey:kFTActivityVideoKey];
+    
+    return query;
+}
 
 #pragma mark Shadow Rendering
 

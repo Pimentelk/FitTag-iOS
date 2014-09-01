@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D007B5F19B3CA46006E1484 /* FTVideoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B5E19B3CA46006E1484 /* FTVideoCell.m */; };
 		2D0A53A81971997F0091FFCA /* InspirationCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */; };
 		2D0A53AC1971ABFF0091FFCA /* FindFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53AB1971ABFF0091FFCA /* FindFriendsViewController.m */; };
 		2D410F481973575C00CE2940 /* FTFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F471973575C00CE2940 /* FTFeedViewController.m */; };
@@ -93,6 +94,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2D007B5D19B3CA46006E1484 /* FTVideoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTVideoCell.h; sourceTree = "<group>"; };
+		2D007B5E19B3CA46006E1484 /* FTVideoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTVideoCell.m; sourceTree = "<group>"; };
 		2D0A53A61971997F0091FFCA /* InspirationCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspirationCellCollectionView.h; sourceTree = "<group>"; };
 		2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InspirationCellCollectionView.m; sourceTree = "<group>"; };
 		2D0A53AA1971ABFF0091FFCA /* FindFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindFriendsViewController.h; sourceTree = "<group>"; };
@@ -549,6 +552,8 @@
 				2DD2B690198417D500600A42 /* FTLoadMoreCell.m */,
 				2DD2B692198418C300600A42 /* FTPhotoCell.h */,
 				2DD2B693198418C300600A42 /* FTPhotoCell.m */,
+				2D007B5D19B3CA46006E1484 /* FTVideoCell.h */,
+				2D007B5E19B3CA46006E1484 /* FTVideoCell.m */,
 			);
 			name = UITableViewCells;
 			sourceTree = "<group>";
@@ -782,6 +787,7 @@
 				2DAA63DE1957A51F003B1DDF /* UIView+FormScroll.m in Sources */,
 				2DD2B669198400D800600A42 /* UIImage+RoundedCornerAdditions.m in Sources */,
 				2DD2B6581983FD2C00600A42 /* FTCache.m in Sources */,
+				2D007B5F19B3CA46006E1484 /* FTVideoCell.m in Sources */,
 				2DBC6EA1195CBCE2008B5AD3 /* FTInterestsViewController.m in Sources */,
 				2DD2B69E19841C3100600A42 /* FTFindFriendsCell.m in Sources */,
 				2D429A141977EE9E00F8A9A0 /* FTOffersViewController.m in Sources */,

@@ -7,7 +7,6 @@
 //
 
 #import "FTPhotoTimelineViewController.h"
-#import "FTPhotoCell.h"
 #import "FTAccountViewController.h"
 #import "FTPhotoDetailsViewController.h"
 #import "FTUtility.h"
@@ -18,7 +17,6 @@
 @property (nonatomic, strong) NSMutableSet *reusableSectionHeaderViews;
 @property (nonatomic, strong) NSMutableDictionary *outstandingSectionHeaderQueries;
 @end
-
 @implementation FTPhotoTimelineViewController
 @synthesize reusableSectionHeaderViews;
 @synthesize shouldReloadOnAppear;
@@ -191,9 +189,10 @@
     if (self.objects.count == 0 || ![[UIApplication sharedApplication].delegate performSelector:@selector(isParseReachable)]) {
         [query setCachePolicy:kPFCachePolicyCacheThenNetwork];
     }
-        
+    
     return query;
 }
+
 
 - (PFObject *)objectAtIndexPath:(NSIndexPath *)indexPath {
     // overridden, since we want to implement sections
@@ -206,12 +205,99 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath object:(PFObject *)object {
     static NSString *CellIdentifier = @"Cell";
+    BOOL isVideo = (object[@"video"]) ? YES : NO;
     
     //NSLog(@"FTPhotoTimelineViewController::Updating tableView:(UITableView *) %@ cellForRowAtIndexPath:(NSIndexPath *) %@ object:(PFObject *) %@",tableView,indexPath,object);
     
     if (indexPath.section == self.objects.count) {
         // this behavior is normally handled by PFQueryTableViewController, but we are using sections for each object and we must handle this ourselves
         UITableViewCell *cell = [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
+        return cell;
+    } else if (isVideo) {
+        
+        FTVideoCell *cell = (FTVideoCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        
+        if (cell == nil) {
+            cell = [[FTVideoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            cell.delegate = self;
+            [cell.videoButton addTarget:self action:@selector(didTapOnVideoAction:) forControlEvents:UIControlEventTouchUpInside];
+        }
+        
+        PFObject *video = [self.objects objectAtIndex:indexPath.section];
+        [cell setVideo:video];
+        cell.tag = indexPath.section;
+        [cell.likeCounter setTag:indexPath.section];
+        
+        NSDictionary *attributesForVideo = [[FTCache sharedCache] attributesForVideo:video];
+        
+        if (attributesForVideo) {
+            [cell setLikeStatus:[[FTCache sharedCache] isVideoLikedByCurrentUser:video]];
+            [cell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForVideo:video] description] forState:UIControlStateNormal];
+            [cell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForVideo:video] description] forState:UIControlStateNormal];
+            [cell.usernameRibbon setTitle:object[@"user"][@"displayName"] forState:UIControlStateNormal];
+        } else {
+            @synchronized(self) {
+                // check if we can update the cache
+                NSNumber *outstandingSectionHeaderQueryStatus = [self.outstandingSectionHeaderQueries objectForKey:@(indexPath.section)];
+                if (!outstandingSectionHeaderQueryStatus) {
+                    PFQuery *query = [FTUtility queryForActivitiesOnPhoto:video cachePolicy:kPFCachePolicyNetworkOnly];
+                    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                        @synchronized(self) {
+                            [self.outstandingSectionHeaderQueries removeObjectForKey:@(indexPath.section)];
+                            
+                            if (error) {
+                                NSLog(@"ERROR##: %@",error);
+                                return;
+                            }
+                            
+                            NSMutableArray *likers = [NSMutableArray array];
+                            NSMutableArray *commenters = [NSMutableArray array];
+                            
+                            BOOL isLikedByCurrentUser = NO;
+                            
+                            for (PFObject *activity in objects) {
+                                if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeLike] && [activity objectForKey:kFTActivityFromUserKey]) {
+                                    [likers addObject:[activity objectForKey:kFTActivityFromUserKey]];
+                                } else if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeComment] && [activity objectForKey:kFTActivityFromUserKey]) {
+                                    [commenters addObject:[activity objectForKey:kFTActivityFromUserKey]];
+                                }
+                                
+                                if ([[[activity objectForKey:kFTActivityFromUserKey] objectId] isEqualToString:[[PFUser currentUser] objectId]]) {
+                                    if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeLike]) {
+                                        isLikedByCurrentUser = YES;
+                                    }
+                                }
+                            }
+                            
+                            [[FTCache sharedCache] setAttributesForVideo:video likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+                            
+                            if (cell.tag != indexPath.section) {
+                                return;
+                            }
+                            
+                            [cell setLikeStatus:[[FTCache sharedCache] isVideoLikedByCurrentUser:video]];
+                            [cell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForVideo:video] description] forState:UIControlStateNormal];
+                            [cell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPhoto:video] description] forState:UIControlStateNormal];
+                            [cell.usernameRibbon setTitle:object[@"user"][@"displayName"] forState:UIControlStateNormal];
+                        }
+                    }];
+                    
+                }
+            }
+        }
+        
+        cell.videoButton.tag = indexPath.section;
+        cell.imageView.image = [UIImage imageNamed:@"profilepic_icon"];
+        
+        if (object) {
+            cell.imageView.file = [object objectForKey:kFTVideoKey];
+            
+            // PFQTVC will take care of asynchronously downloading files, but will only load them when the tableview is not moving. If the data is there, let's load it right away.
+            if ([cell.imageView.file isDataAvailable]) {
+                [cell.imageView loadInBackground];
+            }
+        }
+        
         return cell;
     } else {
         FTPhotoCell *cell = (FTPhotoCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -328,7 +414,92 @@
     
     return nil;
 }
- 
+
+#pragma mark - FTVideoCellViewDelegate
+
+-(void)videoCellView:(FTVideoCell *)videoCellView didTapUserButton:(UIButton *)button user:(PFUser *)user{
+    FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
+    [accountViewController setUser:user];
+    [self.navigationController pushViewController:accountViewController animated:YES];
+}
+
+-(void)videoCellView:(FTVideoCell *)videoCellView didTapCommentOnVideoButton:(UIButton *)button video:(PFObject *)video{
+    FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:video];
+    [self.navigationController pushViewController:photoDetailsVC animated:YES];
+}
+
+-(void)videoCellView:(FTVideoCell *)videoCellView didTapLikeVideoButton:(UIButton *)button counter:(UIButton *)counter video:(PFObject *)video{
+    // Disable the button so users cannot send duplicate requests
+    [videoCellView shouldEnableLikeButton:NO];
+    
+    BOOL liked = !button.selected;
+    [videoCellView setLikeStatus:liked];
+    
+    NSString *originalButtonTitle = counter.titleLabel.text;
+    
+    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+    [numberFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"]];
+    
+    NSNumber *likeCount = [numberFormatter numberFromString:counter.titleLabel.text];
+    if (liked) {
+        likeCount = [NSNumber numberWithInt:[likeCount intValue] + 1];
+        [[FTCache sharedCache] incrementLikerCountForVideo:video];
+    } else {
+        if ([likeCount intValue] > 0) {
+            likeCount = [NSNumber numberWithInt:[likeCount intValue] - 1];
+        }
+        [[FTCache sharedCache] decrementLikerCountForVideo:video];
+    }
+    
+    [[FTCache sharedCache] setVideoIsLikedByCurrentUser:video liked:liked];
+    
+    [counter setTitle:[numberFormatter stringFromNumber:likeCount] forState:UIControlStateNormal];
+    
+    if (liked) {
+        
+        [FTUtility likeVideoInBackground:video block:^(BOOL succeeded, NSError *error) {
+            FTVideoCell *actualView = (FTVideoCell *)[self tableView:self.tableView viewForHeaderInSection:counter.tag];
+            [actualView shouldEnableLikeButton:YES];
+            [actualView setLikeStatus:succeeded];
+            
+            if (!succeeded) {
+                [actualView.likeCounter setTitle:originalButtonTitle forState:UIControlStateNormal];
+            }
+            
+            if (error) {
+                NSLog(@"ERROR###: %@",error);
+            }
+        }];
+        
+    } else {
+        
+        [FTUtility unlikeVideoInBackground:video block:^(BOOL succeeded, NSError *error) {
+            FTVideoCell *actualView = (FTVideoCell *)[self tableView:self.tableView viewForHeaderInSection:counter.tag];
+            [actualView shouldEnableLikeButton:YES];
+            [actualView setLikeStatus:!succeeded];
+            
+            if (!succeeded) {
+                [actualView.likeCounter setTitle:originalButtonTitle forState:UIControlStateNormal];
+            }
+            
+            if(error){
+                NSLog(@"ERROR###: %@",error);
+            }
+            
+        }];
+        
+    }
+}
+
+-(void)videoCellView:(FTVideoCell *)videoCellView didTapMoreButton:(UIButton *)button video:(PFObject *)video{
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+                                                             delegate:self
+                                                    cancelButtonTitle:@"Cancel"
+                                               destructiveButtonTitle:nil
+                                                    otherButtonTitles:@"ReTag", @"Share on Facebook", @"Tweet", @"Report as Inappropriate",  nil];
+    [actionSheet showInView:self.view];
+}
+
 #pragma mark - FTPhotoCellViewDelegate
 
 - (void)photoCellView:(FTPhotoCell *)photoCellView didTapUserButton:(UIButton *)button user:(PFUser *)user {
@@ -472,6 +643,13 @@
     if (photo) {
         FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:photo];
         [self.navigationController pushViewController:photoDetailsVC animated:YES];
+    }
+}
+
+- (void)didTapOnVideoAction:(UIButton *)sender {
+    PFObject *video = [self.objects objectAtIndex:sender.tag];
+    if (video) {
+        NSLog(@"FTVideoDetailsViewController");
     }
 }
 

@@ -132,7 +132,7 @@
     
     [photoCountLabel setText:@"0 photos"];
     
-    PFQuery *queryPhotoCount = [PFQuery queryWithClassName:@"Photo"];
+    PFQuery *queryPhotoCount = [PFQuery queryWithClassName:kFTPostClassName];
     [queryPhotoCount whereKey:kFTPhotoUserKey equalTo:self.user];
     [queryPhotoCount setCachePolicy:kPFCachePolicyCacheThenNetwork];
     [queryPhotoCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
