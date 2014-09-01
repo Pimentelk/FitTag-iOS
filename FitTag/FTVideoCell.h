@@ -12,10 +12,11 @@ typedef enum {
     FTVideoCellButtonsComment = 1 << 1,
     FTVideoCellButtonsUser = 1 << 2,
     FTVideoCellButtonsMore = 1 << 3,
-    FTVideoCellButtonsDefault = FTVideoCellButtonsLike | FTVideoCellButtonsComment | FTVideoCellButtonsUser | FTVideoCellButtonsMore
+    FTVideoCellButtonsPlay = 1 << 4,
+    FTVideoCellButtonsDefault = FTVideoCellButtonsLike | FTVideoCellButtonsComment | FTVideoCellButtonsUser | FTVideoCellButtonsMore | FTVideoCellButtonsPlay
 } FTVideoCellButtons;
 
-@class PFVideoView;
+@class PFImageView;
 @protocol FTVideoCellDelegate;
 
 @interface FTVideoCell : PFTableViewCell
@@ -39,6 +40,9 @@ typedef enum {
 @property (nonatomic, readonly, assign) FTVideoCellButtons buttons;
 
 /*! @name Accessing Interaction Elements */
+
+/// The Play Video button
+@property (nonatomic,readonly) UIButton *playButton;
 
 /// The Like Video button
 @property (nonatomic,readonly) UIButton *likeButton;

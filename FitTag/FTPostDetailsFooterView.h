@@ -12,8 +12,9 @@
 @property (nonatomic, strong) UITextField *commentField;
 @property (nonatomic, strong) UITextField *tagField;
 @property (nonatomic, strong) UITextField *tagsArea;
+@property (nonatomic, strong) UIButton *submitButton;
+@property (nonatomic, weak) id <FTPostDetailsFooterViewDelegate> delegate;
 @property (nonatomic) BOOL hideDropShadow;
-@property (nonatomic,weak) id <FTPostDetailsFooterViewDelegate> delegate;
 + (CGRect)rectForView;
 @end
 

@@ -73,15 +73,6 @@
     [photoImageView setImage:self.image];
     [photoImageView setContentMode:UIViewContentModeScaleAspectFit];
     
-    /*
-    CALayer *layer = photoImageView.layer;
-    layer.masksToBounds = NO;
-    layer.shadowRadius = 3.0f;
-    layer.shadowOffset = CGSizeMake(0.0f, 2.0f);
-    layer.shadowOpacity = 0.5f;
-    layer.shouldRasterize = YES;
-    */
-    
     [self.scrollView addSubview:photoImageView];
  
     CGRect footerRect = [FTPostDetailsFooterView rectForView];
@@ -149,6 +140,34 @@
 }
 
 #pragma mark - ()
+
+- (NSArray *) checkForHashtag {
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)" options:0 error:&error];
+    NSArray *matches = [regex matchesInString:self.commentTextField.text options:0 range:NSMakeRange(0,self.commentTextField.text.length)];
+    NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
+    for (NSTextCheckingResult *match in matches) {
+        NSRange wordRange = [match rangeAtIndex:1];
+        NSString *word = [self.commentTextField.text substringWithRange:wordRange];
+        //NSLog(@"Found tag %@", word);
+        [matchedResults addObject:word];
+    }
+    return matchedResults;
+}
+
+- (NSMutableArray *) checkForMention {
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@(\\w+)" options:0 error:&error];
+    NSArray *matches = [regex matchesInString:self.commentTextField.text options:0 range:NSMakeRange(0,self.commentTextField.text.length)];
+    NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
+    for (NSTextCheckingResult *match in matches) {
+        NSRange wordRange = [match rangeAtIndex:1];
+        NSString *word = [self.commentTextField.text substringWithRange:wordRange];
+        //NSLog(@"Found mention %@", word);
+        [matchedResults addObject:word];
+    }
+    return matchedResults;
+}
 
 - (void)hideCameraView:(id)sender{
     [self.navigationController popViewControllerAnimated:YES];
@@ -236,17 +255,20 @@
             userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment,kFTEditPhotoViewControllerUserInfoCommentKey,nil];
         }
         
-        /*
         // Make sure there were no errors creating the image files
         if (!self.photoFile || !self.thumbnailFile) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
             [alert show];
             return;
         }
-        */
         
         // both files have finished uploading
-  
+        
+        NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[self checkForHashtag]];
+        NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[self checkForMention]];
+        NSLog(@"HashTags: %@",hashtags);
+        NSLog(@"Mentions: %@",mentions);
+        
         // create a photo object
         PFObject *photo = [PFObject objectWithClassName:kFTPhotoClassKey];
         [photo setObject:[PFUser currentUser] forKey:kFTPhotoUserKey];
@@ -280,6 +302,8 @@
                         [comment setObject:photo forKey:kFTActivityPhotoKey];
                         [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
                         [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
+                        [comment setObject:hashtags forKey:kFTActivityHashtag];
+                        [comment setObject:mentions forKey:kFTActivityMention];
                         [comment setObject:commentText forKey:kFTActivityContentKey];
                     
                         PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];

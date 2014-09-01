@@ -16,6 +16,7 @@
     #import <AVFoundation/AVFoundation.h>
     #import <MobileCoreServices/UTCoreTypes.h>
     #import <Parse/Parse.h>
+    #import <MediaPlayer/MediaPlayer.h>
     #import "FTConstants.h"
     #import "FTUtility.h"
     #import "FTCache.h"

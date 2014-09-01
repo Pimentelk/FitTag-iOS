@@ -18,9 +18,11 @@
 @property (nonatomic, strong) UIButton *userButton;
 @property (nonatomic, strong) UILabel *timestampLabel;
 @property (nonatomic, strong) TTTTimeIntervalFormatter *timeIntervalFormatter;
+@property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
 @end
 
 @implementation FTVideoCell
+@synthesize playButton;
 @synthesize videoButton;
 @synthesize containerView;
 @synthesize avatarImageView;
@@ -44,13 +46,13 @@
         self.opaque = NO;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.accessoryType = UITableViewCellAccessoryNone;
-        self.clipsToBounds = NO;
+        self.clipsToBounds = YES;
         
         self.backgroundColor = [UIColor clearColor];
         
         self.imageView.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
-        self.imageView.backgroundColor = [UIColor blackColor];
-        self.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        self.imageView.backgroundColor = [UIColor clearColor];
+        self.imageView.contentMode = UIViewContentModeScaleAspectFill;
         
         self.videoButton = [UIButton buttonWithType:UIButtonTypeCustom];
         self.videoButton.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
@@ -66,9 +68,9 @@
         [FTVideoCell validateButtons:otherButtons];
         buttons = otherButtons;
         
-        self.clipsToBounds = NO;
-        self.containerView.clipsToBounds = NO;
-        self.superview.clipsToBounds = NO;
+        self.clipsToBounds = YES;
+        self.containerView.clipsToBounds = YES;
+        self.superview.clipsToBounds = YES;
         [self setBackgroundColor:[UIColor clearColor]];
         
         UIImageView *profileHexagon = [self getProfileHexagon];
@@ -93,6 +95,18 @@
         self.usernameRibbon.contentEdgeInsets = UIEdgeInsetsMake(0, 5, 0, 0);
         [self.contentView addSubview:self.usernameRibbon];
         [self.contentView bringSubviewToFront:self.avatarImageView];
+        
+        // Play Button
+        if (self.buttons & FTVideoCellButtonsPlay) {
+            float centerX = (self.videoButton.frame.size.width - 60) / 2;
+            float centerY = (self.videoButton.frame.size.height - 60) / 2;
+            playButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            [self.playButton setFrame:CGRectMake(centerX,centerY,60.0f,60.0f)];
+            [self.playButton setBackgroundImage:[UIImage imageNamed:@"play_button"] forState:UIControlStateNormal];
+            [self.playButton setSelected:NO];
+            [self.contentView addSubview:self.playButton];
+            [self.contentView bringSubviewToFront:self.playButton];
+        }
         
         if (self.buttons & FTVideoCellButtonsLike) {
             // like button
@@ -160,12 +174,40 @@
     // user's avatar
     PFUser *user = [self.video objectForKey:kFTVideoUserKey];
     PFFile *profilePictureSmall = [user objectForKey:kFTUserProfilePicSmallKey];
-    [self.avatarImageView setFile:profilePictureSmall];
+    PFFile *videoFile = [video objectForKey:kFTVideoKey];
+    NSURL *url = [NSURL URLWithString:videoFile.url];
+    self.moviePlayer = [[MPMoviePlayerController alloc] init];
+    [self.moviePlayer setControlStyle:MPMovieControlStyleNone];
+    [self.moviePlayer setScalingMode:MPMovieScalingModeAspectFill];
+    [self.moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
+    [self.moviePlayer setContentURL:url];
+    [self.moviePlayer.view setFrame:CGRectMake(0.0f,0.0f,320.0f,320.0f)];
+    [self.moviePlayer requestThumbnailImagesAtTimes:@[ @0.1f, @1.0f ] timeOption:MPMovieTimeOptionExact];
+    [self.moviePlayer setShouldAutoplay:NO];
+    [self.moviePlayer setFullscreen:YES];
+    [self.moviePlayer.view setHidden:YES];
+    [self.moviePlayer.view setBackgroundColor:[UIColor clearColor]];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(movieFinishedCallBack)
+                                                 name:MPMoviePlayerPlaybackDidFinishNotification
+                                               object:self.moviePlayer];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(moviePlayerStateChange:)
+                                                 name:MPMoviePlayerPlaybackStateDidChangeNotification
+                                               object:self.moviePlayer];
+
     NSString *authorName = [user objectForKey:kFTUserDisplayNameKey];
-    [self.userButton setTitle:authorName forState:UIControlStateNormal];
     
     CGFloat constrainWidth = containerView.bounds.size.width;
+
+    [self.avatarImageView setFile:profilePictureSmall];
+    [self.userButton setTitle:authorName forState:UIControlStateNormal];
+    
+    if (self.buttons & FTVideoCellButtonsPlay) {
+        [self.playButton addTarget:self action:@selector(didTapVideoPlayButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    }
     
     if (self.buttons & FTVideoCellButtonsUser){
         [self.userButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
@@ -288,6 +330,54 @@
 - (void)didTapMoreButtonAction:(UIButton *)sender{
     if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapMoreButton:video:)]){
         [delegate videoCellView:self didTapMoreButton:sender video:self.video];
+    }
+}
+
+- (void)didTapVideoPlayButtonAction:(UIButton *)sender{
+    [self.playButton setHidden:YES];
+    [self.moviePlayer prepareToPlay];
+    [self.moviePlayer requestThumbnailImagesAtTimes:@[ @0.1f, @1.0f ] timeOption:MPMovieTimeOptionExact];
+    [self.moviePlayer play];
+}
+
+-(void)movieFinishedCallBack{
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:MPMoviePlayerPlaybackDidFinishNotification
+                                                  object:self.moviePlayer];
+}
+
+-(void)moviePlayerStateChange:(NSNotification *)notification{
+    
+    if (self.moviePlayer.playbackState == MPMoviePlaybackStatePlaying){
+        //NSLog(@"moviePlayer... Playing");
+        [self.imageView addSubview:self.moviePlayer.view];
+        [self.moviePlayer.view setHidden:NO];
+    }
+    
+    if (self.moviePlayer.playbackState == MPMoviePlaybackStateStopped){
+        //NSLog(@"moviePlayer... Stopped");
+        [self.moviePlayer stop];
+        [self.playButton setHidden:NO];
+        [self.moviePlayer.view setHidden:YES];
+        [self.moviePlayer.view removeFromSuperview];
+    }
+    
+    if (self.moviePlayer.playbackState == MPMoviePlaybackStatePaused){
+        //NSLog(@"moviePlayer... Paused");
+        [self.moviePlayer stop];
+    }
+    
+    if (self.moviePlayer.playbackState == MPMoviePlaybackStateInterrupted){
+        //NSLog(@"moviePlayer... Interrupted");
+        [self.moviePlayer stop];
+    }
+    
+    if (self.moviePlayer.playbackState == MPMoviePlaybackStateSeekingForward){
+        //NSLog(@"moviePlayer... Forward");
+    }
+    
+    if (self.moviePlayer.playbackState == MPMoviePlaybackStateSeekingBackward){
+        //NSLog(@"moviePlayer... Backward");
     }
 }
 

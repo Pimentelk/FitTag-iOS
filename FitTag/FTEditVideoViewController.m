@@ -19,6 +19,7 @@
 @property (nonatomic, assign) NSInteger scrollViewHeight;
 @property (nonatomic, strong) PFFile *videoFile;
 @property (nonatomic, strong) PFFile *imageFile;
+@property (nonatomic, strong) FTPostDetailsFooterView *postDetailsFooterView;
 @end
 
 @implementation FTEditVideoViewController
@@ -28,6 +29,7 @@
 @synthesize videoPostBackgroundTaskId;
 @synthesize tagTextField;
 @synthesize scrollViewHeight;
+@synthesize postDetailsFooterView;
 
 #pragma mark - NSObject
 
@@ -37,7 +39,6 @@
 }
 
 - (id)initWithVideo:(NSData *)aVideo {
-    NSLog(@"FTEditVideoViewController::initWithVideo:");
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         if (!aVideo) {
@@ -59,7 +60,6 @@
 #pragma mark - UIViewController
 
 - (void)loadView {
-    NSLog(@"FTEditVideoViewController::loadView");
     self.scrollView = [[UIScrollView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
     self.scrollView.delegate = self;
     self.scrollView.backgroundColor = [UIColor whiteColor];
@@ -75,16 +75,15 @@
     CGRect footerRect = [FTPostDetailsFooterView rectForView];
     footerRect.origin.y = videoImageView.frame.origin.y + videoImageView.frame.size.height;
     
-    FTPostDetailsFooterView *footerView = [[FTPostDetailsFooterView alloc] initWithFrame:footerRect];
-    self.commentTextField = footerView.commentField;
-    self.tagTextField = footerView.tagField;
+    postDetailsFooterView = [[FTPostDetailsFooterView alloc] initWithFrame:footerRect];
+    self.commentTextField = postDetailsFooterView.commentField;
+    self.tagTextField = postDetailsFooterView.tagField;
     self.commentTextField.delegate = self;
     self.tagTextField.delegate = self;
-    footerView.delegate = self;
-    [self.scrollView addSubview:footerView];
-    
-    scrollViewHeight = videoImageView.frame.origin.y + videoImageView.frame.size.height + footerView.frame.size.height;
-    
+    postDetailsFooterView.delegate = self;
+    [postDetailsFooterView.submitButton setEnabled:NO];
+    [self.scrollView addSubview:postDetailsFooterView];
+    scrollViewHeight = videoImageView.frame.origin.y + videoImageView.frame.size.height + postDetailsFooterView.frame.size.height;
     [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, scrollViewHeight)];
 }
 
@@ -138,6 +137,34 @@
 
 #pragma mark - ()
 
+- (NSArray *) checkForHashtag {
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)" options:0 error:&error];
+    NSArray *matches = [regex matchesInString:self.commentTextField.text options:0 range:NSMakeRange(0,self.commentTextField.text.length)];
+    NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
+    for (NSTextCheckingResult *match in matches) {
+        NSRange wordRange = [match rangeAtIndex:1];
+        NSString *word = [self.commentTextField.text substringWithRange:wordRange];
+        //NSLog(@"Found tag %@", word);
+        [matchedResults addObject:word];
+    }
+    return matchedResults;
+}
+
+- (NSMutableArray *) checkForMention {
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@(\\w+)" options:0 error:&error];
+    NSArray *matches = [regex matchesInString:self.commentTextField.text options:0 range:NSMakeRange(0,self.commentTextField.text.length)];
+    NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
+    for (NSTextCheckingResult *match in matches) {
+        NSRange wordRange = [match rangeAtIndex:1];
+        NSString *word = [self.commentTextField.text substringWithRange:wordRange];
+        //NSLog(@"Found mention %@", word);
+        [matchedResults addObject:word];
+    }
+    return matchedResults;
+}
+
 - (void)hideCameraView:(id)sender{
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -148,25 +175,53 @@
         return NO;
     }
     
-    self.videoFile = [PFFile fileWithName:@"video.mov" data:aVideo];
-    
-    NSLog(@"Video Length: %lu",(unsigned long)[self.video length]);
-    
     if ([PFUser currentUser]) {
+        
+        // Set the video
+        self.videoFile = [PFFile fileWithName:@"video.mov" data:aVideo];
+
         // Request a background execution task to allow us to finish uploading the video even if the app is backgrounded
         self.fileUploadBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
         }];
         
         [self.videoFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            if(!succeeded){
-                [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+            if (succeeded) {
+                
+                // Get the first frame of the video and save it as an image                
+                NSURL *url = [NSURL URLWithString:self.videoFile.url];
+                AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:nil];
+                AVAssetImageGenerator *generateImg = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+                generateImg.appliesPreferredTrackTransform = YES;
+                NSError *error = NULL;
+                CMTime time = CMTimeMake(1, 65);
+                CGImageRef refImg = [generateImg copyCGImageAtTime:time actualTime:NULL error:&error];
+                UIImage *anImage = [[UIImage alloc] initWithCGImage:refImg];
+                UIImage *resizedImage = [anImage resizedImageWithContentMode:UIViewContentModeScaleAspectFill bounds:CGSizeMake(320.0f, 320.0f) interpolationQuality:kCGInterpolationHigh];
+                NSData *imageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
+                
+                self.imageFile = [PFFile fileWithName:@"photo.jpeg" data:imageData];
+                
+                [self.imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+                    [postDetailsFooterView.submitButton setEnabled:YES];
+                    
+                    if(!succeeded){
+                        [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+                    }
+                    
+                    if(error){
+                        NSLog(@"self.videoFile saveInBackgroundWithBlock: %@", error);
+                    }
+                }];
             }
             
-            if(error){
-                NSLog(@"self.videoFile saveInBackgroundWithBlock: %@", error);
+            if (error) {
+                NSLog(@"self.imageFile saveInBackgroundWithBlock: %@", error);
             }
         }];
+        
+        
     }
     
     return YES;
@@ -195,8 +250,8 @@
 - (void)doneButtonAction:(id)sender {
     NSLog(@"FTEditVideoViewController::doneButtonAction:%@",sender);
     // Make sure there were no errors creating the image files
-    if (!self.videoFile){
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
+    if (!self.videoFile || !self.imageFile){
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your video" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
         [alert show];
         return;
     }
@@ -210,9 +265,13 @@
             userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment,kFTEditVideoViewControllerUserInfoCommentKey,nil];
         }
         
+        NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[self checkForHashtag]];
+        NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[self checkForMention]];
+        
         // create a video object
         PFObject *video = [PFObject objectWithClassName:kFTVideoClassKey];
         [video setObject:[PFUser currentUser] forKey:kFTVideoUserKey];
+        [video setObject:self.imageFile forKey:kFTVideoImageKey];
         [video setObject:self.videoFile forKey:kFTVideoKey];
         
         // photos are public, but may only be modified by the user who uploaded them
@@ -242,6 +301,8 @@
                         [comment setObject:video forKey:kFTActivityVideoKey];
                         [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
                         [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
+                        [comment setObject:hashtags forKey:kFTActivityHashtag];
+                        [comment setObject:mentions forKey:kFTActivityMention];
                         [comment setObject:commentText forKey:kFTActivityContentKey];
                         
                         PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];

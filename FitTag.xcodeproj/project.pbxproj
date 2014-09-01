@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2D007B5F19B3CA46006E1484 /* FTVideoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B5E19B3CA46006E1484 /* FTVideoCell.m */; };
+		2D007B6119B4074F006E1484 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D007B6019B4074F006E1484 /* MediaPlayer.framework */; };
 		2D0A53A81971997F0091FFCA /* InspirationCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */; };
 		2D0A53AC1971ABFF0091FFCA /* FindFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53AB1971ABFF0091FFCA /* FindFriendsViewController.m */; };
 		2D410F481973575C00CE2940 /* FTFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F471973575C00CE2940 /* FTFeedViewController.m */; };
@@ -96,6 +97,7 @@
 /* Begin PBXFileReference section */
 		2D007B5D19B3CA46006E1484 /* FTVideoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTVideoCell.h; sourceTree = "<group>"; };
 		2D007B5E19B3CA46006E1484 /* FTVideoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTVideoCell.m; sourceTree = "<group>"; };
+		2D007B6019B4074F006E1484 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		2D0A53A61971997F0091FFCA /* InspirationCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspirationCellCollectionView.h; sourceTree = "<group>"; };
 		2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InspirationCellCollectionView.m; sourceTree = "<group>"; };
 		2D0A53AA1971ABFF0091FFCA /* FindFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindFriendsViewController.h; sourceTree = "<group>"; };
@@ -253,6 +255,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D007B6119B4074F006E1484 /* MediaPlayer.framework in Frameworks */,
 				2D429A26197B339900F8A9A0 /* libsqlite3.dylib in Frameworks */,
 				2DD691881949B04F00B59E75 /* CFNetwork.framework in Frameworks */,
 				2DD691871949B04F00B59E75 /* AudioToolbox.framework in Frameworks */,
@@ -599,6 +602,7 @@
 		2DD6914B1949AF5B00B59E75 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2D007B6019B4074F006E1484 /* MediaPlayer.framework */,
 				2D429A29197B341400F8A9A0 /* UIImageEffects */,
 				2D429A28197B340700F8A9A0 /* TTTTimeIntervalFormatter */,
 				2D429A27197B33F500F8A9A0 /* MBProgressHUD */,

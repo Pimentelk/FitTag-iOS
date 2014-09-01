@@ -53,6 +53,8 @@ NSString *const kFTActivityToUserKey      = @"toUser";
 NSString *const kFTActivityContentKey     = @"content";
 NSString *const kFTActivityPhotoKey       = @"post";
 NSString *const kFTActivityVideoKey       = @"post";
+NSString *const kFTActivityHashtag        = @"hashtag";
+NSString *const kFTActivityMention        = @"mention";
 
 // Type values
 NSString *const kFTActivityTypeLike       = @"like";

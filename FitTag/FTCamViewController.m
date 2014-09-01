@@ -9,6 +9,7 @@
 #import "FTCamViewController.h"
 #import "FTCamRollViewController.h"
 #import "FTEditVideoViewController.h"
+#import <MobileCoreServices/MobileCoreServices.h>
 
 static void * CapturingStillImageContext = &CapturingStillImageContext;
 static void * RecordingContext = &RecordingContext;
@@ -64,6 +65,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     // Create the AVCaptureSession
 	AVCaptureSession *session = [[AVCaptureSession alloc] init];
 	[self setSession:session];
+    [self.session setSessionPreset:AVCaptureSessionPresetMedium];
     
     // Setup the preview view
 	[[self previewLayer] setSession:session];
@@ -171,7 +173,8 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
                                                                          frameHeight:self.view.frame.size.height], 44.0f, 39.0f)];
     
     [recordButton setBackgroundImage:[UIImage imageNamed:@"video_button"] forState:UIControlStateNormal];
-    [recordButton addTarget:self action:@selector(toggleMovieRecording:) forControlEvents:UIControlEventTouchUpInside];
+    [recordButton addTarget:self action:@selector(startMovieRecording:) forControlEvents:UIControlEventTouchDown];
+    [recordButton addTarget:self action:@selector(stopMovieRecording:) forControlEvents:UIControlEventTouchUpInside];
     [recordButton setTintColor:[UIColor grayColor]];
     [self.view addSubview:recordButton];
     
@@ -400,25 +403,17 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 	[self setLockInterfaceRotation:NO];
     
 	// Note the backgroundRecordingID for use in the ALAssetsLibrary completion handler to end the background task associated with this recording. This allows a new recording to be started, associated with a new UIBackgroundTaskIdentifier, once the movie file output's -isRecording is back to NO — which happens sometime after this method returns.
-	UIBackgroundTaskIdentifier backgroundRecordingID = [self backgroundRecordingID];
+	
+    UIBackgroundTaskIdentifier backgroundRecordingID = [self backgroundRecordingID];
 	[self setBackgroundRecordingID:UIBackgroundTaskInvalid];
 	
     if (backgroundRecordingID != UIBackgroundTaskInvalid)
         [[UIApplication sharedApplication] endBackgroundTask:backgroundRecordingID];
     
-    /*
-    [[[ALAssetsLibrary alloc] init] writeVideoAtPathToSavedPhotosAlbum:outputFileURL completionBlock:^(NSURL *assetURL, NSError *error) {
-		if (error)
-			NSLog(@"writeVideoAtPathToSavedPhotosAlbum: %@", error);
-		
-        [[NSFileManager defaultManager] removeItemAtURL:outputFileURL error:nil];
-     
-		if (backgroundRecordingID != UIBackgroundTaskInvalid)
-			[[UIApplication sharedApplication] endBackgroundTask:backgroundRecordingID];
-	}];
-    */
     
     NSData *videodata = [NSData dataWithContentsOfURL:outputFileURL];
+    
+    NSLog(@"video data length: %lu",(unsigned long)[videodata length]);
     
     if ([videodata length] > 10485760) {
         [[[UIAlertView alloc] initWithTitle:@"Couldn't post your video, too large."
@@ -599,9 +594,8 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 
 #pragma mark Actions
 
-- (void)toggleMovieRecording:(id)sender {
-    
-	[[self recordButton] setEnabled:NO];
+- (void)startMovieRecording:(id)sender{
+    [[self recordButton] setEnabled:NO];
     CMTime maxDuration = CMTimeMakeWithSeconds(15, 50);
 	[[self movieFileOutput] setMaxRecordedDuration:maxDuration];
     
@@ -622,18 +616,20 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 			[FTCamViewController setFlashMode:AVCaptureFlashModeOff forDevice:[[self videoDeviceInput] device]];
             [toggleFlash setImage:[UIImage imageNamed:[flashImages objectAtIndex:2]] forState:UIControlStateNormal];
             currentFlashMode = [flashImages objectAtIndex:2];
-			
-            NSLog(@"Start recording to a temporary file");
             
 			// Start recording to a temporary file.
 			NSString *outputFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[@"movie" stringByAppendingPathExtension:@"mov"]];
-            NSLog(@"NSTemporaryDirectory called");
 			[[self movieFileOutput] startRecordingToOutputFileURL:[NSURL fileURLWithPath:outputFilePath] recordingDelegate:self];
-            NSLog(@"startRecordingToOutputFileURL");
 		} else	{
 			[[self movieFileOutput] stopRecording];
 		}
 	});
+}
+
+- (void)stopMovieRecording:(id)sender{
+    if ([[self movieFileOutput] isRecording]) {
+        [[self movieFileOutput] stopRecording];
+    }
 }
 
 - (void)snapStillImage:(id)sender {
@@ -656,11 +652,6 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
                 FTEditPhotoViewController *viewController = [[FTEditPhotoViewController alloc] initWithImage:croppedImage];
                 viewController.delegate = self;
                 [self.navigationController pushViewController:viewController animated:NO];
-                
-                //[viewController setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
-                //[self setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
-                //[self pushViewController:viewController animated:NO];
-                //[[[ALAssetsLibrary alloc] init] writeImageToSavedPhotosAlbum:[croppedImage CGImage] orientation:(ALAssetOrientation)[croppedImage imageOrientation] completionBlock:nil];
 			}
 		}];
 	});

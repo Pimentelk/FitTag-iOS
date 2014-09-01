@@ -203,7 +203,6 @@ typedef enum {
     }
     
     [cell setUser:(PFUser*)object];
-    
     [cell.photoLabel setText:@"0 photos"];
     
     NSDictionary *attributes = [[FTCache sharedCache] attributesForUser:(PFUser *)object];

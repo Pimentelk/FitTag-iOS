@@ -58,6 +58,8 @@ extern NSString *const kFTActivityToUserKey;
 extern NSString *const kFTActivityContentKey;
 extern NSString *const kFTActivityPhotoKey;
 extern NSString *const kFTActivityVideoKey;
+extern NSString *const kFTActivityHashtag;
+extern NSString *const kFTActivityMention;
 
 // Type values
 extern NSString *const kFTActivityTypeLike;

@@ -20,6 +20,7 @@
 @synthesize hideDropShadow;
 @synthesize tagField;
 @synthesize tagsArea;
+@synthesize submitButton;
 
 -(id)initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
@@ -77,7 +78,7 @@
         [twitterButton addTarget:self action:@selector(twitterShareButton:) forControlEvents:UIControlEventTouchUpInside];
         [mainView addSubview:twitterButton];
         
-        UIButton *submitButton = [UIButton buttonWithType: UIButtonTypeCustom];
+        submitButton = [UIButton buttonWithType: UIButtonTypeCustom];
         submitButton.frame = CGRectMake(230.0f, 111.0f, 71.0f, 80.0f);
         [submitButton setBackgroundImage:[UIImage imageNamed:@"signup_button"] forState:UIControlStateNormal];
         [submitButton addTarget:self action:@selector(sendPost:) forControlEvents:UIControlEventTouchUpInside];
