@@ -23,6 +23,8 @@
 - (NSArray *)likersForVideo:(PFObject *)video;
 - (NSArray *)commentersForPhoto:(PFObject *)photo;
 - (NSArray *)commentersForVideo:(PFObject *)video;
+- (NSString *)displayNameForPhoto:(PFObject *)photo;
+- (NSString *)displayNameForVideo:(PFObject *)video;
 - (void)setPhotoIsLikedByCurrentUser:(PFObject *)photo liked:(BOOL)liked;
 - (void)setVideoIsLikedByCurrentUser:(PFObject *)video liked:(BOOL)liked;
 - (BOOL)isPhotoLikedByCurrentUser:(PFObject *)photo;

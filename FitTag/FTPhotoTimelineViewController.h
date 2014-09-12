@@ -10,7 +10,5 @@
 #import "FTVideoCell.h"
 
 @interface FTPhotoTimelineViewController : PFQueryTableViewController <FTPhotoCellDelegate,FTVideoCellDelegate,UIActionSheetDelegate>
-
 - (FTPhotoCell *)dequeueReusableSectionHeaderView;
-
 @end

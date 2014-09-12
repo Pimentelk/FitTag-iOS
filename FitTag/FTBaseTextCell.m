@@ -47,7 +47,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
             timeFormatter = [[TTTTimeIntervalFormatter alloc] init];
         }
         
-        cellInsetWidth = 0.0f;
+        cellInsetWidth = 1.0f;
         hideSeparator = NO;
         self.clipsToBounds = YES;
         horizontalTextSpace =  [FTBaseTextCell horizontalTextSpaceForInsetWidth:cellInsetWidth];
@@ -58,17 +58,21 @@ static TTTTimeIntervalFormatter *timeFormatter;
         self.backgroundColor = [UIColor clearColor];
         
         mainView = [[UIView alloc] initWithFrame:self.contentView.frame];
-        [mainView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"BackgroundComments.png"]]];
         
+        UIImageView *profileHexagon = [self getProfileHexagon];
         self.avatarImageView = [[FTProfileImageView alloc] init];
         [self.avatarImageView setBackgroundColor:[UIColor clearColor]];
         [self.avatarImageView setOpaque:YES];
+        self.avatarImageView.frame = profileHexagon.frame;
+        self.avatarImageView.layer.mask = profileHexagon.layer.mask;
         [mainView addSubview:self.avatarImageView];
         
         self.nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [self.nameButton setBackgroundColor:[UIColor clearColor]];
-        [self.nameButton setTitleColor:[UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
-        [self.nameButton setTitleColor:[UIColor colorWithRed:134.0f/255.0f green:100.0f/255.0f blue:65.0f/255.0f alpha:1.0f] forState:UIControlStateHighlighted];
+        //[self.nameButton setTitleColor:[UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+        //[self.nameButton setTitleColor:[UIColor colorWithRed:134.0f/255.0f green:100.0f/255.0f blue:65.0f/255.0f alpha:1.0f] forState:UIControlStateHighlighted];
+        [self.nameButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+        [self.nameButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
         [self.nameButton.titleLabel setFont:[UIFont boldSystemFontOfSize:13]];
         [self.nameButton.titleLabel setLineBreakMode:NSLineBreakByTruncatingTail];
         [self.nameButton setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -102,7 +106,8 @@ static TTTTimeIntervalFormatter *timeFormatter;
         
         [mainView addSubview:self.avatarImageButton];
         
-        self.separatorImage = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"SeparatorComments.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 1, 0, 1)]];
+        self.separatorImage = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 0.5f)];
+        self.separatorImage.backgroundColor = [UIColor colorWithRed:234.0f/255.0f green:234.0f/255.0f blue:234.0f/255.0f alpha:1];
         [mainView addSubview:separatorImage];
         
         [self.contentView addSubview:mainView];
@@ -169,6 +174,45 @@ static TTTTimeIntervalFormatter *timeFormatter;
 
 
 #pragma mark - FTBaseTextCell
+
+- (UIImageView *)getProfileHexagon{
+    
+    UIImageView *imageView = [[UIImageView alloc] init];
+    imageView.frame = CGRectMake( 4.0f, 4.0f, 32.0f, 32.0f);
+    imageView.backgroundColor = [UIColor redColor];
+    
+    CGRect rect = CGRectMake( 4.0f, 4.0f, 30.0f, 30.0f);
+    
+    CAShapeLayer *hexagonMask = [CAShapeLayer layer];
+    CAShapeLayer *hexagonBorder = [CAShapeLayer layer];
+    hexagonBorder.frame = imageView.layer.bounds;
+    UIBezierPath *hexagonPath = [UIBezierPath bezierPath];
+    
+    CGFloat sideWidth = 2 * ( 0.5 * rect.size.width / 2 );
+    CGFloat lcolumn = rect.size.width - sideWidth;
+    CGFloat height = rect.size.height;
+    CGFloat ty = (rect.size.height - height) / 2;
+    CGFloat tmy = rect.size.height / 4;
+    CGFloat bmy = rect.size.height - tmy;
+    CGFloat by = rect.size.height;
+    CGFloat rightmost = rect.size.width;
+    
+    [hexagonPath moveToPoint:CGPointMake(lcolumn, ty)];
+    [hexagonPath addLineToPoint:CGPointMake(rightmost, tmy)];
+    [hexagonPath addLineToPoint:CGPointMake(rightmost, bmy)];
+    [hexagonPath addLineToPoint:CGPointMake(lcolumn, by)];
+    
+    [hexagonPath addLineToPoint:CGPointMake(0, bmy)];
+    [hexagonPath addLineToPoint:CGPointMake(0, tmy)];
+    [hexagonPath addLineToPoint:CGPointMake(lcolumn, ty)];
+    
+    hexagonMask.path = hexagonPath.CGPath;
+    
+    imageView.layer.mask = hexagonMask;
+    [imageView.layer addSublayer:hexagonBorder];
+    
+    return imageView;
+}
 
 /* Static helper to get the height for a cell if it had the given name and content */
 + (CGFloat)heightForCellWithName:(NSString *)name contentString:(NSString *)content {

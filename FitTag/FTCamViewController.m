@@ -17,10 +17,10 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 
 @interface FTCamViewController () <AVCaptureFileOutputRecordingDelegate>
 //@property (nonatomic, weak) FTCamPreviewView *previewView;
-@property (nonatomic, weak) UIView *liveView;
-@property (nonatomic, weak) UIButton *toggleCamera;
-@property (nonatomic, weak) UIButton *recordButton;
-@property (nonatomic, weak) UIButton *takePicture;
+@property (nonatomic, strong) UIView *liveView;
+@property (nonatomic, strong) UIButton *toggleCamera;
+@property (nonatomic, strong) UIButton *recordButton;
+@property (nonatomic, strong) UIButton *takePicture;
 @property (nonatomic) UIImageView *crosshairs;
 @property (nonatomic) UIImageView *cameraOverlay;
 @property (nonatomic) UIButton *toggleFlash;
@@ -152,10 +152,16 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     [cameraBarOverlay addSubview:toggleCamera];
     [cameraBarOverlay addSubview:toggleFlash];
     
+    NSLog(@"getTopPaddingNavigationBarHeight: %ld",(long)[self getTopPaddingNavigationBarHeight:navigationBarHeight
+                                                              previewHeight:previewHeight
+                                                              elementHeight:74.0f
+                                                                frameHeight:self.view.frame.size.height]);
+    NSLog(@"(self.view.frame.size.width - 74.0f)/2: %f",(self.view.frame.size.width - 74.0f)/2);
+    
     // Take picture
     takePicture = [UIButton buttonWithType:UIButtonTypeCustom];
     [takePicture setFrame:CGRectMake((self.view.frame.size.width - 74.0f)/2,
-                                     [self getTopPaddingNavigationBarHeight:navigationBarHeight
+                                     (long)[self getTopPaddingNavigationBarHeight:navigationBarHeight
                                                               previewHeight:previewHeight
                                                               elementHeight:74.0f
                                                                 frameHeight:self.view.frame.size.height], 74.0f, 74.0f)];

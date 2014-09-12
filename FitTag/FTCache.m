@@ -49,6 +49,7 @@
                                 likers,kFTPhotoAttributesLikersKey,
                                 @([commenters count]),kFTPhotoAttributesCommentCountKey,
                                 commenters,kFTPhotoAttributesCommentersKey,
+                                photo[@"user"][@"displayName"],kFTPhotoAttributesDisplayName,
                                 nil];
     [self setAttributes:attributes forPhoto:photo];
 }
@@ -60,6 +61,7 @@
                                 likers,kFTVideoAttributesLikersKey,
                                 @([commenters count]),kFTVideoAttributesCommentCountKey,
                                 commenters,kFTVideoAttributesCommentersKey,
+                                video[@"user"][@"displayName"],kFTVideoAttributesDisplayName,
                                 nil];
     [self setAttributes:attributes forVideo:video];
 }
@@ -141,6 +143,24 @@
     NSDictionary *attributes = [self attributesForVideo:video];
     if (attributes) {
         return [attributes objectForKey:kFTVideoAttributesCommentersKey];
+    }
+    
+    return [NSArray array];
+}
+
+- (NSArray *)displayNameForPhoto:(PFObject *)photo{
+    NSDictionary *attributes = [self attributesForPhoto:photo];
+    if(attributes){
+        return [attributes objectForKey:kFTPhotoAttributesDisplayName];
+    }
+    
+    return [NSArray array];
+}
+
+- (NSArray *)displayNameForVideo:(PFObject *)video{
+    NSDictionary *attributes = [self attributesForVideo:video];
+    if(attributes){
+        return [attributes objectForKey:kFTVideoAttributesDisplayName];
     }
     
     return [NSArray array];

@@ -132,8 +132,8 @@
     
     [photoCountLabel setText:@"0 photos"];
     
-    PFQuery *queryPhotoCount = [PFQuery queryWithClassName:kFTPostClassName];
-    [queryPhotoCount whereKey:kFTPhotoUserKey equalTo:self.user];
+    PFQuery *queryPhotoCount = [PFQuery queryWithClassName:kFTPostClassKey];
+    [queryPhotoCount whereKey:kFTPostUserKey equalTo:self.user];
     [queryPhotoCount setCachePolicy:kPFCachePolicyCacheThenNetwork];
     [queryPhotoCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
@@ -216,9 +216,9 @@
     if (self.objects.count == 0) {
         query.cachePolicy = kPFCachePolicyCacheThenNetwork;
     }
-    [query whereKey:kFTPhotoUserKey equalTo:self.user];
+    [query whereKey:kFTPostUserKey equalTo:self.user];
     [query orderByDescending:@"createdAt"];
-    [query includeKey:kFTPhotoUserKey];
+    [query includeKey:kFTPostUserKey];
     
     return query;
 }
@@ -278,8 +278,7 @@
     return imageView;
 }
 
-- (void)returnHome:(id)sender
-{
+- (void)returnHome:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
 }
 

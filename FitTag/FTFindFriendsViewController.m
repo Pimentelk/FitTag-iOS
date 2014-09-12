@@ -216,8 +216,8 @@ typedef enum {
             NSNumber *outstandingCountQueryStatus = [self.outstandingCountQueries objectForKey:indexPath];
             if (!outstandingCountQueryStatus) {
                 [self.outstandingCountQueries setObject:[NSNumber numberWithBool:YES] forKey:indexPath];
-                PFQuery *photoNumQuery = [PFQuery queryWithClassName:kFTPhotoClassKey];
-                [photoNumQuery whereKey:kFTPhotoUserKey equalTo:object];
+                PFQuery *photoNumQuery = [PFQuery queryWithClassName:kFTPostClassKey];
+                [photoNumQuery whereKey:kFTPostUserKey equalTo:object];
                 [photoNumQuery setCachePolicy:kPFCachePolicyCacheThenNetwork];
                 [photoNumQuery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
                     @synchronized(self) {

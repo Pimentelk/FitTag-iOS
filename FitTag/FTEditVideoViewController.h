@@ -7,10 +7,11 @@
 //
 
 #import "FTPostDetailsFooterView.h"
+#import <CoreLocation/CoreLocation.h>
 
 @protocol FTEditVideoViewControllerDelegate;
 
-@interface FTEditVideoViewController : UIViewController <UITextFieldDelegate,UIScrollViewDelegate,FTPostDetailsFooterViewDelegate>
+@interface FTEditVideoViewController : UIViewController <UITextFieldDelegate,UIScrollViewDelegate,FTPostDetailsFooterViewDelegate,CLLocationManagerDelegate>
 
 @property (nonatomic,weak) id <FTEditVideoViewControllerDelegate> delegate;
 - (id)initWithVideo:(NSData *)aVideo;

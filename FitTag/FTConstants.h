@@ -58,6 +58,7 @@ extern NSString *const kFTActivityToUserKey;
 extern NSString *const kFTActivityContentKey;
 extern NSString *const kFTActivityPhotoKey;
 extern NSString *const kFTActivityVideoKey;
+extern NSString *const kFTActivityPostKey;
 extern NSString *const kFTActivityHashtag;
 extern NSString *const kFTActivityMention;
 
@@ -68,9 +69,22 @@ extern NSString *const kFTActivityTypeComment;
 extern NSString *const kFTActivityTypeJoined;
 
 #pragma mark - PFObject Post Class
-extern NSString *const kFTPostClassName;
+extern NSString *const kFTPostClassKey;
+
+// Field keys
+extern NSString *const kFTPostImageKey;
+extern NSString *const kFTPostVideoKey;
+extern NSString *const kFTPostKey;
+extern NSString *const kFTPostUserKey;
+extern NSString *const kFTPostThumbnailKey;
+extern NSString *const kFTPostTypeKey;
+extern NSString *const kFTPostOpenGraphIDKey;
+extern NSString *const kFTPostLocationKey;
 
 #pragma mark - PFObject User Class
+// Class key
+extern NSString *const kFTUserClassKey;
+
 // Field keys
 extern NSString *const kFTUserDisplayNameKey;
 extern NSString *const kFTUserFacebookIDKey;
@@ -79,16 +93,17 @@ extern NSString *const kFTUserProfilePicSmallKey;
 extern NSString *const kFTUserProfilePicMediumKey;
 extern NSString *const kFTUserFacebookFriendsKey;
 extern NSString *const kFTUserAlreadyAutoFollowedFacebookFriendsKey;
+extern NSString *const kFTUserLocationKey;
 
 #pragma mark - PFObject Video Class
 // Class key
-extern NSString *const kFTVideoClassKey;
+//extern NSString *const kFTVideoClassKey;
 
 // Field keys
-extern NSString *const kFTVideoImageKey;
-extern NSString *const kFTVideoKey;
-extern NSString *const kFTVideoUserKey;
-extern NSString *const kFTVideoOpenGraphIDKey;
+//extern NSString *const kFTVideoImageKey;
+//extern NSString *const kFTVideoKey;
+//extern NSString *const kFTVideoUserKey;
+//extern NSString *const kFTVideoOpenGraphIDKey;
 
 #pragma mark - Cached Video Attributes
 // keys
@@ -97,16 +112,17 @@ extern NSString *const kFTVideoAttributesLikeCountKey;
 extern NSString *const kFTVideoAttributesLikersKey;
 extern NSString *const kFTVideoAttributesCommentCountKey;
 extern NSString *const kFTVideoAttributesCommentersKey;
+extern NSString *const kFTVideoAttributesDisplayName;
 
 #pragma mark - PFObject Photo Class
 // Class key
-extern NSString *const kFTPhotoClassKey;
+//extern NSString *const kFTPhotoClassKey;
 
 // Field keys
-extern NSString *const kFTPhotoPictureKey;
-extern NSString *const kFTPhotoThumbnailKey;
-extern NSString *const kFTPhotoUserKey;
-extern NSString *const kFTPhotoOpenGraphIDKey;
+//extern NSString *const kFTPhotoPictureKey;
+//extern NSString *const kFTPhotoThumbnailKey;
+//extern NSString *const kFTPhotoUserKey;
+//extern NSString *const kFTPhotoOpenGraphIDKey;
 
 #pragma mark - Cached Photo Attributes
 // keys
@@ -115,6 +131,7 @@ extern NSString *const kFTPhotoAttributesLikeCountKey;
 extern NSString *const kFTPhotoAttributesLikersKey;
 extern NSString *const kFTPhotoAttributesCommentCountKey;
 extern NSString *const kFTPhotoAttributesCommentersKey;
+extern NSString *const kFTPhotoAttributesDisplayName;
 
 
 #pragma mark - Cached User Attributes

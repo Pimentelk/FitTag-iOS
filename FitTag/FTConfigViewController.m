@@ -18,10 +18,10 @@
 #import "FTHomeViewController.h"
 #import "UIImage+ResizeAdditions.h"
 
-@interface FTConfigViewController ()
-{
+@interface FTConfigViewController () {
     FTLoginViewController *logInViewController;
     FTSignupViewController *signUpViewController;
+    CLLocationManager *locationManager;
 }
 @end
 
@@ -35,120 +35,31 @@
     [super viewWillAppear:animated];
 }
 
+-(void)viewDidLoad{
+    [super viewDidLoad];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     //[PFUser logOut]; // For testing log out user.
     PFUser *user = [PFUser currentUser];
-    BOOL isLinkedToTwitter = [PFTwitterUtils isLinkedWithUser:[PFUser currentUser]];
-    BOOL isLinkedToFacebook = [PFFacebookUtils isLinkedWithUser:[PFUser currentUser]];
     BOOL isFirstUserLogin = YES;
     
     if ([user objectForKey:@"lastLogin"]) {
         isFirstUserLogin = NO;
     }
     
-    // Testing
-    /*
+    // Is the user logged in
     if(user){
-    InterestCollectionViewFlowLayout *layoutFlow = [[InterestCollectionViewFlowLayout alloc] init];
-    [layoutFlow setItemSize:CGSizeMake(159.5,42)];
-    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [layoutFlow setMinimumInteritemSpacing:0];
-    [layoutFlow setMinimumLineSpacing:0];
-    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,80)];
-    
-    // Show the interests
-    FTInterestsViewController *rootViewController = [[FTInterestsViewController alloc] initWithCollectionViewLayout:layoutFlow];
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
-    
-    // Present the Interests View Controller
-    [self presentViewController:navController animated:YES completion:NULL];
-    }
-    */
-    
-    if(user){ // Is the user logged in
      
-        if(isFirstUserLogin){ // Is this his first launch
+        // Start Updating Location
+        [[self locationManager] startUpdatingLocation];
+        
+        // Is this his first launch
+        if(isFirstUserLogin){
             
-            if(isLinkedToFacebook){ // Is the user logged in via facebook
-                
-                [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *FBuser, NSError *error) {
-                    
-                    if (!error) {
-                        
-                        NSData* profileImageData = [NSData dataWithContentsOfURL:
-                                                    [NSURL URLWithString:
-                                                     [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=large&width=600&height=600",FBuser[@"id"]]]];
-                        
-                        // Get the data from facebook and put it into the user object
-                        user[@"firstname"]              = FBuser[@"first_name"];
-                        user[@"lastname"]               = FBuser[@"last_name"];
-                        user[@"displayName"]            = FBuser[@"name"];
-                        user[@"email"]                  = FBuser[@"email"];
-                        user[@"facebookId"]             = FBuser[@"id"];
-                        user[@"bio"]                    = @"WHAT MAKES YOU, YOU? (OPTIONAL)";
-                        user[@"profilePictureMedium"]   = [PFFile fileWithName:@"medium.jpeg" data:profileImageData];
-                        user[@"profilePictureSmall"]    = [PFFile fileWithName:@"small.png" data:profileImageData];
-                        user[@"lastLogin"]              = [NSDate date];
-                        
-                        [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                            if (error) {
-                                [user saveEventually];
-                                NSLog(@"error... %@", error);
-                            }
-                        }];
-                        
-                    } else {
-                        
-                        NSLog(@"Facebook Error: %@",error);
-                    }
-                }];
-                
-            }
-            
-            if(isLinkedToTwitter){ // Is the user logged via twitter
-                NSLog(@"isLinkedToTwitter");
-                
-                NSString * requestString = [NSString stringWithFormat:@"https://api.twitter.com/1.1/users/show.json?screen_name=%@", [PFTwitterUtils twitter].screenName];
-                NSURL *verify = [NSURL URLWithString:requestString];
-                NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:verify];
-                [[PFTwitterUtils twitter] signRequest:request];
-                NSURLResponse *response = nil;
-                NSError *error = nil;
-                NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-                
-                if (error == nil){
-                    NSDictionary* TWuser = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
-                    NSString *profile_image_normal = TWuser[@"profile_image_url_https"];
-                    NSString *profile_image = [profile_image_normal stringByReplacingOccurrencesOfString:@"_normal" withString:@""];
-                    NSData *profileImageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:profile_image]];
-                    
-                    NSString *names = [TWuser objectForKey:@"name"];
-                    NSMutableArray *array = [NSMutableArray arrayWithArray:[names componentsSeparatedByString:@" "]];
-                    
-                    if ( array.count > 1){
-                        [user setObject:[array lastObject] forKey:@"lastname"];
-                        [array removeLastObject];
-                        [user setObject:[array componentsJoinedByString:@" "] forKey:@"firstname"];
-                    }
-                    
-                    user[@"displayName"]            = TWuser[@"name"];
-                    user[@"twitterId"]              = [NSString stringWithFormat:@"%@",TWuser[@"id"]];
-                    user[@"bio"]                    = @"WHAT MAKES YOU, YOU? (OPTIONAL)";
-                    user[@"profilePictureMedium"]   = [PFFile fileWithName:@"medium.jpeg" data:profileImageData];
-                    user[@"profilePictureSmall"]    = [PFFile fileWithName:@"small.png" data:profileImageData];
-                    user[@"lastLogin"]              = [NSDate date];
-
-                    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                        if (error) {
-                            [user saveEventually];
-                            NSLog(@"error... %@", error);
-                        }
-                    }];
-                }
-            }
-            
+            [self didLogInWithTwitter:user];
+            [self didLogInWithFacebook:user];
             
             InterestCollectionViewFlowLayout *layoutFlow = [[InterestCollectionViewFlowLayout alloc] init];
             [layoutFlow setItemSize:CGSizeMake(159.5,42)];
@@ -165,8 +76,9 @@
             // Present the Interests View Controller
             [self presentViewController:navController animated:YES completion:NULL];
             
-        } else { // This is not the users first login
+        } else {
             
+            // Returning user
             FeedCollectionViewFlowLayout *layoutFlow = [[FeedCollectionViewFlowLayout alloc] init];
             [layoutFlow setItemSize:CGSizeMake(320,320)];
             [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -176,13 +88,12 @@
             [layoutFlow setHeaderReferenceSize:CGSizeMake(320,80)];
             
             // Show the interests
-            FTHomeViewController *rootViewController = [[FTHomeViewController alloc] initWithClassName:kFTPhotoClassKey];
+            FTHomeViewController *rootViewController = [[FTHomeViewController alloc] initWithClassName:kFTPostClassKey];
             UINavigationController *navController = [[UINavigationController alloc] initWithNavigationBarClass:[FTNavigationBar class] toolbarClass:[FTToolBar class]];
             [navController setViewControllers:@[rootViewController] animated:NO];
             
             // Present the Interests View Controller
             [self presentViewController:navController animated:YES completion:NULL];
-            
         }
         
     } else {
@@ -201,24 +112,140 @@
         
         // Present Log In View Controller
         [self presentViewController:logInViewController animated:YES completion:NULL];
-        
     }
 }
 
-- (void)viewDidLoad{
-    [super viewDidLoad];
-    //NSLog(@"viewDidAppear");
-    // Do any additional setup after loading the view.
+-(void) didLogInWithTwitter:(PFObject *)user{
+    if ([self isLoggedInWithTwitter]) {
+        NSLog(@"isLinkedToTwitter");
+        NSString * requestString = [NSString stringWithFormat:@"https://api.twitter.com/1.1/users/show.json?screen_name=%@",[PFTwitterUtils twitter].screenName];
+        NSURL *verify = [NSURL URLWithString:requestString];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:verify];
+        [[PFTwitterUtils twitter] signRequest:request];
+        NSURLResponse *response = nil;
+        NSError *error = nil;
+        NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+        
+        if (error == nil){
+            NSDictionary* TWuser = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+            NSString *profile_image_normal = TWuser[@"profile_image_url_https"];
+            NSString *profile_image = [profile_image_normal stringByReplacingOccurrencesOfString:@"_normal" withString:@""];
+            NSData *profileImageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:profile_image]];
+            
+            NSString *names = [TWuser objectForKey:@"name"];
+            NSMutableArray *array = [NSMutableArray arrayWithArray:[names componentsSeparatedByString:@" "]];
+            
+            if ( array.count > 1){
+                [user setObject:[array lastObject] forKey:@"lastname"];
+                [array removeLastObject];
+                [user setObject:[array componentsJoinedByString:@" "] forKey:@"firstname"];
+            }
+            
+            user[@"displayName"]            = TWuser[@"name"];
+            user[@"twitterId"]              = [NSString stringWithFormat:@"%@",TWuser[@"id"]];
+            user[@"bio"]                    = @"WHAT MAKES YOU, YOU? (OPTIONAL)";
+            user[@"profilePictureMedium"]   = [PFFile fileWithName:@"medium.jpeg" data:profileImageData];
+            user[@"profilePictureSmall"]    = [PFFile fileWithName:@"small.png" data:profileImageData];
+            user[@"lastLogin"]              = [NSDate date];
+            
+            [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (error) {
+                    [user saveEventually];
+                    NSLog(@"error... %@", error);
+                }
+            }];
+        }
+    } else {
+        NSLog(@"User is not logged in to twitter...");
+    }
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [self.navigationController setNavigationBarHidden:NO animated:animated];
-    [super viewWillDisappear:animated];
+-(void) didLogInWithFacebook:(PFObject *)user{
+    if([self isLoggedInWithFacebook]){ // Is the user logged in via facebook
+        [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *FBuser, NSError *error) {
+            
+            if (!error) {
+                
+                NSData* profileImageData = [NSData dataWithContentsOfURL:
+                                            [NSURL URLWithString:
+                                             [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=large&width=600&height=600",FBuser[@"id"]]]];
+                
+                // Get the data from facebook and put it into the user object
+                user[@"firstname"]              = FBuser[@"first_name"];
+                user[@"lastname"]               = FBuser[@"last_name"];
+                user[@"displayName"]            = FBuser[@"name"];
+                user[@"email"]                  = FBuser[@"email"];
+                user[@"facebookId"]             = FBuser[@"id"];
+                user[@"bio"]                    = @"WHAT MAKES YOU, YOU? (OPTIONAL)";
+                user[@"profilePictureMedium"]   = [PFFile fileWithName:@"medium.jpeg" data:profileImageData];
+                user[@"profilePictureSmall"]    = [PFFile fileWithName:@"small.png" data:profileImageData];
+                user[@"lastLogin"]              = [NSDate date];
+                
+                [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    if (error) {
+                        [user saveEventually];
+                        NSLog(@"error... %@", error);
+                    }
+                }];
+                
+            } else {
+                
+                NSLog(@"Facebook Error: %@",error);
+            }
+        }];
+        
+    } else {
+        NSLog(@"User is not logged in to facebook");
+    }
 }
 
-- (void)didReceiveMemoryWarning{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+-(BOOL) isLoggedInWithTwitter{
+    return [PFTwitterUtils isLinkedWithUser:[PFUser currentUser]];
+}
+
+-(BOOL) isLoggedInWithFacebook{
+    return [PFFacebookUtils isLinkedWithUser:[PFUser currentUser]];
+}
+
+#pragma mark - CLLocationManagerDelegate
+
+- (CLLocationManager *)locationManager {
+    if (locationManager != nil) {
+        return locationManager;
+    }
+    
+    locationManager = [[CLLocationManager alloc] init];
+    locationManager.delegate = self;
+    locationManager.distanceFilter = kCLDistanceFilterNone;
+    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    
+    return locationManager;
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    NSLog(@"didFailWithError: %@", error);
+    UIAlertView *errorAlert = [[UIAlertView alloc]
+                               initWithTitle:@"Error" message:@"Failed to Get Your Location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [errorAlert show];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+    [locationManager stopUpdatingLocation];
+    PFUser *user = [PFUser currentUser];
+    if (user) {
+        CLLocation *location = [locations lastObject];
+        //NSLog(@"lat%f - lon%f", location.coordinate.latitude, location.coordinate.longitude);
+        
+        PFGeoPoint *geoPoint = [PFGeoPoint geoPointWithLatitude:location.coordinate.latitude
+                                                      longitude:location.coordinate.longitude];
+        
+        user[@"location"] = geoPoint;
+        [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+                //NSLog(@"User location updated successfully.");
+            }
+        }];
+    }
 }
 
 #pragma mark - PFLogInViewControllerDelegate

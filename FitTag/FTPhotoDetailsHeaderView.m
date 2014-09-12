@@ -19,7 +19,6 @@
 #define vertBorderSpacing 6.0f
 #define vertSmallSpacing 2.0f
 
-
 #define nameHeaderX baseHorizontalOffset
 #define nameHeaderY 0.0f
 #define nameHeaderWidth baseWidth
@@ -65,6 +64,7 @@
 @property (nonatomic, strong) PFImageView *photoImageView;
 @property (nonatomic, strong) UIView *likeBarView;
 @property (nonatomic, strong) NSMutableArray *currentLikeAvatars;
+@property (nonatomic, strong) UIButton *moreButton;
 
 // Redeclare for edit
 @property (nonatomic, strong, readwrite) PFUser *photographer;
@@ -88,6 +88,11 @@ static TTTTimeIntervalFormatter *timeFormatter;
 @synthesize likeButton;
 @synthesize delegate;
 @synthesize currentLikeAvatars;
+@synthesize usernameRibbon;
+@synthesize likeCounter;
+@synthesize commentCounter;
+@synthesize commentButton;
+@synthesize moreButton;
 
 #pragma mark - NSObject
 
@@ -100,7 +105,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
         }
         
         self.photo = aPhoto;
-        self.photographer = [self.photo objectForKey:kFTPhotoUserKey];
+        self.photographer = [self.photo objectForKey:kFTPostUserKey];
         self.likeUsers = nil;
         
         self.backgroundColor = [UIColor clearColor];
@@ -156,6 +161,45 @@ static TTTTimeIntervalFormatter *timeFormatter;
     }
 }
 
+- (UIImageView *)getProfileHexagon{
+    
+    UIImageView *imageView = [[UIImageView alloc] init];
+    imageView.frame = CGRectMake( 4.0f, 4.0f, 42.0f, 42.0f);
+    imageView.backgroundColor = [UIColor redColor];
+    
+    CGRect rect = CGRectMake( 4.0f, 4.0f, 40.0f, 40.0f);
+    
+    CAShapeLayer *hexagonMask = [CAShapeLayer layer];
+    CAShapeLayer *hexagonBorder = [CAShapeLayer layer];
+    hexagonBorder.frame = imageView.layer.bounds;
+    UIBezierPath *hexagonPath = [UIBezierPath bezierPath];
+    
+    CGFloat sideWidth = 2 * ( 0.5 * rect.size.width / 2 );
+    CGFloat lcolumn = rect.size.width - sideWidth;
+    CGFloat height = rect.size.height;
+    CGFloat ty = (rect.size.height - height) / 2;
+    CGFloat tmy = rect.size.height / 4;
+    CGFloat bmy = rect.size.height - tmy;
+    CGFloat by = rect.size.height;
+    CGFloat rightmost = rect.size.width;
+    
+    [hexagonPath moveToPoint:CGPointMake(lcolumn, ty)];
+    [hexagonPath addLineToPoint:CGPointMake(rightmost, tmy)];
+    [hexagonPath addLineToPoint:CGPointMake(rightmost, bmy)];
+    [hexagonPath addLineToPoint:CGPointMake(lcolumn, by)];
+    
+    [hexagonPath addLineToPoint:CGPointMake(0, bmy)];
+    [hexagonPath addLineToPoint:CGPointMake(0, tmy)];
+    [hexagonPath addLineToPoint:CGPointMake(lcolumn, ty)];
+    
+    hexagonMask.path = hexagonPath.CGPath;
+    
+    imageView.layer.mask = hexagonMask;
+    [imageView.layer addSublayer:hexagonBorder];
+    
+    return imageView;
+}
+
 - (void)setLikeUsers:(NSMutableArray *)anArray {
     likeUsers = [anArray sortedArrayUsingComparator:^NSComparisonResult(PFUser *liker1, PFUser *liker2) {
         NSString *displayName1 = [liker1 objectForKey:kFTUserDisplayNameKey];
@@ -174,7 +218,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
         [image removeFromSuperview];
     }
     
-    [likeButton setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)self.likeUsers.count] forState:UIControlStateNormal];
+    [likeCounter setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)self.likeUsers.count] forState:UIControlStateNormal];
     
     self.currentLikeAvatars = [[NSMutableArray alloc] initWithCapacity:likeUsers.count];
     NSInteger i;
@@ -214,15 +258,21 @@ static TTTTimeIntervalFormatter *timeFormatter;
 #pragma mark - ()
 
 - (void)createView {
+    
+    self.clipsToBounds = YES;
+    self.nameHeaderView.clipsToBounds = YES;
+    self.superview.clipsToBounds = YES;
+    [self setBackgroundColor:[UIColor clearColor]];
+    
     /*
      Create middle section of the header view; the image
      */
     self.photoImageView = [[PFImageView alloc] initWithFrame:CGRectMake(mainImageX, mainImageY, mainImageWidth, mainImageHeight)];
-    self.photoImageView.image = [UIImage imageNamed:@"PlaceholderPhoto.png"];
+    //self.photoImageView.image = [UIImage imageNamed:@"PlaceholderPhoto.png"];
     self.photoImageView.backgroundColor = [UIColor blackColor];
-    self.photoImageView.contentMode = UIViewContentModeScaleAspectFit;
+    self.photoImageView.contentMode = UIViewContentModeScaleAspectFill;
     
-    PFFile *imageFile = [self.photo objectForKey:kFTPhotoPictureKey];
+    PFFile *imageFile = [self.photo objectForKey:kFTPostImageKey];
     
     if (imageFile) {
         self.photoImageView.file = imageFile;
@@ -235,58 +285,39 @@ static TTTTimeIntervalFormatter *timeFormatter;
      Create top of header view with name and avatar
      */
     self.nameHeaderView = [[UIView alloc] initWithFrame:CGRectMake(nameHeaderX, nameHeaderY, nameHeaderWidth, nameHeaderHeight)];
-    self.nameHeaderView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"BackgroundComments.png"]];
+    self.nameHeaderView.backgroundColor = [UIColor clearColor];
     [self addSubview:self.nameHeaderView];
-    
-    CALayer *layer = self.nameHeaderView.layer;
-    layer.backgroundColor = [UIColor whiteColor].CGColor;
-    layer.masksToBounds = NO;
-    layer.shadowRadius = 1.0f;
-    layer.shadowOffset = CGSizeMake( 0.0f, 2.0f);
-    layer.shadowOpacity = 0.5f;
-    layer.shouldRasterize = YES;
-    
-    layer.shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake( 0.0f, self.nameHeaderView.frame.size.height - 4.0f, self.nameHeaderView.frame.size.width, 4.0f)].CGPath;
     
     // Load data for header
     [self.photographer fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         // Create avatar view
+        UIImageView *profileHexagon = [self getProfileHexagon];
         FTProfileImageView *avatarImageView = [[FTProfileImageView alloc] initWithFrame:CGRectMake(avatarImageX, avatarImageY, avatarImageDim, avatarImageDim)];
         [avatarImageView setFile:[self.photographer objectForKey:kFTUserProfilePicSmallKey]];
         [avatarImageView setBackgroundColor:[UIColor clearColor]];
-        [avatarImageView setOpaque:NO];
+        [avatarImageView setFrame:profileHexagon.frame];
+        [avatarImageView.layer setMask:profileHexagon.layer.mask];
+        //[avatarImageView setOpaque:NO];
         [avatarImageView.profileButton addTarget:self action:@selector(didTapUserNameButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        //[avatarImageView load:^(UIImage *image, NSError *error) {}];
         [nameHeaderView addSubview:avatarImageView];
         
-        // Create name label
-        NSString *nameString = [self.photographer objectForKey:kFTUserDisplayNameKey];
-        UIButton *userButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [nameHeaderView addSubview:userButton];
-        [userButton setBackgroundColor:[UIColor clearColor]];
-        [[userButton titleLabel] setFont:[UIFont boldSystemFontOfSize:15.0f]];
-        [userButton setTitle:nameString forState:UIControlStateNormal];
-        [userButton setTitleColor:[UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
-        [userButton setTitleColor:[UIColor colorWithRed:134.0f/255.0f green:100.0f/255.0f blue:65.0f/255.0f alpha:1.0f] forState:UIControlStateHighlighted];
-        [[userButton titleLabel] setLineBreakMode:NSLineBreakByTruncatingTail];
-        [[userButton titleLabel] setShadowOffset:CGSizeMake(0.0f, 1.0f)];
-        [userButton setTitleShadowColor:[UIColor colorWithWhite:1.0f alpha:0.750f] forState:UIControlStateNormal];
-        [userButton addTarget:self action:@selector(didTapUserNameButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        //username_ribbon
+        usernameRibbon = [UIButton buttonWithType:UIButtonTypeCustom];
+        UIImage *image = [FTPhotoDetailsHeaderView imageWithImage:[UIImage imageNamed:@"username_ribbon"] scaledToSize:CGSizeMake(88.0f,20.0f)];
+        [usernameRibbon setBackgroundColor:[UIColor colorWithPatternImage:image]];
+        [usernameRibbon setFrame:CGRectMake(avatarImageView.frame.size.width + avatarImageView.frame.origin.x - 4,
+                                            avatarImageView.frame.origin.y + 10, 88.0f, 20.0f)];
         
-        // we resize the button to fit the user's name to avoid having a huge touch area
-        CGPoint userButtonPoint = CGPointMake(50.0f, 6.0f);
-        CGFloat constrainWidth = self.nameHeaderView.bounds.size.width - (avatarImageView.bounds.origin.x + avatarImageView.bounds.size.width);
-        CGSize constrainSize = CGSizeMake(constrainWidth, self.nameHeaderView.bounds.size.height - userButtonPoint.y*2.0f);
-        CGSize userButtonSize = [userButton.titleLabel.text boundingRectWithSize:constrainSize
-                                                                         options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
-                                                                      attributes:@{NSFontAttributeName:userButton.titleLabel.font}
-                                                                         context:nil].size;
-        
-        
-        CGRect userButtonFrame = CGRectMake(userButtonPoint.x, userButtonPoint.y, userButtonSize.width, userButtonSize.height);
-        [userButton setFrame:userButtonFrame];
+        [self.usernameRibbon addTarget:self action:@selector(didTapUserNameButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [self.usernameRibbon setTitle:[self.photographer objectForKey:kFTUserDisplayNameKey] forState:UIControlStateNormal];
+        [self.usernameRibbon.titleLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:10]];
+        self.usernameRibbon.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+        self.usernameRibbon.contentEdgeInsets = UIEdgeInsetsMake(0, 5, 0, 0);
+        [nameHeaderView addSubview:self.usernameRibbon];
+        [nameHeaderView bringSubviewToFront:avatarImageView];
         
         // Create time label
+        /*
         NSString *timeString = [timeFormatter stringForTimeIntervalFromDate:[NSDate date] toDate:[self.photo createdAt]];
         CGSize timeLabelSize = [timeString boundingRectWithSize:CGSizeMake(nameLabelMaxWidth, CGFLOAT_MAX)
                                                         options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
@@ -301,45 +332,64 @@ static TTTTimeIntervalFormatter *timeFormatter;
         [timeLabel setShadowOffset:CGSizeMake(0.0f, 1.0f)];
         [timeLabel setBackgroundColor:[UIColor clearColor]];
         [self.nameHeaderView addSubview:timeLabel];
-        
+         */
         [self setNeedsDisplay];
     }];
     
-    /*
-     Create bottom section fo the header view; the likes
-     */
-    likeBarView = [[UIView alloc] initWithFrame:CGRectMake(likeBarX, likeBarY, likeBarWidth, likeBarHeight)];
-    [likeBarView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"BackgroundComments.png"]]];
-    [self addSubview:likeBarView];
+    /* Create bottom section fo the header view; the likes */
+    UIView *previewButtons = [[UIView alloc] init];
+    previewButtons.frame = CGRectMake(120.0f, 295.0f, 200.0f, 22.0f);
+    previewButtons.backgroundColor = [UIColor clearColor];
+    [self addSubview:previewButtons];
     
     // Create the heart-shaped like button
     likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [likeButton setFrame:CGRectMake(likeButtonX, likeButtonY, likeButtonDim, likeButtonDim)];
+    [likeButton setFrame:CGRectMake(5.0f, 1.0f, 21.0f, 18.0f)];
     [likeButton setBackgroundColor:[UIColor clearColor]];
-    [likeButton setTitleColor:[UIColor colorWithRed:0.369f green:0.271f blue:0.176f alpha:1.0f] forState:UIControlStateNormal];
-    [likeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
-    [likeButton setTitleShadowColor:[UIColor colorWithWhite:1.0f alpha:0.750f] forState:UIControlStateNormal];
-    [likeButton setTitleShadowColor:[UIColor colorWithWhite:0.0f alpha:0.750f] forState:UIControlStateSelected];
-    [likeButton setTitleEdgeInsets:UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f)];
-    [[likeButton titleLabel] setFont:[UIFont systemFontOfSize:12.0f]];
-    [[likeButton titleLabel] setMinimumScaleFactor:0.8f];
-    [[likeButton titleLabel] setAdjustsFontSizeToFitWidth:YES];
-    [[likeButton titleLabel] setShadowOffset:CGSizeMake(0.0f, 1.0f)];
     [likeButton setAdjustsImageWhenDisabled:NO];
     [likeButton setAdjustsImageWhenHighlighted:NO];
-    [likeButton setBackgroundImage:[UIImage imageNamed:@"ButtonLike.png"] forState:UIControlStateNormal];
-    [likeButton setBackgroundImage:[UIImage imageNamed:@"ButtonLikeSelected.png"] forState:UIControlStateSelected];
-    [likeButton addTarget:self action:@selector(didTapLikePhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-    [likeBarView addSubview:likeButton];
+    [likeButton setBackgroundImage:[UIImage imageNamed:@"heart_white"] forState:UIControlStateNormal];
+    [likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateSelected];
+    [likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateHighlighted];
+    [previewButtons addSubview:likeButton];
     
+    likeCounter = [UIButton buttonWithType:UIButtonTypeCustom];
+    [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x + 3.0f, likeButton.frame.origin.y, 37.0f, 19.0f)];
+    [likeCounter setBackgroundColor:[UIColor clearColor]];
+    [likeCounter setTitle:@"0" forState:UIControlStateNormal];
+    [likeCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
+    [previewButtons addSubview:likeCounter];
+    
+    // comments button
+    commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [previewButtons addSubview:commentButton];
+    [commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x + 15.0f, likeCounter.frame.origin.y, 21.0f, 18.0f)];
+    [commentButton setBackgroundColor:[UIColor clearColor]];
+    [commentButton setTitle:@"" forState:UIControlStateNormal];
+    [commentButton setBackgroundImage:[UIImage imageNamed:@"comment_bubble"] forState:UIControlStateNormal];
+    [commentButton setSelected:NO];
+    
+    commentCounter = [UIButton buttonWithType:UIButtonTypeCustom];
+    [commentCounter setFrame: CGRectMake(self.commentButton.frame.origin.x + self.commentButton.frame.size.width + 3.0f, self.commentButton.frame.origin.y, 37.0f, 19.0f)];
+    [commentCounter setBackgroundColor:[UIColor clearColor]];
+    [commentCounter setTitle:@"" forState:UIControlStateNormal];
+    [commentCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
+    [previewButtons addSubview:commentCounter];
+    
+    moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [moreButton setBackgroundImage:[UIImage imageNamed:@"more_button"] forState:UIControlStateNormal];
+    [moreButton setFrame:CGRectMake(commentCounter.frame.size.width + commentCounter.frame.origin.x + 15.0f, commentCounter.frame.origin.y, 35.0f, 19.0f)];
+    [moreButton setBackgroundColor:[UIColor clearColor]];
+    [moreButton setTitle:@"" forState:UIControlStateNormal];
+    [previewButtons addSubview:moreButton];
+    [self bringSubviewToFront:previewButtons];
     [self reloadLikeBar];
     
-    UIImageView *separator = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"SeparatorComments.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0f, 1.0f, 0.0f, 1.0f)]];
-    [separator setFrame:CGRectMake(0.0f, likeBarView.frame.size.height - 2.0f, likeBarView.frame.size.width, 2.0f)];
-    [likeBarView addSubview:separator];
+    
 }
 
 - (void)didTapLikePhotoButtonAction:(UIButton *)button {
+    NSLog(@"didTapLikePhotoButtonAction:");
     BOOL liked = !button.selected;
     [button removeTarget:self action:@selector(didTapLikePhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self setLikeButtonState:liked];
@@ -387,16 +437,36 @@ static TTTTimeIntervalFormatter *timeFormatter;
 }
 
 - (void)didTapLikerButtonAction:(UIButton *)button {
+    NSLog(@"didTapLikerButtonAction:");
     PFUser *user = [self.likeUsers objectAtIndex:button.tag];
     if (delegate && [delegate respondsToSelector:@selector(photoDetailsHeaderView:didTapUserButton:user:)]) {
         [delegate photoDetailsHeaderView:self didTapUserButton:button user:user];
     }
 }
 
-- (void)didTapUserNameButtonAction:(UIButton *)button {
+- (void)didTapUserNameButtonAction:(id)button {
+    NSLog(@"didTapUserNameButtonAction:");
     if (delegate && [delegate respondsToSelector:@selector(photoDetailsHeaderView:didTapUserButton:user:)]) {
         [delegate photoDetailsHeaderView:self didTapUserButton:button user:self.photographer];
     }    
+}
+
+- (void)didTapUserButtonAction:(UIButton *)button {
+    NSLog(@"didTapUserButtonAction:");
+    if (delegate && [delegate respondsToSelector:@selector(photoDetailsHeaderView:didTapUserButton:user:)]) {
+        [delegate photoDetailsHeaderView:self didTapUserButton:button user:self.photographer];
+    }
+}
+
++ (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize {
+    //UIGraphicsBeginImageContext(newSize);
+    // In next line, pass 0.0 to use the current device's pixel scaling factor (and thus account for Retina resolution).
+    // Pass 1.0 to force exact pixel size.
+    UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
+    [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
 }
 
 @end

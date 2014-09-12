@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-@interface FTConfigViewController : UIViewController <PFLogInViewControllerDelegate,PFSignUpViewControllerDelegate>
+#import <CoreLocation/CoreLocation.h>
+
+@interface FTConfigViewController : UIViewController <PFLogInViewControllerDelegate,PFSignUpViewControllerDelegate,CLLocationManagerDelegate>
 @property (nonatomic, assign, getter = isFirstLaunch) BOOL firstLaunch;
 @end

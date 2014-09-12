@@ -9,7 +9,9 @@
 #import "FTEditVideoViewController.h"
 #import "UIImage+ResizeAdditions.h"
 
-@interface FTEditVideoViewController ()
+@interface FTEditVideoViewController (){
+    CLLocationManager *locationManager;
+}
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) NSData *video;
 @property (nonatomic, strong) UITextField *commentTextField;
@@ -20,6 +22,7 @@
 @property (nonatomic, strong) PFFile *videoFile;
 @property (nonatomic, strong) PFFile *imageFile;
 @property (nonatomic, strong) FTPostDetailsFooterView *postDetailsFooterView;
+@property (nonatomic, strong) PFGeoPoint *geoPoint;
 @end
 
 @implementation FTEditVideoViewController
@@ -89,6 +92,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    // Start Updating Location
+    [[self locationManager] startUpdatingLocation];
     
     // NavigationBar & ToolBar
     [self.navigationController.navigationBar setHidden:NO];
@@ -256,8 +262,7 @@
         return;
     }
     
-    if ([PFUser currentUser]) {
-        
+    if ([PFUser currentUser]) {        
         NSDictionary *userInfo = [NSDictionary dictionary];
         NSString *trimmedComment = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         
@@ -269,10 +274,12 @@
         NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[self checkForMention]];
         
         // create a video object
-        PFObject *video = [PFObject objectWithClassName:kFTVideoClassKey];
-        [video setObject:[PFUser currentUser] forKey:kFTVideoUserKey];
-        [video setObject:self.imageFile forKey:kFTVideoImageKey];
-        [video setObject:self.videoFile forKey:kFTVideoKey];
+        PFObject *video = [PFObject objectWithClassName:kFTPostClassKey];
+        [video setObject:[PFUser currentUser] forKey:kFTPostUserKey];
+        [video setObject:self.imageFile forKey:kFTPostImageKey];
+        [video setObject:self.videoFile forKey:kFTPostVideoKey];
+        [video setObject:kFTPostVideoKey forKey:kFTPostTypeKey];
+        [video setObject:self.geoPoint forKey:kFTPostLocationKey];
         
         // photos are public, but may only be modified by the user who uploaded them
         PFACL *videoACL = [PFACL ACLWithUser:[PFUser currentUser]];
@@ -337,6 +344,40 @@
 
 - (void)cancelButtonAction:(id)sender {
     [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - CLLocationManagerDelegate
+
+- (CLLocationManager *)locationManager {
+    if (locationManager != nil) {
+        return locationManager;
+    }
+    
+    locationManager = [[CLLocationManager alloc] init];
+    locationManager.delegate = self;
+    locationManager.distanceFilter = kCLDistanceFilterNone;
+    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    
+    return locationManager;
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    NSLog(@"didFailWithError: %@", error);
+    UIAlertView *errorAlert = [[UIAlertView alloc]
+                               initWithTitle:@"Error" message:@"Failed to Get Your Location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [errorAlert show];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+    [locationManager stopUpdatingLocation];
+    PFUser *user = [PFUser currentUser];
+    if (user) {
+        CLLocation *location = [locations lastObject];
+        //NSLog(@"lat%f - lon%f", location.coordinate.latitude, location.coordinate.longitude);
+        
+        self.geoPoint = [PFGeoPoint geoPointWithLatitude:location.coordinate.latitude
+                                               longitude:location.coordinate.longitude];
+    }
 }
 
 @end

@@ -138,7 +138,7 @@
     photo = aPhoto;
     
     // user's avatar
-    PFUser *user = [self.photo objectForKey:kFTPhotoUserKey];
+    PFUser *user = [self.photo objectForKey:kFTPostUserKey];
     PFFile *profilePictureSmall = [user objectForKey:kFTUserProfilePicSmallKey];
     [self.avatarImageView setFile:profilePictureSmall];
     
@@ -211,7 +211,7 @@
 
 - (void)didTapUserButtonAction:(UIButton *)sender {
     if (delegate && [delegate respondsToSelector:@selector(photoHeaderView:didTapUserButton:user:)]) {
-        [delegate photoHeaderView:self didTapUserButton:sender user:[self.photo objectForKey:kFTPhotoUserKey]];
+        [delegate photoHeaderView:self didTapUserButton:sender user:[self.photo objectForKey:kFTPostUserKey]];
     }
 }
 

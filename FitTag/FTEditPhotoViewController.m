@@ -9,7 +9,12 @@
 #import "FTEditPhotoViewController.h"
 #import "UIImage+ResizeAdditions.h"
 
-@interface FTEditPhotoViewController ()
+@interface FTEditPhotoViewController (){
+    CLLocationManager *locationManager;
+}
+@end
+
+@interface FTEditPhotoViewController()
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, strong) NSString *videoURL;
@@ -20,6 +25,7 @@
 @property (nonatomic, assign) NSInteger scrollViewHeight;
 @property (nonatomic, strong) PFFile *photoFile;
 @property (nonatomic, strong) PFFile *thumbnailFile;
+@property (nonatomic, strong) PFGeoPoint *geoPoint;
 @end
 
 @implementation FTEditPhotoViewController
@@ -94,6 +100,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    // Start Updating Location
+    [[self locationManager] startUpdatingLocation];
+    
     // NavigationBar & ToolBar
     [self.navigationController.navigationBar setHidden:NO];
     [self.navigationController.toolbar setHidden:YES];
@@ -140,6 +149,7 @@
 }
 
 #pragma mark - ()
+
 
 - (NSArray *) checkForHashtag {
     NSError *error = nil;
@@ -266,15 +276,17 @@
         
         NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[self checkForHashtag]];
         NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[self checkForMention]];
-        NSLog(@"HashTags: %@",hashtags);
-        NSLog(@"Mentions: %@",mentions);
+        //NSLog(@"HashTags: %@",hashtags);
+        //NSLog(@"Mentions: %@",mentions);
         
         // create a photo object
-        PFObject *photo = [PFObject objectWithClassName:kFTPhotoClassKey];
-        [photo setObject:[PFUser currentUser] forKey:kFTPhotoUserKey];
-        [photo setObject:self.photoFile forKey:kFTPhotoPictureKey];
-        [photo setObject:self.thumbnailFile forKey:kFTPhotoThumbnailKey];
-    
+        PFObject *photo = [PFObject objectWithClassName:kFTPostClassKey];
+        [photo setObject:[PFUser currentUser] forKey:kFTPostUserKey];
+        [photo setObject:self.photoFile forKey:kFTPostImageKey];
+        [photo setObject:self.thumbnailFile forKey:kFTPostThumbnailKey];
+        [photo setObject:kFTPostImageKey forKey:kFTPostTypeKey];
+        [photo setObject:self.geoPoint forKey:kFTPostLocationKey];
+        
         // photos are public, but may only be modified by the user who uploaded them
         PFACL *photoACL = [PFACL ACLWithUser:[PFUser currentUser]];
         [photoACL setPublicReadAccess:YES];
@@ -342,6 +354,39 @@
 - (void)setCoverPhoto:(UIImage *)photo Caption:(NSString *)caption{
     if ([delegate respondsToSelector:@selector(setCoverPhoto:Caption:)]){
         [delegate setCoverPhoto:photo Caption:caption];
+    }
+}
+
+#pragma mark - CLLocationManagerDelegate
+
+- (CLLocationManager *)locationManager {
+    if (locationManager != nil) {
+        return locationManager;
+    }
+    
+    locationManager = [[CLLocationManager alloc] init];
+    locationManager.delegate = self;
+    locationManager.distanceFilter = kCLDistanceFilterNone;
+    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    
+    return locationManager;
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    NSLog(@"didFailWithError: %@", error);
+    UIAlertView *errorAlert = [[UIAlertView alloc]
+                               initWithTitle:@"Error" message:@"Failed to Get Your Location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [errorAlert show];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+    [locationManager stopUpdatingLocation];
+    PFUser *user = [PFUser currentUser];
+    if (user) {
+        CLLocation *location = [locations lastObject];
+        //NSLog(@"lat%f - lon%f", location.coordinate.latitude, location.coordinate.longitude);
+        self.geoPoint = [PFGeoPoint geoPointWithLatitude:location.coordinate.latitude
+                                               longitude:location.coordinate.longitude];
     }
 }
 

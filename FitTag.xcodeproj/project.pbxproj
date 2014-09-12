@@ -9,8 +9,13 @@
 /* Begin PBXBuildFile section */
 		2D007B5F19B3CA46006E1484 /* FTVideoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B5E19B3CA46006E1484 /* FTVideoCell.m */; };
 		2D007B6119B4074F006E1484 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D007B6019B4074F006E1484 /* MediaPlayer.framework */; };
+		2D007B6419B6A5A1006E1484 /* FTSearchHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B6319B6A5A1006E1484 /* FTSearchHeaderView.m */; };
+		2D007B6719B6B321006E1484 /* FTSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B6619B6B321006E1484 /* FTSearchResultsViewController.m */; };
+		2D007B6A19B6C6BB006E1484 /* FTSearchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B6919B6C6BB006E1484 /* FTSearchCell.m */; };
 		2D0A53A81971997F0091FFCA /* InspirationCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */; };
 		2D0A53AC1971ABFF0091FFCA /* FindFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53AB1971ABFF0091FFCA /* FindFriendsViewController.m */; };
+		2D197E8E19C1B5BA00E91274 /* FTGeoPointAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D197E8D19C1B5BA00E91274 /* FTGeoPointAnnotation.m */; };
+		2D197E9119C1BC7900E91274 /* FTMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D197E9019C1BC7900E91274 /* FTMapViewController.m */; };
 		2D410F481973575C00CE2940 /* FTFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F471973575C00CE2940 /* FTFeedViewController.m */; };
 		2D410F4C1973581A00CE2940 /* FeedCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F4B1973581A00CE2940 /* FeedCollectionViewFlowLayout.m */; };
 		2D410F4F19735B5B00CE2940 /* FTNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F4E19735B5B00CE2940 /* FTNavigationBar.m */; };
@@ -98,10 +103,20 @@
 		2D007B5D19B3CA46006E1484 /* FTVideoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTVideoCell.h; sourceTree = "<group>"; };
 		2D007B5E19B3CA46006E1484 /* FTVideoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTVideoCell.m; sourceTree = "<group>"; };
 		2D007B6019B4074F006E1484 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		2D007B6219B6A5A1006E1484 /* FTSearchHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSearchHeaderView.h; sourceTree = "<group>"; };
+		2D007B6319B6A5A1006E1484 /* FTSearchHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchHeaderView.m; sourceTree = "<group>"; };
+		2D007B6519B6B321006E1484 /* FTSearchResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSearchResultsViewController.h; sourceTree = "<group>"; };
+		2D007B6619B6B321006E1484 /* FTSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchResultsViewController.m; sourceTree = "<group>"; };
+		2D007B6819B6C6BB006E1484 /* FTSearchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSearchCell.h; sourceTree = "<group>"; };
+		2D007B6919B6C6BB006E1484 /* FTSearchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchCell.m; sourceTree = "<group>"; };
 		2D0A53A61971997F0091FFCA /* InspirationCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspirationCellCollectionView.h; sourceTree = "<group>"; };
 		2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InspirationCellCollectionView.m; sourceTree = "<group>"; };
 		2D0A53AA1971ABFF0091FFCA /* FindFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindFriendsViewController.h; sourceTree = "<group>"; };
 		2D0A53AB1971ABFF0091FFCA /* FindFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindFriendsViewController.m; sourceTree = "<group>"; };
+		2D197E8C19C1B5BA00E91274 /* FTGeoPointAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGeoPointAnnotation.h; sourceTree = "<group>"; };
+		2D197E8D19C1B5BA00E91274 /* FTGeoPointAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGeoPointAnnotation.m; sourceTree = "<group>"; };
+		2D197E8F19C1BC7900E91274 /* FTMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTMapViewController.h; sourceTree = "<group>"; };
+		2D197E9019C1BC7900E91274 /* FTMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTMapViewController.m; sourceTree = "<group>"; };
 		2D410F461973575C00CE2940 /* FTFeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTFeedViewController.h; sourceTree = "<group>"; };
 		2D410F471973575C00CE2940 /* FTFeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTFeedViewController.m; sourceTree = "<group>"; };
 		2D410F4A1973581A00CE2940 /* FeedCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedCollectionViewFlowLayout.h; sourceTree = "<group>"; };
@@ -465,8 +480,14 @@
 		2DD2B65D1983FDF400600A42 /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				2D007B6519B6B321006E1484 /* FTSearchResultsViewController.h */,
+				2D007B6619B6B321006E1484 /* FTSearchResultsViewController.m */,
 				2D429A0C1977EE7700F8A9A0 /* FTSearchViewController.h */,
 				2D429A0D1977EE7700F8A9A0 /* FTSearchViewController.m */,
+				2D197E8C19C1B5BA00E91274 /* FTGeoPointAnnotation.h */,
+				2D197E8D19C1B5BA00E91274 /* FTGeoPointAnnotation.m */,
+				2D197E8F19C1BC7900E91274 /* FTMapViewController.h */,
+				2D197E9019C1BC7900E91274 /* FTMapViewController.m */,
 			);
 			name = Search;
 			sourceTree = "<group>";
@@ -543,6 +564,8 @@
 			children = (
 				2DD2B68B1984170800600A42 /* FTPhotoHeaderView.h */,
 				2DD2B68C1984170800600A42 /* FTPhotoHeaderView.m */,
+				2D007B6219B6A5A1006E1484 /* FTSearchHeaderView.h */,
+				2D007B6319B6A5A1006E1484 /* FTSearchHeaderView.m */,
 			);
 			name = TimelineViews;
 			sourceTree = "<group>";
@@ -557,6 +580,8 @@
 				2DD2B693198418C300600A42 /* FTPhotoCell.m */,
 				2D007B5D19B3CA46006E1484 /* FTVideoCell.h */,
 				2D007B5E19B3CA46006E1484 /* FTVideoCell.m */,
+				2D007B6819B6C6BB006E1484 /* FTSearchCell.h */,
+				2D007B6919B6C6BB006E1484 /* FTSearchCell.m */,
 			);
 			name = UITableViewCells;
 			sourceTree = "<group>";
@@ -768,12 +793,15 @@
 			files = (
 				2DABDA0A195DE15900379891 /* ImageCustomNavigationBar.m in Sources */,
 				2DD2B6801984100000600A42 /* FTBaseTextCell.m in Sources */,
+				2D197E9119C1BC7900E91274 /* FTMapViewController.m in Sources */,
 				2DAF5BA119B2A28E00E5E10B /* FTEditVideoViewController.m in Sources */,
 				2DD2B6861984164E00600A42 /* FTAccountViewController.m in Sources */,
 				2DD2B67D19840FB500600A42 /* FTActivityCell.m in Sources */,
 				2DD691981949B24300B59E75 /* FTConfigViewController.m in Sources */,
+				2D007B6A19B6C6BB006E1484 /* FTSearchCell.m in Sources */,
 				2DD6919B1949B71B00B59E75 /* FTLoginViewController.m in Sources */,
 				2DD2B691198417D500600A42 /* FTLoadMoreCell.m in Sources */,
+				2D007B6419B6A5A1006E1484 /* FTSearchHeaderView.m in Sources */,
 				2DD2B68D1984170800600A42 /* FTPhotoHeaderView.m in Sources */,
 				2D410F4C1973581A00CE2940 /* FeedCollectionViewFlowLayout.m in Sources */,
 				2DD2B6551983FD0E00600A42 /* FTUtility.m in Sources */,
@@ -792,6 +820,7 @@
 				2DD2B669198400D800600A42 /* UIImage+RoundedCornerAdditions.m in Sources */,
 				2DD2B6581983FD2C00600A42 /* FTCache.m in Sources */,
 				2D007B5F19B3CA46006E1484 /* FTVideoCell.m in Sources */,
+				2D007B6719B6B321006E1484 /* FTSearchResultsViewController.m in Sources */,
 				2DBC6EA1195CBCE2008B5AD3 /* FTInterestsViewController.m in Sources */,
 				2DD2B69E19841C3100600A42 /* FTFindFriendsCell.m in Sources */,
 				2D429A141977EE9E00F8A9A0 /* FTOffersViewController.m in Sources */,
@@ -828,6 +857,7 @@
 				2DFE736C197316A700114541 /* FindFriendsFlowLayout.m in Sources */,
 				2DABDA06195DC0E500379891 /* PhotoCellCollectionView.m in Sources */,
 				2DBC6E5A195C783C008B5AD3 /* FTCamRollViewController.m in Sources */,
+				2D197E8E19C1B5BA00E91274 /* FTGeoPointAnnotation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

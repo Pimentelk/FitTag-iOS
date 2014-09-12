@@ -40,7 +40,7 @@
         self.outstandingSectionHeaderQueries = [NSMutableDictionary dictionary];
         
         // The className to query on
-        self.parseClassName = kFTPhotoClassKey;
+        self.parseClassName = kFTPostClassKey;
         
         // Whether the built-in pagination is enabled
         self.paginationEnabled = YES;
@@ -138,6 +138,8 @@
         // Load More Cell
         [self loadNextPage];
     }
+    
+    NSLog(@"tableView:didSelectRowAtIndexPath:");
 }
 
 #pragma mark - PFQueryTableViewController
@@ -149,37 +151,25 @@
         [query setLimit:100];
         return query;
     }
-    
+     
     PFQuery *followingActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
     [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
     [followingActivitiesQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
     followingActivitiesQuery.cachePolicy = kPFCachePolicyNetworkOnly;
     followingActivitiesQuery.limit = 100;
     
-    PFQuery *photosFromFollowedUsersQuery = [PFQuery queryWithClassName:self.parseClassName];
-    [photosFromFollowedUsersQuery whereKey:kFTPhotoUserKey matchesKey:kFTActivityToUserKey inQuery:followingActivitiesQuery];
-    [photosFromFollowedUsersQuery whereKeyExists:kFTPhotoPictureKey];
-
-    /* Load videos from followed users */
-    PFQuery *videosFromFollowedUsersQuery = [PFQuery queryWithClassName:self.parseClassName];
-    [videosFromFollowedUsersQuery whereKey:kFTVideoUserKey matchesKey:kFTActivityToUserKey inQuery:followingActivitiesQuery];
-    [videosFromFollowedUsersQuery whereKeyExists:kFTVideoKey];
+    PFQuery *postsFromFollowedUsersQuery = [PFQuery queryWithClassName:self.parseClassName];
+    [postsFromFollowedUsersQuery whereKey:kFTPostUserKey matchesKey:kFTActivityToUserKey inQuery:followingActivitiesQuery];
+    [postsFromFollowedUsersQuery whereKeyExists:kFTPostImageKey];
     
-    PFQuery *photosFromCurrentUserQuery = [PFQuery queryWithClassName:self.parseClassName];
-    [photosFromCurrentUserQuery whereKey:kFTPhotoUserKey equalTo:[PFUser currentUser]];
-    [photosFromCurrentUserQuery whereKeyExists:kFTPhotoPictureKey];
+    PFQuery *postsFromCurrentUserQuery = [PFQuery queryWithClassName:self.parseClassName];
+    [postsFromCurrentUserQuery whereKey:kFTPostUserKey equalTo:[PFUser currentUser]];
+    [postsFromCurrentUserQuery whereKeyExists:kFTPostImageKey];
     
-    /* Load current users videos */
-    PFQuery *videosFromCurrentUserQuery = [PFQuery queryWithClassName:self.parseClassName];
-    [videosFromCurrentUserQuery whereKey:kFTVideoUserKey equalTo:[PFUser currentUser]];
-    [videosFromCurrentUserQuery whereKeyExists:kFTVideoKey];
-    
-    PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects:photosFromFollowedUsersQuery, videosFromFollowedUsersQuery,
-                                                                              photosFromCurrentUserQuery, videosFromCurrentUserQuery, nil]];
-    [query includeKey:kFTPhotoUserKey];
-    [query includeKey:kFTVideoUserKey];
+    PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects: postsFromFollowedUsersQuery, postsFromCurrentUserQuery, nil]];
+    [query includeKey:kFTPostUserKey];
     [query orderByDescending:@"createdAt"];
-    
+        
     // A pull-to-refresh should always trigger a network request.
     [query setCachePolicy:kPFCachePolicyNetworkOnly];
     
@@ -206,15 +196,24 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath object:(PFObject *)object {
     
-    BOOL isVideo = (object[@"video"]) ? YES : NO;
+    BOOL isVideo = NO;
+    if([object[@"type"] isEqualToString:@"video"]){
+        isVideo = YES;
+    } else if([object[@"type"] isEqualToString:@"image"]) {
+        isVideo = NO;
+    } else { // If type is undefined
+        return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
+    }
     
     //NSLog(@"FTPhotoTimelineViewController::Updating tableView:(UITableView *) %@ cellForRowAtIndexPath:(NSIndexPath *) %@ object:(PFObject *) %@",tableView,indexPath,object);
-    
     if (indexPath.section == self.objects.count) {
         // this behavior is normally handled by PFQueryTableViewController, but we are using sections for each object and we must handle this ourselves
-        return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
-        
-    } else if (isVideo) {
+        UITableViewCell *cell = [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
+        return cell;
+    }
+    
+    // If the cell is a video
+    if (isVideo) {
         
         static NSString *videoCellIdentifier = @"VideoCell";
         FTVideoCell *videoCell = (FTVideoCell *)[tableView dequeueReusableCellWithIdentifier:videoCellIdentifier];
@@ -226,6 +225,7 @@
         }
         
         PFObject *video = [self.objects objectAtIndex:indexPath.section];
+        //NSLog(@"video: %@",video);
         [videoCell setVideo:video];
         videoCell.tag = indexPath.section;
         [videoCell.likeCounter setTag:indexPath.section];
@@ -236,7 +236,7 @@
             [videoCell setLikeStatus:[[FTCache sharedCache] isVideoLikedByCurrentUser:video]];
             [videoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForVideo:video] description] forState:UIControlStateNormal];
             [videoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForVideo:video] description] forState:UIControlStateNormal];
-            [videoCell.usernameRibbon setTitle:object[@"user"][@"displayName"] forState:UIControlStateNormal];
+            [videoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForVideo:video] description] forState:UIControlStateNormal];
         } else {
             @synchronized(self) {
                 // check if we can update the cache
@@ -280,7 +280,7 @@
                             [videoCell setLikeStatus:[[FTCache sharedCache] isVideoLikedByCurrentUser:video]];
                             [videoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForVideo:video] description] forState:UIControlStateNormal];
                             [videoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForVideo:video] description] forState:UIControlStateNormal];
-                            [videoCell.usernameRibbon setTitle:object[@"user"][@"displayName"] forState:UIControlStateNormal];
+                            [videoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForVideo:video] description] forState:UIControlStateNormal];
                         }
                     }];
                     
@@ -291,7 +291,7 @@
         videoCell.videoButton.tag = indexPath.section;
         
         if (object) {
-            videoCell.imageView.file = [object objectForKey:kFTVideoImageKey];
+            videoCell.imageView.file = [object objectForKey:kFTPostImageKey];
             
             // PFQTVC will take care of asynchronously downloading files, but will only load them when the tableview is not moving. If the data is there, let's load it right away.
             if ([videoCell.imageView.file isDataAvailable]) {
@@ -300,8 +300,10 @@
         }
         
         return videoCell;
-        
-    } else {
+    }
+    
+    // If the cell is not a video
+    if(!isVideo) {
         
         static NSString *photoCellIdentifier = @"PhotoCell";
         FTPhotoCell *photoCell = (FTPhotoCell *)[tableView dequeueReusableCellWithIdentifier:photoCellIdentifier];
@@ -314,7 +316,7 @@
         
         PFObject *photo = [self.objects objectAtIndex:indexPath.section];
         [photoCell setPhoto:photo];
-        photoCell.tag = indexPath.section;
+        [photoCell setTag:indexPath.section];
         [photoCell.likeCounter setTag:indexPath.section];
         
         NSDictionary *attributesForPhoto = [[FTCache sharedCache] attributesForPhoto:photo];
@@ -323,7 +325,7 @@
             [photoCell setLikeStatus:[[FTCache sharedCache] isPhotoLikedByCurrentUser:photo]];
             [photoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPhoto:photo] description] forState:UIControlStateNormal];
             [photoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPhoto:photo] description] forState:UIControlStateNormal];
-            [photoCell.usernameRibbon setTitle:object[@"user"][@"displayName"] forState:UIControlStateNormal];
+            [photoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPhoto:photo] description] forState:UIControlStateNormal];
         } else {
             
             @synchronized(self) {
@@ -368,7 +370,7 @@
                             [photoCell setLikeStatus:[[FTCache sharedCache] isPhotoLikedByCurrentUser:photo]];
                             [photoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPhoto:photo] description] forState:UIControlStateNormal];
                             [photoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPhoto:photo] description] forState:UIControlStateNormal];
-                            [photoCell.usernameRibbon setTitle:object[@"user"][@"displayName"] forState:UIControlStateNormal];
+                            [photoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPhoto:photo] description] forState:UIControlStateNormal];
                         }
                     }];
              
@@ -379,7 +381,7 @@
         photoCell.photoButton.tag = indexPath.section;
         
         if (object) {
-            photoCell.imageView.file = [object objectForKey:kFTPhotoPictureKey];
+            photoCell.imageView.file = [object objectForKey:kFTPostImageKey];
             
             // PFQTVC will take care of asynchronously downloading files, but will only load them when the tableview is not moving. If the data is there, let's load it right away.
             if ([photoCell.imageView.file isDataAvailable]) {
@@ -389,6 +391,8 @@
         
         return photoCell;
     }
+    
+    return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForNextPageAtIndexPath:(NSIndexPath *)indexPath {

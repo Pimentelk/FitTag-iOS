@@ -204,7 +204,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     if (cell == nil) {
         cell = [[FTLoadMoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         cell.cellInsetWidth = kFTCellInsetWidth;
-        cell.hideSeparatorTop = YES;
+        cell.hideSeparatorTop = YES;        
     }
     
     return cell;
@@ -215,17 +215,17 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     NSString *trimmedComment = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    if (trimmedComment.length != 0 && [self.photo objectForKey:kFTPhotoUserKey]) {
+    if (trimmedComment.length != 0 && [self.photo objectForKey:kFTPostUserKey]) {
         PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
         [comment setObject:trimmedComment forKey:kFTActivityContentKey]; // Set comment text
-        [comment setObject:[self.photo objectForKey:kFTPhotoUserKey] forKey:kFTActivityToUserKey]; // Set toUser
+        [comment setObject:[self.photo objectForKey:kFTPostUserKey] forKey:kFTActivityToUserKey]; // Set toUser
         [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey]; // Set fromUser
         [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
         [comment setObject:self.photo forKey:kFTActivityPhotoKey];
         
         PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];
         [ACL setPublicReadAccess:YES];
-        [ACL setWriteAccess:YES forUser:[self.photo objectForKey:kFTPhotoUserKey]];
+        [ACL setWriteAccess:YES forUser:[self.photo objectForKey:kFTPostUserKey]];
         comment.ACL = ACL;
         
         [[FTCache sharedCache] incrementCommentCountForPhoto:self.photo];
@@ -345,14 +345,14 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 }
 
 - (void)showShareSheet {
-    [[self.photo objectForKey:kFTPhotoPictureKey] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+    [[self.photo objectForKey:kFTPostImageKey] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
         if (!error) {
             NSMutableArray *activityItems = [NSMutableArray arrayWithCapacity:3];
             
             // Prefill caption if this is the original poster of the photo, and then only if they added a caption initially.
-            if ([[[PFUser currentUser] objectId] isEqualToString:[[self.photo objectForKey:kFTPhotoUserKey] objectId]] && [self.objects count] > 0) {
+            if ([[[PFUser currentUser] objectId] isEqualToString:[[self.photo objectForKey:kFTPostUserKey] objectId]] && [self.objects count] > 0) {
                 PFObject *firstActivity = self.objects[0];
-                if ([[[firstActivity objectForKey:kFTActivityFromUserKey] objectId] isEqualToString:[[self.photo objectForKey:kFTPhotoUserKey] objectId]]) {
+                if ([[[firstActivity objectForKey:kFTActivityFromUserKey] objectId] isEqualToString:[[self.photo objectForKey:kFTPostUserKey] objectId]]) {
                     NSString *commentString = [firstActivity objectForKey:kFTActivityContentKey];
                     [activityItems addObject:commentString];
                 }
@@ -433,7 +433,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 }
 
 - (BOOL)currentUserOwnsPhoto {
-    return [[[self.photo objectForKey:kFTPhotoUserKey] objectId] isEqualToString:[[PFUser currentUser] objectId]];
+    return [[[self.photo objectForKey:kFTPostUserKey] objectId] isEqualToString:[[PFUser currentUser] objectId]];
 }
 
 - (void)shouldDeletePhoto {

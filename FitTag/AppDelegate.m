@@ -319,7 +319,7 @@
         // If the push notification payload references a photo, we will attempt to push this view controller into view
         NSString *photoObjectId = [remoteNotificationPayload objectForKey:kFTPushPayloadPhotoObjectIdKey];
         if (photoObjectId && photoObjectId.length > 0) {
-            [self shouldNavigateToPhoto:[PFObject objectWithoutDataWithClassName:kFTPhotoClassKey objectId:photoObjectId]];
+            [self shouldNavigateToPhoto:[PFObject objectWithoutDataWithClassName:kFTPostClassKey objectId:photoObjectId]];
             return;
         }
         
@@ -370,7 +370,7 @@
         if ([[url fragment] rangeOfString:@"^pic/[A-Za-z0-9]{10}$" options:NSRegularExpressionSearch].location != NSNotFound) {
             NSString *photoObjectId = [[url fragment] substringWithRange:NSMakeRange(4, 10)];
             if (photoObjectId && photoObjectId.length > 0) {
-                [self shouldNavigateToPhoto:[PFObject objectWithoutDataWithClassName:kFTPhotoClassKey objectId:photoObjectId]];
+                [self shouldNavigateToPhoto:[PFObject objectWithoutDataWithClassName:kFTPostClassKey objectId:photoObjectId]];
                 return YES;
             }
         }

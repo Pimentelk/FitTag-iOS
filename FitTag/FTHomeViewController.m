@@ -31,12 +31,11 @@
 @synthesize settingsActionSheetDelegate;
 @synthesize blankTimelineView;
 
-
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+        
     // Toolbar & Navigationbar Setup
     [self.navigationController setToolbarHidden:NO animated:NO];
     [self.navigationItem setTitle: @"FEED"];
@@ -65,14 +64,12 @@
     [self.blankTimelineView addSubview:button];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [self.navigationController setToolbarHidden:NO];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
+- (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
 
     // Get the classname of the next view controller
@@ -118,7 +115,6 @@
     [actionSheet showFromTabBar:self.tabBarController.tabBar];
 }
 
-
 - (void)inviteFriendsButtonAction:(id)sender {
     FTFindFriendsViewController *detailViewController = [[FTFindFriendsViewController alloc] init];
     [self.navigationController pushViewController:detailViewController animated:YES];
@@ -126,15 +122,12 @@
 
 #pragma mark - Navigation Bar
 
-- (void)loadCamera:(id)sender
-{
+- (void)loadCamera:(id)sender {
     FTCamViewController *camViewController = [[FTCamViewController alloc] init];
     [self.navigationController pushViewController:camViewController animated:YES];
 }
 
-- (void)addFriends:(id)sender
-{
-    NSLog(@"FTFeedViewController::addFriends");
+- (void)addFriends:(id)sender{
     // Layout param
     FindFriendsFlowLayout *layoutFlow = [[FindFriendsFlowLayout alloc] init];
     [layoutFlow setItemSize:CGSizeMake(320,42)];
@@ -151,27 +144,23 @@
 
 #pragma mark - Toolbar
 
--(void)viewNotifications:(id)sender
-{
+-(void)viewNotifications:(id)sender{
     FTActivityFeedViewController *activityFeedViewController = [[FTActivityFeedViewController alloc] init];
     [self.navigationController pushViewController:activityFeedViewController animated:YES];
 }
 
--(void)viewSearch:(id)sender
-{
+-(void)viewSearch:(id)sender{
     FTSearchViewController *searchViewController = [[FTSearchViewController alloc] init];
     [self.navigationController pushViewController:searchViewController animated:YES];
 }
 
--(void)viewMyProfile:(id)sender
-{
+-(void)viewMyProfile:(id)sender{
     FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
     [accountViewController setUser:[PFUser currentUser]];
     [self.navigationController pushViewController:accountViewController animated:YES];
 }
 
--(void)viewOffers:(id)sender
-{
+-(void)viewOffers:(id)sender{
     FTOffersViewController *offersViewController = [[FTOffersViewController alloc] init];
     [self.navigationController pushViewController:offersViewController animated:YES];
 }

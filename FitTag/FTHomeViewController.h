@@ -10,7 +10,5 @@
 #import "FTPhotoTimelineViewController.h"
 
 @interface FTHomeViewController : FTPhotoTimelineViewController <FTToolBarDelegate>
-
 @property (nonatomic, assign, getter = isFirstLaunch) BOOL firstLaunch;
-
 @end

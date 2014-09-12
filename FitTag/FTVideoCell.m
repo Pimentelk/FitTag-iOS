@@ -172,9 +172,9 @@
     video = aVideo;
     
     // user's avatar
-    PFUser *user = [self.video objectForKey:kFTVideoUserKey];
+    PFUser *user = [self.video objectForKey:kFTPostUserKey];
     PFFile *profilePictureSmall = [user objectForKey:kFTUserProfilePicSmallKey];
-    PFFile *videoFile = [video objectForKey:kFTVideoKey];
+    PFFile *videoFile = [video objectForKey:kFTPostVideoKey];
     NSURL *url = [NSURL URLWithString:videoFile.url];
     self.moviePlayer = [[MPMoviePlayerController alloc] init];
     [self.moviePlayer setControlStyle:MPMovieControlStyleNone];
@@ -311,7 +311,7 @@
 
 - (void)didTapUserButtonAction:(UIButton *)sender{
     if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapUserButton:user:)]) {
-        [delegate videoCellView:self didTapUserButton:sender user:[self.video objectForKey:kFTVideoUserKey]];
+        [delegate videoCellView:self didTapUserButton:sender user:[self.video objectForKey:kFTPostUserKey]];
     }
 }
 

@@ -40,12 +40,12 @@
         PFObject *likeActivity = [PFObject objectWithClassName:kFTActivityClassKey];
         [likeActivity setObject:kFTActivityTypeLike forKey:kFTActivityTypeKey];
         [likeActivity setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
-        [likeActivity setObject:[photo objectForKey:kFTPhotoUserKey] forKey:kFTActivityToUserKey];
+        [likeActivity setObject:[photo objectForKey:kFTPostUserKey] forKey:kFTActivityToUserKey];
         [likeActivity setObject:photo forKey:kFTActivityPhotoKey];
         
         PFACL *likeACL = [PFACL ACLWithUser:[PFUser currentUser]];
         [likeACL setPublicReadAccess:YES];
-        [likeACL setWriteAccess:YES forUser:[photo objectForKey:kFTPhotoUserKey]];
+        [likeACL setWriteAccess:YES forUser:[photo objectForKey:kFTPostUserKey]];
         likeActivity.ACL = likeACL;
         
         [likeActivity saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -105,12 +105,12 @@
         PFObject *likeActivity = [PFObject objectWithClassName:kFTActivityClassKey];
         [likeActivity setObject:kFTActivityTypeLike forKey:kFTActivityTypeKey];
         [likeActivity setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
-        [likeActivity setObject:[video objectForKey:kFTVideoUserKey] forKey:kFTActivityToUserKey];
+        [likeActivity setObject:[video objectForKey:kFTPostUserKey] forKey:kFTActivityToUserKey];
         [likeActivity setObject:video forKey:kFTActivityVideoKey];
         
         PFACL *likeACL = [PFACL ACLWithUser:[PFUser currentUser]];
         [likeACL setPublicReadAccess:YES];
-        [likeACL setWriteAccess:YES forUser:[video objectForKey:kFTVideoUserKey]];
+        [likeACL setWriteAccess:YES forUser:[video objectForKey:kFTPostUserKey]];
         likeActivity.ACL = likeACL;
         
         [likeActivity saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {

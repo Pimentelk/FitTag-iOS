@@ -39,25 +39,12 @@
         commentBoxButton.frame = CGRectMake(264.0f, 9.0f, 47.0f, 25.0f);
         [commentBox addSubview:commentBoxButton];
         
-        commentField = [[UITextField alloc] initWithFrame:CGRectMake( 5.0f, 0.0f, 320.0f, 31.0f)];
+        commentField = [[UITextField alloc] initWithFrame:CGRectMake( 7.0f, 6.0f, 252.0f, 31.0f)];
         commentField.font = [UIFont systemFontOfSize:12.0f];
         commentField.returnKeyType = UIReturnKeySend;
         commentField.textColor = [UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f];
         commentField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-        [commentField setValue:[UIColor colorWithRed:154.0f/255.0f green:146.0f/255.0f blue:138.0f/255.0f alpha:1.0f] forKeyPath:@"_placeholderLabel.textColor"]; // Are we allowed to modify private properties like this? -Héctor
-        [mainView addSubview:commentField];
-        
-        /*
-        UIButton *facebookButton = [UIButton buttonWithType: UIButtonTypeCustom];
-        facebookButton.frame = CGRectMake(0.0f, 0.0f, 71.0f, 80.0f);
-        [facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook_button"] forState:UIControlStateNormal];
-        [mainView addSubview:facebookButton];
-        
-        UIButton *twitterButton = [UIButton buttonWithType: UIButtonTypeCustom];
-        twitterButton.frame = CGRectMake(0.0f, 0.0f, 71.0f, 80.0f);
-        [twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter_button"] forState:UIControlStateNormal];
-        [mainView addSubview:twitterButton];
-         */
+        [mainView addSubview:commentField];        
     }
     return self;
 }

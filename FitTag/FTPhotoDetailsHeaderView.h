@@ -6,14 +6,27 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
+@class PFImageView;
 @protocol FTPhotoDetailsHeaderViewDelegate;
-
 @interface FTPhotoDetailsHeaderView : UIView
+
 
 /*! @name Managing View Properties */
 
+/// The displayname button
+@property (nonatomic, strong) UIButton *usernameRibbon;
+
+/// The Comment counter button
+@property (nonatomic, strong) UIButton *commentCounter;
+
+/// The like counter button
+@property (nonatomic, strong) UIButton *likeCounter;
+
 /// The photo displayed in the view
 @property (nonatomic, strong, readonly) PFObject *photo;
+
+/// The Comment On display button
+@property (nonatomic,readonly) UIButton *commentButton;
 
 /// The user that took the photo
 @property (nonatomic, strong, readonly) PFUser *photographer;
