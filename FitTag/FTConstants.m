@@ -11,11 +11,9 @@
 NSString *const kFTUserDefaultsActivityFeedViewControllerLastRefreshKey    = @"com.fittag.userDefaults.activityFeedViewController.lastRefresh";
 NSString *const kFTUserDefaultsCacheFacebookFriendsKey                     = @"com.fittag.userDefaults.cache.facebookFriends";
 
-
 #pragma mark - Launch URLs
 
 NSString *const kFTLaunchURLHostTakePicture = @"camera";
-
 
 #pragma mark - NSNotification
 
@@ -30,7 +28,6 @@ NSString *const FTPhotoDetailsViewControllerUserDeletedPhotoNotification       =
 NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification  = @"com.fittag.photoDetailsViewController.userLikedUnlikedPhotoInDetailsViewNotification";
 NSString *const FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification   = @"com.fittag.photoDetailsViewController.userCommentedOnPhotoInDetailsViewNotification";
 
-
 #pragma mark - User Info Keys
 NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey = @"liked";
 NSString *const FTVideoDetailsViewControllerUserLikedUnlikedVideoNotificationUserInfoLikedKey = @"liked";
@@ -40,10 +37,11 @@ NSString *const kFTEditVideoViewControllerUserInfoCommentKey = @"comment";
 #pragma mark - Installation Class
 
 // Field keys
-NSString *const kFTUserClassKey         = @"user";
+NSString *const kFTUserClassKey         = @"_User";
 NSString *const kPFTInstallationUserKey = @"user";
 
 #pragma mark - Activity Class
+
 // Class key
 NSString *const kFTActivityClassKey = @"Activity";
 
@@ -55,8 +53,8 @@ NSString *const kFTActivityContentKey     = @"content";
 NSString *const kFTActivityPhotoKey       = @"post";
 NSString *const kFTActivityVideoKey       = @"post";
 NSString *const kFTActivityPostKey        = @"post";
-NSString *const kFTActivityHashtag        = @"hashtag";
-NSString *const kFTActivityMention        = @"mention";
+NSString *const kFTActivityHashtagKey     = @"hashtag";
+NSString *const kFTActivityMentionKey     = @"mention";
 
 // Type values
 NSString *const kFTActivityTypeLike       = @"like";
@@ -65,12 +63,13 @@ NSString *const kFTActivityTypeComment    = @"comment";
 NSString *const kFTActivityTypeJoined     = @"joined";
 
 #pragma mark - User Class
+
 // Field keys
 NSString *const kFTUserDisplayNameKey                          = @"displayName";
-NSString *const kFTUserFirstname                               = @"firstname";
-NSString *const kFTUserlastname                                = @"lastname";
-NSString *const kFTUserInterests                               = @"interests";
-NSString *const kFTUserBio                                     = @"bio";
+NSString *const kFTUserFirstnameKey                            = @"firstname";
+NSString *const kFTUserlastnameKey                             = @"lastname";
+NSString *const kFTUserInterestsKey                            = @"interests";
+NSString *const kFTUserBioKey                                  = @"bio";
 NSString *const kFTUserFacebookIDKey                           = @"facebookId";
 NSString *const kFTUserPhotoIDKey                              = @"photoId";
 NSString *const kFTUserProfilePicSmallKey                      = @"profilePictureSmall";
@@ -78,8 +77,15 @@ NSString *const kFTUserProfilePicMediumKey                     = @"profilePictur
 NSString *const kFTUserFacebookFriendsKey                      = @"facebookFriends";
 NSString *const kFTUserAlreadyAutoFollowedFacebookFriendsKey   = @"userAlreadyAutoFollowedFacebookFriends";
 NSString *const kFTUserLocationKey                             = @"location";
+NSString *const kFTUserTypeKey                                 = @"type";
+
+// Type values
+NSString *const kFTUserTypeUser                                = @"user";
+NSString *const kFTUserTypeAmbassador                          = @"ambassador";
+NSString *const kFTUserTypeBusiness                            = @"business";
 
 #pragma mark - PFObject Post Class
+
 NSString *const kFTPostClassKey = @"Post";
 
 NSString *const kFTPostImageKey             = @"image";
@@ -91,50 +97,22 @@ NSString *const kFTPostTypeKey              = @"type";
 NSString *const kFTPostOpenGraphIDKey       = @"fbOpenGraphID";
 NSString *const kFTPostLocationKey          = @"location";
 
-#pragma mark - PFObject Video Class
-// Class key
-//NSString *const kFTVideoClassKey = @"Post";
+#pragma mark - Cached Post Attributes
 
-// Field keys
-//NSString *const kFTVideoImageKey             = @"image";
-//NSString *const kFTVideoKey                  = @"video";
-//NSString *const kFTVideoUserKey              = @"user";
-//NSString *const kFTVideoOpenGraphIDKey       = @"fbOpenGraphID";
-
-#pragma mark - Cached Video Attributes
 // keys
-NSString *const kFTVideoAttributesIsLikedByCurrentUserKey   = @"isLikedByCurrentUser";
-NSString *const kFTVideoAttributesLikeCountKey              = @"likeCount";
-NSString *const kFTVideoAttributesLikersKey                 = @"likers";
-NSString *const kFTVideoAttributesCommentCountKey           = @"commentCount";
-NSString *const kFTVideoAttributesCommentersKey             = @"commenters";
-NSString *const kFTVideoAttributesDisplayName               = @"displayName";
-
-#pragma mark - Photo Class
-// Class key
-//NSString *const kFTPhotoClassKey = @"Post";
-
-// Field keys
-//NSString *const kFTPhotoPictureKey         = @"image";
-//NSString *const kFTPhotoThumbnailKey       = @"thumbnail";
-//NSString *const kFTPhotoUserKey            = @"user";
-//NSString *const kFTPhotoOpenGraphIDKey     = @"fbOpenGraphID";
-
-#pragma mark - Cached Photo Attributes
-// keys
-NSString *const kFTPhotoAttributesIsLikedByCurrentUserKey = @"isLikedByCurrentUser";
-NSString *const kFTPhotoAttributesLikeCountKey            = @"likeCount";
-NSString *const kFTPhotoAttributesLikersKey               = @"likers";
-NSString *const kFTPhotoAttributesCommentCountKey         = @"commentCount";
-NSString *const kFTPhotoAttributesCommentersKey           = @"commenters";
-NSString *const kFTPhotoAttributesDisplayName             = @"displayName";
-
+NSString *const kFTPostAttributesIsLikedByCurrentUserKey   = @"isLikedByCurrentUser";
+NSString *const kFTPostAttributesLikeCountKey              = @"likeCount";
+NSString *const kFTPostAttributesLikersKey                 = @"likers";
+NSString *const kFTPostAttributesCommentCountKey           = @"commentCount";
+NSString *const kFTPostAttributesCommentersKey             = @"commenters";
+NSString *const kFTPostAttributesDisplayNameKey            = @"displayName";
 #pragma mark - Cached User Attributes
-// keys
-NSString *const kFTUserAttributesPhotoCountKey                 = @"photoCount";
-NSString *const kFTUserAttributesVideoCountKey                 = @"videoCount";
-NSString *const kFTUserAttributesIsFollowedByCurrentUserKey    = @"isFollowedByCurrentUser";
 
+// keys
+//NSString *const kFTUserAttributesPhotoCountKey                 = @"photoCount";
+//NSString *const kFTUserAttributesVideoCountKey                 = @"videoCount";
+NSString *const kFTUserAttributesPostCountKey                  = @"postCount";
+NSString *const kFTUserAttributesIsFollowedByCurrentUserKey    = @"isFollowedByCurrentUser";
 
 #pragma mark - Push Notification Payload Keys
 

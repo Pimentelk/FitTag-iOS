@@ -249,8 +249,8 @@ static TTTTimeIntervalFormatter *timeFormatter;
 }
 
 - (void)reloadLikeBar {
-    self.likeUsers = [[FTCache sharedCache] likersForPhoto:self.photo];
-    [self setLikeButtonState:[[FTCache sharedCache] isPhotoLikedByCurrentUser:self.photo]];
+    self.likeUsers = [[FTCache sharedCache] likersForPost:self.photo];
+    [self setLikeButtonState:[[FTCache sharedCache] isPostLikedByCurrentUser:self.photo]];
     [likeButton addTarget:self action:@selector(didTapLikePhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
 }
 
@@ -405,13 +405,13 @@ static TTTTimeIntervalFormatter *timeFormatter;
     }
     
     if (liked) {
-        [[FTCache sharedCache] incrementLikerCountForPhoto:self.photo];
+        [[FTCache sharedCache] incrementLikerCountForPost:self.photo];
         [newLikeUsersSet addObject:[PFUser currentUser]];
     } else {
-        [[FTCache sharedCache] decrementLikerCountForPhoto:self.photo];
+        [[FTCache sharedCache] decrementLikerCountForPost:self.photo];
     }
     
-    [[FTCache sharedCache] setPhotoIsLikedByCurrentUser:self.photo liked:liked];
+    [[FTCache sharedCache] setPostIsLikedByCurrentUser:self.photo liked:liked];
     
     [self setLikeUsers:[newLikeUsersSet allObjects]];
     

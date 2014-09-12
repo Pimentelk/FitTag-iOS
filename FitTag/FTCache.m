@@ -11,7 +11,7 @@
 @interface FTCache()
 
 @property (nonatomic, strong) NSCache *cache;
-- (void)setAttributes:(NSDictionary *)attributes forPhoto:(PFObject *)photo;
+- (void)setAttributes:(NSDictionary *)attributes forPost:(PFObject *)post;
 @end
 
 @implementation FTCache
@@ -42,239 +42,120 @@
     [self.cache removeAllObjects];
 }
 
-- (void)setAttributesForPhoto:(PFObject *)photo likers:(NSArray *)likers commenters:(NSArray *)commenters likedByCurrentUser:(BOOL)likedByCurrentUser {
+- (void)setAttributesForPost:(PFObject *)post likers:(NSArray *)likers commenters:(NSArray *)commenters likedByCurrentUser:(BOOL)likedByCurrentUser {
     NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                [NSNumber numberWithBool:likedByCurrentUser],kFTPhotoAttributesIsLikedByCurrentUserKey,
-                                @([likers count]),kFTPhotoAttributesLikeCountKey,
-                                likers,kFTPhotoAttributesLikersKey,
-                                @([commenters count]),kFTPhotoAttributesCommentCountKey,
-                                commenters,kFTPhotoAttributesCommentersKey,
-                                photo[@"user"][@"displayName"],kFTPhotoAttributesDisplayName,
+                                [NSNumber numberWithBool:likedByCurrentUser],kFTPostAttributesIsLikedByCurrentUserKey,
+                                @([likers count]),kFTPostAttributesLikeCountKey,
+                                likers,kFTPostAttributesLikersKey,
+                                @([commenters count]),kFTPostAttributesCommentCountKey,
+                                commenters,kFTPostAttributesCommentersKey,
+                                post[@"user"][@"displayName"],kFTPostAttributesDisplayNameKey,
                                 nil];
-    [self setAttributes:attributes forPhoto:photo];
+    [self setAttributes:attributes forPost:post];
 }
 
-- (void)setAttributesForVideo:(PFObject *)video likers:(NSArray *)likers commenters:(NSArray *)commenters likedByCurrentUser:(BOOL)likedByCurrentUser {
-    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                [NSNumber numberWithBool:likedByCurrentUser],kFTVideoAttributesIsLikedByCurrentUserKey,
-                                @([likers count]),kFTVideoAttributesLikeCountKey,
-                                likers,kFTVideoAttributesLikersKey,
-                                @([commenters count]),kFTVideoAttributesCommentCountKey,
-                                commenters,kFTVideoAttributesCommentersKey,
-                                video[@"user"][@"displayName"],kFTVideoAttributesDisplayName,
-                                nil];
-    [self setAttributes:attributes forVideo:video];
-}
-
-- (NSDictionary *)attributesForPhoto:(PFObject *)photo {
-    NSString *key = [self keyForPhoto:photo];
+- (NSDictionary *)attributesForPost:(PFObject *)post {
+    NSString *key = [self keyForPost:post];
     return [self.cache objectForKey:key];
 }
 
-- (NSDictionary *)attributesForVideo:(PFObject *)video {
-    NSString *key = [self keyForVideo:video];
-    return [self.cache objectForKey:key];
-}
-
-- (NSNumber *)likeCountForPhoto:(PFObject *)photo {
-    NSDictionary *attributes = [self attributesForPhoto:photo];
+- (NSNumber *)likeCountForPost:(PFObject *)post {
+    NSDictionary *attributes = [self attributesForPost:post];
     if (attributes) {
-        return [attributes objectForKey:kFTPhotoAttributesLikeCountKey];
+        return [attributes objectForKey:kFTPostAttributesLikeCountKey];
     }
     
     return [NSNumber numberWithInt:0];
 }
 
-- (NSNumber *)likeCountForVideo:(PFObject *)video {
-    NSDictionary *attributes = [self attributesForVideo:video];
+- (NSNumber *)commentCountForPost:(PFObject *)post {
+    NSDictionary *attributes = [self attributesForPost:post];
     if (attributes) {
-        return [attributes objectForKey:kFTVideoAttributesLikeCountKey];
+        return [attributes objectForKey:kFTPostAttributesCommentCountKey];
     }
     
     return [NSNumber numberWithInt:0];
 }
 
-- (NSNumber *)commentCountForPhoto:(PFObject *)photo {
-    NSDictionary *attributes = [self attributesForPhoto:photo];
+- (NSArray *)likersForPost:(PFObject *)post {
+    NSDictionary *attributes = [self attributesForPost:post];
     if (attributes) {
-        return [attributes objectForKey:kFTPhotoAttributesCommentCountKey];
-    }
-    
-    return [NSNumber numberWithInt:0];
-}
-
-- (NSNumber *)commentCountForVideo:(PFObject *)video {
-    NSDictionary *attributes = [self attributesForVideo:video];
-    if (attributes) {
-        return [attributes objectForKey:kFTVideoAttributesCommentCountKey];
-    }
-    
-    return [NSNumber numberWithInt:0];
-}
-
-- (NSArray *)likersForPhoto:(PFObject *)photo {
-    NSDictionary *attributes = [self attributesForPhoto:photo];
-    if (attributes) {
-        return [attributes objectForKey:kFTPhotoAttributesLikersKey];
+        return [attributes objectForKey:kFTPostAttributesLikersKey];
     }
     
     return [NSArray array];
 }
 
-- (NSArray *)likersForVideo:(PFObject *)video {
-    NSDictionary *attributes = [self attributesForPhoto:video];
+- (NSArray *)commentersForPost:(PFObject *)post {
+    NSDictionary *attributes = [self attributesForPost:post];
     if (attributes) {
-        return [attributes objectForKey:kFTVideoAttributesLikersKey];
+        return [attributes objectForKey:kFTPostAttributesCommentersKey];
     }
     
     return [NSArray array];
 }
 
-- (NSArray *)commentersForPhoto:(PFObject *)photo {
-    NSDictionary *attributes = [self attributesForPhoto:photo];
-    if (attributes) {
-        return [attributes objectForKey:kFTPhotoAttributesCommentersKey];
-    }
-    
-    return [NSArray array];
-}
-
-- (NSArray *)commentersForVideo:(PFObject *)video {
-    NSDictionary *attributes = [self attributesForVideo:video];
-    if (attributes) {
-        return [attributes objectForKey:kFTVideoAttributesCommentersKey];
-    }
-    
-    return [NSArray array];
-}
-
-- (NSArray *)displayNameForPhoto:(PFObject *)photo{
-    NSDictionary *attributes = [self attributesForPhoto:photo];
+- (NSArray *)displayNameForPost:(PFObject *)post{
+    NSDictionary *attributes = [self attributesForPost:post];
     if(attributes){
-        return [attributes objectForKey:kFTPhotoAttributesDisplayName];
+        return [attributes objectForKey:kFTPostAttributesDisplayNameKey];
     }
     
     return [NSArray array];
 }
 
-- (NSArray *)displayNameForVideo:(PFObject *)video{
-    NSDictionary *attributes = [self attributesForVideo:video];
-    if(attributes){
-        return [attributes objectForKey:kFTVideoAttributesDisplayName];
-    }
-    
-    return [NSArray array];
+- (void)setPostIsLikedByCurrentUser:(PFObject *)post liked:(BOOL)liked {
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForPost:post]];
+    [attributes setObject:[NSNumber numberWithBool:liked] forKey:kFTPostAttributesIsLikedByCurrentUserKey];
+    [self setAttributes:attributes forPost:post];
 }
 
-- (void)setPhotoIsLikedByCurrentUser:(PFObject *)photo liked:(BOOL)liked {
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForPhoto:photo]];
-    [attributes setObject:[NSNumber numberWithBool:liked] forKey:kFTPhotoAttributesIsLikedByCurrentUserKey];
-    [self setAttributes:attributes forPhoto:photo];
-}
-
-- (void)setVideoIsLikedByCurrentUser:(PFObject *)video liked:(BOOL)liked {
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForVideo:video]];
-    [attributes setObject:[NSNumber numberWithBool:liked] forKey:kFTVideoAttributesIsLikedByCurrentUserKey];
-    [self setAttributes:attributes forVideo:video];
-}
-
-- (BOOL)isPhotoLikedByCurrentUser:(PFObject *)photo {
-    NSDictionary *attributes = [self attributesForPhoto:photo];
+- (BOOL)isPostLikedByCurrentUser:(PFObject *)post {
+    NSDictionary *attributes = [self attributesForPost:post];
     if (attributes) {
-        return [[attributes objectForKey:kFTPhotoAttributesIsLikedByCurrentUserKey] boolValue];
+        return [[attributes objectForKey:kFTPostAttributesIsLikedByCurrentUserKey] boolValue];
     }
     
     return NO;
 }
 
-- (BOOL)isVideoLikedByCurrentUser:(PFObject *)video {
-    NSDictionary *attributes = [self attributesForVideo:video];
-    if (attributes) {
-        return [[attributes objectForKey:kFTVideoAttributesIsLikedByCurrentUserKey] boolValue];
-    }
-    
-    return NO;
+- (void)incrementLikerCountForPost:(PFObject *)post {
+    NSNumber *likerCount = [NSNumber numberWithInt:[[self likeCountForPost:post] intValue] + 1];
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForPost:post]];
+    [attributes setObject:likerCount forKey:kFTPostAttributesLikeCountKey];
+    [self setAttributes:attributes forPost:post];
 }
 
-- (void)incrementLikerCountForPhoto:(PFObject *)photo {
-    NSNumber *likerCount = [NSNumber numberWithInt:[[self likeCountForPhoto:photo] intValue] + 1];
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForPhoto:photo]];
-    [attributes setObject:likerCount forKey:kFTPhotoAttributesLikeCountKey];
-    [self setAttributes:attributes forPhoto:photo];
-}
-
-- (void)incrementLikerCountForVideo:(PFObject *)video {
-    NSNumber *likerCount = [NSNumber numberWithInt:[[self likeCountForPhoto:video] intValue] + 1];
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForVideo:video]];
-    [attributes setObject:likerCount forKey:kFTVideoAttributesLikeCountKey];
-    [self setAttributes:attributes forPhoto:video];
-}
-
-- (void)decrementLikerCountForPhoto:(PFObject *)photo {
-    NSNumber *likerCount = [NSNumber numberWithInt:[[self likeCountForPhoto:photo] intValue] - 1];
+- (void)decrementLikerCountForPost:(PFObject *)post {
+    NSNumber *likerCount = [NSNumber numberWithInt:[[self likeCountForPost:post] intValue] - 1];
     if ([likerCount intValue] < 0) {
         return;
     }
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForPhoto:photo]];
-    [attributes setObject:likerCount forKey:kFTPhotoAttributesLikeCountKey];
-    [self setAttributes:attributes forPhoto:photo];
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForPost:post]];
+    [attributes setObject:likerCount forKey:kFTPostAttributesLikeCountKey];
+    [self setAttributes:attributes forPost:post];
 }
 
-- (void)decrementLikerCountForVideo:(PFObject *)video {
-    NSNumber *likerCount = [NSNumber numberWithInt:[[self likeCountForVideo:video] intValue] - 1];
-    if ([likerCount intValue] < 0) {
-        return;
-    }
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForVideo:video]];
-    [attributes setObject:likerCount forKey:kFTVideoAttributesLikeCountKey];
-    [self setAttributes:attributes forVideo:video];
+- (void)incrementCommentCountForPost:(PFObject *)post {
+    NSNumber *commentCount = [NSNumber numberWithInt:[[self commentCountForPost:post] intValue] + 1];
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForPost:post]];
+    [attributes setObject:commentCount forKey:kFTPostAttributesCommentCountKey];
+    [self setAttributes:attributes forPost:post];
 }
 
-- (void)incrementCommentCountForPhoto:(PFObject *)photo {
-    NSNumber *commentCount = [NSNumber numberWithInt:[[self commentCountForPhoto:photo] intValue] + 1];
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForPhoto:photo]];
-    [attributes setObject:commentCount forKey:kFTPhotoAttributesCommentCountKey];
-    [self setAttributes:attributes forPhoto:photo];
-}
-
-- (void)incrementCommentCountForVideo:(PFObject *)video{
-    NSNumber *commentCount = [NSNumber numberWithInt:[[self commentCountForVideo:video] intValue] + 1];
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForVideo:video]];
-    [attributes setObject:commentCount forKey:kFTVideoAttributesCommentCountKey];
-    [self setAttributes:attributes forVideo:video];
-}
-
-- (void)decrementCommentCountForPhoto:(PFObject *)photo {
-    NSNumber *commentCount = [NSNumber numberWithInt:[[self commentCountForPhoto:photo] intValue] - 1];
+- (void)decrementCommentCountForPost:(PFObject *)post {
+    NSNumber *commentCount = [NSNumber numberWithInt:[[self commentCountForPost:post] intValue] - 1];
     if ([commentCount intValue] < 0) {
         return;
     }
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForPhoto:photo]];
-    [attributes setObject:commentCount forKey:kFTPhotoAttributesCommentCountKey];
-    [self setAttributes:attributes forPhoto:photo];
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForPost:post]];
+    [attributes setObject:commentCount forKey:kFTPostAttributesCommentCountKey];
+    [self setAttributes:attributes forPost:post];
 }
 
-- (void)decrementCommentCountForVideo:(PFObject *)video {
-    NSNumber *commentCount = [NSNumber numberWithInt:[[self commentCountForVideo:video] intValue] - 1];
-    if ([commentCount intValue] < 0) {
-        return;
-    }
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForVideo:video]];
-    [attributes setObject:commentCount forKey:kFTVideoAttributesCommentCountKey];
-    [self setAttributes:attributes forVideo:video];
-}
-
-- (void)setAttributesForUser:(PFUser *)user photoCount:(NSNumber *)count followedByCurrentUser:(BOOL)following {
+- (void)setAttributesForUser:(PFUser *)user postCount:(NSNumber *)count followedByCurrentUser:(BOOL)following {
     NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                count,kFTUserAttributesPhotoCountKey,
-                                [NSNumber numberWithBool:following],kFTUserAttributesIsFollowedByCurrentUserKey,
-                                nil];
-    [self setAttributes:attributes forUser:user];
-}
-
-- (void)setAttributesForUser:(PFUser *)user videoCount:(NSNumber *)count followedByCurrentUser:(BOOL)following {
-    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                count,kFTUserAttributesVideoCountKey,
+                                count,kFTUserAttributesPostCountKey,
                                 [NSNumber numberWithBool:following],kFTUserAttributesIsFollowedByCurrentUserKey,
                                 nil];
     [self setAttributes:attributes forUser:user];
@@ -285,24 +166,12 @@
     return [self.cache objectForKey:key];
 }
 
-- (NSNumber *)photoCountForUser:(PFUser *)user {
+- (NSNumber *)postCountForUser:(PFUser *)user {
     NSDictionary *attributes = [self attributesForUser:user];
     if (attributes) {
-        NSNumber *photoCount = [attributes objectForKey:kFTUserAttributesPhotoCountKey];
-        if (photoCount) {
-            return photoCount;
-        }
-    }
-    
-    return [NSNumber numberWithInt:0];
-}
-
-- (NSNumber *)videoCountForUser:(PFUser *)user {
-    NSDictionary *attributes = [self attributesForUser:user];
-    if (attributes) {
-        NSNumber *videoCount = [attributes objectForKey:kFTUserAttributesVideoCountKey];
-        if (videoCount) {
-            return videoCount;
+        NSNumber *postCount = [attributes objectForKey:kFTUserAttributesPostCountKey];
+        if (postCount) {
+            return postCount;
         }
     }
     
@@ -321,15 +190,9 @@
     return NO;
 }
 
-- (void)setPhotoCount:(NSNumber *)count user:(PFUser *)user {
+- (void)setPostCount:(NSNumber *)count user:(PFUser *)user {
     NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForUser:user]];
-    [attributes setObject:count forKey:kFTUserAttributesPhotoCountKey];
-    [self setAttributes:attributes forUser:user];
-}
-
-- (void)setVideoCount:(NSNumber *)count user:(PFUser *)user {
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForUser:user]];
-    [attributes setObject:count forKey:kFTUserAttributesVideoCountKey];
+    [attributes setObject:count forKey:kFTUserAttributesPostCountKey];
     [self setAttributes:attributes forUser:user];
 }
 
@@ -364,13 +227,8 @@
 
 #pragma mark - ()
 
-- (void)setAttributes:(NSDictionary *)attributes forVideo:(PFObject *)video {
-    NSString *key = [self keyForVideo:video];
-    [self.cache setObject:attributes forKey:key];
-}
-
-- (void)setAttributes:(NSDictionary *)attributes forPhoto:(PFObject *)photo {
-    NSString *key = [self keyForPhoto:photo];
+- (void)setAttributes:(NSDictionary *)attributes forPost:(PFObject *)post {
+    NSString *key = [self keyForPost:post];
     [self.cache setObject:attributes forKey:key];
 }
 
@@ -379,12 +237,8 @@
     [self.cache setObject:attributes forKey:key];
 }
 
-- (NSString *)keyForVideo:(PFObject *)video{
-    return [NSString stringWithFormat:@"video_%@", [video objectId]];
-}
-
-- (NSString *)keyForPhoto:(PFObject *)photo {
-    return [NSString stringWithFormat:@"photo_%@", [photo objectId]];
+- (NSString *)keyForPost:(PFObject *)post {
+    return [NSString stringWithFormat:@"post_%@", [post objectId]];
 }
 
 - (NSString *)keyForUser:(PFUser *)user {

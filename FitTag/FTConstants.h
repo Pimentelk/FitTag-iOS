@@ -19,9 +19,7 @@ extern NSString *const kFTUserDefaultsActivityFeedViewControllerLastRefreshKey;
 extern NSString *const kFTUserDefaultsCacheFacebookFriendsKey;
 
 #pragma mark - Launch URLs
-
 extern NSString *const kFTLaunchURLHostTakePicture;
-
 
 #pragma mark - NSNotification
 extern NSString *const FTAppDelegateApplicationDidReceiveRemoteNotification;
@@ -35,7 +33,6 @@ extern NSString *const FTPhotoDetailsViewControllerUserDeletedPhotoNotification;
 extern NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification;
 extern NSString *const FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification;
 
-
 #pragma mark - User Info Keys
 extern NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey;
 extern NSString *const FTVideoDetailsViewControllerUserLikedUnlikedVideoNotificationUserInfoLikedKey;
@@ -48,6 +45,7 @@ extern NSString *const kFTEditVideoViewControllerUserInfoCommentKey;
 extern NSString *const kFTInstallationUserKey;
 
 #pragma mark - PFObject Activity Class
+
 // Class key
 extern NSString *const kFTActivityClassKey;
 
@@ -59,8 +57,8 @@ extern NSString *const kFTActivityContentKey;
 extern NSString *const kFTActivityPhotoKey;
 extern NSString *const kFTActivityVideoKey;
 extern NSString *const kFTActivityPostKey;
-extern NSString *const kFTActivityHashtag;
-extern NSString *const kFTActivityMention;
+extern NSString *const kFTActivityHashtagKey;
+extern NSString *const kFTActivityMentionKey;
 
 // Type values
 extern NSString *const kFTActivityTypeLike;
@@ -82,11 +80,16 @@ extern NSString *const kFTPostOpenGraphIDKey;
 extern NSString *const kFTPostLocationKey;
 
 #pragma mark - PFObject User Class
+
 // Class key
 extern NSString *const kFTUserClassKey;
 
 // Field keys
 extern NSString *const kFTUserDisplayNameKey;
+extern NSString *const kFTUserFirstnameKey;
+extern NSString *const kFTUserlastnameKey;
+extern NSString *const kFTUserInterestsKey;
+extern NSString *const kFTUserBioKey;
 extern NSString *const kFTUserFacebookIDKey;
 extern NSString *const kFTUserPhotoIDKey;
 extern NSString *const kFTUserProfilePicSmallKey;
@@ -94,52 +97,30 @@ extern NSString *const kFTUserProfilePicMediumKey;
 extern NSString *const kFTUserFacebookFriendsKey;
 extern NSString *const kFTUserAlreadyAutoFollowedFacebookFriendsKey;
 extern NSString *const kFTUserLocationKey;
+extern NSString *const kFTUserTypeKey;
 
-#pragma mark - PFObject Video Class
-// Class key
-//extern NSString *const kFTVideoClassKey;
+// Type values
+extern NSString *const kFTUserTypeUser;
+extern NSString *const kFTUserTypeAmbassador;
+extern NSString *const kFTUserTypeBusiness;
 
-// Field keys
-//extern NSString *const kFTVideoImageKey;
-//extern NSString *const kFTVideoKey;
-//extern NSString *const kFTVideoUserKey;
-//extern NSString *const kFTVideoOpenGraphIDKey;
+#pragma mark - Cached Post Attributes
 
-#pragma mark - Cached Video Attributes
 // keys
-extern NSString *const kFTVideoAttributesIsLikedByCurrentUserKey;
-extern NSString *const kFTVideoAttributesLikeCountKey;
-extern NSString *const kFTVideoAttributesLikersKey;
-extern NSString *const kFTVideoAttributesCommentCountKey;
-extern NSString *const kFTVideoAttributesCommentersKey;
-extern NSString *const kFTVideoAttributesDisplayName;
-
-#pragma mark - PFObject Photo Class
-// Class key
-//extern NSString *const kFTPhotoClassKey;
-
-// Field keys
-//extern NSString *const kFTPhotoPictureKey;
-//extern NSString *const kFTPhotoThumbnailKey;
-//extern NSString *const kFTPhotoUserKey;
-//extern NSString *const kFTPhotoOpenGraphIDKey;
-
-#pragma mark - Cached Photo Attributes
-// keys
-extern NSString *const kFTPhotoAttributesIsLikedByCurrentUserKey;
-extern NSString *const kFTPhotoAttributesLikeCountKey;
-extern NSString *const kFTPhotoAttributesLikersKey;
-extern NSString *const kFTPhotoAttributesCommentCountKey;
-extern NSString *const kFTPhotoAttributesCommentersKey;
-extern NSString *const kFTPhotoAttributesDisplayName;
-
+extern NSString *const kFTPostAttributesIsLikedByCurrentUserKey;
+extern NSString *const kFTPostAttributesLikeCountKey;
+extern NSString *const kFTPostAttributesLikersKey;
+extern NSString *const kFTPostAttributesCommentCountKey;
+extern NSString *const kFTPostAttributesCommentersKey;
+extern NSString *const kFTPostAttributesDisplayNameKey;
 
 #pragma mark - Cached User Attributes
-// keys
-extern NSString *const kFTUserAttributesPhotoCountKey;
-extern NSString *const kFTUserAttributesVideoCountKey;
-extern NSString *const kFTUserAttributesIsFollowedByCurrentUserKey;
 
+// keys
+//extern NSString *const kFTUserAttributesPhotoCountKey;
+//extern NSString *const kFTUserAttributesVideoCountKey;
+extern NSString *const kFTUserAttributesPostCountKey;
+extern NSString *const kFTUserAttributesIsFollowedByCurrentUserKey;
 
 #pragma mark - PFPush Notification Payload Keys
 

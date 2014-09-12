@@ -138,7 +138,7 @@
     [queryPhotoCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
             [photoCountLabel setText:[NSString stringWithFormat:@"%d photo%@", number, number==1?@"":@"s"]];
-            [[FTCache sharedCache] setPhotoCount:[NSNumber numberWithInt:number] user:self.user];
+            [[FTCache sharedCache] setPostCount:[NSNumber numberWithInt:number] user:self.user];
         }
     }];
     

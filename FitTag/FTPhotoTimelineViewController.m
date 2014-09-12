@@ -230,13 +230,13 @@
         videoCell.tag = indexPath.section;
         [videoCell.likeCounter setTag:indexPath.section];
         
-        NSDictionary *attributesForVideo = [[FTCache sharedCache] attributesForVideo:video];
+        NSDictionary *attributesForVideo = [[FTCache sharedCache] attributesForPost:video];
         
         if (attributesForVideo) {
-            [videoCell setLikeStatus:[[FTCache sharedCache] isVideoLikedByCurrentUser:video]];
-            [videoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForVideo:video] description] forState:UIControlStateNormal];
-            [videoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForVideo:video] description] forState:UIControlStateNormal];
-            [videoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForVideo:video] description] forState:UIControlStateNormal];
+            [videoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:video]];
+            [videoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:video] description] forState:UIControlStateNormal];
+            [videoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:video] description] forState:UIControlStateNormal];
+            [videoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:video] description] forState:UIControlStateNormal];
         } else {
             @synchronized(self) {
                 // check if we can update the cache
@@ -271,16 +271,16 @@
                                 }
                             }
                             
-                            [[FTCache sharedCache] setAttributesForVideo:video likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+                            [[FTCache sharedCache] setAttributesForPost:video likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
                             
                             if (videoCell.tag != indexPath.section) {
                                 return;
                             }
                             
-                            [videoCell setLikeStatus:[[FTCache sharedCache] isVideoLikedByCurrentUser:video]];
-                            [videoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForVideo:video] description] forState:UIControlStateNormal];
-                            [videoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForVideo:video] description] forState:UIControlStateNormal];
-                            [videoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForVideo:video] description] forState:UIControlStateNormal];
+                            [videoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:video]];
+                            [videoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:video] description] forState:UIControlStateNormal];
+                            [videoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:video] description] forState:UIControlStateNormal];
+                            [videoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:video] description] forState:UIControlStateNormal];
                         }
                     }];
                     
@@ -319,13 +319,13 @@
         [photoCell setTag:indexPath.section];
         [photoCell.likeCounter setTag:indexPath.section];
         
-        NSDictionary *attributesForPhoto = [[FTCache sharedCache] attributesForPhoto:photo];
+        NSDictionary *attributesForPhoto = [[FTCache sharedCache] attributesForPost:photo];
         
         if (attributesForPhoto) {
-            [photoCell setLikeStatus:[[FTCache sharedCache] isPhotoLikedByCurrentUser:photo]];
-            [photoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPhoto:photo] description] forState:UIControlStateNormal];
-            [photoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPhoto:photo] description] forState:UIControlStateNormal];
-            [photoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPhoto:photo] description] forState:UIControlStateNormal];
+            [photoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:photo]];
+            [photoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:photo] description] forState:UIControlStateNormal];
+            [photoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:photo] description] forState:UIControlStateNormal];
+            [photoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:photo] description] forState:UIControlStateNormal];
         } else {
             
             @synchronized(self) {
@@ -361,16 +361,16 @@
                                 }
                             }
                             
-                            [[FTCache sharedCache] setAttributesForPhoto:photo likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+                            [[FTCache sharedCache] setAttributesForPost:photo likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
                             
                             if (photoCell.tag != indexPath.section) {
                                 return;
                             }
                             
-                            [photoCell setLikeStatus:[[FTCache sharedCache] isPhotoLikedByCurrentUser:photo]];
-                            [photoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPhoto:photo] description] forState:UIControlStateNormal];
-                            [photoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPhoto:photo] description] forState:UIControlStateNormal];
-                            [photoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPhoto:photo] description] forState:UIControlStateNormal];
+                            [photoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:photo]];
+                            [photoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:photo] description] forState:UIControlStateNormal];
+                            [photoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:photo] description] forState:UIControlStateNormal];
+                            [photoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:photo] description] forState:UIControlStateNormal];
                         }
                     }];
              
@@ -450,15 +450,15 @@
     NSNumber *likeCount = [numberFormatter numberFromString:counter.titleLabel.text];
     if (liked) {
         likeCount = [NSNumber numberWithInt:[likeCount intValue] + 1];
-        [[FTCache sharedCache] incrementLikerCountForVideo:video];
+        [[FTCache sharedCache] incrementLikerCountForPost:video];
     } else {
         if ([likeCount intValue] > 0) {
             likeCount = [NSNumber numberWithInt:[likeCount intValue] - 1];
         }
-        [[FTCache sharedCache] decrementLikerCountForVideo:video];
+        [[FTCache sharedCache] decrementLikerCountForPost:video];
     }
     
-    [[FTCache sharedCache] setVideoIsLikedByCurrentUser:video liked:liked];
+    [[FTCache sharedCache] setPostIsLikedByCurrentUser:video liked:liked];
     
     [counter setTitle:[numberFormatter stringFromNumber:likeCount] forState:UIControlStateNormal];
     
@@ -533,16 +533,16 @@
     NSNumber *likeCount = [numberFormatter numberFromString:counter.titleLabel.text];
     if (liked) {
         likeCount = [NSNumber numberWithInt:[likeCount intValue] + 1];
-        [[FTCache sharedCache] incrementLikerCountForPhoto:photo];
+        [[FTCache sharedCache] incrementLikerCountForPost:photo];
     } else {
         if ([likeCount intValue] > 0) {
             likeCount = [NSNumber numberWithInt:[likeCount intValue] - 1];
         }
-        [[FTCache sharedCache] decrementLikerCountForPhoto:photo];
+        [[FTCache sharedCache] decrementLikerCountForPost:photo];
     }
     
     
-    [[FTCache sharedCache] setPhotoIsLikedByCurrentUser:photo liked:liked];
+    [[FTCache sharedCache] setPostIsLikedByCurrentUser:photo liked:liked];
     
     [counter setTitle:[numberFormatter stringFromNumber:likeCount] forState:UIControlStateNormal];
 

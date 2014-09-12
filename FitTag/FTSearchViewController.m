@@ -526,7 +526,7 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
             [query orderByAscending:@"createdAt"];
         } else if ([businessButton isSelected]) {
             query = [PFQuery queryWithClassName:kFTActivityClassKey];
-            [query whereKey:kFTActivityHashtag equalTo:[trimmedComment lowercaseString]];
+            [query whereKey:kFTActivityHashtagKey equalTo:[trimmedComment lowercaseString]];
             [query includeKey:kFTActivityFromUserKey];
             [query includeKey:kFTActivityPostKey];
             [query orderByDescending:@"createdAt"];

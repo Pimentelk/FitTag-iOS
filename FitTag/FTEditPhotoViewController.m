@@ -301,7 +301,7 @@
         [photo saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
             
-                [[FTCache sharedCache] setAttributesForPhoto:photo likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
+                [[FTCache sharedCache] setAttributesForPost:photo likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
             
                 // userInfo might contain any caption which might have been posted by the uploader
                 if (userInfo) {
@@ -314,8 +314,8 @@
                         [comment setObject:photo forKey:kFTActivityPhotoKey];
                         [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
                         [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
-                        [comment setObject:hashtags forKey:kFTActivityHashtag];
-                        [comment setObject:mentions forKey:kFTActivityMention];
+                        [comment setObject:hashtags forKey:kFTActivityHashtagKey];
+                        [comment setObject:mentions forKey:kFTActivityMentionKey];
                         [comment setObject:commentText forKey:kFTActivityContentKey];
                     
                         PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];
@@ -323,7 +323,7 @@
                         comment.ACL = ACL;
                     
                         [comment saveEventually];
-                        [[FTCache sharedCache] incrementCommentCountForPhoto:photo];
+                        [[FTCache sharedCache] incrementCommentCountForPost:photo];
                     }
                 } else {
                     [photo saveEventually];

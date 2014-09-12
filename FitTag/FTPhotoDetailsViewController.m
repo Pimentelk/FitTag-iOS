@@ -117,7 +117,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [self.headerView reloadLikeBar];
     
     // we will only hit the network if we have no cached data for this photo
-    BOOL hasCachedLikers = [[FTCache sharedCache] attributesForPhoto:self.photo] != nil;
+    BOOL hasCachedLikers = [[FTCache sharedCache] attributesForPost:self.photo] != nil;
     if (!hasCachedLikers) {
         [self loadLikers];
     }
@@ -228,7 +228,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
         [ACL setWriteAccess:YES forUser:[self.photo objectForKey:kFTPostUserKey]];
         comment.ACL = ACL;
         
-        [[FTCache sharedCache] incrementCommentCountForPhoto:self.photo];
+        [[FTCache sharedCache] incrementCommentCountForPost:self.photo];
         
         // Show HUD view
         [MBProgressHUD showHUDAddedTo:self.view.superview animated:YES];
@@ -240,7 +240,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
             [timer invalidate];
             
             if (error && error.code == kPFErrorObjectNotFound) {
-                [[FTCache sharedCache] decrementCommentCountForPhoto:self.photo];
+                [[FTCache sharedCache] decrementCommentCountForPost:self.photo];
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Could not post comment", nil) message:NSLocalizedString(@"This photo is no longer available", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
                 [alert show];
                 [self.navigationController popViewControllerAnimated:YES];
@@ -427,7 +427,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
             }
         }
         
-        [[FTCache sharedCache] setAttributesForPhoto:photo likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+        [[FTCache sharedCache] setAttributesForPost:photo likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
         [self.headerView reloadLikeBar];
     }];
 }

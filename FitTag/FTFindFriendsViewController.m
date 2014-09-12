@@ -209,7 +209,7 @@ typedef enum {
     
     if (attributes) {
         // set them now
-        NSNumber *number = [[FTCache sharedCache] photoCountForUser:(PFUser *)object];
+        NSNumber *number = [[FTCache sharedCache] postCountForUser:(PFUser *)object];
         [cell.photoLabel setText:[NSString stringWithFormat:@"%@ photo%@", number, [number intValue] == 1 ? @"": @"s"]];
     } else {
         @synchronized(self) {
@@ -221,7 +221,7 @@ typedef enum {
                 [photoNumQuery setCachePolicy:kPFCachePolicyCacheThenNetwork];
                 [photoNumQuery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
                     @synchronized(self) {
-                        [[FTCache sharedCache] setPhotoCount:[NSNumber numberWithInt:number] user:(PFUser *)object];
+                        [[FTCache sharedCache] setPostCount:[NSNumber numberWithInt:number] user:(PFUser *)object];
                         [self.outstandingCountQueries removeObjectForKey:indexPath];
                     }
                     FTFindFriendsCell *actualCell = (FTFindFriendsCell*)[tableView cellForRowAtIndexPath:indexPath];
