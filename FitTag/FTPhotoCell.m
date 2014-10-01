@@ -142,42 +142,6 @@
         [moreButton setBackgroundColor:[UIColor clearColor]];
         [moreButton setTitle:@"" forState:UIControlStateNormal];
         [photoCellButtonsContainer addSubview:moreButton];
-        
-        /*
-        if (self.buttons & FTPhotoCellButtonsUser) {
-            NSLog(@"FTPhotoCellButtonsUser");
-            // This is the user's display name, on a button so that we can tap on it
-            self.userButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [photoCellButtonsContainer addSubview:self.userButton];
-            [self.userButton setBackgroundColor:[UIColor clearColor]];
-            [[self.userButton titleLabel] setFont:[UIFont boldSystemFontOfSize:15]];
-            [self.userButton setTitleColor:[UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
-            [self.userButton setTitleColor:[UIColor colorWithRed:134.0f/255.0f green:100.0f/255.0f blue:65.0f/255.0f alpha:1.0f] forState:UIControlStateHighlighted];
-            [[self.userButton titleLabel] setLineBreakMode:NSLineBreakByTruncatingTail];
-            [[self.userButton titleLabel] setShadowOffset:CGSizeMake( 0.0f, 1.0f)];
-            [self.userButton setTitleShadowColor:[UIColor colorWithWhite:1.0f alpha:0.750f] forState:UIControlStateNormal];
-        }
-        
-        self.timeIntervalFormatter = [[TTTTimeIntervalFormatter alloc] init];
-        
-        // timestamp
-        self.timestampLabel = [[UILabel alloc] initWithFrame:CGRectMake( 50.0f, 210.0f, self.contentView.bounds.size.width - 50.0f - 72.0f, 18.0f)];
-        [self.contentView addSubview:self.timestampLabel];
-        [self.timestampLabel setTextColor:[UIColor colorWithRed:124.0f/255.0f green:124.0f/255.0f blue:124.0f/255.0f alpha:1.0f]];
-        [self.timestampLabel setShadowColor:[UIColor colorWithWhite:1.0f alpha:0.750f]];
-        [self.timestampLabel setShadowOffset:CGSizeMake( 0.0f, 1.0f)];
-        [self.timestampLabel setFont:[UIFont systemFontOfSize:11.0f]];
-        [self.timestampLabel setBackgroundColor:[UIColor clearColor]];
-        
-        CALayer *layer = [containerView layer];
-        layer.backgroundColor = [[UIColor whiteColor] CGColor];
-        layer.masksToBounds = NO;
-        layer.shadowRadius = 1.0f;
-        layer.shadowOffset = CGSizeMake( 0.0f, 2.0f);
-        layer.shadowOpacity = 0.5f;
-        layer.shouldRasterize = YES;
-        layer.shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake( 0.0f, self.contentView.frame.size.height - 4.0f, self.contentView.frame.size.width, 4.0f)].CGPath;
-        */
     }
     
     return self;
@@ -196,7 +160,7 @@
 - (void)setPhoto:(PFObject *)aPhoto {
     photo = aPhoto;
     
-    // user's avatar
+    // User profile image
     PFUser *user = [self.photo objectForKey:kFTPostUserKey];
     PFFile *profilePictureSmall = [user objectForKey:kFTUserProfilePicSmallKey];
     [self.avatarImageView setFile:profilePictureSmall];
@@ -224,25 +188,6 @@
         constrainWidth = self.likeButton.frame.origin.x;
         [self.moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
-    
-    /*
-    // we resize the button to fit the user's name to avoid having a huge touch area
-    CGPoint userButtonPoint = CGPointMake(50.0f, 6.0f);
-    constrainWidth -= userButtonPoint.x;
-    CGSize constrainSize = CGSizeMake(constrainWidth, containerView.bounds.size.height - userButtonPoint.y*2.0f);
-    
-    CGSize userButtonSize = [self.userButton.titleLabel.text boundingRectWithSize:constrainSize
-                                                                          options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
-                                                                       attributes:@{NSFontAttributeName:self.userButton.titleLabel.font}
-                                                                          context:nil].size;
-    
-    CGRect userButtonFrame = CGRectMake(userButtonPoint.x, userButtonPoint.y, userButtonSize.width, userButtonSize.height);
-    [self.userButton setFrame:userButtonFrame];
-    
-    NSTimeInterval timeInterval = [[self.photo createdAt] timeIntervalSinceNow];
-    NSString *timestamp = [self.timeIntervalFormatter stringForTimeInterval:timeInterval];
-    [self.timestampLabel setText:timestamp];
-    */
     
     [self setNeedsDisplay];
 }

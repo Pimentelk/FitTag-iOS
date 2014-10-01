@@ -59,12 +59,15 @@ extern NSString *const kFTActivityVideoKey;
 extern NSString *const kFTActivityPostKey;
 extern NSString *const kFTActivityHashtagKey;
 extern NSString *const kFTActivityMentionKey;
+extern NSString *const kFTActivityWordKey;
+extern NSString *const kFTActivityRewardsKey;
 
 // Type values
 extern NSString *const kFTActivityTypeLike;
 extern NSString *const kFTActivityTypeFollow;
 extern NSString *const kFTActivityTypeComment;
 extern NSString *const kFTActivityTypeJoined;
+extern NSString *const kFTActivityTypeReward;
 
 #pragma mark - PFObject Post Class
 extern NSString *const kFTPostClassKey;
@@ -78,6 +81,26 @@ extern NSString *const kFTPostThumbnailKey;
 extern NSString *const kFTPostTypeKey;
 extern NSString *const kFTPostOpenGraphIDKey;
 extern NSString *const kFTPostLocationKey;
+
+#pragma mark - PFObject Rewards Class
+
+// Class key
+extern NSString *const kFTRewardsClassKey;
+
+// Field keys
+extern NSString *const kFTRewardsNameKey;
+extern NSString *const kFTRewardsDescriptionKey;
+extern NSString *const kFTRewardsTypeKey;
+extern NSString *const kFTRewardsUserKey;
+extern NSString *const kFTRewardsExpiredKey;
+extern NSString *const kFTRewardsImageKey;
+extern NSString *const kFTRewardsStatusKey;
+
+// Type values
+extern NSString *const kFTRewardsTypeActive;
+extern NSString *const kFTRewardsTypeInactive;
+extern NSString *const kFTRewardsTypeUsed;
+extern NSString *const kFTRewardsTypeExpired;
 
 #pragma mark - PFObject User Class
 
@@ -98,6 +121,13 @@ extern NSString *const kFTUserFacebookFriendsKey;
 extern NSString *const kFTUserAlreadyAutoFollowedFacebookFriendsKey;
 extern NSString *const kFTUserLocationKey;
 extern NSString *const kFTUserTypeKey;
+extern NSString *const kFTUserCompanyNameKey;
+extern NSString *const kFTUserAddressKey;
+extern NSString *const kFTUserWebsiteKey;
+extern NSString *const kFTUserDescriptionKey;
+extern NSString *const kFTUserEmailKey;
+extern NSString *const kFTUserPostCountKey;
+extern NSString *const kFTUserRewardsEarnedKey;
 
 // Type values
 extern NSString *const kFTUserTypeUser;
@@ -117,8 +147,6 @@ extern NSString *const kFTPostAttributesDisplayNameKey;
 #pragma mark - Cached User Attributes
 
 // keys
-//extern NSString *const kFTUserAttributesPhotoCountKey;
-//extern NSString *const kFTUserAttributesVideoCountKey;
 extern NSString *const kFTUserAttributesPostCountKey;
 extern NSString *const kFTUserAttributesIsFollowedByCurrentUserKey;
 

@@ -14,6 +14,8 @@
 @interface FTEditVideoViewController : UIViewController <UITextFieldDelegate,UIScrollViewDelegate,FTPostDetailsFooterViewDelegate,CLLocationManagerDelegate>
 
 @property (nonatomic,weak) id <FTEditVideoViewControllerDelegate> delegate;
+/// The Play Video button
+@property (nonatomic,readonly) UIButton *playButton;
 - (id)initWithVideo:(NSData *)aVideo;
 @end
 

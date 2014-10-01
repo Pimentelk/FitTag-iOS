@@ -10,7 +10,7 @@
 #import "FTActivityFeedViewController.h"
 #import "FTProfileViewController.h"
 #import "FTSearchViewController.h"
-#import "FTOffersViewController.h"
+#import "FTRewardsCollectionViewController.h"
 
 @implementation FTToolBar
 

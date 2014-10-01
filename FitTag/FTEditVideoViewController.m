@@ -8,6 +8,7 @@
 
 #import "FTEditVideoViewController.h"
 #import "UIImage+ResizeAdditions.h"
+#import "MBProgressHUD.h"
 
 @interface FTEditVideoViewController (){
     CLLocationManager *locationManager;
@@ -15,7 +16,7 @@
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) NSData *video;
 @property (nonatomic, strong) UITextField *commentTextField;
-@property (nonatomic, strong) UITextField *tagTextField;
+@property (nonatomic, strong) UITextField *hashtagTextField;
 @property (nonatomic, assign) UIBackgroundTaskIdentifier fileUploadBackgroundTaskId;
 @property (nonatomic, assign) UIBackgroundTaskIdentifier videoPostBackgroundTaskId;
 @property (nonatomic, assign) NSInteger scrollViewHeight;
@@ -23,6 +24,10 @@
 @property (nonatomic, strong) PFFile *imageFile;
 @property (nonatomic, strong) FTPostDetailsFooterView *postDetailsFooterView;
 @property (nonatomic, strong) PFGeoPoint *geoPoint;
+@property (nonatomic, retain) MPMoviePlayerController *moviePlayer;
+@property (nonatomic, strong) UIImageView *videoImageView;
+@property (nonatomic, strong) UIImageView *videoPlaceHolderView;
+@property (nonatomic, strong) NSString *postLocation;
 @end
 
 @implementation FTEditVideoViewController
@@ -30,9 +35,13 @@
 @synthesize commentTextField;
 @synthesize fileUploadBackgroundTaskId;
 @synthesize videoPostBackgroundTaskId;
-@synthesize tagTextField;
+@synthesize hashtagTextField;
 @synthesize scrollViewHeight;
 @synthesize postDetailsFooterView;
+@synthesize moviePlayer;
+@synthesize playButton;
+@synthesize videoImageView;
+@synthesize videoPlaceHolderView;
 
 #pragma mark - NSObject
 
@@ -48,7 +57,7 @@
             return nil;
         }
         
-        self.video = aVideo;
+        self.video = aVideo;        
         self.fileUploadBackgroundTaskId = UIBackgroundTaskInvalid;
         self.videoPostBackgroundTaskId = UIBackgroundTaskInvalid;
     }
@@ -57,7 +66,7 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    NSLog(@"Memory warning on Edit");
+    //NSLog(@"Memory warning on Edit");
 }
 
 #pragma mark - UIViewController
@@ -68,26 +77,30 @@
     self.scrollView.backgroundColor = [UIColor whiteColor];
     self.view = self.scrollView;
     
-    UIImageView *videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
+    videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
     [videoImageView setBackgroundColor:[UIColor blackColor]];
-    //[photoImageView setImage:self.video];
     [videoImageView setContentMode:UIViewContentModeScaleAspectFit];
     
     [self.scrollView addSubview:videoImageView];
     
+    // Footer view
     CGRect footerRect = [FTPostDetailsFooterView rectForView];
     footerRect.origin.y = videoImageView.frame.origin.y + videoImageView.frame.size.height;
     
     postDetailsFooterView = [[FTPostDetailsFooterView alloc] initWithFrame:footerRect];
     self.commentTextField = postDetailsFooterView.commentField;
-    self.tagTextField = postDetailsFooterView.tagField;
+    self.hashtagTextField = postDetailsFooterView.hashtagTextField;
     self.commentTextField.delegate = self;
-    self.tagTextField.delegate = self;
+    self.hashtagTextField.delegate = self;
     postDetailsFooterView.delegate = self;
     [postDetailsFooterView.submitButton setEnabled:NO];
     [self.scrollView addSubview:postDetailsFooterView];
     scrollViewHeight = videoImageView.frame.origin.y + videoImageView.frame.size.height + postDetailsFooterView.frame.size.height;
     [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, scrollViewHeight)];
+}
+
+- (void)didTapVideoPlayButtonAction:(UIButton *)sender{
+    [moviePlayer play];
 }
 
 - (void)viewDidLoad {
@@ -103,14 +116,123 @@
     [self.navigationItem setHidesBackButton:NO];
     
     // Override the back idnicator
-    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(hideCameraView:)];
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"]
+                                                                      style:UIBarButtonItemStylePlain
+                                                                     target:self
+                                                                     action:@selector(hideCameraView:)];
     [backIndicator setTintColor:[UIColor whiteColor]];
     [self.navigationItem setLeftBarButtonItem:backIndicator];
+    
+    
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     
+    // Videoplayer background image
+    videoPlaceHolderView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
+    [videoPlaceHolderView setBackgroundColor:[UIColor clearColor]];
+    [videoPlaceHolderView setContentMode:UIViewContentModeScaleAspectFill];
+    
+    [videoImageView addSubview:videoPlaceHolderView];
+    
+    // setup the video player
+    //NSLog(@"FTEditVideoViewController::Setup video...");
+    moviePlayer = [[MPMoviePlayerController alloc] init];
+    [moviePlayer setControlStyle:MPMovieControlStyleNone];
+    [moviePlayer setScalingMode:MPMovieScalingModeAspectFill];
+    [moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
+    [moviePlayer setShouldAutoplay:NO];
+    [moviePlayer.view setFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
+    [moviePlayer.view setBackgroundColor:[UIColor clearColor]];
+    [moviePlayer.view setUserInteractionEnabled:NO];
+    [moviePlayer.view setHidden:YES];
+    
+    [videoImageView addSubview:moviePlayer.view];
+    [videoImageView bringSubviewToFront:moviePlayer.view];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieFinishedCallBack:) name:MPMoviePlayerPlaybackDidFinishNotification object:moviePlayer];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerStateChange:) name:MPMoviePlayerPlaybackStateDidChangeNotification object:moviePlayer];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadStateDidChange:) name:MPMoviePlayerLoadStateDidChangeNotification object:moviePlayer];
+    
+    // setup the playbutton
+    float centerX = (videoImageView.frame.size.width - 60) / 2;
+    float centerY = (videoImageView.frame.size.height - 60) / 2;
+    playButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.playButton setFrame:CGRectMake(centerX,centerY,60.0f,60.0f)];
+    [self.playButton setBackgroundImage:[UIImage imageNamed:@"play_button"] forState:UIControlStateNormal];
+    [self.playButton addTarget:self action:@selector(didTapVideoPlayButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.playButton setSelected:NO];
+    
+    [self.scrollView addSubview:self.playButton];
+    [self.scrollView bringSubviewToFront:self.playButton];
+    
     [self shouldUploadVideo:self.video];
+}
+
+-(void)movieFinishedCallBack:(NSNotification *)notification{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:self.moviePlayer];
+}
+
+-(void)loadStateDidChange:(NSNotification *)notification{
+    //NSLog(@"loadStateDidChange: %@",notification);
+    
+    if (self.moviePlayer.loadState & MPMovieLoadStatePlayable) {
+        NSLog(@"loadState... MPMovieLoadStatePlayable");
+    }
+    
+    if (self.moviePlayer.loadState & MPMovieLoadStatePlaythroughOK) {
+        NSLog(@"loadState... MPMovieLoadStatePlaythroughOK");
+        [moviePlayer.view setHidden:NO];
+        //[self.imageView setHidden:YES];
+    }
+    
+    if (self.moviePlayer.loadState & MPMovieLoadStateStalled) {
+        NSLog(@"loadState... MPMovieLoadStateStalled");
+    }
+    
+    if (self.moviePlayer.loadState & MPMovieLoadStateUnknown) {
+        NSLog(@"loadState... MPMovieLoadStateUnknown");
+    }
+}
+
+-(void)moviePlayerStateChange:(NSNotification *)notification{
+    
+    //NSLog(@"moviePlayerStateChange: %@",notification);
+    
+    if (self.moviePlayer.playbackState == MPMoviePlaybackStatePlaying){
+        NSLog(@"moviePlayer... Playing");
+        [self.playButton setHidden:YES];
+        if (self.moviePlayer.loadState & MPMovieLoadStatePlayable) {
+            NSLog(@"2 loadState... MPMovieLoadStatePlayable");
+            [moviePlayer.view setHidden:NO];
+            //[self.imageView setHidden:YES];
+        }
+    }
+    
+    if (self.moviePlayer.playbackState & MPMoviePlaybackStateStopped){
+        NSLog(@"moviePlayer... Stopped");
+        [self.playButton setHidden:NO];
+    }
+    
+    if (self.moviePlayer.playbackState & MPMoviePlaybackStatePaused){
+        NSLog(@"moviePlayer... Paused");
+        [self.playButton setHidden:NO];
+        [moviePlayer.view setHidden:YES];
+        //[self.imageView setHidden:NO];
+    }
+    
+    if (self.moviePlayer.playbackState & MPMoviePlaybackStateInterrupted){
+        NSLog(@"moviePlayer... Interrupted");
+        //[self.moviePlayer stop];
+    }
+    
+    if (self.moviePlayer.playbackState & MPMoviePlaybackStateSeekingForward){
+        NSLog(@"moviePlayer... Forward");
+    }
+    
+    if (self.moviePlayer.playbackState & MPMoviePlaybackStateSeekingBackward){
+        NSLog(@"moviePlayer... Backward");
+    }
 }
 
 #pragma mark - UITextFieldDelegate
@@ -124,7 +246,7 @@
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     [self.commentTextField resignFirstResponder];
-    [self.tagTextField resignFirstResponder];
+    [self.hashtagTextField resignFirstResponder];
 }
 
 #pragma mark - FTPhotoPostDetailsFooterViewDelegate
@@ -145,8 +267,13 @@
 
 - (NSArray *) checkForHashtag {
     NSError *error = nil;
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)" options:0 error:&error];
-    NSArray *matches = [regex matchesInString:self.commentTextField.text options:0 range:NSMakeRange(0,self.commentTextField.text.length)];
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)"
+                                                                           options:0 error:&error];
+    
+    NSArray *matches = [regex matchesInString:self.commentTextField.text
+                                      options:0
+                                        range:NSMakeRange(0,self.commentTextField.text.length)];
+    
     NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
     for (NSTextCheckingResult *match in matches) {
         NSRange wordRange = [match rangeAtIndex:1];
@@ -159,8 +286,13 @@
 
 - (NSMutableArray *) checkForMention {
     NSError *error = nil;
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@(\\w+)" options:0 error:&error];
-    NSArray *matches = [regex matchesInString:self.commentTextField.text options:0 range:NSMakeRange(0,self.commentTextField.text.length)];
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@(\\w+)"
+                                                                           options:0 error:&error];
+    
+    NSArray *matches = [regex matchesInString:self.commentTextField.text
+                                      options:0
+                                        range:NSMakeRange(0,self.commentTextField.text.length)];
+    
     NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
     for (NSTextCheckingResult *match in matches) {
         NSRange wordRange = [match rangeAtIndex:1];
@@ -182,10 +314,12 @@
     }
     
     if ([PFUser currentUser]) {
-        
         // Set the video
+        
+        [MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
+        
         self.videoFile = [PFFile fileWithName:@"video.mov" data:aVideo];
-
+        
         // Request a background execution task to allow us to finish uploading the video even if the app is backgrounded
         self.fileUploadBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
@@ -194,11 +328,17 @@
         [self.videoFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
                 
-                // Get the first frame of the video and save it as an image                
+                // Get the first frame of the video and save it as an image
                 NSURL *url = [NSURL URLWithString:self.videoFile.url];
+                
+                // Set video url
+                [moviePlayer setContentURL:url];
+                [moviePlayer prepareToPlay];
+                
                 AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:nil];
                 AVAssetImageGenerator *generateImg = [[AVAssetImageGenerator alloc] initWithAsset:asset];
                 generateImg.appliesPreferredTrackTransform = YES;
+                
                 NSError *error = NULL;
                 CMTime time = CMTimeMake(1, 65);
                 CGImageRef refImg = [generateImg copyCGImageAtTime:time actualTime:NULL error:&error];
@@ -206,6 +346,10 @@
                 UIImage *resizedImage = [anImage resizedImageWithContentMode:UIViewContentModeScaleAspectFill bounds:CGSizeMake(320.0f, 320.0f) interpolationQuality:kCGInterpolationHigh];
                 NSData *imageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
                 
+                // Set placeholder image
+                [videoPlaceHolderView setImage:[UIImage imageWithData:imageData]];
+                
+                [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
                 self.imageFile = [PFFile fileWithName:@"photo.jpeg" data:imageData];
                 
                 [self.imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -226,8 +370,6 @@
                 NSLog(@"self.imageFile saveInBackgroundWithBlock: %@", error);
             }
         }];
-        
-        
     }
     
     return YES;
@@ -254,7 +396,7 @@
 }
 
 - (void)doneButtonAction:(id)sender {
-    NSLog(@"FTEditVideoViewController::doneButtonAction:%@",sender);
+    //NSLog(@"FTEditVideoViewController::doneButtonAction:%@",sender);
     // Make sure there were no errors creating the image files
     if (!self.videoFile || !self.imageFile){
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your video" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
@@ -279,7 +421,10 @@
         [video setObject:self.imageFile forKey:kFTPostImageKey];
         [video setObject:self.videoFile forKey:kFTPostVideoKey];
         [video setObject:kFTPostVideoKey forKey:kFTPostTypeKey];
-        [video setObject:self.geoPoint forKey:kFTPostLocationKey];
+        
+        if (self.geoPoint) {
+            [video setObject:self.geoPoint forKey:kFTPostLocationKey];
+        }
         
         // photos are public, but may only be modified by the user who uploaded them
         PFACL *videoACL = [PFACL ACLWithUser:[PFUser currentUser]];
@@ -291,7 +436,7 @@
             [[UIApplication sharedApplication] endBackgroundTask:self.videoPostBackgroundTaskId];
         }];
         
-        NSLog(@"Save the video PFObject");
+        //NSLog(@"Save the video PFObject");
         // Save the video PFObject
         [video saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
@@ -322,8 +467,7 @@
                 }
                 [[NSNotificationCenter defaultCenter] postNotificationName:FTTabBarControllerDidFinishEditingPhotoNotification object:video];
             } else {
-                NSLog(@"Error: %@",error);
-                
+                //NSLog(@"Error: %@",error);
                 [[[UIAlertView alloc] initWithTitle:@"Couldn't post your video"
                                             message:nil
                                            delegate:nil
@@ -361,14 +505,25 @@
     return locationManager;
 }
 
-- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    NSLog(@"didFailWithError: %@", error);
-    UIAlertView *errorAlert = [[UIAlertView alloc]
-                               initWithTitle:@"Error" message:@"Failed to Get Your Location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+- (void)locationManager:(CLLocationManager *)manager
+       didFailWithError:(NSError *)error {
+    
+    //NSLog(@"didFailWithError: %@", error);
+    
+    /*
+    UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                         message:@"Failed to Get Your Location"
+                                                        delegate:nil
+                                               cancelButtonTitle:@"OK"
+                                               otherButtonTitles:nil];
     [errorAlert show];
+    */
+    postDetailsFooterView.locationTextField.text = @"Please visit privacy settings to enable location tracking.";
 }
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+- (void)locationManager:(CLLocationManager *)manager
+     didUpdateLocations:(NSArray *)locations {
+    
     [locationManager stopUpdatingLocation];
     PFUser *user = [PFUser currentUser];
     if (user) {
@@ -377,6 +532,17 @@
         
         self.geoPoint = [PFGeoPoint geoPointWithLatitude:location.coordinate.latitude
                                                longitude:location.coordinate.longitude];
+        
+        // Set location
+        CLGeocoder * geoCoder = [[CLGeocoder alloc] init];
+        [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+            for (CLPlacemark *placemark in placemarks) {
+                self.postLocation = [NSString stringWithFormat:@" %@, %@", [placemark locality], [placemark administrativeArea]];
+                if (postDetailsFooterView) {
+                    postDetailsFooterView.locationTextField.text = self.postLocation;
+                }
+            }
+        }];
     }
 }
 

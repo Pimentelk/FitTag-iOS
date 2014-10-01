@@ -17,7 +17,7 @@
 #import "FTNavigationBar.h"
 #import "FTToolBar.h"
 #import "FTCamViewController.h"
-#import "FTOffersViewController.h"
+#import "FTRewardsCollectionViewController.h"
 #import "FTSearchViewController.h"
 #import "FTAccountViewController.h"
 
@@ -144,25 +144,38 @@
 
 #pragma mark - Toolbar
 
--(void)viewNotifications:(id)sender{
+-(void)viewNotifications:(id)sender {
+    NSLog(@"viewNotifications");
     FTActivityFeedViewController *activityFeedViewController = [[FTActivityFeedViewController alloc] init];
     [self.navigationController pushViewController:activityFeedViewController animated:YES];
 }
 
--(void)viewSearch:(id)sender{
+-(void)viewSearch:(id)sender {
+    NSLog(@"viewSearch");
     FTSearchViewController *searchViewController = [[FTSearchViewController alloc] init];
     [self.navigationController pushViewController:searchViewController animated:YES];
 }
 
--(void)viewMyProfile:(id)sender{
+-(void)viewMyProfile:(id)sender {
+    NSLog(@"viewMyProfile");
     FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
     [accountViewController setUser:[PFUser currentUser]];
     [self.navigationController pushViewController:accountViewController animated:YES];
 }
 
--(void)viewOffers:(id)sender{
-    FTOffersViewController *offersViewController = [[FTOffersViewController alloc] init];
-    [self.navigationController pushViewController:offersViewController animated:YES];
+-(void)viewOffers:(id)sender {
+    NSLog(@"viewOffers");
+    // Layout param
+    FindFriendsFlowLayout *layoutFlow = [[FindFriendsFlowLayout alloc] init];
+    [layoutFlow setItemSize:CGSizeMake(158,185)];
+    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [layoutFlow setMinimumInteritemSpacing:0];
+    [layoutFlow setMinimumLineSpacing:0];
+    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,160)];
+    
+    FTRewardsCollectionViewController *rewardsViewController = [[FTRewardsCollectionViewController alloc] initWithCollectionViewLayout:layoutFlow];
+    [self.navigationController pushViewController:rewardsViewController animated:YES];
 }
 @end
 

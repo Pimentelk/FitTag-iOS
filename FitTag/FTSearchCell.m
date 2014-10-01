@@ -50,18 +50,18 @@
 
 #pragma mark - ()
 - (void)setName:(NSString *)name{
-    NSLog(@"FTSearchCell::setName:(NSString *)%@",name);
-    displayName.text = name;
+    if (name != nil)
+        displayName.text = name;
 }
 
 - (void)setPost:(PFObject *)aPost{
-    NSLog(@"FTSearchCell::setPost:(PFObject *) %@",aPost);
-    post = aPost;
+    if (aPost != nil)
+        post = aPost;
 }
 
 - (void)setUser:(PFUser *)aUser{
-    NSLog(@"FTSearchCell::setUser:(PFUser *) %@",aUser);
-    user = aUser;
+    if (aUser != nil)
+        user = aUser;
 }
 
 - (void)setIcon:(NSInteger)aIcon{
@@ -103,6 +103,11 @@
         [iconView addTarget:self action:@selector(didTapNearbyCellIconButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [tapGestureRecognizer addTarget:self action:@selector(didTapNearbyCellIconButtonAction:)];
         [iconView setFrame:CGRectMake(0.0f, 0.0f, 48.0f, 56.0f)];
+    } else if(aIcon == 7) {
+        [iconView setBackgroundImage:[UIImage imageNamed:@"search_hashtag"] forState:UIControlStateNormal];
+        [iconView addTarget:self action:@selector(didTapNearbyCellIconButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [tapGestureRecognizer addTarget:self action:@selector(didTapNearbyCellIconButtonAction:)];
+        [iconView setFrame:CGRectMake(0.0f, 0.0f, 48.0f, 56.0f)];
     }
     
     [self.contentView addSubview:iconView];
@@ -110,8 +115,8 @@
 }
 
 - (void)didTapTrendingCellIconButtonAction:(UIButton *)sender{
-    NSLog(@"didTapTrendingCellIconButtonAction:");
     if (self.post != nil) {
+        NSLog(@"FTSearchCell::didTapTrendingCellIconButtonAction: post = %@",self.post);
         if (delegate && [delegate respondsToSelector:@selector(cellView:didTapTrendingCellIconButton:post:)]) {
             [delegate cellView:self didTapTrendingCellIconButton:sender post:self.post];
         }
@@ -119,7 +124,7 @@
 }
 
 - (void)didTapPopularCellIconButtonAction:(UIButton *)sender{
-    NSLog(@"didTapPopularCellIconButtonAction:");
+    NSLog(@"FTSearchCell::didTapPopularCellIconButtonAction:");
     if (self.post != nil) {
         if (delegate && [delegate respondsToSelector:@selector(cellView:didTapPopularCellIconButton:post:)]) {
             [delegate cellView:self didTapPopularCellIconButton:sender post:self.post];
@@ -128,7 +133,7 @@
 }
 
 - (void)didTapAmbassadorCellIconButtonAction:(UIButton *)sender{
-    NSLog(@"didTapAmbassadorCellIconButtonAction:");
+    NSLog(@"FTSearchCell::didTapAmbassadorCellIconButtonAction:");
     if (self.post != nil) {
         if (delegate && [delegate respondsToSelector:@selector(cellView:didTapAmbassadorCellIconButton:post:)]) {
             [delegate cellView:self didTapAmbassadorCellIconButton:sender post:self.post];
@@ -137,7 +142,7 @@
 }
 
 - (void)didTapNearbyCellIconButtonAction:(UIButton *)sender{
-    NSLog(@"didTapNearbyCellIconButtonAction:");
+    NSLog(@"FTSearchCell::didTapNearbyCellIconButtonAction:");
     if (self.post != nil) {
         if (delegate && [delegate respondsToSelector:@selector(cellView:didTapNearbyCellIconButton:post:)]) {
             [delegate cellView:self didTapNearbyCellIconButton:sender post:self.post];
@@ -146,7 +151,7 @@
 }
 
 - (void)didTapUserCellIconButtonAction:(UIButton *)sender{
-    NSLog(@"didTapUserCellIconButtonAction:");
+    NSLog(@"FTSearchCell::didTapUserCellIconButtonAction:");
     if (self.user != nil) {
         if (delegate && [delegate respondsToSelector:@selector(cellView:didTapUserCellIconButton:user:)]) {
             [delegate cellView:self didTapUserCellIconButton:sender user:self.user];
@@ -155,7 +160,7 @@
 }
 
 - (void)didTapHashtagCellIconButtonAction:(UIButton *)sender{
-    NSLog(@"didTapHashtagCellIconButtonAction:");
+    NSLog(@"FTSearchCell::didTapHashtagCellIconButtonAction:");
     if (self.post != nil) {
         if (delegate && [delegate respondsToSelector:@selector(cellView:didTapHashtagCellIconButton:post:)]) {
             [delegate cellView:self didTapHashtagCellIconButton:sender post:self.post];
@@ -164,7 +169,7 @@
 }
 
 - (void)didTapCellLabelButtonAction:(UIButton *)sender{
-    NSLog(@"didTapCellLabelButtonAction:");
+    NSLog(@"FTSearchCell::didTapCellLabelButtonAction:");
     if (self.post != nil) {
         if (delegate && [delegate respondsToSelector:@selector(cellView:didTapCellLabelButton:post:)]) {
             [delegate cellView:self didTapCellLabelButton:sender post:self.post];

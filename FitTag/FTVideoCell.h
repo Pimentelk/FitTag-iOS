@@ -25,6 +25,7 @@ typedef enum {
 @property (nonatomic, strong) UIButton *likeCounter;
 @property (nonatomic, strong) UIButton *videoButton;
 @property (nonatomic, strong) UIButton *usernameRibbon;
+@property (nonatomic, retain) MPMoviePlayerController *moviePlayer;
 
 /*! @name Creating Video Header View */
 /*!
@@ -101,5 +102,10 @@ typedef enum {
 - (void)videoCellView:(FTVideoCell *)videoCellView didTapMoreButton:(UIButton *)button video:(PFObject *)video;
 
 
+/*!
+ Sent to the delegate when the more button is tapped
+ @param the video for which the more button will be used
+ */
+//- (void)videoCellView:(FTVideoCell *)videoCellView didTapPlayButton:(UIButton *)button forVideoFile:(PFFile *)videoFile;
 @end
 

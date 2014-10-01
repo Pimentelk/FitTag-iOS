@@ -18,8 +18,8 @@
 @synthesize commentField;
 @synthesize mainView;
 @synthesize hideDropShadow;
-@synthesize tagField;
-@synthesize tagsArea;
+@synthesize hashtagTextField;
+@synthesize locationTextField;
 @synthesize submitButton;
 
 -(id)initWithFrame:(CGRect)frame{
@@ -42,29 +42,43 @@
         commentField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         commentField.backgroundColor = [UIColor whiteColor];
         commentField.placeholder = @" WRITE A CAPTION...";
-        [commentField setValue:[UIColor colorWithRed:154.0f/255.0f green:146.0f/255.0f blue:138.0f/255.0f alpha:1.0f] forKeyPath:@"_placeholderLabel.textColor"]; // Are we allowed to modify private properties like this? -Héctor
+        [commentField setValue:[UIColor colorWithRed:154.0f/255.0f
+                                               green:146.0f/255.0f
+                                                blue:138.0f/255.0f
+                                               alpha:1.0f]
+                    forKeyPath:@"_placeholderLabel.textColor"];
+        
         [mainView addSubview:commentField];
         
-        tagField = [[UITextField alloc] initWithFrame:CGRectMake(0.0f, 44.0f, 320.0f, 30.0f)];
-        tagField.font = [UIFont systemFontOfSize:12.0f];
-        tagField.returnKeyType = UIReturnKeyDefault;
-        tagField.textColor = [UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f];
-        tagField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-        tagField.backgroundColor = [UIColor whiteColor];
-        tagField.placeholder = @" TAG THIS...";
-        [tagField setValue:[UIColor colorWithRed:154.0f/255.0f green:146.0f/255.0f blue:138.0f/255.0f alpha:1.0f] forKeyPath:@"_placeholderLabel.textColor"]; // Are we allowed to modify private properties like this? -Héctor
-        [mainView addSubview:tagField];
+        hashtagTextField = [[UITextField alloc] initWithFrame:CGRectMake(0.0f, 44.0f, 320.0f, 30.0f)];
+        hashtagTextField.font = [UIFont systemFontOfSize:12.0f];
+        hashtagTextField.returnKeyType = UIReturnKeyDefault;
+        hashtagTextField.textColor = [UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f];
+        hashtagTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+        hashtagTextField.backgroundColor = [UIColor whiteColor];
+        hashtagTextField.placeholder = @" TAG THIS...";
+        [hashtagTextField setValue:[UIColor colorWithRed:154.0f/255.0f
+                                                   green:146.0f/255.0f
+                                                    blue:138.0f/255.0f
+                                                   alpha:1.0f]
+                        forKeyPath:@"_placeholderLabel.textColor"];
         
-        tagsArea = [[UITextField alloc] initWithFrame:CGRectMake(0.0f, 78.0f, 320.0f, 25.0f)];
-        tagsArea.font = [UIFont systemFontOfSize:12.0f];
-        tagsArea.returnKeyType = UIReturnKeyDefault;
-        tagsArea.textColor = [UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f];
-        tagsArea.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-        tagsArea.backgroundColor = [UIColor whiteColor];
-        tagsArea.placeholder = @"";
-        tagsArea.userInteractionEnabled = NO;
-        [tagsArea setValue:[UIColor colorWithRed:154.0f/255.0f green:146.0f/255.0f blue:138.0f/255.0f alpha:1.0f] forKeyPath:@"_placeholderLabel.textColor"]; // Are we allowed to modify private properties like this? -Héctor
-        [mainView addSubview:tagsArea];
+        [mainView addSubview:hashtagTextField];
+        
+        locationTextField = [[UITextField alloc] initWithFrame:CGRectMake(0.0f, 78.0f, 320.0f, 25.0f)];
+        locationTextField.font = [UIFont systemFontOfSize:12.0f];
+        locationTextField.returnKeyType = UIReturnKeyDefault;
+        locationTextField.textColor = [UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f];
+        locationTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+        locationTextField.backgroundColor = [UIColor whiteColor];
+        locationTextField.placeholder = @"";
+        locationTextField.userInteractionEnabled = NO;
+        [locationTextField setValue:[UIColor colorWithRed:154.0f/255.0f
+                                                    green:146.0f/255.0f
+                                                     blue:138.0f/255.0f alpha:1.0f]
+                         forKeyPath:@"_placeholderLabel.textColor"];
+        
+        [mainView addSubview:locationTextField];
         
         UIButton *facebookButton = [UIButton buttonWithType: UIButtonTypeCustom];
         facebookButton.frame = CGRectMake(20.0f, 111.0f, 71.0f, 80.0f);
@@ -96,19 +110,19 @@
 
 #pragma mark - ()
 
--(void)facebookShareButton:(id)sender{
+-(void)facebookShareButton:(id)sender {
     if ([self.delegate respondsToSelector:@selector(facebookShareButton:)]){
         [self.delegate facebookShareButton:sender];
     }
 }
 
--(void)twitterShareButton:(id)sender{
+-(void)twitterShareButton:(id)sender {
     if ([self.delegate respondsToSelector:@selector(twitterShareButton:)]){
         [self.delegate twitterShareButton:sender];
     }
 }
 
--(void)sendPost:(id)sender{
+-(void)sendPost:(id)sender {
     if ([self.delegate respondsToSelector:@selector(sendPost:)]){
         [self.delegate sendPost:sender];
     }

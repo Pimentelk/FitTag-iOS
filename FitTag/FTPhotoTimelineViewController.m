@@ -16,12 +16,14 @@
 @property (nonatomic, assign) BOOL shouldReloadOnAppear;
 @property (nonatomic, strong) NSMutableSet *reusableSectionHeaderViews;
 @property (nonatomic, strong) NSMutableDictionary *outstandingSectionHeaderQueries;
-@property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
+//@property (nonatomic, retain) MPMoviePlayerController *moviePlayer;
 @end
+
 @implementation FTPhotoTimelineViewController
 @synthesize reusableSectionHeaderViews;
 @synthesize shouldReloadOnAppear;
 @synthesize outstandingSectionHeaderQueries;
+//@synthesize moviePlayer;
 
 #pragma mark - Initialization
 
@@ -43,7 +45,7 @@
         self.parseClassName = kFTPostClassKey;
         
         // Whether the built-in pagination is enabled
-        self.paginationEnabled = YES;
+        self.paginationEnabled = NO;
         
         // Whether the built-in pull-to-refresh is enabled
         self.pullToRefreshEnabled = YES;
@@ -54,7 +56,7 @@
         // Improve scrolling performance by reusing UITableView section headers
         self.reusableSectionHeaderViews = [NSMutableSet setWithCapacity:3];
         
-        self.shouldReloadOnAppear = NO;
+        self.shouldReloadOnAppear = YES;
     }
     return self;
 }
@@ -180,7 +182,6 @@
     if (self.objects.count == 0 || ![[UIApplication sharedApplication].delegate performSelector:@selector(isParseReachable)]) {
         [query setCachePolicy:kPFCachePolicyCacheThenNetwork];
     }
-    
     return query;
 }
 
@@ -190,44 +191,35 @@
     if (indexPath.section < self.objects.count) {
         return [self.objects objectAtIndex:indexPath.section];
     }
-    
     return nil;
 }
 
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath object:(PFObject *)object {
     
-    BOOL isVideo = NO;
-    if([object[@"type"] isEqualToString:@"video"]){
-        isVideo = YES;
-    } else if([object[@"type"] isEqualToString:@"image"]) {
-        isVideo = NO;
-    } else { // If type is undefined
-        return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
-    }
+    static NSString *videoCellIdentifier = @"VideoCell";
+    static NSString *photoCellIdentifier = @"PhotoCell";
     
     //NSLog(@"FTPhotoTimelineViewController::Updating tableView:(UITableView *) %@ cellForRowAtIndexPath:(NSIndexPath *) %@ object:(PFObject *) %@",tableView,indexPath,object);
     if (indexPath.section == self.objects.count) {
-        // this behavior is normally handled by PFQueryTableViewController, but we are using sections for each object and we must handle this ourselves
-        UITableViewCell *cell = [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
-        return cell;
+        return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
+    }
+    
+    FTVideoCell *videoCell = (FTVideoCell *)[tableView dequeueReusableCellWithIdentifier:videoCellIdentifier];
+    if (videoCell == nil) {
+        videoCell = [[FTVideoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:videoCellIdentifier];
+        videoCell.delegate = self;
+        [videoCell.videoButton addTarget:self action:@selector(didTapOnVideoAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
     // If the cell is a video
-    if (isVideo) {
-        
-        static NSString *videoCellIdentifier = @"VideoCell";
-        FTVideoCell *videoCell = (FTVideoCell *)[tableView dequeueReusableCellWithIdentifier:videoCellIdentifier];
-        
-        if (videoCell == nil) {
-            videoCell = [[FTVideoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:videoCellIdentifier];
-            videoCell.delegate = self;
-            [videoCell.videoButton addTarget:self action:@selector(didTapOnVideoAction:) forControlEvents:UIControlEventTouchUpInside];
-        }
+    if ([[object objectForKey:kFTPostTypeKey] isEqualToString:kFTPostVideoKey]) {
         
         PFObject *video = [self.objects objectAtIndex:indexPath.section];
-        //NSLog(@"video: %@",video);
+        PFFile *videoFile = [video objectForKey:kFTPostVideoKey];
+        [videoCell.moviePlayer setContentURL:[NSURL URLWithString:videoFile.url]];
         [videoCell setVideo:video];
-        videoCell.tag = indexPath.section;
+        [videoCell setTag:indexPath.section];
         [videoCell.likeCounter setTag:indexPath.section];
         
         NSDictionary *attributesForVideo = [[FTCache sharedCache] attributesForPost:video];
@@ -287,12 +279,11 @@
                 }
             }
         }
-        
+
         videoCell.videoButton.tag = indexPath.section;
         
         if (object) {
-            videoCell.imageView.file = [object objectForKey:kFTPostImageKey];
-            
+            videoCell.imageView.file = [object objectForKey:kFTPostImageKey];            
             // PFQTVC will take care of asynchronously downloading files, but will only load them when the tableview is not moving. If the data is there, let's load it right away.
             if ([videoCell.imageView.file isDataAvailable]) {
                 [videoCell.imageView loadInBackground];
@@ -302,17 +293,16 @@
         return videoCell;
     }
     
+    FTPhotoCell *photoCell = (FTPhotoCell *)[tableView dequeueReusableCellWithIdentifier:photoCellIdentifier];
+    
+    if (photoCell == nil) {
+        photoCell = [[FTPhotoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:photoCellIdentifier];
+        photoCell.delegate = self;
+        [photoCell.photoButton addTarget:self action:@selector(didTapOnPhotoAction:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    
     // If the cell is not a video
-    if(!isVideo) {
-        
-        static NSString *photoCellIdentifier = @"PhotoCell";
-        FTPhotoCell *photoCell = (FTPhotoCell *)[tableView dequeueReusableCellWithIdentifier:photoCellIdentifier];
-
-        if (photoCell == nil) {
-            photoCell = [[FTPhotoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:photoCellIdentifier];
-            photoCell.delegate = self;
-            [photoCell.photoButton addTarget:self action:@selector(didTapOnPhotoAction:) forControlEvents:UIControlEventTouchUpInside];
-        }
+    if([[object objectForKey:kFTPostTypeKey] isEqualToString:kFTPostImageKey]) {
         
         PFObject *photo = [self.objects objectAtIndex:indexPath.section];
         [photoCell setPhoto:photo];
@@ -373,7 +363,6 @@
                             [photoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:photo] description] forState:UIControlStateNormal];
                         }
                     }];
-             
                 }
             }
         }
@@ -423,6 +412,14 @@
 }
 
 #pragma mark - FTVideoCellViewDelegate
+
+/*
+-(void)videoCellView:(FTVideoCell *)videoCellView didTapPlayButton:(UIButton *)button forVideoFile:(PFFile *)videoFile{
+    [videoCellView.playButton setHidden:YES];
+    [moviePlayer play];
+    [videoCellView.videoButton addSubview:moviePlayer.view];
+}
+*/
 
 -(void)videoCellView:(FTVideoCell *)videoCellView didTapUserButton:(UIButton *)button user:(PFUser *)user{
     FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
@@ -492,9 +489,7 @@
             if(error){
                 NSLog(@"ERROR###: %@",error);
             }
-            
         }];
-        
     }
 }
 
@@ -610,7 +605,6 @@
             return [NSIndexPath indexPathForRow:0 inSection:i];
         }
     }
-    
     return nil;
 }
 

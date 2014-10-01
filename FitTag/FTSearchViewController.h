@@ -7,7 +7,9 @@
 //
 
 #import "FTSearchCell.h"
+#import "FTSearchHeaderView.h"
+#import <CoreLocation/CoreLocation.h>
 
-@interface FTSearchViewController : PFQueryTableViewController <FTSearchCellDelegate,UIActionSheetDelegate,UISearchBarDelegate,UITextFieldDelegate>
-
+@interface FTSearchViewController : PFQueryTableViewController <FTSearchHeaderViewDelegate,FTSearchCellDelegate,UIActionSheetDelegate,
+                                                                CLLocationManagerDelegate,UITextFieldDelegate,UISearchBarDelegate>
 @end

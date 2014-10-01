@@ -13,12 +13,11 @@
 
 @interface FTVideoCell ()
 @property (nonatomic, strong) UIButton *moreButton;
-@property (nonatomic, strong) UIView *containerView;
-@property (nonatomic, strong) FTProfileImageView *avatarImageView;
 @property (nonatomic, strong) UIButton *userButton;
+@property (nonatomic, strong) UIView *containerView;
 @property (nonatomic, strong) UILabel *timestampLabel;
+@property (nonatomic, strong) FTProfileImageView *avatarImageView;
 @property (nonatomic, strong) TTTTimeIntervalFormatter *timeIntervalFormatter;
-@property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
 @end
 
 @implementation FTVideoCell
@@ -38,6 +37,7 @@
 @synthesize likeCounter;
 @synthesize moreButton;
 @synthesize usernameRibbon;
+@synthesize moviePlayer;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
@@ -71,7 +71,6 @@
         self.clipsToBounds = YES;
         self.containerView.clipsToBounds = YES;
         self.superview.clipsToBounds = YES;
-        [self setBackgroundColor:[UIColor clearColor]];
         
         UIImageView *profileHexagon = [self getProfileHexagon];
         
@@ -129,7 +128,6 @@
         }
         
         if (self.buttons & FTVideoCellButtonsComment) {
-            
             // comments button
             commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
             [videoCellButtonsContainer addSubview:self.commentButton];
@@ -153,6 +151,23 @@
         [moreButton setBackgroundColor:[UIColor clearColor]];
         [moreButton setTitle:@"" forState:UIControlStateNormal];
         [videoCellButtonsContainer addSubview:moreButton];
+        
+        // setup the video player
+        //NSLog(@"Setting up...");
+        moviePlayer = [[MPMoviePlayerController alloc] init];
+        [moviePlayer setControlStyle:MPMovieControlStyleNone];
+        [moviePlayer setScalingMode:MPMovieScalingModeAspectFill];
+        [moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
+        [moviePlayer setShouldAutoplay:NO];
+        [moviePlayer.view setFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
+        [moviePlayer.view setBackgroundColor:[UIColor clearColor]];
+        [moviePlayer.view setUserInteractionEnabled:NO];
+        [moviePlayer.view setHidden:YES];
+        [videoButton addSubview:moviePlayer.view];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieFinishedCallBack:) name:MPMoviePlayerPlaybackDidFinishNotification object:moviePlayer];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerStateChange:) name:MPMoviePlayerPlaybackStateDidChangeNotification object:moviePlayer];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadStateDidChange:) name:MPMoviePlayerLoadStateDidChangeNotification object:moviePlayer];
     }
     
     return self;
@@ -171,33 +186,9 @@
 - (void)setVideo:(PFObject *)aVideo {
     video = aVideo;
     
-    // user's avatar
-    PFUser *user = [self.video objectForKey:kFTPostUserKey];
+    // Get the profile image
+    PFUser *user = [video objectForKey:kFTPostUserKey];
     PFFile *profilePictureSmall = [user objectForKey:kFTUserProfilePicSmallKey];
-    PFFile *videoFile = [video objectForKey:kFTPostVideoKey];
-    NSURL *url = [NSURL URLWithString:videoFile.url];
-    self.moviePlayer = [[MPMoviePlayerController alloc] init];
-    [self.moviePlayer setControlStyle:MPMovieControlStyleNone];
-    [self.moviePlayer setScalingMode:MPMovieScalingModeAspectFill];
-    [self.moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
-    [self.moviePlayer setContentURL:url];
-    [self.moviePlayer.view setFrame:CGRectMake(0.0f,0.0f,320.0f,320.0f)];
-    [self.moviePlayer requestThumbnailImagesAtTimes:@[ @0.1f, @1.0f ] timeOption:MPMovieTimeOptionExact];
-    [self.moviePlayer setShouldAutoplay:NO];
-    [self.moviePlayer setFullscreen:YES];
-    [self.moviePlayer.view setHidden:YES];
-    [self.moviePlayer.view setBackgroundColor:[UIColor clearColor]];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(movieFinishedCallBack)
-                                                 name:MPMoviePlayerPlaybackDidFinishNotification
-                                               object:self.moviePlayer];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(moviePlayerStateChange:)
-                                                 name:MPMoviePlayerPlaybackStateDidChangeNotification
-                                               object:self.moviePlayer];
-
     NSString *authorName = [user objectForKey:kFTUserDisplayNameKey];
     
     CGFloat constrainWidth = containerView.bounds.size.width;
@@ -229,6 +220,72 @@
     }
     
     [self setNeedsDisplay];
+}
+
+-(void)movieFinishedCallBack:(NSNotification *)notification{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:self.moviePlayer];
+}
+
+-(void)loadStateDidChange:(NSNotification *)notification{
+    //NSLog(@"loadStateDidChange: %@",notification);
+    
+    if (self.moviePlayer.loadState & MPMovieLoadStatePlayable) {
+        NSLog(@"loadState... MPMovieLoadStatePlayable");
+    }
+    
+    if (self.moviePlayer.loadState & MPMovieLoadStatePlaythroughOK) {
+        NSLog(@"loadState... MPMovieLoadStatePlaythroughOK");
+        [moviePlayer.view setHidden:NO];
+        [self.imageView setHidden:YES];
+    }
+    
+    if (self.moviePlayer.loadState & MPMovieLoadStateStalled) {
+        NSLog(@"loadState... MPMovieLoadStateStalled");
+    }
+    
+    if (self.moviePlayer.loadState & MPMovieLoadStateUnknown) {
+        NSLog(@"loadState... MPMovieLoadStateUnknown");
+    }
+}
+
+-(void)moviePlayerStateChange:(NSNotification *)notification{
+    
+    //NSLog(@"moviePlayerStateChange: %@",notification);
+    
+    if (self.moviePlayer.playbackState == MPMoviePlaybackStatePlaying){
+        NSLog(@"moviePlayer... Playing");
+        [self.playButton setHidden:YES];
+        if (self.moviePlayer.loadState & MPMovieLoadStatePlayable) {
+            NSLog(@"2 loadState... MPMovieLoadStatePlayable");
+            [moviePlayer.view setHidden:NO];
+            [self.imageView setHidden:YES];
+        }
+    }
+    
+    if (self.moviePlayer.playbackState & MPMoviePlaybackStateStopped){
+        NSLog(@"moviePlayer... Stopped");
+        [self.playButton setHidden:NO];
+    }
+    
+    if (self.moviePlayer.playbackState & MPMoviePlaybackStatePaused){
+        NSLog(@"moviePlayer... Paused");
+        [self.playButton setHidden:NO];
+        [moviePlayer.view setHidden:YES];
+        [self.imageView setHidden:NO];
+    }
+    
+    if (self.moviePlayer.playbackState & MPMoviePlaybackStateInterrupted){
+        NSLog(@"moviePlayer... Interrupted");
+        //[self.moviePlayer stop];
+    }
+    
+    if (self.moviePlayer.playbackState & MPMoviePlaybackStateSeekingForward){
+        NSLog(@"moviePlayer... Forward");
+    }
+    
+    if (self.moviePlayer.playbackState & MPMoviePlaybackStateSeekingBackward){
+        NSLog(@"moviePlayer... Backward");
+    }
 }
 
 - (void)setLikeStatus:(BOOL)liked {
@@ -334,51 +391,12 @@
 }
 
 - (void)didTapVideoPlayButtonAction:(UIButton *)sender{
-    [self.playButton setHidden:YES];
-    [self.moviePlayer prepareToPlay];
-    [self.moviePlayer requestThumbnailImagesAtTimes:@[ @0.1f, @1.0f ] timeOption:MPMovieTimeOptionExact];
-    [self.moviePlayer play];
-}
-
--(void)movieFinishedCallBack{
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:MPMoviePlayerPlaybackDidFinishNotification
-                                                  object:self.moviePlayer];
-}
-
--(void)moviePlayerStateChange:(NSNotification *)notification{
-    
-    if (self.moviePlayer.playbackState == MPMoviePlaybackStatePlaying){
-        //NSLog(@"moviePlayer... Playing");
-        [self.imageView addSubview:self.moviePlayer.view];
-        [self.moviePlayer.view setHidden:NO];
+    [moviePlayer play];
+    /*
+    if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapPlayButton:forVideoFile:)]){
+        [delegate videoCellView:self didTapPlayButton:sender forVideoFile:[self.video objectForKey:kFTPostVideoKey]];
     }
-    
-    if (self.moviePlayer.playbackState == MPMoviePlaybackStateStopped){
-        //NSLog(@"moviePlayer... Stopped");
-        [self.moviePlayer stop];
-        [self.playButton setHidden:NO];
-        [self.moviePlayer.view setHidden:YES];
-        [self.moviePlayer.view removeFromSuperview];
-    }
-    
-    if (self.moviePlayer.playbackState == MPMoviePlaybackStatePaused){
-        //NSLog(@"moviePlayer... Paused");
-        [self.moviePlayer stop];
-    }
-    
-    if (self.moviePlayer.playbackState == MPMoviePlaybackStateInterrupted){
-        //NSLog(@"moviePlayer... Interrupted");
-        [self.moviePlayer stop];
-    }
-    
-    if (self.moviePlayer.playbackState == MPMoviePlaybackStateSeekingForward){
-        //NSLog(@"moviePlayer... Forward");
-    }
-    
-    if (self.moviePlayer.playbackState == MPMoviePlaybackStateSeekingBackward){
-        //NSLog(@"moviePlayer... Backward");
-    }
+    */
 }
 
 @end

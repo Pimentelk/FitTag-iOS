@@ -26,9 +26,12 @@
 @property (nonatomic, strong) PFFile *photoFile;
 @property (nonatomic, strong) PFFile *thumbnailFile;
 @property (nonatomic, strong) PFGeoPoint *geoPoint;
+@property (nonatomic, strong) NSString *postLocation;
+@property (nonatomic, strong) FTPostDetailsFooterView *postDetailsFooterView;
 @end
 
 @implementation FTEditPhotoViewController
+@synthesize postDetailsFooterView;
 @synthesize scrollView;
 @synthesize image;
 @synthesize commentTextField;
@@ -84,15 +87,15 @@
     CGRect footerRect = [FTPostDetailsFooterView rectForView];
     footerRect.origin.y = photoImageView.frame.origin.y + photoImageView.frame.size.height;
     
-    FTPostDetailsFooterView *footerView = [[FTPostDetailsFooterView alloc] initWithFrame:footerRect];
-    self.commentTextField = footerView.commentField;
-    self.tagTextField = footerView.tagField;
+    self.postDetailsFooterView = [[FTPostDetailsFooterView alloc] initWithFrame:footerRect];
+    self.commentTextField = postDetailsFooterView.commentField;
+    self.tagTextField = postDetailsFooterView.hashtagTextField;
     self.commentTextField.delegate = self;
     self.tagTextField.delegate = self;
-    footerView.delegate = self;
-    [self.scrollView addSubview:footerView];
+    self.postDetailsFooterView.delegate = self;
+    [self.scrollView addSubview:postDetailsFooterView];
     
-    scrollViewHeight = photoImageView.frame.origin.y + photoImageView.frame.size.height + footerView.frame.size.height;
+    scrollViewHeight = photoImageView.frame.origin.y + photoImageView.frame.size.height + postDetailsFooterView.frame.size.height;
     
     [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, scrollViewHeight)];
 }
@@ -110,7 +113,10 @@
     [self.navigationItem setHidesBackButton:NO];
     
     // Override the back idnicator
-    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(hideCameraView:)];
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"]
+                                                                      style:UIBarButtonItemStylePlain
+                                                                     target:self
+                                                                     action:@selector(hideCameraView:)];
     [backIndicator setTintColor:[UIColor whiteColor]];
     [self.navigationItem setLeftBarButtonItem:backIndicator];
     
@@ -285,7 +291,10 @@
         [photo setObject:self.photoFile forKey:kFTPostImageKey];
         [photo setObject:self.thumbnailFile forKey:kFTPostThumbnailKey];
         [photo setObject:kFTPostImageKey forKey:kFTPostTypeKey];
-        [photo setObject:self.geoPoint forKey:kFTPostLocationKey];
+        
+        if (self.geoPoint) {
+            [photo setObject:self.geoPoint forKey:kFTPostLocationKey];
+        }
         
         // photos are public, but may only be modified by the user who uploaded them
         PFACL *photoACL = [PFACL ACLWithUser:[PFUser currentUser]];
@@ -374,9 +383,15 @@
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     NSLog(@"didFailWithError: %@", error);
-    UIAlertView *errorAlert = [[UIAlertView alloc]
-                               initWithTitle:@"Error" message:@"Failed to Get Your Location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    /*
+    UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                         message:@"Failed to Get Your Location"
+                                                        delegate:nil
+                                               cancelButtonTitle:@"OK"
+                                               otherButtonTitles:nil];
     [errorAlert show];
+    */
+    postDetailsFooterView.locationTextField.text = @"Please visit privacy settings to enable location tracking.";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
@@ -387,6 +402,19 @@
         //NSLog(@"lat%f - lon%f", location.coordinate.latitude, location.coordinate.longitude);
         self.geoPoint = [PFGeoPoint geoPointWithLatitude:location.coordinate.latitude
                                                longitude:location.coordinate.longitude];
+        
+        // Set location
+        CLGeocoder * geoCoder = [[CLGeocoder alloc] init];
+        [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+            for (CLPlacemark *placemark in placemarks) {
+                NSLog(@"City: %@",[placemark locality]);
+                NSLog(@"State: %@",[placemark administrativeArea]);
+                self.postLocation = [NSString stringWithFormat:@" %@, %@", [placemark locality], [placemark administrativeArea]];
+                if (postDetailsFooterView) {
+                    postDetailsFooterView.locationTextField.text = self.postLocation;
+                }
+            }
+        }];
     }
 }
 

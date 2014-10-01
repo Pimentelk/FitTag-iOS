@@ -10,7 +10,6 @@
 		2D007B5F19B3CA46006E1484 /* FTVideoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B5E19B3CA46006E1484 /* FTVideoCell.m */; };
 		2D007B6119B4074F006E1484 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D007B6019B4074F006E1484 /* MediaPlayer.framework */; };
 		2D007B6419B6A5A1006E1484 /* FTSearchHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B6319B6A5A1006E1484 /* FTSearchHeaderView.m */; };
-		2D007B6719B6B321006E1484 /* FTSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B6619B6B321006E1484 /* FTSearchResultsViewController.m */; };
 		2D007B6A19B6C6BB006E1484 /* FTSearchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B6919B6C6BB006E1484 /* FTSearchCell.m */; };
 		2D0A53A81971997F0091FFCA /* InspirationCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */; };
 		2D0A53AC1971ABFF0091FFCA /* FindFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53AB1971ABFF0091FFCA /* FindFriendsViewController.m */; };
@@ -23,7 +22,7 @@
 		2D429A0B1977ED6000F8A9A0 /* FTProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A0A1977ED6000F8A9A0 /* FTProfileViewController.m */; };
 		2D429A0E1977EE7700F8A9A0 /* FTSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A0D1977EE7700F8A9A0 /* FTSearchViewController.m */; };
 		2D429A111977EE8F00F8A9A0 /* FTActivityFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A101977EE8F00F8A9A0 /* FTActivityFeedViewController.m */; };
-		2D429A141977EE9E00F8A9A0 /* FTOffersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A131977EE9E00F8A9A0 /* FTOffersViewController.m */; };
+		2D429A141977EE9E00F8A9A0 /* FTRewardsCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A131977EE9E00F8A9A0 /* FTRewardsCollectionViewController.m */; };
 		2D429A17197AD47000F8A9A0 /* FTConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A16197AD47000F8A9A0 /* FTConstants.m */; };
 		2D429A1B197AF37000F8A9A0 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A1A197AF37000F8A9A0 /* Reachability.m */; };
 		2D429A20197B2F4C00F8A9A0 /* FTTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A1F197B2F4C00F8A9A0 /* FTTabBarController.m */; };
@@ -48,6 +47,24 @@
 		2DAF5BA119B2A28E00E5E10B /* FTEditVideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF5BA019B2A28E00E5E10B /* FTEditVideoViewController.m */; };
 		2DBC6E5A195C783C008B5AD3 /* FTCamRollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBC6E59195C783C008B5AD3 /* FTCamRollViewController.m */; };
 		2DBC6EA1195CBCE2008B5AD3 /* FTInterestsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBC6EA0195CBCE2008B5AD3 /* FTInterestsViewController.m */; };
+		2DBE020619D0C62D00CD278C /* FTRewardsCollectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE020519D0C62D00CD278C /* FTRewardsCollectionHeaderView.m */; };
+		2DBE021019D1A1F100CD278C /* FTRewardsCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE020F19D1A1F100CD278C /* FTRewardsCollectionViewCell.m */; };
+		2DBE021419D37AF900CD278C /* FTRewardsDetailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE021319D37AF900CD278C /* FTRewardsDetailView.m */; };
+		2DBE021719D3D45F00CD278C /* FTRewardsDetailsHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE021619D3D45F00CD278C /* FTRewardsDetailsHeaderView.m */; };
+		2DBE021A19D44F9F00CD278C /* TTTAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE021919D44F9F00CD278C /* TTTAttributedLabel.m */; };
+		2DBE021D19D4682500CD278C /* FTRewardsDetailFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE021C19D4682500CD278C /* FTRewardsDetailFooterView.m */; };
+		2DBE023619D6FB7F00CD278C /* ELCAlbumPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE022019D6FB7F00CD278C /* ELCAlbumPickerController.m */; };
+		2DBE023719D6FB7F00CD278C /* ELCAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE022219D6FB7F00CD278C /* ELCAsset.m */; };
+		2DBE023819D6FB7F00CD278C /* ELCAssetCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE022419D6FB7F00CD278C /* ELCAssetCell.m */; };
+		2DBE023919D6FB7F00CD278C /* ELCAssetTablePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE022819D6FB7F00CD278C /* ELCAssetTablePicker.m */; };
+		2DBE023A19D6FB7F00CD278C /* ELCConsole.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE022A19D6FB7F00CD278C /* ELCConsole.m */; };
+		2DBE023B19D6FB7F00CD278C /* ELCImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE022C19D6FB7F00CD278C /* ELCImagePickerController.m */; };
+		2DBE023C19D6FB7F00CD278C /* ELCOverlayImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE022F19D6FB7F00CD278C /* ELCOverlayImageView.m */; };
+		2DBE023D19D6FB7F00CD278C /* ELCAlbumPickerController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2DBE023119D6FB7F00CD278C /* ELCAlbumPickerController.xib */; };
+		2DBE023E19D6FB7F00CD278C /* ELCAssetPicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2DBE023219D6FB7F00CD278C /* ELCAssetPicker.xib */; };
+		2DBE023F19D6FB7F00CD278C /* ELCAssetTablePicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2DBE023319D6FB7F00CD278C /* ELCAssetTablePicker.xib */; };
+		2DBE024019D6FB7F00CD278C /* Overlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DBE023419D6FB7F00CD278C /* Overlay.png */; };
+		2DBE024119D6FB7F00CD278C /* Overlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DBE023519D6FB7F00CD278C /* Overlay@2x.png */; };
 		2DBEEE5719AB4F1E00AAD238 /* FTPostDetailsFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBEEE5619AB4F1E00AAD238 /* FTPostDetailsFooterView.m */; };
 		2DC507CC199829940041A03D /* FTCamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC507CB199829940041A03D /* FTCamViewController.m */; };
 		2DC507D5199FBE030041A03D /* FTHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC507D4199FBE030041A03D /* FTHomeViewController.m */; };
@@ -73,6 +90,8 @@
 		2DD2B69E19841C3100600A42 /* FTFindFriendsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B69D19841C3100600A42 /* FTFindFriendsCell.m */; };
 		2DD2B6A119841DB000600A42 /* FTSettingsButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B6A019841DB000600A42 /* FTSettingsButtonItem.m */; };
 		2DD2B6A419841E0900600A42 /* FTImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B6A319841E0900600A42 /* FTImageView.m */; };
+		2DD4E5EB19C650080096FC2F /* FTGeoQueryAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD4E5EA19C650080096FC2F /* FTGeoQueryAnnotation.m */; };
+		2DD4E5EE19C650F80096FC2F /* FTCircleOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD4E5ED19C650F80096FC2F /* FTCircleOverlay.m */; };
 		2DD6914D1949AF5B00B59E75 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6914C1949AF5B00B59E75 /* Foundation.framework */; };
 		2DD6914F1949AF5B00B59E75 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6914E1949AF5B00B59E75 /* CoreGraphics.framework */; };
 		2DD691511949AF5B00B59E75 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691501949AF5B00B59E75 /* UIKit.framework */; };
@@ -105,8 +124,6 @@
 		2D007B6019B4074F006E1484 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		2D007B6219B6A5A1006E1484 /* FTSearchHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSearchHeaderView.h; sourceTree = "<group>"; };
 		2D007B6319B6A5A1006E1484 /* FTSearchHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchHeaderView.m; sourceTree = "<group>"; };
-		2D007B6519B6B321006E1484 /* FTSearchResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSearchResultsViewController.h; sourceTree = "<group>"; };
-		2D007B6619B6B321006E1484 /* FTSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchResultsViewController.m; sourceTree = "<group>"; };
 		2D007B6819B6C6BB006E1484 /* FTSearchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSearchCell.h; sourceTree = "<group>"; };
 		2D007B6919B6C6BB006E1484 /* FTSearchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchCell.m; sourceTree = "<group>"; };
 		2D0A53A61971997F0091FFCA /* InspirationCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspirationCellCollectionView.h; sourceTree = "<group>"; };
@@ -131,8 +148,8 @@
 		2D429A0D1977EE7700F8A9A0 /* FTSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchViewController.m; sourceTree = "<group>"; };
 		2D429A0F1977EE8F00F8A9A0 /* FTActivityFeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTActivityFeedViewController.h; sourceTree = "<group>"; };
 		2D429A101977EE8F00F8A9A0 /* FTActivityFeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTActivityFeedViewController.m; sourceTree = "<group>"; };
-		2D429A121977EE9E00F8A9A0 /* FTOffersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTOffersViewController.h; sourceTree = "<group>"; };
-		2D429A131977EE9E00F8A9A0 /* FTOffersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTOffersViewController.m; sourceTree = "<group>"; };
+		2D429A121977EE9E00F8A9A0 /* FTRewardsCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTRewardsCollectionViewController.h; sourceTree = "<group>"; };
+		2D429A131977EE9E00F8A9A0 /* FTRewardsCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTRewardsCollectionViewController.m; sourceTree = "<group>"; };
 		2D429A15197AD47000F8A9A0 /* FTConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTConstants.h; sourceTree = "<group>"; };
 		2D429A16197AD47000F8A9A0 /* FTConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTConstants.m; sourceTree = "<group>"; };
 		2D429A19197AF37000F8A9A0 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
@@ -177,6 +194,40 @@
 		2DBC6E59195C783C008B5AD3 /* FTCamRollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCamRollViewController.m; sourceTree = "<group>"; };
 		2DBC6E9F195CBCE2008B5AD3 /* FTInterestsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTInterestsViewController.h; sourceTree = "<group>"; };
 		2DBC6EA0195CBCE2008B5AD3 /* FTInterestsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTInterestsViewController.m; sourceTree = "<group>"; };
+		2DBE020419D0C62D00CD278C /* FTRewardsCollectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTRewardsCollectionHeaderView.h; sourceTree = "<group>"; };
+		2DBE020519D0C62D00CD278C /* FTRewardsCollectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTRewardsCollectionHeaderView.m; sourceTree = "<group>"; };
+		2DBE020E19D1A1F100CD278C /* FTRewardsCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTRewardsCollectionViewCell.h; sourceTree = "<group>"; };
+		2DBE020F19D1A1F100CD278C /* FTRewardsCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTRewardsCollectionViewCell.m; sourceTree = "<group>"; };
+		2DBE021219D37AF900CD278C /* FTRewardsDetailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTRewardsDetailView.h; sourceTree = "<group>"; };
+		2DBE021319D37AF900CD278C /* FTRewardsDetailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTRewardsDetailView.m; sourceTree = "<group>"; };
+		2DBE021519D3D45F00CD278C /* FTRewardsDetailsHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTRewardsDetailsHeaderView.h; sourceTree = "<group>"; };
+		2DBE021619D3D45F00CD278C /* FTRewardsDetailsHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTRewardsDetailsHeaderView.m; sourceTree = "<group>"; };
+		2DBE021819D44F9F00CD278C /* TTTAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTTAttributedLabel.h; sourceTree = "<group>"; };
+		2DBE021919D44F9F00CD278C /* TTTAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTTAttributedLabel.m; sourceTree = "<group>"; };
+		2DBE021B19D4682500CD278C /* FTRewardsDetailFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTRewardsDetailFooterView.h; sourceTree = "<group>"; };
+		2DBE021C19D4682500CD278C /* FTRewardsDetailFooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTRewardsDetailFooterView.m; sourceTree = "<group>"; };
+		2DBE021F19D6FB7F00CD278C /* ELCAlbumPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAlbumPickerController.h; sourceTree = "<group>"; };
+		2DBE022019D6FB7F00CD278C /* ELCAlbumPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCAlbumPickerController.m; sourceTree = "<group>"; };
+		2DBE022119D6FB7F00CD278C /* ELCAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAsset.h; sourceTree = "<group>"; };
+		2DBE022219D6FB7F00CD278C /* ELCAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCAsset.m; sourceTree = "<group>"; };
+		2DBE022319D6FB7F00CD278C /* ELCAssetCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAssetCell.h; sourceTree = "<group>"; };
+		2DBE022419D6FB7F00CD278C /* ELCAssetCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCAssetCell.m; sourceTree = "<group>"; };
+		2DBE022519D6FB7F00CD278C /* ELCAssetPickerFilterDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAssetPickerFilterDelegate.h; sourceTree = "<group>"; };
+		2DBE022619D6FB7F00CD278C /* ELCAssetSelectionDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAssetSelectionDelegate.h; sourceTree = "<group>"; };
+		2DBE022719D6FB7F00CD278C /* ELCAssetTablePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAssetTablePicker.h; sourceTree = "<group>"; };
+		2DBE022819D6FB7F00CD278C /* ELCAssetTablePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCAssetTablePicker.m; sourceTree = "<group>"; };
+		2DBE022919D6FB7F00CD278C /* ELCConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCConsole.h; sourceTree = "<group>"; };
+		2DBE022A19D6FB7F00CD278C /* ELCConsole.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCConsole.m; sourceTree = "<group>"; };
+		2DBE022B19D6FB7F00CD278C /* ELCImagePickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCImagePickerController.h; sourceTree = "<group>"; };
+		2DBE022C19D6FB7F00CD278C /* ELCImagePickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCImagePickerController.m; sourceTree = "<group>"; };
+		2DBE022D19D6FB7F00CD278C /* ELCImagePickerHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCImagePickerHeader.h; sourceTree = "<group>"; };
+		2DBE022E19D6FB7F00CD278C /* ELCOverlayImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCOverlayImageView.h; sourceTree = "<group>"; };
+		2DBE022F19D6FB7F00CD278C /* ELCOverlayImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCOverlayImageView.m; sourceTree = "<group>"; };
+		2DBE023119D6FB7F00CD278C /* ELCAlbumPickerController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ELCAlbumPickerController.xib; sourceTree = "<group>"; };
+		2DBE023219D6FB7F00CD278C /* ELCAssetPicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ELCAssetPicker.xib; sourceTree = "<group>"; };
+		2DBE023319D6FB7F00CD278C /* ELCAssetTablePicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ELCAssetTablePicker.xib; sourceTree = "<group>"; };
+		2DBE023419D6FB7F00CD278C /* Overlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Overlay.png; sourceTree = "<group>"; };
+		2DBE023519D6FB7F00CD278C /* Overlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Overlay@2x.png"; sourceTree = "<group>"; };
 		2DBEEE5519AB4F1E00AAD238 /* FTPostDetailsFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTPostDetailsFooterView.h; sourceTree = "<group>"; };
 		2DBEEE5619AB4F1E00AAD238 /* FTPostDetailsFooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTPostDetailsFooterView.m; sourceTree = "<group>"; };
 		2DC507CA199829940041A03D /* FTCamViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCamViewController.h; sourceTree = "<group>"; };
@@ -227,6 +278,10 @@
 		2DD2B6A019841DB000600A42 /* FTSettingsButtonItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSettingsButtonItem.m; sourceTree = "<group>"; };
 		2DD2B6A219841E0900600A42 /* FTImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTImageView.h; sourceTree = "<group>"; };
 		2DD2B6A319841E0900600A42 /* FTImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTImageView.m; sourceTree = "<group>"; };
+		2DD4E5E919C650080096FC2F /* FTGeoQueryAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGeoQueryAnnotation.h; sourceTree = "<group>"; };
+		2DD4E5EA19C650080096FC2F /* FTGeoQueryAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGeoQueryAnnotation.m; sourceTree = "<group>"; };
+		2DD4E5EC19C650F80096FC2F /* FTCircleOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCircleOverlay.h; sourceTree = "<group>"; };
+		2DD4E5ED19C650F80096FC2F /* FTCircleOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCircleOverlay.m; sourceTree = "<group>"; };
 		2DD691491949AF5B00B59E75 /* FitTag.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitTag.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DD6914C1949AF5B00B59E75 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2DD6914E1949AF5B00B59E75 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -308,6 +363,8 @@
 				2DD2B665198400C000600A42 /* UIImage+ResizeAdditions.m */,
 				2DD2B667198400D800600A42 /* UIImage+RoundedCornerAdditions.h */,
 				2DD2B668198400D800600A42 /* UIImage+RoundedCornerAdditions.m */,
+				2DBE021819D44F9F00CD278C /* TTTAttributedLabel.h */,
+				2DBE021919D44F9F00CD278C /* TTTAttributedLabel.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -363,7 +420,7 @@
 			children = (
 				2DD31E0219AF4F41000A6D2D /* Friends */,
 				2D0A53AD1971AC240091FFCA /* Home */,
-				2DD2B65F1983FE1500600A42 /* Offers */,
+				2DD2B65F1983FE1500600A42 /* Rewards */,
 				2DD2B65D1983FDF400600A42 /* Search */,
 				2DD2B65C1983FDE800600A42 /* Profile */,
 				2DD2B65A1983FDB800600A42 /* Detail */,
@@ -425,16 +482,62 @@
 		2DBC6E57195C77FF008B5AD3 /* Take Photo */ = {
 			isa = PBXGroup;
 			children = (
-				2DBC6E58195C783C008B5AD3 /* FTCamRollViewController.h */,
-				2DBC6E59195C783C008B5AD3 /* FTCamRollViewController.m */,
 				2DD2B66B198402BB00600A42 /* FTEditPhotoViewController.h */,
 				2DD2B66C198402BB00600A42 /* FTEditPhotoViewController.m */,
-				2DC507CA199829940041A03D /* FTCamViewController.h */,
-				2DC507CB199829940041A03D /* FTCamViewController.m */,
 				2DAF5B9F19B2A28E00E5E10B /* FTEditVideoViewController.h */,
 				2DAF5BA019B2A28E00E5E10B /* FTEditVideoViewController.m */,
+				2DBC6E58195C783C008B5AD3 /* FTCamRollViewController.h */,
+				2DBC6E59195C783C008B5AD3 /* FTCamRollViewController.m */,
+				2DC507CA199829940041A03D /* FTCamViewController.h */,
+				2DC507CB199829940041A03D /* FTCamViewController.m */,
 			);
 			name = "Take Photo";
+			sourceTree = "<group>";
+		};
+		2DBE021119D35BAC00CD278C /* CollectionViews */ = {
+			isa = PBXGroup;
+			children = (
+				2DBE020419D0C62D00CD278C /* FTRewardsCollectionHeaderView.h */,
+				2DBE020519D0C62D00CD278C /* FTRewardsCollectionHeaderView.m */,
+			);
+			name = CollectionViews;
+			sourceTree = "<group>";
+		};
+		2DBE021E19D6FB7F00CD278C /* ELCImagePicker */ = {
+			isa = PBXGroup;
+			children = (
+				2DBE021F19D6FB7F00CD278C /* ELCAlbumPickerController.h */,
+				2DBE022019D6FB7F00CD278C /* ELCAlbumPickerController.m */,
+				2DBE022119D6FB7F00CD278C /* ELCAsset.h */,
+				2DBE022219D6FB7F00CD278C /* ELCAsset.m */,
+				2DBE022319D6FB7F00CD278C /* ELCAssetCell.h */,
+				2DBE022419D6FB7F00CD278C /* ELCAssetCell.m */,
+				2DBE022519D6FB7F00CD278C /* ELCAssetPickerFilterDelegate.h */,
+				2DBE022619D6FB7F00CD278C /* ELCAssetSelectionDelegate.h */,
+				2DBE022719D6FB7F00CD278C /* ELCAssetTablePicker.h */,
+				2DBE022819D6FB7F00CD278C /* ELCAssetTablePicker.m */,
+				2DBE022919D6FB7F00CD278C /* ELCConsole.h */,
+				2DBE022A19D6FB7F00CD278C /* ELCConsole.m */,
+				2DBE022B19D6FB7F00CD278C /* ELCImagePickerController.h */,
+				2DBE022C19D6FB7F00CD278C /* ELCImagePickerController.m */,
+				2DBE022D19D6FB7F00CD278C /* ELCImagePickerHeader.h */,
+				2DBE022E19D6FB7F00CD278C /* ELCOverlayImageView.h */,
+				2DBE022F19D6FB7F00CD278C /* ELCOverlayImageView.m */,
+				2DBE023019D6FB7F00CD278C /* Resources */,
+			);
+			path = ELCImagePicker;
+			sourceTree = "<group>";
+		};
+		2DBE023019D6FB7F00CD278C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2DBE023119D6FB7F00CD278C /* ELCAlbumPickerController.xib */,
+				2DBE023219D6FB7F00CD278C /* ELCAssetPicker.xib */,
+				2DBE023319D6FB7F00CD278C /* ELCAssetTablePicker.xib */,
+				2DBE023419D6FB7F00CD278C /* Overlay.png */,
+				2DBE023519D6FB7F00CD278C /* Overlay@2x.png */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		2DD2B6591983FDAC00600A42 /* Activity */ = {
@@ -480,25 +583,29 @@
 		2DD2B65D1983FDF400600A42 /* Search */ = {
 			isa = PBXGroup;
 			children = (
-				2D007B6519B6B321006E1484 /* FTSearchResultsViewController.h */,
-				2D007B6619B6B321006E1484 /* FTSearchResultsViewController.m */,
 				2D429A0C1977EE7700F8A9A0 /* FTSearchViewController.h */,
 				2D429A0D1977EE7700F8A9A0 /* FTSearchViewController.m */,
 				2D197E8C19C1B5BA00E91274 /* FTGeoPointAnnotation.h */,
 				2D197E8D19C1B5BA00E91274 /* FTGeoPointAnnotation.m */,
 				2D197E8F19C1BC7900E91274 /* FTMapViewController.h */,
 				2D197E9019C1BC7900E91274 /* FTMapViewController.m */,
+				2DD4E5E919C650080096FC2F /* FTGeoQueryAnnotation.h */,
+				2DD4E5EA19C650080096FC2F /* FTGeoQueryAnnotation.m */,
+				2DD4E5EC19C650F80096FC2F /* FTCircleOverlay.h */,
+				2DD4E5ED19C650F80096FC2F /* FTCircleOverlay.m */,
 			);
 			name = Search;
 			sourceTree = "<group>";
 		};
-		2DD2B65F1983FE1500600A42 /* Offers */ = {
+		2DD2B65F1983FE1500600A42 /* Rewards */ = {
 			isa = PBXGroup;
 			children = (
-				2D429A121977EE9E00F8A9A0 /* FTOffersViewController.h */,
-				2D429A131977EE9E00F8A9A0 /* FTOffersViewController.m */,
+				2D429A121977EE9E00F8A9A0 /* FTRewardsCollectionViewController.h */,
+				2D429A131977EE9E00F8A9A0 /* FTRewardsCollectionViewController.m */,
+				2DBE021219D37AF900CD278C /* FTRewardsDetailView.h */,
+				2DBE021319D37AF900CD278C /* FTRewardsDetailView.m */,
 			);
-			name = Offers;
+			name = Rewards;
 			sourceTree = "<group>";
 		};
 		2DD2B66A1984014200600A42 /* UICollectionViewCells */ = {
@@ -512,6 +619,8 @@
 				2DACD9741962D62200833C14 /* InterestCellCollectionView.m */,
 				2D0A53A61971997F0091FFCA /* InspirationCellCollectionView.h */,
 				2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */,
+				2DBE020E19D1A1F100CD278C /* FTRewardsCollectionViewCell.h */,
+				2DBE020F19D1A1F100CD278C /* FTRewardsCollectionViewCell.m */,
 			);
 			name = UICollectionViewCells;
 			sourceTree = "<group>";
@@ -519,8 +628,9 @@
 		2DD2B66E1984033900600A42 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				2DBE021119D35BAC00CD278C /* CollectionViews */,
 				2DD2B68A198416E800600A42 /* TimelineViews */,
-				2DD2B66F1984035400600A42 /* PhotoDetailsViews */,
+				2DD2B66F1984035400600A42 /* DetailsViews */,
 				2DD2B68E1984179600600A42 /* UITableViewCells */,
 				2DD2B66A1984014200600A42 /* UICollectionViewCells */,
 				2DD2B6771984046B00600A42 /* FTProfileImageView.h */,
@@ -533,7 +643,7 @@
 			name = Views;
 			sourceTree = "<group>";
 		};
-		2DD2B66F1984035400600A42 /* PhotoDetailsViews */ = {
+		2DD2B66F1984035400600A42 /* DetailsViews */ = {
 			isa = PBXGroup;
 			children = (
 				2DD2B6711984039500600A42 /* FTPhotoDetailsHeaderView.h */,
@@ -542,8 +652,12 @@
 				2DD2B675198403FC00600A42 /* FTPhotoDetailsFooterView.m */,
 				2DBEEE5519AB4F1E00AAD238 /* FTPostDetailsFooterView.h */,
 				2DBEEE5619AB4F1E00AAD238 /* FTPostDetailsFooterView.m */,
+				2DBE021519D3D45F00CD278C /* FTRewardsDetailsHeaderView.h */,
+				2DBE021619D3D45F00CD278C /* FTRewardsDetailsHeaderView.m */,
+				2DBE021B19D4682500CD278C /* FTRewardsDetailFooterView.h */,
+				2DBE021C19D4682500CD278C /* FTRewardsDetailFooterView.m */,
 			);
-			name = PhotoDetailsViews;
+			name = DetailsViews;
 			sourceTree = "<group>";
 		};
 		2DD2B67A19840F6C00600A42 /* FTBaseTextCell */ = {
@@ -609,6 +723,7 @@
 		2DD691401949AF5B00B59E75 = {
 			isa = PBXGroup;
 			children = (
+				2DBE021E19D6FB7F00CD278C /* ELCImagePicker */,
 				2DD691521949AF5B00B59E75 /* FitTag */,
 				2DD6914B1949AF5B00B59E75 /* Frameworks */,
 				2DD6914A1949AF5B00B59E75 /* Products */,
@@ -779,7 +894,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DBE024019D6FB7F00CD278C /* Overlay.png in Resources */,
+				2DBE023D19D6FB7F00CD278C /* ELCAlbumPickerController.xib in Resources */,
+				2DBE023E19D6FB7F00CD278C /* ELCAssetPicker.xib in Resources */,
+				2DBE023F19D6FB7F00CD278C /* ELCAssetTablePicker.xib in Resources */,
 				2DD691651949AF5B00B59E75 /* Images.xcassets in Resources */,
+				2DBE024119D6FB7F00CD278C /* Overlay@2x.png in Resources */,
 				2DD691571949AF5B00B59E75 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -794,18 +914,23 @@
 				2DABDA0A195DE15900379891 /* ImageCustomNavigationBar.m in Sources */,
 				2DD2B6801984100000600A42 /* FTBaseTextCell.m in Sources */,
 				2D197E9119C1BC7900E91274 /* FTMapViewController.m in Sources */,
+				2DBE020619D0C62D00CD278C /* FTRewardsCollectionHeaderView.m in Sources */,
 				2DAF5BA119B2A28E00E5E10B /* FTEditVideoViewController.m in Sources */,
+				2DBE021419D37AF900CD278C /* FTRewardsDetailView.m in Sources */,
 				2DD2B6861984164E00600A42 /* FTAccountViewController.m in Sources */,
 				2DD2B67D19840FB500600A42 /* FTActivityCell.m in Sources */,
 				2DD691981949B24300B59E75 /* FTConfigViewController.m in Sources */,
 				2D007B6A19B6C6BB006E1484 /* FTSearchCell.m in Sources */,
 				2DD6919B1949B71B00B59E75 /* FTLoginViewController.m in Sources */,
 				2DD2B691198417D500600A42 /* FTLoadMoreCell.m in Sources */,
+				2DBE021D19D4682500CD278C /* FTRewardsDetailFooterView.m in Sources */,
 				2D007B6419B6A5A1006E1484 /* FTSearchHeaderView.m in Sources */,
 				2DD2B68D1984170800600A42 /* FTPhotoHeaderView.m in Sources */,
+				2DBE021719D3D45F00CD278C /* FTRewardsDetailsHeaderView.m in Sources */,
 				2D410F4C1973581A00CE2940 /* FeedCollectionViewFlowLayout.m in Sources */,
 				2DD2B6551983FD0E00600A42 /* FTUtility.m in Sources */,
 				2D6E0224196A24A1004DC010 /* InterestFlowLayout.m in Sources */,
+				2DBE023A19D6FB7F00CD278C /* ELCConsole.m in Sources */,
 				2DD2B6A419841E0900600A42 /* FTImageView.m in Sources */,
 				2DD2B69B19841BC700600A42 /* FTSettingsActionSheetDelegate.m in Sources */,
 				2DD6915D1949AF5B00B59E75 /* AppDelegate.m in Sources */,
@@ -815,46 +940,55 @@
 				2DACE8141966FF7200154504 /* CollectionHeaderView.m in Sources */,
 				2D0A53A81971997F0091FFCA /* InspirationCellCollectionView.m in Sources */,
 				2D429A1B197AF37000F8A9A0 /* Reachability.m in Sources */,
+				2DBE023819D6FB7F00CD278C /* ELCAssetCell.m in Sources */,
 				2DACD97819656F8900833C14 /* InterestCollectionViewFlowLayout.m in Sources */,
 				2DAA63DE1957A51F003B1DDF /* UIView+FormScroll.m in Sources */,
 				2DD2B669198400D800600A42 /* UIImage+RoundedCornerAdditions.m in Sources */,
 				2DD2B6581983FD2C00600A42 /* FTCache.m in Sources */,
 				2D007B5F19B3CA46006E1484 /* FTVideoCell.m in Sources */,
-				2D007B6719B6B321006E1484 /* FTSearchResultsViewController.m in Sources */,
 				2DBC6EA1195CBCE2008B5AD3 /* FTInterestsViewController.m in Sources */,
 				2DD2B69E19841C3100600A42 /* FTFindFriendsCell.m in Sources */,
-				2D429A141977EE9E00F8A9A0 /* FTOffersViewController.m in Sources */,
+				2D429A141977EE9E00F8A9A0 /* FTRewardsCollectionViewController.m in Sources */,
 				2DBEEE5719AB4F1E00AAD238 /* FTPostDetailsFooterView.m in Sources */,
+				2DD4E5EB19C650080096FC2F /* FTGeoQueryAnnotation.m in Sources */,
 				2D9949731996905E000E321E /* FTOverlayView.m in Sources */,
+				2DBE023919D6FB7F00CD278C /* ELCAssetTablePicker.m in Sources */,
 				2D429A0E1977EE7700F8A9A0 /* FTSearchViewController.m in Sources */,
 				2DACD97B196578DA00833C14 /* FTInspirationViewController.m in Sources */,
 				2D9949761996A9B0000E321E /* FTCameraToolBar.m in Sources */,
 				2DD2B694198418C300600A42 /* FTPhotoCell.m in Sources */,
 				2DABDA0D1960520800379891 /* CustomToolBar.m in Sources */,
 				2DD691591949AF5B00B59E75 /* main.m in Sources */,
+				2DBE023719D6FB7F00CD278C /* ELCAsset.m in Sources */,
 				2DD2B6A119841DB000600A42 /* FTSettingsButtonItem.m in Sources */,
 				2D0A53AC1971ABFF0091FFCA /* FindFriendsViewController.m in Sources */,
 				2D429A17197AD47000F8A9A0 /* FTConstants.m in Sources */,
 				2D429A0B1977ED6000F8A9A0 /* FTProfileViewController.m in Sources */,
 				2DC507D5199FBE030041A03D /* FTHomeViewController.m in Sources */,
+				2DBE023619D6FB7F00CD278C /* ELCAlbumPickerController.m in Sources */,
 				2DD2B69819841B0600600A42 /* FTFindFriendsViewController.m in Sources */,
 				2DC507CC199829940041A03D /* FTCamViewController.m in Sources */,
 				2DD2B6631984005300600A42 /* UIImage+AlphaAdditions.m in Sources */,
 				2DD2B676198403FC00600A42 /* FTPhotoDetailsFooterView.m in Sources */,
+				2DBE021019D1A1F100CD278C /* FTRewardsCollectionViewCell.m in Sources */,
 				2D429A2D197B345300F8A9A0 /* MBProgressHUD.m in Sources */,
 				2DD2B683198414B700600A42 /* FTPhotoDetailsViewController.m in Sources */,
+				2DBE023B19D6FB7F00CD278C /* ELCImagePickerController.m in Sources */,
 				2DD2B6731984039500600A42 /* FTPhotoDetailsHeaderView.m in Sources */,
 				2DACD9751962D62200833C14 /* InterestCellCollectionView.m in Sources */,
 				2D429A20197B2F4C00F8A9A0 /* FTTabBarController.m in Sources */,
 				2DD2B666198400C000600A42 /* UIImage+ResizeAdditions.m in Sources */,
 				2D429A30197B34DC00F8A9A0 /* TTTTimeIntervalFormatter.m in Sources */,
 				2D429A33197B354600F8A9A0 /* UIImage+ImageEffects.m in Sources */,
+				2DD4E5EE19C650F80096FC2F /* FTCircleOverlay.m in Sources */,
+				2DBE023C19D6FB7F00CD278C /* ELCOverlayImageView.m in Sources */,
 				2D410F5219735B7500CE2940 /* FTToolBar.m in Sources */,
 				2D410F481973575C00CE2940 /* FTFeedViewController.m in Sources */,
 				2DD2B6891984167200600A42 /* FTPhotoTimelineViewController.m in Sources */,
 				2DD2B66D198402BB00600A42 /* FTEditPhotoViewController.m in Sources */,
 				2DD6919E1949B74400B59E75 /* FTSignupViewController.m in Sources */,
 				2DFE736C197316A700114541 /* FindFriendsFlowLayout.m in Sources */,
+				2DBE021A19D44F9F00CD278C /* TTTAttributedLabel.m in Sources */,
 				2DABDA06195DC0E500379891 /* PhotoCellCollectionView.m in Sources */,
 				2DBC6E5A195C783C008B5AD3 /* FTCamRollViewController.m in Sources */,
 				2D197E8E19C1B5BA00E91274 /* FTGeoPointAnnotation.m in Sources */,

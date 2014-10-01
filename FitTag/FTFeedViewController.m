@@ -100,6 +100,7 @@
 
 - (void)fitTagPost:(id)sender
 {
+    /*
     NSLog(@"FTFeedViewController::fitTagPost");
     
     UICollectionViewFlowLayout *aFlowLayout = [[UICollectionViewFlowLayout alloc] init];
@@ -112,7 +113,7 @@
     [naviController setViewControllers:@[rootViewController] animated:NO];
     [self presentViewController:naviController animated:YES completion:NULL];
     
-    /*
+    
     rootViewController.onCompletion = ^(id result){
         [naviController dismissViewControllerAnimated:YES completion:NULL];
         NSLog(@"Image selected result: %@ ", result);

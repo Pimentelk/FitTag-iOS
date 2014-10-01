@@ -75,7 +75,11 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [self.navigationItem setTitle:@"COMMENT"];
     
     // Override the back idnicator
-    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(hideCameraView:)];
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"]
+                                                                      style:UIBarButtonItemStylePlain
+                                                                     target:self
+                                                                     action:@selector(hideCameraView:)];
+    
     [backIndicator setTintColor:[UIColor whiteColor]];
     [self.navigationItem setLeftBarButtonItem:backIndicator];
     
@@ -241,7 +245,11 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
             
             if (error && error.code == kPFErrorObjectNotFound) {
                 [[FTCache sharedCache] decrementCommentCountForPost:self.photo];
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Could not post comment", nil) message:NSLocalizedString(@"This photo is no longer available", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Could not post comment", nil)
+                                                                message:NSLocalizedString(@"This photo is no longer available", nil)
+                                                               delegate:nil
+                                                      cancelButtonTitle:nil
+                                                      otherButtonTitles:@"OK", nil];
                 [alert show];
                 [self.navigationController popViewControllerAnimated:YES];
             }
@@ -333,14 +341,12 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 
 #pragma mark - ()
 
-- (void)loadCamera:(id)sender
-{
+- (void)loadCamera:(id)sender {
     FTCamViewController *cameraViewController = [[FTCamViewController alloc] init];
     [self.navigationController pushViewController:cameraViewController animated:YES];
 }
 
-- (void)hideCameraView:(id)sender
-{
+- (void)hideCameraView:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
 }
 

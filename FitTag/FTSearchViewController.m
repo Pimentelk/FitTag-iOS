@@ -15,40 +15,29 @@
 
 static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
 
-@interface FTSearchViewController ()
+@interface FTSearchViewController (){
+    CLLocationManager *locationManager;
+}
+@end
+
+@interface FTSearchViewController()
 @property (nonatomic, assign) BOOL shouldReloadOnAppear;
 @property (nonatomic, strong) NSMutableSet *reusableSectionHeaderViews;
 @property (nonatomic, strong) NSMutableDictionary *outstandingSectionHeaderQueries;
+@property (nonatomic, strong) PFGeoPoint *geoPoint;
 
 // Searchbar
-@property (nonatomic, strong) UITextField *searchbar;
 @property (nonatomic, strong) NSMutableArray *searchResults;
-@property (nonatomic, strong) UIView *headerView;
-@property (nonatomic, strong) UIView *filterView;
-@property (nonatomic, strong) UIButton *filterButton;
-@property (nonatomic, strong) UIButton *popularButton;
-@property (nonatomic, strong) UIButton *trendingButton;
-@property (nonatomic, strong) UIButton *userButtons;
-@property (nonatomic, strong) UIButton *businessButton;
-@property (nonatomic, strong) UIButton *ambassadorButton;
-@property (nonatomic, strong) UIButton *nearbyButton;
+@property (nonatomic, strong) FTSearchHeaderView *searchHeaderView;
 @end
 
 @implementation FTSearchViewController
 @synthesize reusableSectionHeaderViews;
 @synthesize shouldReloadOnAppear;
 @synthesize outstandingSectionHeaderQueries;
-@synthesize headerView;
-@synthesize filterView;
-@synthesize filterButton;
-@synthesize popularButton;
-@synthesize trendingButton;
-@synthesize userButtons;
-@synthesize businessButton;
-@synthesize ambassadorButton;
-@synthesize nearbyButton;
-@synthesize searchbar;
 @synthesize searchResults;
+@synthesize searchHeaderView;
+@synthesize geoPoint;
 
 #pragma mark - Initialization
 
@@ -60,6 +49,7 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FTPhotoDetailsViewControllerUserDeletedPhotoNotification object:nil];
 }
+
 - (id)initWithStyle:(UITableViewStyle)style{
     self = [super initWithStyle:style];
     if (self) {
@@ -84,6 +74,9 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
     
     [super viewDidLoad];
     
+    // Update the users location
+    [[self locationManager] startUpdatingLocation];
+    
     // Set title
     [self.navigationItem setTitle: @"SEARCH"];
     [self.navigationItem setHidesBackButton:NO];
@@ -102,113 +95,23 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
     // Set Background
     [self.view setBackgroundColor:[UIColor whiteColor]];
     
-    headerView = [[UIView alloc] initWithFrame:CGRectMake( 0.0f, 0.0f, self.tableView.bounds.size.width, 35.0f)];
+    searchHeaderView = [[FTSearchHeaderView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.tableView.bounds.size.width, 35.0f)];
+    searchHeaderView.delegate = self;
+    searchHeaderView.searchbar.delegate = self;
     
-    UIImageView *searchbarBackground = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchbar"]];
-    [searchbarBackground setFrame:CGRectMake(0.0f, 0.0f, self.tableView.bounds.size.width, 35.0f)];
-    [searchbarBackground setUserInteractionEnabled:YES];
-    [headerView addSubview:searchbarBackground];
-    
-    searchbar = [[UITextField alloc] init];
-    [searchbar setFrame:CGRectMake(7.0f, 1.0f, 280.0f, 31.0f)];
-    [searchbar setFont:[UIFont systemFontOfSize:12.0f]];
-    [searchbar setReturnKeyType:UIReturnKeyGo];
-    [searchbar setTextColor:[UIColor blackColor]];
-    [searchbar setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
-    [searchbar setBackgroundColor:[UIColor clearColor]];
-    [searchbar setPlaceholder:@"Search..."];
-    [searchbar setDelegate:self];
-    [headerView addSubview:searchbar];
-    [headerView bringSubviewToFront:searchbar];
-    
-    filterButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [filterButton setFrame: CGRectMake( self.headerView.bounds.size.width - 30.0f, 7.0f, 20.0f, 20.0f)];
-    //[filterButton setContentEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
-    [filterButton setBackgroundColor:[UIColor clearColor]];
-    [filterButton setBackgroundImage:[UIImage imageNamed:@"filter"] forState:UIControlStateNormal];
-    [filterButton setBackgroundImage:[UIImage imageNamed:@"cancelfilter"] forState:UIControlStateSelected];
-    [filterButton addTarget:self action:@selector(showFilterOptions:) forControlEvents:UIControlEventTouchUpInside];
-    [headerView addSubview:filterButton];
-    [headerView bringSubviewToFront:filterButton];
-    
-    filterView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, headerView.bounds.size.height, self.tableView.bounds.size.width, 56.0f)];
-    [filterView setBackgroundColor:[UIColor clearColor]];
-    [filterView setUserInteractionEnabled:YES];
-    [headerView addSubview:filterView];
-    [headerView setUserInteractionEnabled:YES];
-    [headerView bringSubviewToFront:filterView];
-    
-    popularButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [popularButton setFrame: CGRectMake( 0.0f, 0.0f, 50.0f, 56.0f)];
-    [popularButton setBackgroundColor:[UIColor clearColor]];
-    [popularButton setBackgroundImage:[UIImage imageNamed:@"search_popular"] forState:UIControlStateNormal];
-    [popularButton setBackgroundImage:[UIImage imageNamed:@"search_popular_selected"] forState:UIControlStateSelected];
-    [popularButton setBackgroundImage:[UIImage imageNamed:@"search_popular_selected"] forState:UIControlStateHighlighted];
-    [popularButton addTarget:self action:@selector(popularButtonHandler:) forControlEvents:UIControlEventTouchUpInside];
-    [filterView addSubview:popularButton];
-    [filterView bringSubviewToFront:popularButton];
-    [filterView setUserInteractionEnabled:YES];
-    
-    trendingButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [trendingButton setFrame: CGRectMake( popularButton.frame.origin.x + popularButton.frame.size.width, 0.0f, 48.0f, 56.0f)];
-    [trendingButton setBackgroundColor:[UIColor clearColor]];
-    [trendingButton setBackgroundImage:[UIImage imageNamed:@"search_trending"] forState:UIControlStateNormal];
-    [trendingButton setBackgroundImage:[UIImage imageNamed:@"search_trending_selected"] forState:UIControlStateSelected];
-    [trendingButton setBackgroundImage:[UIImage imageNamed:@"search_trending_selected"] forState:UIControlStateHighlighted];
-    [trendingButton addTarget:self action:@selector(trendingButtonHandler:) forControlEvents:UIControlEventTouchUpInside];
-    [filterView addSubview:trendingButton];
-    [filterView bringSubviewToFront:trendingButton];
-    [filterView setUserInteractionEnabled:YES];
-    
-    userButtons = [UIButton buttonWithType:UIButtonTypeCustom];
-    [userButtons setFrame: CGRectMake( trendingButton.frame.origin.x + trendingButton.frame.size.width, 0.0f, 62.0f, 56.0f)];
-    [userButtons setBackgroundColor:[UIColor clearColor]];
-    [userButtons setBackgroundImage:[UIImage imageNamed:@"search_users"] forState:UIControlStateNormal];
-    [userButtons setBackgroundImage:[UIImage imageNamed:@"search_users_selected"] forState:UIControlStateSelected];
-    [userButtons setBackgroundImage:[UIImage imageNamed:@"search_users_selected"] forState:UIControlStateHighlighted];
-    [userButtons addTarget:self action:@selector(userButtonsHandler:) forControlEvents:UIControlEventTouchUpInside];
-    [filterView addSubview:userButtons];
-    [filterView bringSubviewToFront:userButtons];
-    [filterView setUserInteractionEnabled:YES];
-    
-    businessButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [businessButton setFrame: CGRectMake( userButtons.frame.origin.x + userButtons.frame.size.width, 0.0f, 56.0f, 56.0f)];
-    [businessButton setBackgroundColor:[UIColor clearColor]];
-    [businessButton setBackgroundImage:[UIImage imageNamed:@"search_business"] forState:UIControlStateNormal];
-    [businessButton setBackgroundImage:[UIImage imageNamed:@"search_business_selected"] forState:UIControlStateSelected];
-    [businessButton setBackgroundImage:[UIImage imageNamed:@"search_business_selected"] forState:UIControlStateHighlighted];
-    [businessButton addTarget:self action:@selector(businessButtonHandler:) forControlEvents:UIControlEventTouchUpInside];
-    [filterView addSubview:businessButton];
-    [filterView bringSubviewToFront:businessButton];
-    [filterView setUserInteractionEnabled:YES];
-    
-    ambassadorButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [ambassadorButton setFrame: CGRectMake( businessButton.frame.origin.x + businessButton.frame.size.width, 0.0f, 56.0f, 56.0f)];
-    [ambassadorButton setBackgroundColor:[UIColor clearColor]];
-    [ambassadorButton setBackgroundImage:[UIImage imageNamed:@"search_ambassador"] forState:UIControlStateNormal];
-    [ambassadorButton setBackgroundImage:[UIImage imageNamed:@"search_ambassador_selected"] forState:UIControlStateSelected];
-    [ambassadorButton setBackgroundImage:[UIImage imageNamed:@"search_ambassador_selected"] forState:UIControlStateHighlighted];
-    [ambassadorButton addTarget:self action:@selector(ambassadorButtonHandler:) forControlEvents:UIControlEventTouchUpInside];
-    [filterView addSubview:ambassadorButton];
-    [filterView bringSubviewToFront:ambassadorButton];
-    [filterView setUserInteractionEnabled:YES];
-    
-    nearbyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [nearbyButton setFrame: CGRectMake( ambassadorButton.frame.origin.x + ambassadorButton.frame.size.width, 0.0f, 48.0f, 56.0f)];
-    [nearbyButton setBackgroundColor:[UIColor clearColor]];
-    [nearbyButton setBackgroundImage:[UIImage imageNamed:@"search_nearby"] forState:UIControlStateNormal];
-    [nearbyButton setBackgroundImage:[UIImage imageNamed:@"search_nearby_selected"] forState:UIControlStateSelected];
-    [nearbyButton setBackgroundImage:[UIImage imageNamed:@"search_nearby_selected"] forState:UIControlStateHighlighted];
-    [nearbyButton addTarget:self action:@selector(nearbyButtonHandler:) forControlEvents:UIControlEventTouchUpInside];
-    [filterView addSubview:nearbyButton];
-    [filterView bringSubviewToFront:nearbyButton];
-    [filterView setUserInteractionEnabled:YES];
-    [filterView setHidden:YES];
+    // Dismiss keyboard gesture recognizer
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard:)];
+    [self.view addGestureRecognizer:tap];
+}
+
+-(void)dismissKeyboard:(id)sender {
+    if (searchHeaderView.searchbar != nil)
+        [searchHeaderView.searchbar resignFirstResponder];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [self clearSelectedFilters];
+    //[self clearSelectedFilters];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -258,7 +161,7 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
 - (void)objectsDidLoad:(NSError *)error {
     [super objectsDidLoad:error];
     
-    self.tableView.tableHeaderView = headerView;
+    self.tableView.tableHeaderView = searchHeaderView;
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -287,61 +190,57 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
     } else {
         @synchronized(self) {
             
-            //PFObject *object = [PFObject objectWithClassName:self.parseClassName];
-            //object = [searchResults objectAtIndex:indexPath.row];
+            PFObject *object = [PFObject objectWithClassName:kFTActivityClassKey];
+            object = [searchResults objectAtIndex:indexPath.row];
             
-            if ([popularButton isSelected]) {
-                
-                PFObject *object = [PFObject objectWithClassName:kFTActivityClassKey];
-                object = [searchResults objectAtIndex:indexPath.row];
-                //NSLog(@"PFOBJECT: %@",object);
-                
-                if ([[object objectForKey:kFTPostTypeKey] isEqualToString:@"video"]) {
-                    //NSLog(@"likeCountForVideo: %@",[[[FTCache sharedCache] likeCountForVideo:object] description]);
-                    //NSLog(@"commentCountForVideo: %@",[[[FTCache sharedCache] commentCountForVideo:object] description]);
-                }
-                
-                if ([[object objectForKey:kFTPostTypeKey] isEqualToString:@"image"]) {
-                    //NSLog(@"likeCountForPhoto: %@",[[[FTCache sharedCache] likeCountForPhoto:object] description]);
-                    //NSLog(@"commentCountForPhoto: %@",[[[FTCache sharedCache] commentCountForPhoto:object] description]);
-                }
-                
-                [searchCell setName:[object[@"user"] objectForKey:kFTUserDisplayNameKey]];
-                [searchCell setIcon:[self setIconType]];
-                [searchCell setPost:object];
-                
-                /*
-                PFRelation *relation = [object relationforKey:kFTPostKey];
-                [[relation query] countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-                    if (!error) {
-                        NSLog(@"Object id: %@ count: %d for.",object.objectId,number);
-                    }
-                }];
-                */
-            }
+            //NSLog(@"object: %@",object);
             
-            if ([businessButton isSelected]) {
-                PFObject *object = [PFObject objectWithClassName:kFTActivityClassKey];
-                object = [searchResults objectAtIndex:indexPath.row];
-                [searchCell setName:[object[@"fromUser"] objectForKey:kFTUserDisplayNameKey]];
-                [searchCell setIcon:[self setIconType]];
-                [searchCell setPost:[object objectForKey:kFTActivityPostKey]];
-            }
-            
-            if ([trendingButton isSelected]) {
-                PFObject *object = [PFObject objectWithClassName:kFTActivityClassKey];
-                object = [searchResults objectAtIndex:indexPath.row];
-                [searchCell setName:[object[@"fromUser"] objectForKey:kFTUserDisplayNameKey]];
-                [searchCell setIcon:[self setIconType]];
-                [searchCell setPost:[object objectForKey:kFTActivityPostKey]];
-            }
-            
-            if([userButtons isSelected]){
-                PFObject *object = [PFObject objectWithClassName:@"_User"];
-                object = [searchResults objectAtIndex:indexPath.row];
-                [searchCell setName:[object objectForKey:kFTUserDisplayNameKey]];
-                [searchCell setIcon:[self setIconType]];
+            if ([[object parseClassName] isEqual: @"_User"]) {
+                NSString *displayName = [object objectForKey:kFTUserFirstnameKey];
+                displayName = [displayName stringByAppendingString:@" "];
+                displayName = [displayName stringByAppendingString:[object objectForKey:kFTUserlastnameKey]];
+                displayName = [displayName stringByAppendingString:@" "];
+                displayName = [displayName stringByAppendingString:[object objectForKey:kFTUserDisplayNameKey]];
+                [searchCell setName:displayName];
+                [searchCell setIcon:[self getIconTypeInteger:[object objectForKey:kFTUserTypeKey]]];
                 [searchCell setUser:(PFUser *)object];
+            }
+            
+            /*
+            if ([[object parseClassName]  isEqual: @"Activity"]) {
+                PFObject *toUser = [PFObject objectWithClassName:kFTUserClassKey];
+                toUser = [object objectForKey:kFTActivityToUserKey];
+
+                NSLog(@"type ---------- %@",[object objectForKey:kFTActivityTypeKey]);
+                NSString *displayName = [[object objectForKey:kFTActivityHashtagKey] componentsJoinedByString:@", "];
+                
+                if (displayName == nil) {
+                    displayName = [[object objectForKey:kFTActivityMentionKey] componentsJoinedByString:@", "];
+                }
+                
+                if (displayName == nil) {
+                    displayName = [object objectForKey:kFTActivityContentKey];
+                }
+                
+                [searchCell setName:displayName];
+                [searchCell setIcon:[self getIconTypeInteger:@"hashtag"]];
+                [searchCell setUser:(PFUser *)toUser];
+            }
+            */
+            
+            if ([[object parseClassName]  isEqual: @"Post"]) {
+                PFObject *user = [PFObject objectWithClassName:kFTUserClassKey];
+                user = [object objectForKey:kFTPostUserKey];
+                [user fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                    NSString *displayName = [user objectForKey:kFTUserFirstnameKey];
+                    displayName = [displayName stringByAppendingString:@" "];
+                    displayName = [displayName stringByAppendingString:[user objectForKey:kFTUserlastnameKey]];
+                    displayName = [displayName stringByAppendingString:@" "];
+                    displayName = [displayName stringByAppendingString:[user objectForKey:kFTUserDisplayNameKey]];
+                    [searchCell setName:displayName];
+                }];
+                [searchCell setIcon:[self getIconTypeInteger:@"trending"]];
+                [searchCell setPost:object];
             }
         }
     }
@@ -356,101 +255,25 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
 
 #pragma mark - ()
 
-- (NSInteger)setIconType{
-    if ([popularButton isSelected]) {
+- (NSInteger)getIconTypeInteger:(NSString *)type{
+    
+    if([type isEqualToString:@"popular"]){
         return 1;
-    } else if ([trendingButton isSelected]) {
+    } else if([type isEqualToString:@"trending"]){
         return 2;
-    } else if ([userButtons isSelected]) {
+    } else if([type isEqualToString:@"user"]){
         return 3;
-    } else if ([businessButton isSelected]) {
+    } else if([type isEqualToString:@"business"]){
         return 4;
-    } else if ([ambassadorButton isSelected]) {
+    } else if([type isEqualToString:@"ambassador"]){
         return 5;
-    } else if ([nearbyButton isSelected]) {
+    } else if([type isEqualToString:@"nearby"]){
         return 6;
+    } else if([type isEqualToString:@"hashtag"]){
+        return 7;
     } else {
         return 0;
     }
-}
-
-- (void)clearSelectedFilters{
-    [popularButton setSelected:NO];
-    [trendingButton setSelected:NO];
-    [userButtons setSelected:NO];
-    [businessButton setSelected:NO];
-    [ambassadorButton setSelected:NO];
-    [nearbyButton setSelected:NO];
-}
-
-- (void)popularButtonHandler:(id)sender{
-    [self clearSelectedFilters];
-    if(![popularButton isSelected]){
-        [popularButton setSelected:YES];
-    } else {
-        [popularButton setSelected:NO];
-    }
-}
-
-- (void)trendingButtonHandler:(id)sender{
-    [self clearSelectedFilters];
-    if(![trendingButton isSelected]){
-        [trendingButton setSelected:YES];
-    } else {
-        [trendingButton setSelected:NO];
-    }
-}
-
-- (void)userButtonsHandler:(id)sender{
-    [self clearSelectedFilters];
-    if(![userButtons isSelected]){
-        [userButtons setSelected:YES];
-    } else {
-        [userButtons setSelected:NO];
-    }
-}
-
-- (void)businessButtonHandler:(id)sender{
-    [self clearSelectedFilters];
-    if(![businessButton isSelected]){
-        [businessButton setSelected:YES];
-    } else {
-        [businessButton setSelected:NO];
-    }
-}
-
-- (void)ambassadorButtonHandler:(id)sender{
-    [self clearSelectedFilters];
-    if(![ambassadorButton isSelected]){
-        [ambassadorButton setSelected:YES];
-    } else {
-        [ambassadorButton setSelected:NO];
-    }
-}
-
-- (void)nearbyButtonHandler:(id)sender{
-    [self clearSelectedFilters];
-    if(![nearbyButton isSelected]){
-        [nearbyButton setSelected:YES];
-    } else {
-        [nearbyButton setSelected:NO];
-    }
-}
-
-- (void)showFilterOptions:(id)sender{
-    [self.headerView setFrame:CGRectMake(0.0f, 0.0f, self.tableView.bounds.size.width, 91.0f)];
-    [filterButton removeTarget:self action:@selector(showFilterOptions:) forControlEvents:UIControlEventTouchUpInside];
-    [filterButton addTarget:self action:@selector(hideFilterOptions:) forControlEvents:UIControlEventTouchUpInside];
-    [filterView setHidden:NO];
-    self.tableView.tableHeaderView = headerView;
-}
-
--(void)hideFilterOptions:(id)sender{
-    [self.headerView setFrame:CGRectMake(0.0f, 0.0f, self.tableView.bounds.size.width, 35.0f)];
-    [filterButton removeTarget:self action:@selector(hideFilterOptions:) forControlEvents:UIControlEventTouchUpInside];
-    [filterButton addTarget:self action:@selector(showFilterOptions:) forControlEvents:UIControlEventTouchUpInside];
-    [filterView setHidden:YES];
-    self.tableView.tableHeaderView = headerView;
 }
 
 - (void)returnHome:(id)sender{
@@ -459,10 +282,24 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
 
 - (void)loadNearbyMap:(id)sender{
     FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
+    [mapViewController setInitialLocation:locationManager.location];
     [self.navigationController pushViewController:mapViewController animated:YES];
 }
 
-- (NSArray *) checkForHashtag:(UITextField *)textField {
+- (NSMutableArray *) checkForWords:(UITextField *)textField {
+    NSMutableArray *words = [[NSMutableArray alloc] initWithArray:[[textField.text componentsSeparatedByString:@" "] mutableCopy]];
+    NSMutableArray *matches = [[NSMutableArray alloc] init];
+    for (NSString *word in words) {
+        NSString *firstCharacter = [word substringToIndex:1];
+        if (![firstCharacter isEqual:@"#"] && ![firstCharacter isEqual:@"@"]) {
+            if ([word length] > 3)
+                [matches addObject:word];
+        }
+    }
+    return matches;
+}
+
+- (NSMutableArray *) checkForHashtag:(UITextField *)textField {
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)" options:0 error:&error];
     NSArray *matches = [regex matchesInString:textField.text options:0 range:NSMakeRange(0,textField.text.length)];
@@ -500,85 +337,167 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
         [searchResults removeAllObjects];
         searchResults = [NSMutableArray arrayWithCapacity:50];
         
-        PFQuery *query = nil;
+        PFQuery *activityQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
+        [activityQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeComment];
+        [activityQuery includeKey:kFTActivityPostKey];
+        [activityQuery includeKey:kFTActivityToUserKey];
+        [activityQuery setLimit:1000];
         
-        if ([popularButton isSelected]) {
-            
-            PFQuery *postsActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
-            [postsActivitiesQuery whereKey:kFTActivityTypeKey containedIn:@[kFTActivityTypeLike,kFTActivityTypeComment]];
-            [postsActivitiesQuery includeKey:kFTActivityPostKey];
-            
-            PFQuery *postsQuery = [PFQuery queryWithClassName:kFTPostClassKey];
-            [query whereKey:kFTPostUserKey matchesKey:kFTActivityToUserKey inQuery:postsActivitiesQuery];
-            
-            query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects: postsQuery, nil]];
-            [query includeKey:kFTPostUserKey];
-            [query orderByDescending:@"createdAt"];
-        } else if ([trendingButton isSelected]) {
-            query = [PFQuery queryWithClassName:kFTActivityClassKey];
-            [query whereKey:kFTActivityContentKey containsString:[trimmedComment lowercaseString]];
-            [query includeKey:kFTActivityFromUserKey];
-            [query includeKey:kFTActivityPostKey];
-            [query orderByDescending:@"createdAt"];
-        } else if ([userButtons isSelected]) {
-            query = [PFQuery queryWithClassName:@"_User"];
-            [query whereKey:kFTUserDisplayNameKey containsString:[trimmedComment lowercaseString]];
-            [query orderByAscending:@"createdAt"];
-        } else if ([businessButton isSelected]) {
-            query = [PFQuery queryWithClassName:kFTActivityClassKey];
-            [query whereKey:kFTActivityHashtagKey equalTo:[trimmedComment lowercaseString]];
-            [query includeKey:kFTActivityFromUserKey];
-            [query includeKey:kFTActivityPostKey];
-            [query orderByDescending:@"createdAt"];
-        } else if ([ambassadorButton isSelected]) {
-            // Query where user type is ambassador
-        } else if ([nearbyButton isSelected]) {
-            // Query where current location is near 50 miles of other users
-            /*
-            CGFloat kilometers = 50 / 0.62137; // M / 0.62137 = Kilometers
-            
-            query = [PFQuery queryWithClassName:@"_User"];
-            [query setLimit:1000];
-            [query whereKey:kFTUserDisplayNameKey containsString:[trimmedComment lowercaseString]];
-            [query whereKey:kFTUserLocationKey
-               nearGeoPoint:[PFGeoPoint geoPointWithLatitude:self.location.coordinate.latitude
-                                                   longitude:self.location.coordinate.longitude]
-           withinKilometers:kilometers];
-           */
+        NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[self checkForHashtag:textField]];
+        //NSLog(@"hashtags: %@",hashtags);
+        
+        // Hashtags detected
+        if (hashtags.count > 0) {
+            [activityQuery whereKey:kFTActivityHashtagKey containedIn:hashtags];
         }
         
-        if (query != nil) {
-            [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                if (!error) {
-                    NSArray *results = objects;
-                    [searchResults addObjectsFromArray:results];
+        NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[self checkForMention:textField]];
+        //NSLog(@"mentions: %@",mentions);
+        
+        // Mentions detected
+        if (mentions.count > 0) {
+            [activityQuery whereKey:kFTActivityHashtagKey containedIn:mentions];
+        }
+        
+        NSMutableArray *words = [[NSMutableArray alloc] initWithArray:[self checkForWords:textField]];
+        //NSLog(@"words: %@",words);
+        
+        // Mentions detected
+        if (words.count > 0) {
+            [activityQuery whereKey:kFTActivityWordKey containedIn:words];
+        }
+        
+        // Nearby button is selected
+        PFQuery *userQuery = nil;
+        PFQuery *postQuery = nil;
+        if ([searchHeaderView isNearbyButtonSelected]) {
+            CGFloat miles = 50.0f;
+            
+            if (geoPoint != nil) {
+                userQuery = [PFQuery queryWithClassName:kFTUserClassKey];
+                [userQuery whereKey:kFTUserLocationKey nearGeoPoint:geoPoint withinMiles:miles];
+                [activityQuery whereKey:kFTActivityFromUserKey matchesQuery:userQuery];
                 
-                    if (searchResults != nil) {
-                        [self loadObjects];
-                    } else {
-                        [[[UIAlertView alloc] initWithTitle:@"Empty search" message:@"no results found" delegate:self cancelButtonTitle:@"cancel" otherButtonTitles:nil] show];
-                    }
-                    //NSLog(@"searchResults = %@",searchResults);
+                // Nearby button in combination with trending OR popular
+                if ([searchHeaderView isPopularButtonSelected] || [searchHeaderView isTrendingButtonSelected]) {
+                    postQuery = [PFQuery queryWithClassName:kFTPostClassKey];
+                    [postQuery whereKey:kFTPostLocationKey nearGeoPoint:geoPoint withinMiles:miles];
+                    [activityQuery whereKey:kFTActivityPostKey matchesQuery:postQuery];
+                }
+            }
+        }
+        
+        [activityQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            if (!error) {
+                
+                NSMutableArray *userType = [[NSMutableArray alloc] init];
+                NSDate *today = [NSDate date];
+                NSDate *trendRange = nil;
+                
+                // Treding button is selected
+                if ([searchHeaderView isTrendingButtonSelected]) {
+                    trendRange = [today dateByAddingTimeInterval: -259200.0];
+                }
+                
+                // If an user type is selected add it to our array and use it as a constraint
+                if ([searchHeaderView isUserButtonSelected])
+                    [userType addObject:kFTUserTypeUser];
+                if ([searchHeaderView isBusinessButtonSelected])
+                    [userType addObject:kFTUserTypeBusiness];
+                if ([searchHeaderView isAmbassadorButtonSelected])
+                    [userType addObject:kFTUserTypeAmbassador];
 
-                    if ([popularButton isSelected]) {
-                        NSMutableDictionary *resultsDictionary =[[NSMutableDictionary alloc] init];
-                        for (PFObject *object in objects) {
-                            [resultsDictionary setValue:object forKey:object.objectId];
+                for (PFObject *object in objects) {
+                    PFUser *user = [object objectForKey:kFTActivityToUserKey];
+                    PFObject *post = [object objectForKey:kFTActivityPostKey];
+                    //PFObject *activity = object;
+                    
+                    if (user != nil && ![self array:searchResults containsPFObjectById:user] && [userType containsObject:[user objectForKey:kFTUserTypeKey]])
+                        [searchResults addObject:user];
+                    //if (activity != nil && ![self array:searchResults containsPFObjectById:activity])
+                        //[searchResults addObject:activity];
+                    
+                    // If trending button is selected
+                    if (post != nil) {
+                        if (trendRange != nil) {
+                            if (![self array:searchResults containsPFObjectById:post])
+                                if ([post createdAt] > trendRange)
+                                    [searchResults addObject:post];
+                        } else {
+                            if (![self array:searchResults containsPFObjectById:post])
+                                [searchResults addObject:post];
                         }
-                        NSLog(@"resultsDictionary: %@",resultsDictionary);
                     }
                 }
-            }];
-        }
+                
+                if (searchResults != nil) {
+                    [self loadObjects];
+                } else {
+                    [[[UIAlertView alloc] initWithTitle:@"Empty search" message:@"no results found" delegate:self cancelButtonTitle:@"cancel" otherButtonTitles:nil] show];
+                }
+            }
+        }];
     }
     
     [textField setText:@""];
     return [textField resignFirstResponder];
 }
 
+- (BOOL) array:(NSArray *)array containsPFObjectById:(PFObject *)object {
+    //Check if the object's objectId matches the objectId of any member of the array.
+    for (PFObject *arrayObject in array) {
+        if ([[arrayObject objectId] isEqual:[object objectId]]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+#pragma mark - CLLocationManagerDelegate
+
+- (CLLocationManager *)locationManager {
+    if (locationManager != nil) {
+        return locationManager;
+    }
+    
+    locationManager = [[CLLocationManager alloc] init];
+    locationManager.delegate = self;
+    locationManager.distanceFilter = kCLDistanceFilterNone;
+    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    
+    return locationManager;
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    NSLog(@"didFailWithError: %@", error);
+    UIAlertView *errorAlert = [[UIAlertView alloc]
+                               initWithTitle:@"Error" message:@"Failed to Get Your Location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [errorAlert show];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+    [locationManager stopUpdatingLocation];
+    PFUser *user = [PFUser currentUser];
+    if (user) {
+        CLLocation *location = [locations lastObject];
+        //NSLog(@"lat%f - lon%f", location.coordinate.latitude, location.coordinate.longitude);
+        
+        geoPoint = [PFGeoPoint geoPointWithLatitude:location.coordinate.latitude
+                                          longitude:location.coordinate.longitude];
+        
+        user[@"location"] = geoPoint;
+        [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+                NSLog(@"FTSearchViewController::locationManager:didUpdateLocations: //User location updated successfully.");
+            }
+        }];
+    }
+}
+
 #pragma mark - FTSearchCellDelegate
 
 -(void)cellView:(PFTableViewCell *)cellView didTapCellLabelButton:(UIButton *)button post:(PFObject *)post{
+    NSLog(@"cellView:(PFTableViewCell *) %@ didTapCellLabelButton:(UIButton *) %@ post:(PFObject *) %@",cellView,button,post);
     if (post != nil) {
         FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:post];
         [self.navigationController pushViewController:photoDetailsVC animated:YES];
@@ -586,10 +505,11 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
 }
 
 -(void)cellView:(PFTableViewCell *)cellView didTapAmbassadorCellIconButton:(UIButton *)button post:(PFObject *)post{
-    
+    NSLog(@"cellView:(PFTableViewCell *) %@ didTapAmbassadorCellIconButton:(UIButton *) %@ post:(PFObject *) %@",cellView,button,post);
 }
 
 -(void)cellView:(PFTableViewCell *)cellView didTapHashtagCellIconButton:(UIButton *)button post:(PFObject *)post{
+    NSLog(@"cellView:(PFTableViewCell *) %@ didTapHashtagCellIconButton:(UIButton *) %@ post:(PFObject *) %@",cellView,button,post);
     if (post != nil) {
         FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:post];
         [self.navigationController pushViewController:photoDetailsVC animated:YES];
@@ -597,10 +517,11 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
 }
 
 -(void)cellView:(PFTableViewCell *)cellView didTapNearbyCellIconButton:(UIButton *)button post:(PFObject *)post{
-    
+    NSLog(@"cellView:(PFTableViewCell *) %@ didTapNearbyCellIconButton:(UIButton *) %@ post:(PFObject *) %@",cellView,button,post);
 }
 
 -(void)cellView:(PFTableViewCell *)cellView didTapPopularCellIconButton:(UIButton *)button post:(PFObject *)post{
+    NSLog(@"cellView:(PFTableViewCell *) %@ didTapPopularCellIconButton:(UIButton *) %@ post:(PFObject *) %@",cellView,button,post);
     if (post != nil) {
         FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:post];
         [self.navigationController pushViewController:photoDetailsVC animated:YES];
@@ -608,6 +529,7 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
 }
 
 -(void)cellView:(PFTableViewCell *)cellView didTapTrendingCellIconButton:(UIButton *)button post:(PFObject *)post{
+    NSLog(@"cellView:(PFTableViewCell *) %@ didTapTrendingCellIconButton:(UIButton *) %@ post:(PFObject *) %@",cellView,button,post);
     if (post != nil) {
         FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:post];
         [self.navigationController pushViewController:photoDetailsVC animated:YES];
@@ -615,10 +537,19 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
 }
 
 -(void)cellView:(PFTableViewCell *)cellView didTapUserCellIconButton:(UIButton *)button user:(PFUser *)user{
+    NSLog(@"cellView:(PFTableViewCell *) %@ didTapUserCellIconButton:(UIButton *) %@ post:(PFObject *) %@",cellView,button,user);
     if (user != nil) {
         FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
         [accountViewController setUser:user];
         [self.navigationController pushViewController:accountViewController animated:YES];
     }
 }
+
+#pragma mark - FT
+
+-(void)searchHeaderView:(FTSearchHeaderView *)searchHeaderView didChangeFrameSize:(CGRect)rect{
+    [self.searchHeaderView setFrame:rect];
+    self.tableView.tableHeaderView = self.searchHeaderView;
+}
+
 @end

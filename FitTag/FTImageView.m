@@ -9,10 +9,8 @@
 #import "FTImageView.h"
 
 @interface FTImageView ()
-
 @property (nonatomic, strong) PFFile *currentFile;
 @property (nonatomic, strong) NSString *url;
-
 @end
 
 @implementation FTImageView

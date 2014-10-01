@@ -13,6 +13,7 @@
 #pragma mark - Initialization
 
 - (id)initWithTarget:(id)target action:(SEL)action {
+    
     UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
     
     self = [super initWithCustomView:settingsButton];
@@ -26,4 +27,5 @@
     
     return self;
 }
+
 @end

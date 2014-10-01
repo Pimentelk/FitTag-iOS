@@ -7,7 +7,5 @@
 //
 
 @interface FTSettingsButtonItem : UIBarButtonItem
-
 - (id)initWithTarget:(id)target action:(SEL)action;
-
 @end

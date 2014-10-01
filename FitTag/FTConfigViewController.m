@@ -78,6 +78,24 @@
             
         } else {
             
+            PFQuery *queryPosts = [PFQuery queryWithClassName:kFTPostClassKey];
+            [queryPosts whereKey:kFTPostUserKey equalTo:user];
+            [queryPosts findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                if (!error) {
+                    
+                    NSNumber *count = [NSNumber numberWithUnsignedInteger:objects.count];
+                    NSNumber *rewardCount = [NSNumber numberWithUnsignedInteger:(objects.count / 10)];
+                    [user setObject:count forKey:kFTUserPostCountKey];
+                    [user setObject:rewardCount forKey:kFTUserRewardsEarnedKey];
+                    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                        if (error) {
+                            NSLog(@"error %@",error);
+                            [user saveEventually];
+                        }
+                    }];
+                }
+            }];
+            
             // Returning user
             FeedCollectionViewFlowLayout *layoutFlow = [[FeedCollectionViewFlowLayout alloc] init];
             [layoutFlow setItemSize:CGSizeMake(320,320)];
@@ -224,12 +242,19 @@
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     NSLog(@"didFailWithError: %@", error);
-    UIAlertView *errorAlert = [[UIAlertView alloc]
-                               initWithTitle:@"Error" message:@"Failed to Get Your Location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    /*
+    UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                         message:@"Failed to Get Your Location"
+                                                        delegate:nil
+                                               cancelButtonTitle:@"OK"
+                                               otherButtonTitles:nil];
     [errorAlert show];
+    */
 }
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+- (void)locationManager:(CLLocationManager *)manager
+     didUpdateLocations:(NSArray *)locations {
+    
     [locationManager stopUpdatingLocation];
     PFUser *user = [PFUser currentUser];
     if (user) {
@@ -249,9 +274,11 @@
 }
 
 #pragma mark - PFLogInViewControllerDelegate
-
 // Sent to the delegate to determine whether the log in request should be submitted to the server.
-- (BOOL)logInViewController:(PFLogInViewController *)logInController shouldBeginLogInWithUsername:(NSString *)username password:(NSString *)password {
+ - (BOOL)logInViewController:(PFLogInViewController *)logInController
+shouldBeginLogInWithUsername:(NSString *)username
+                    password:(NSString *)password {
+    
     //NSLog(@"logInViewController shouldBeginLogInWithUsername");
     if (username && password && username.length && password.length) {
         return YES;
@@ -267,13 +294,16 @@
 }
 
 // Sent to the delegate when a PFUser is logged in.
-- (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
+- (void)logInViewController:(PFLogInViewController *)logInController
+               didLogInUser:(PFUser *)user {
+    
     //NSLog(@"logInViewController didLogInUser");
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 // Sent to the delegate when the log in attempt fails.
-- (void)logInViewController:(PFLogInViewController *)logInController didFailToLogInWithError:(NSError *)error {
+- (void)logInViewController:(PFLogInViewController *)logInController
+    didFailToLogInWithError:(NSError *)error {
     //NSLog(@"FTConfigViewController::logInViewController error: %@",error);
     NSLog(@"Failed to log in...");
 }
@@ -287,7 +317,8 @@
 #pragma mark - PFSignUpViewControllerDelegate
 
 // Sent to the delegate to determine whether the sign up request should be submitted to the server.
-- (BOOL)signUpViewController:(PFSignUpViewController *)signUpController shouldBeginSignUp:(NSDictionary *)info {
+- (BOOL)signUpViewController:(PFSignUpViewController *)signUpController
+           shouldBeginSignUp:(NSDictionary *)info {
     //NSLog(@"signUpViewController ShouldBeginSignUp...My dictionary: %@ ", info);
     NSString *firstname = signUpViewController.firstname;
     NSString *lastname = signUpViewController.lastname;

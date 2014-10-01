@@ -55,12 +55,15 @@ NSString *const kFTActivityVideoKey       = @"post";
 NSString *const kFTActivityPostKey        = @"post";
 NSString *const kFTActivityHashtagKey     = @"hashtag";
 NSString *const kFTActivityMentionKey     = @"mention";
+NSString *const kFTActivityWordKey        = @"keyWords";
+NSString *const kFTActivityRewardsKey     = @"rewards";
 
 // Type values
 NSString *const kFTActivityTypeLike       = @"like";
 NSString *const kFTActivityTypeFollow     = @"follow";
 NSString *const kFTActivityTypeComment    = @"comment";
 NSString *const kFTActivityTypeJoined     = @"joined";
+NSString *const kFTActivityTypeReward     = @"reward";
 
 #pragma mark - User Class
 
@@ -78,11 +81,38 @@ NSString *const kFTUserFacebookFriendsKey                      = @"facebookFrien
 NSString *const kFTUserAlreadyAutoFollowedFacebookFriendsKey   = @"userAlreadyAutoFollowedFacebookFriends";
 NSString *const kFTUserLocationKey                             = @"location";
 NSString *const kFTUserTypeKey                                 = @"type";
+NSString *const kFTUserCompanyNameKey                          = @"companyName";
+NSString *const kFTUserAddressKey                              = @"address";
+NSString *const kFTUserWebsiteKey                              = @"website";
+NSString *const kFTUserDescriptionKey                          = @"description";
+NSString *const kFTUserEmailKey                                = @"email";
+NSString *const kFTUserPostCountKey                            = @"postCount";
+NSString *const kFTUserRewardsEarnedKey                        = @"rewardsEarned";
 
 // Type values
 NSString *const kFTUserTypeUser                                = @"user";
 NSString *const kFTUserTypeAmbassador                          = @"ambassador";
 NSString *const kFTUserTypeBusiness                            = @"business";
+
+#pragma mark - PFObject Rewards Class
+
+// Class key
+NSString *const kFTRewardsClassKey          = @"Rewards";
+
+// Field keys
+NSString *const kFTRewardsNameKey           = @"name";
+NSString *const kFTRewardsDescriptionKey    = @"description";
+NSString *const kFTRewardsTypeKey           = @"type";
+NSString *const kFTRewardsUserKey           = @"user";
+NSString *const kFTRewardsExpiredKey        = @"expiredAt";
+NSString *const kFTRewardsImageKey          = @"image";
+NSString *const kFTRewardsStatusKey         = @"status";
+
+// Type keys
+NSString *const kFTRewardsTypeActive        = @"ACTIVE";
+NSString *const kFTRewardsTypeInactive      = @"INACTIVE";
+NSString *const kFTRewardsTypeUsed          = @"USED";
+NSString *const kFTRewardsTypeExpired       = @"EXPIRED";
 
 #pragma mark - PFObject Post Class
 
@@ -109,8 +139,6 @@ NSString *const kFTPostAttributesDisplayNameKey            = @"displayName";
 #pragma mark - Cached User Attributes
 
 // keys
-//NSString *const kFTUserAttributesPhotoCountKey                 = @"photoCount";
-//NSString *const kFTUserAttributesVideoCountKey                 = @"videoCount";
 NSString *const kFTUserAttributesPostCountKey                  = @"postCount";
 NSString *const kFTUserAttributesIsFollowedByCurrentUserKey    = @"isFollowedByCurrentUser";
 
