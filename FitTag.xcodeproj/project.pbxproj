@@ -33,6 +33,7 @@
 		2D429A30197B34DC00F8A9A0 /* TTTTimeIntervalFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A2F197B34DC00F8A9A0 /* TTTTimeIntervalFormatter.m */; };
 		2D429A33197B354600F8A9A0 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A32197B354600F8A9A0 /* UIImage+ImageEffects.m */; };
 		2D6E0224196A24A1004DC010 /* InterestFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D6E0223196A24A1004DC010 /* InterestFlowLayout.m */; };
+		2D77353419DF4C0400F05FC0 /* FTGalleryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D77353319DF4C0400F05FC0 /* FTGalleryCell.m */; };
 		2D9949731996905E000E321E /* FTOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D9949721996905E000E321E /* FTOverlayView.m */; };
 		2D9949761996A9B0000E321E /* FTCameraToolBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D9949751996A9B0000E321E /* FTCameraToolBar.m */; };
 		2DAA63DE1957A51F003B1DDF /* UIView+FormScroll.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DAA63DD1957A51F003B1DDF /* UIView+FormScroll.m */; };
@@ -65,6 +66,7 @@
 		2DBE023F19D6FB7F00CD278C /* ELCAssetTablePicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2DBE023319D6FB7F00CD278C /* ELCAssetTablePicker.xib */; };
 		2DBE024019D6FB7F00CD278C /* Overlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DBE023419D6FB7F00CD278C /* Overlay.png */; };
 		2DBE024119D6FB7F00CD278C /* Overlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DBE023519D6FB7F00CD278C /* Overlay@2x.png */; };
+		2DBE024719DCF84000CD278C /* FTEditPostViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE024619DCF84000CD278C /* FTEditPostViewController.m */; };
 		2DBEEE5719AB4F1E00AAD238 /* FTPostDetailsFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBEEE5619AB4F1E00AAD238 /* FTPostDetailsFooterView.m */; };
 		2DC507CC199829940041A03D /* FTCamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC507CB199829940041A03D /* FTCamViewController.m */; };
 		2DC507D5199FBE030041A03D /* FTHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC507D4199FBE030041A03D /* FTHomeViewController.m */; };
@@ -167,6 +169,8 @@
 		2D429A32197B354600F8A9A0 /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
 		2D6E0222196A24A1004DC010 /* InterestFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterestFlowLayout.h; sourceTree = "<group>"; };
 		2D6E0223196A24A1004DC010 /* InterestFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterestFlowLayout.m; sourceTree = "<group>"; };
+		2D77353219DF4C0400F05FC0 /* FTGalleryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGalleryCell.h; sourceTree = "<group>"; };
+		2D77353319DF4C0400F05FC0 /* FTGalleryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGalleryCell.m; sourceTree = "<group>"; };
 		2D9949711996905E000E321E /* FTOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTOverlayView.h; sourceTree = "<group>"; };
 		2D9949721996905E000E321E /* FTOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTOverlayView.m; sourceTree = "<group>"; };
 		2D9949741996A9AF000E321E /* FTCameraToolBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCameraToolBar.h; sourceTree = "<group>"; };
@@ -228,6 +232,8 @@
 		2DBE023319D6FB7F00CD278C /* ELCAssetTablePicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ELCAssetTablePicker.xib; sourceTree = "<group>"; };
 		2DBE023419D6FB7F00CD278C /* Overlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Overlay.png; sourceTree = "<group>"; };
 		2DBE023519D6FB7F00CD278C /* Overlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Overlay@2x.png"; sourceTree = "<group>"; };
+		2DBE024519DCF84000CD278C /* FTEditPostViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTEditPostViewController.h; sourceTree = "<group>"; };
+		2DBE024619DCF84000CD278C /* FTEditPostViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTEditPostViewController.m; sourceTree = "<group>"; };
 		2DBEEE5519AB4F1E00AAD238 /* FTPostDetailsFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTPostDetailsFooterView.h; sourceTree = "<group>"; };
 		2DBEEE5619AB4F1E00AAD238 /* FTPostDetailsFooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTPostDetailsFooterView.m; sourceTree = "<group>"; };
 		2DC507CA199829940041A03D /* FTCamViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCamViewController.h; sourceTree = "<group>"; };
@@ -486,6 +492,8 @@
 				2DD2B66C198402BB00600A42 /* FTEditPhotoViewController.m */,
 				2DAF5B9F19B2A28E00E5E10B /* FTEditVideoViewController.h */,
 				2DAF5BA019B2A28E00E5E10B /* FTEditVideoViewController.m */,
+				2DBE024519DCF84000CD278C /* FTEditPostViewController.h */,
+				2DBE024619DCF84000CD278C /* FTEditPostViewController.m */,
 				2DBC6E58195C783C008B5AD3 /* FTCamRollViewController.h */,
 				2DBC6E59195C783C008B5AD3 /* FTCamRollViewController.m */,
 				2DC507CA199829940041A03D /* FTCamViewController.h */,
@@ -696,6 +704,8 @@
 				2D007B5E19B3CA46006E1484 /* FTVideoCell.m */,
 				2D007B6819B6C6BB006E1484 /* FTSearchCell.h */,
 				2D007B6919B6C6BB006E1484 /* FTSearchCell.m */,
+				2D77353219DF4C0400F05FC0 /* FTGalleryCell.h */,
+				2D77353319DF4C0400F05FC0 /* FTGalleryCell.m */,
 			);
 			name = UITableViewCells;
 			sourceTree = "<group>";
@@ -916,6 +926,7 @@
 				2D197E9119C1BC7900E91274 /* FTMapViewController.m in Sources */,
 				2DBE020619D0C62D00CD278C /* FTRewardsCollectionHeaderView.m in Sources */,
 				2DAF5BA119B2A28E00E5E10B /* FTEditVideoViewController.m in Sources */,
+				2D77353419DF4C0400F05FC0 /* FTGalleryCell.m in Sources */,
 				2DBE021419D37AF900CD278C /* FTRewardsDetailView.m in Sources */,
 				2DD2B6861984164E00600A42 /* FTAccountViewController.m in Sources */,
 				2DD2B67D19840FB500600A42 /* FTActivityCell.m in Sources */,
@@ -954,6 +965,7 @@
 				2D9949731996905E000E321E /* FTOverlayView.m in Sources */,
 				2DBE023919D6FB7F00CD278C /* ELCAssetTablePicker.m in Sources */,
 				2D429A0E1977EE7700F8A9A0 /* FTSearchViewController.m in Sources */,
+				2DBE024719DCF84000CD278C /* FTEditPostViewController.m in Sources */,
 				2DACD97B196578DA00833C14 /* FTInspirationViewController.m in Sources */,
 				2D9949761996A9B0000E321E /* FTCameraToolBar.m in Sources */,
 				2DD2B694198418C300600A42 /* FTPhotoCell.m in Sources */,

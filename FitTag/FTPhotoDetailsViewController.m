@@ -157,7 +157,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 
 - (PFQuery *)queryForTable {
     PFQuery *query = [PFQuery queryWithClassName:self.parseClassName];
-    [query whereKey:kFTActivityPhotoKey equalTo:self.photo];
+    [query whereKey:kFTActivityPostKey equalTo:self.photo];
     [query includeKey:kFTActivityFromUserKey];
     [query whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeComment];
     [query orderByAscending:@"createdAt"];
@@ -225,7 +225,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
         [comment setObject:[self.photo objectForKey:kFTPostUserKey] forKey:kFTActivityToUserKey]; // Set toUser
         [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey]; // Set fromUser
         [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
-        [comment setObject:self.photo forKey:kFTActivityPhotoKey];
+        [comment setObject:self.photo forKey:kFTActivityPostKey];
         
         PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];
         [ACL setPublicReadAccess:YES];
@@ -406,7 +406,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     }
     
     self.likersQueryInProgress = YES;
-    PFQuery *query = [FTUtility queryForActivitiesOnPhoto:photo cachePolicy:kPFCachePolicyNetworkOnly];
+    PFQuery *query = [FTUtility queryForActivitiesOnPost:photo cachePolicy:kPFCachePolicyNetworkOnly];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         self.likersQueryInProgress = NO;
         if (error) {
@@ -445,7 +445,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 - (void)shouldDeletePhoto {
     // Delete all activites related to this photo
     PFQuery *query = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [query whereKey:kFTActivityPhotoKey equalTo:self.photo];
+    [query whereKey:kFTActivityPostKey equalTo:self.photo];
     [query findObjectsInBackgroundWithBlock:^(NSArray *activities, NSError *error) {
         if (!error) {
             for (PFObject *activity in activities) {

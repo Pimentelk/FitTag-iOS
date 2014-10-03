@@ -8,7 +8,8 @@
 
 #import "FTPhotoCell.h"
 #import "FTVideoCell.h"
+#import "FTGalleryCell.h"
 
-@interface FTPhotoTimelineViewController : PFQueryTableViewController <FTPhotoCellDelegate,FTVideoCellDelegate,UIActionSheetDelegate>
+@interface FTPhotoTimelineViewController : PFQueryTableViewController <FTPhotoCellDelegate,FTVideoCellDelegate,FTGalleryCellDelegate,UIActionSheetDelegate>
 - (FTPhotoCell *)dequeueReusableSectionHeaderView;
 @end

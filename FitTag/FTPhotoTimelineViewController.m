@@ -162,11 +162,11 @@
     
     PFQuery *postsFromFollowedUsersQuery = [PFQuery queryWithClassName:self.parseClassName];
     [postsFromFollowedUsersQuery whereKey:kFTPostUserKey matchesKey:kFTActivityToUserKey inQuery:followingActivitiesQuery];
-    [postsFromFollowedUsersQuery whereKeyExists:kFTPostImageKey];
+    [postsFromFollowedUsersQuery whereKey:kFTPostTypeKey containedIn:@[kFTPostTypeImage,kFTPostTypeVideo,kFTPostTypeGallery]];
     
     PFQuery *postsFromCurrentUserQuery = [PFQuery queryWithClassName:self.parseClassName];
     [postsFromCurrentUserQuery whereKey:kFTPostUserKey equalTo:[PFUser currentUser]];
-    [postsFromCurrentUserQuery whereKeyExists:kFTPostImageKey];
+    [postsFromCurrentUserQuery whereKey:kFTPostTypeKey containedIn:@[kFTPostTypeImage,kFTPostTypeVideo,kFTPostTypeGallery]];
     
     PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects: postsFromFollowedUsersQuery, postsFromCurrentUserQuery, nil]];
     [query includeKey:kFTPostUserKey];
@@ -185,7 +185,6 @@
     return query;
 }
 
-
 - (PFObject *)objectAtIndexPath:(NSIndexPath *)indexPath {
     // overridden, since we want to implement sections
     if (indexPath.section < self.objects.count) {
@@ -194,16 +193,108 @@
     return nil;
 }
 
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath object:(PFObject *)object {
     
     static NSString *videoCellIdentifier = @"VideoCell";
     static NSString *photoCellIdentifier = @"PhotoCell";
+    static NSString *galleryCellIdentifier = @"GalleryCell";
     
     //NSLog(@"FTPhotoTimelineViewController::Updating tableView:(UITableView *) %@ cellForRowAtIndexPath:(NSIndexPath *) %@ object:(PFObject *) %@",tableView,indexPath,object);
     if (indexPath.section == self.objects.count) {
         return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
     }
+    
+    //*********************************** If the cell is a gallery ****************************************//
+    
+    FTGalleryCell *galleryCell = (FTGalleryCell *)[tableView dequeueReusableCellWithIdentifier:galleryCellIdentifier];
+    if (galleryCell == nil) {
+        galleryCell = [[FTGalleryCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:galleryCellIdentifier];
+        galleryCell.delegate = self;
+        [galleryCell.galleryButton addTarget:self action:@selector(didTapOnGalleryAction:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    
+    // If the cell is a gallery
+    if ([[object objectForKey:kFTPostTypeGallery] isEqualToString:kFTPostTypeGallery]) {
+        NSLog(@"object: %@",object);
+        NSLog(@"Post of type gallery foudn...");
+        
+        PFObject *gallery = [self.objects objectAtIndex:indexPath.section];
+        [galleryCell setGallery:gallery];
+        [galleryCell setTag:indexPath.section];
+        [galleryCell.likeCounter setTag:indexPath.section];
+        
+        NSDictionary *attributesForGallery = [[FTCache sharedCache] attributesForPost:gallery];
+        
+        if (attributesForGallery) {
+            [galleryCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:gallery]];
+            [galleryCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:gallery] description] forState:UIControlStateNormal];
+            [galleryCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:gallery] description] forState:UIControlStateNormal];
+            [galleryCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:gallery] description] forState:UIControlStateNormal];
+        } else {
+            @synchronized(self) {
+                // check if we can update the cache
+                NSNumber *outstandingSectionHeaderQueryStatus = [self.outstandingSectionHeaderQueries objectForKey:@(indexPath.section)];
+                if (!outstandingSectionHeaderQueryStatus) {
+                    PFQuery *query = [FTUtility queryForActivitiesOnPost:gallery cachePolicy:kPFCachePolicyNetworkOnly];
+                    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                        @synchronized(self) {
+                            [self.outstandingSectionHeaderQueries removeObjectForKey:@(indexPath.section)];
+                            
+                            if (error) {
+                                NSLog(@"ERROR##: %@",error);
+                                return;
+                            }
+                            
+                            NSMutableArray *likers = [NSMutableArray array];
+                            NSMutableArray *commenters = [NSMutableArray array];
+                            
+                            BOOL isLikedByCurrentUser = NO;
+                            
+                            for (PFObject *activity in objects) {
+                                if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeLike] && [activity objectForKey:kFTActivityFromUserKey]) {
+                                    [likers addObject:[activity objectForKey:kFTActivityFromUserKey]];
+                                } else if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeComment] && [activity objectForKey:kFTActivityFromUserKey]) {
+                                    [commenters addObject:[activity objectForKey:kFTActivityFromUserKey]];
+                                }
+                                
+                                if ([[[activity objectForKey:kFTActivityFromUserKey] objectId] isEqualToString:[[PFUser currentUser] objectId]]) {
+                                    if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeLike]) {
+                                        isLikedByCurrentUser = YES;
+                                    }
+                                }
+                            }
+                            
+                            [[FTCache sharedCache] setAttributesForPost:gallery likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+                            
+                            if (galleryCell.tag != indexPath.section) {
+                                return;
+                            }
+                            
+                            [galleryCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:gallery]];
+                            [galleryCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:gallery] description] forState:UIControlStateNormal];
+                            [galleryCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:gallery] description] forState:UIControlStateNormal];
+                            [galleryCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:gallery] description] forState:UIControlStateNormal];
+                        }
+                    }];
+                }
+            }
+        }
+        
+        galleryCell.galleryButton.tag = indexPath.section;
+        
+        if (object) {
+            galleryCell.imageView.file = [object objectForKey:kFTPostImageKey];
+            
+            // PFQTVC will take care of asynchronously downloading files, but will only load them when the tableview is not moving. If the data is there, let's load it right away.
+            if ([galleryCell.imageView.file isDataAvailable]) {
+                [galleryCell.imageView loadInBackground];
+            }
+        }
+        
+        return galleryCell;
+    }
+    
+    //*********************************** If the cell is a video ****************************************//
     
     FTVideoCell *videoCell = (FTVideoCell *)[tableView dequeueReusableCellWithIdentifier:videoCellIdentifier];
     if (videoCell == nil) {
@@ -234,7 +325,7 @@
                 // check if we can update the cache
                 NSNumber *outstandingSectionHeaderQueryStatus = [self.outstandingSectionHeaderQueries objectForKey:@(indexPath.section)];
                 if (!outstandingSectionHeaderQueryStatus) {
-                    PFQuery *query = [FTUtility queryForActivitiesOnVideo:video cachePolicy:kPFCachePolicyNetworkOnly];
+                    PFQuery *query = [FTUtility queryForActivitiesOnPost:video cachePolicy:kPFCachePolicyNetworkOnly];
                     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                         @synchronized(self) {
                             [self.outstandingSectionHeaderQueries removeObjectForKey:@(indexPath.section)];
@@ -293,6 +384,8 @@
         return videoCell;
     }
     
+    //*********************************** If the cell is an image ****************************************//
+    
     FTPhotoCell *photoCell = (FTPhotoCell *)[tableView dequeueReusableCellWithIdentifier:photoCellIdentifier];
     
     if (photoCell == nil) {
@@ -301,7 +394,6 @@
         [photoCell.photoButton addTarget:self action:@selector(didTapOnPhotoAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
-    // If the cell is not a video
     if([[object objectForKey:kFTPostTypeKey] isEqualToString:kFTPostImageKey]) {
         
         PFObject *photo = [self.objects objectAtIndex:indexPath.section];
@@ -322,7 +414,7 @@
                 // check if we can update the cache
                 NSNumber *outstandingSectionHeaderQueryStatus = [self.outstandingSectionHeaderQueries objectForKey:@(indexPath.section)];
                 if (!outstandingSectionHeaderQueryStatus) {
-                    PFQuery *query = [FTUtility queryForActivitiesOnPhoto:photo cachePolicy:kPFCachePolicyNetworkOnly];
+                    PFQuery *query = [FTUtility queryForActivitiesOnPost:photo cachePolicy:kPFCachePolicyNetworkOnly];
                     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                         @synchronized(self) {
                             [self.outstandingSectionHeaderQueries removeObjectForKey:@(indexPath.section)];

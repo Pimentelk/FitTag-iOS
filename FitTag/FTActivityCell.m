@@ -121,7 +121,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeFollow] || [[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeJoined]) {
         [self setActivityImageFile:nil];
     } else {
-        [self setActivityImageFile:(PFFile*)[[activity objectForKey:kFTActivityPhotoKey] objectForKey:kFTPostThumbnailKey]];
+        [self setActivityImageFile:(PFFile*)[[activity objectForKey:kFTActivityPostKey] objectForKey:kFTPostThumbnailKey]];
     }
     
     NSString *activityString = [FTActivityFeedViewController stringForActivityType:(NSString*)[activity objectForKey:kFTActivityTypeKey]];

@@ -418,9 +418,9 @@
         // create a video object
         PFObject *video = [PFObject objectWithClassName:kFTPostClassKey];
         [video setObject:[PFUser currentUser] forKey:kFTPostUserKey];
-        [video setObject:self.imageFile forKey:kFTPostImageKey];
-        [video setObject:self.videoFile forKey:kFTPostVideoKey];
-        [video setObject:kFTPostVideoKey forKey:kFTPostTypeKey];
+        [video setObject:self.imageFile forKey:kFTPostTypeImage];
+        [video setObject:self.videoFile forKey:kFTPostTypeVideo];
+        [video setObject:kFTPostTypeVideo forKey:kFTPostTypeKey];
         
         if (self.geoPoint) {
             [video setObject:self.geoPoint forKey:kFTPostLocationKey];
@@ -450,7 +450,7 @@
                         // create and save photo caption
                         PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
                         [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
-                        [comment setObject:video forKey:kFTActivityVideoKey];
+                        [comment setObject:video forKey:kFTActivityPostKey];
                         [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
                         [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
                         [comment setObject:hashtags forKey:kFTActivityHashtagKey];

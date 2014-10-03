@@ -54,8 +54,6 @@ extern NSString *const kFTActivityTypeKey;
 extern NSString *const kFTActivityFromUserKey;
 extern NSString *const kFTActivityToUserKey;
 extern NSString *const kFTActivityContentKey;
-extern NSString *const kFTActivityPhotoKey;
-extern NSString *const kFTActivityVideoKey;
 extern NSString *const kFTActivityPostKey;
 extern NSString *const kFTActivityHashtagKey;
 extern NSString *const kFTActivityMentionKey;
@@ -73,14 +71,20 @@ extern NSString *const kFTActivityTypeReward;
 extern NSString *const kFTPostClassKey;
 
 // Field keys
-extern NSString *const kFTPostImageKey;
-extern NSString *const kFTPostVideoKey;
 extern NSString *const kFTPostKey;
 extern NSString *const kFTPostUserKey;
 extern NSString *const kFTPostThumbnailKey;
+extern NSString *const kFTPostImageKey;
+extern NSString *const kFTPostVideoKey;
 extern NSString *const kFTPostTypeKey;
 extern NSString *const kFTPostOpenGraphIDKey;
 extern NSString *const kFTPostLocationKey;
+
+extern NSString *const kFTPostTypeGallery;
+extern NSString *const kFTPostTypeGalleryImage;
+extern NSString *const kFTPostTypeGalleryVideo;
+extern NSString *const kFTPostTypeImage;
+extern NSString *const kFTPostTypeVideo;
 
 #pragma mark - PFObject Rewards Class
 

@@ -320,7 +320,7 @@
                         // create and save photo caption
                         PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
                         [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
-                        [comment setObject:photo forKey:kFTActivityPhotoKey];
+                        [comment setObject:photo forKey:kFTActivityPostKey];
                         [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
                         [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
                         [comment setObject:hashtags forKey:kFTActivityHashtagKey];

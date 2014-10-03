@@ -8,18 +8,15 @@
 
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "FTEditPhotoViewController.h"
+#import "ELCImagePickerHeader.h"
+#import "FTEditPostViewController.h"
 
 @protocol FTCamRollViewControllerDelegate;
 
-@interface FTCamRollViewController : UICollectionViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIActionSheetDelegate, FTEditPhotoViewControllerDelegate>
-@property (nonatomic,weak) id <FTCamRollViewControllerDelegate> delegate;
-@property (nonatomic,retain) NSMutableArray *usersBeingFollowed;
-@property (nonatomic, strong) NSArray *assets;
-+ (ALAssetsLibrary *)defaultAssetsLibrary;
-- (BOOL)shouldPresentPhotoCaptureController;
-@end
+@interface FTCamRollViewController : UIViewController <ELCImagePickerControllerDelegate,FTEditPostViewControllerDelegate>
 
-@protocol FTCamRollViewControllerDelegate <NSObject>
-@optional
-- (void)setCoverPhoto:(UIImage *)image Caption:(NSString *)caption;
+@property (nonatomic, strong) ELCAssetTablePicker *tableView;
+@property (nonatomic,weak) id <FTCamRollViewControllerDelegate> delegate;
+@property (nonatomic, copy) NSArray *chosenImages;
+
 @end

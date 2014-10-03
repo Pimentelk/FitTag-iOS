@@ -161,8 +161,8 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.row < self.objects.count) {
         PFObject *activity = [self.objects objectAtIndex:indexPath.row];
-        if ([activity objectForKey:kFTActivityPhotoKey]) {
-            FTPhotoDetailsViewController *detailViewController = [[FTPhotoDetailsViewController alloc] initWithPhoto:[activity objectForKey:kFTActivityPhotoKey]];
+        if ([activity objectForKey:kFTActivityPostKey]) {
+            FTPhotoDetailsViewController *detailViewController = [[FTPhotoDetailsViewController alloc] initWithPhoto:[activity objectForKey:kFTActivityPostKey]];
             [self.navigationController pushViewController:detailViewController animated:YES];
         } else if ([activity objectForKey:kFTActivityFromUserKey]) {
             FTAccountViewController *detailViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
@@ -191,7 +191,7 @@
     [query whereKey:kFTActivityFromUserKey notEqualTo:[PFUser currentUser]];
     [query whereKeyExists:kFTActivityFromUserKey];
     [query includeKey:kFTActivityFromUserKey];
-    [query includeKey:kFTActivityPhotoKey];
+    [query includeKey:kFTActivityPostKey];
     [query orderByDescending:@"createdAt"];
     
     [query setCachePolicy:kPFCachePolicyNetworkOnly];
@@ -287,7 +287,7 @@
 
 - (void)cell:(FTActivityCell *)cellView didTapActivityButton:(PFObject *)activity {
     // Get image associated with the activity
-    PFObject *photo = [activity objectForKey:kFTActivityPhotoKey];
+    PFObject *photo = [activity objectForKey:kFTActivityPostKey];
     
     // Push single photo view controller
     FTPhotoDetailsViewController *photoViewController = [[FTPhotoDetailsViewController alloc] initWithPhoto:photo];

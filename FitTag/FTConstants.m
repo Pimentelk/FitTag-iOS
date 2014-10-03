@@ -50,8 +50,6 @@ NSString *const kFTActivityTypeKey        = @"type";
 NSString *const kFTActivityFromUserKey    = @"fromUser";
 NSString *const kFTActivityToUserKey      = @"toUser";
 NSString *const kFTActivityContentKey     = @"content";
-NSString *const kFTActivityPhotoKey       = @"post";
-NSString *const kFTActivityVideoKey       = @"post";
 NSString *const kFTActivityPostKey        = @"post";
 NSString *const kFTActivityHashtagKey     = @"hashtag";
 NSString *const kFTActivityMentionKey     = @"mention";
@@ -118,14 +116,20 @@ NSString *const kFTRewardsTypeExpired       = @"EXPIRED";
 
 NSString *const kFTPostClassKey = @"Post";
 
+NSString *const kFTPostKey                  = @"post";
 NSString *const kFTPostImageKey             = @"image";
 NSString *const kFTPostVideoKey             = @"video";
-NSString *const kFTPostKey                  = @"post";
 NSString *const kFTPostUserKey              = @"user";
 NSString *const kFTPostThumbnailKey         = @"thumbnail";
 NSString *const kFTPostTypeKey              = @"type";
 NSString *const kFTPostOpenGraphIDKey       = @"fbOpenGraphID";
 NSString *const kFTPostLocationKey          = @"location";
+
+NSString *const kFTPostTypeGallery          = @"gallery";
+NSString *const kFTPostTypeGalleryImage     = @"galleryImage";
+NSString *const kFTPostTypeGalleryVideo     = @"galleryVideo";
+NSString *const kFTPostTypeImage            = @"image";
+NSString *const kFTPostTypeVideo            = @"video";
 
 #pragma mark - Cached Post Attributes
 

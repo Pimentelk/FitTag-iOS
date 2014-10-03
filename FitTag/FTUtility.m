@@ -25,7 +25,7 @@
 
 + (void)likePhotoInBackground:(id)photo block:(void (^)(BOOL succeeded, NSError *error))completionBlock {
     PFQuery *queryExistingLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryExistingLikes whereKey:kFTActivityPhotoKey equalTo:photo];
+    [queryExistingLikes whereKey:kFTActivityPostKey equalTo:photo];
     [queryExistingLikes whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
     [queryExistingLikes whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
     [queryExistingLikes setCachePolicy:kPFCachePolicyNetworkOnly];
@@ -41,7 +41,7 @@
         [likeActivity setObject:kFTActivityTypeLike forKey:kFTActivityTypeKey];
         [likeActivity setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
         [likeActivity setObject:[photo objectForKey:kFTPostUserKey] forKey:kFTActivityToUserKey];
-        [likeActivity setObject:photo forKey:kFTActivityPhotoKey];
+        [likeActivity setObject:photo forKey:kFTActivityPostKey];
         
         PFACL *likeACL = [PFACL ACLWithUser:[PFUser currentUser]];
         [likeACL setPublicReadAccess:YES];
@@ -54,7 +54,7 @@
             }
             
             // refresh cache
-            PFQuery *query = [FTUtility queryForActivitiesOnPhoto:photo cachePolicy:kPFCachePolicyNetworkOnly];
+            PFQuery *query = [FTUtility queryForActivitiesOnPost:photo cachePolicy:kPFCachePolicyNetworkOnly];
             [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 if (!error) {
                     
@@ -90,7 +90,7 @@
 
 + (void)likeVideoInBackground:(id)video block:(void (^)(BOOL succeeded, NSError *error))completionBlock{
     PFQuery *queryExistingLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryExistingLikes whereKey:kFTActivityVideoKey equalTo:video];
+    [queryExistingLikes whereKey:kFTActivityPostKey equalTo:video];
     [queryExistingLikes whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
     [queryExistingLikes whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
     [queryExistingLikes setCachePolicy:kPFCachePolicyNetworkOnly];
@@ -106,7 +106,7 @@
         [likeActivity setObject:kFTActivityTypeLike forKey:kFTActivityTypeKey];
         [likeActivity setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
         [likeActivity setObject:[video objectForKey:kFTPostUserKey] forKey:kFTActivityToUserKey];
-        [likeActivity setObject:video forKey:kFTActivityVideoKey];
+        [likeActivity setObject:video forKey:kFTActivityPostKey];
         
         PFACL *likeACL = [PFACL ACLWithUser:[PFUser currentUser]];
         [likeACL setPublicReadAccess:YES];
@@ -119,7 +119,7 @@
             }
             
             // refresh cache
-            PFQuery *query = [FTUtility queryForActivitiesOnVideo:video cachePolicy:kPFCachePolicyNetworkOnly];
+            PFQuery *query = [FTUtility queryForActivitiesOnPost:video cachePolicy:kPFCachePolicyNetworkOnly];
             [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 if (!error) {
                     
@@ -154,7 +154,7 @@
 
 + (void)unlikeVideoInBackground:(id)video block:(void (^)(BOOL succeeded, NSError *error))completionBlock{
     PFQuery *queryExistingLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryExistingLikes whereKey:kFTActivityVideoKey equalTo:video];
+    [queryExistingLikes whereKey:kFTActivityPostKey equalTo:video];
     [queryExistingLikes whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
     [queryExistingLikes whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
     [queryExistingLikes setCachePolicy:kPFCachePolicyNetworkOnly];
@@ -171,7 +171,7 @@
             }
             
             // refresh cache
-            PFQuery *query = [FTUtility queryForActivitiesOnVideo:video cachePolicy:kPFCachePolicyNetworkOnly];
+            PFQuery *query = [FTUtility queryForActivitiesOnPost:video cachePolicy:kPFCachePolicyNetworkOnly];
             [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 if (!error) {
                     
@@ -210,7 +210,7 @@
 
 + (void)unlikePhotoInBackground:(id)photo block:(void (^)(BOOL succeeded, NSError *error))completionBlock {
     PFQuery *queryExistingLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryExistingLikes whereKey:kFTActivityPhotoKey equalTo:photo];
+    [queryExistingLikes whereKey:kFTActivityPostKey equalTo:photo];
     [queryExistingLikes whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
     [queryExistingLikes whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
     [queryExistingLikes setCachePolicy:kPFCachePolicyNetworkOnly];
@@ -227,7 +227,7 @@
             }
             
             // refresh cache
-            PFQuery *query = [FTUtility queryForActivitiesOnPhoto:photo cachePolicy:kPFCachePolicyNetworkOnly];
+            PFQuery *query = [FTUtility queryForActivitiesOnPost:photo cachePolicy:kPFCachePolicyNetworkOnly];
             [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 if (!error) {
                     
@@ -431,39 +431,75 @@
 
 #pragma mark Activities
 
-+ (PFQuery *)queryForActivitiesOnPhoto:(PFObject *)photo cachePolicy:(PFCachePolicy)cachePolicy {
++ (PFQuery *)queryForActivitiesOnPost:(PFObject *)post cachePolicy:(PFCachePolicy)cachePolicy {
     PFQuery *queryLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryLikes whereKey:kFTActivityPhotoKey equalTo:photo];
+    [queryLikes whereKey:kFTActivityPostKey equalTo:post];
     [queryLikes whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
     
     PFQuery *queryComments = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryComments whereKey:kFTActivityPhotoKey equalTo:photo];
+    [queryComments whereKey:kFTActivityPostKey equalTo:post];
     [queryComments whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeComment];
     
     PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects:queryLikes,queryComments,nil]];
     [query setCachePolicy:cachePolicy];
     [query includeKey:kFTActivityFromUserKey];
-    [query includeKey:kFTActivityPhotoKey];
+    [query includeKey:kFTActivityPostKey];
+    
+    return query;
+}
+
+/*
++ (PFQuery *)queryForActivitiesOnPhoto:(PFObject *)photo cachePolicy:(PFCachePolicy)cachePolicy {
+    PFQuery *queryLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [queryLikes whereKey:kFTActivityPostKey equalTo:photo];
+    [queryLikes whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
+    
+    PFQuery *queryComments = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [queryComments whereKey:kFTActivityPostKey equalTo:photo];
+    [queryComments whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeComment];
+    
+    PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects:queryLikes,queryComments,nil]];
+    [query setCachePolicy:cachePolicy];
+    [query includeKey:kFTActivityFromUserKey];
+    [query includeKey:kFTActivityPostKey];
     
     return query;
 }
 
 + (PFQuery *)queryForActivitiesOnVideo:(PFObject *)video cachePolicy:(PFCachePolicy)cachePolicy {
     PFQuery *queryLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryLikes whereKey:kFTActivityVideoKey equalTo:video];
+    [queryLikes whereKey:kFTActivityPostKey equalTo:video];
     [queryLikes whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
     
     PFQuery *queryComments = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryComments whereKey:kFTActivityVideoKey equalTo:video];
+    [queryComments whereKey:kFTActivityPostKey equalTo:video];
     [queryComments whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeComment];
     
     PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects:queryLikes,queryComments,nil]];
     [query setCachePolicy:cachePolicy];
     [query includeKey:kFTActivityFromUserKey];
-    [query includeKey:kFTActivityVideoKey];
+    [query includeKey:kFTActivityPostKey];
     
     return query;
 }
+
++ (PFQuery *)queryForActivitiesOnGallery:(PFObject *)gallery cachePolicy:(PFCachePolicy)cachePolicy {
+    PFQuery *queryLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [queryLikes whereKey:kFTActivityPostKey equalTo:gallery];
+    [queryLikes whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
+    
+    PFQuery *queryComments = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [queryComments whereKey:kFTActivityPostKey equalTo:gallery];
+    [queryComments whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeComment];
+    
+    PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects:queryLikes,queryComments,nil]];
+    [query setCachePolicy:cachePolicy];
+    [query includeKey:kFTActivityFromUserKey];
+    [query includeKey:kFTActivityPostKey];
+    
+    return query;
+}
+*/
 
 #pragma mark Shadow Rendering
 
