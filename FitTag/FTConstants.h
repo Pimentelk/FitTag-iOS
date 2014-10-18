@@ -10,8 +10,8 @@ typedef enum {
 	FTActivityTabBarItemIndex = 0,
 	FTSearchTabBarItemIndex = 1,
 	FTFeedTabBarItemIndex = 2,
-    FTOffersTabBarItemIndex = 3,
-    FTEmptyTabBarItemIndex = 4
+    FTProfileTabBarItemIndex = 3,
+    FTReardsTabBarItemIndex = 4
 } FTTabBarControllerViewControllerIndex;
 
 #pragma mark - NSUserDefaults
@@ -79,6 +79,7 @@ extern NSString *const kFTPostVideoKey;
 extern NSString *const kFTPostTypeKey;
 extern NSString *const kFTPostOpenGraphIDKey;
 extern NSString *const kFTPostLocationKey;
+extern NSString *const kFTPostPostsKey;
 
 extern NSString *const kFTPostTypeGallery;
 extern NSString *const kFTPostTypeGalleryImage;
@@ -114,7 +115,7 @@ extern NSString *const kFTUserClassKey;
 // Field keys
 extern NSString *const kFTUserDisplayNameKey;
 extern NSString *const kFTUserFirstnameKey;
-extern NSString *const kFTUserlastnameKey;
+extern NSString *const kFTUserLastnameKey;
 extern NSString *const kFTUserInterestsKey;
 extern NSString *const kFTUserBioKey;
 extern NSString *const kFTUserFacebookIDKey;
@@ -132,6 +133,7 @@ extern NSString *const kFTUserDescriptionKey;
 extern NSString *const kFTUserEmailKey;
 extern NSString *const kFTUserPostCountKey;
 extern NSString *const kFTUserRewardsEarnedKey;
+extern NSString *const kFTUserLastLoginKey;
 
 // Type values
 extern NSString *const kFTUserTypeUser;
@@ -171,3 +173,10 @@ extern NSString *const kFTPushPayloadActivityFollowKey;
 extern NSString *const kFTPushPayloadFromUserObjectIdKey;
 extern NSString *const kFTPushPayloadToUserObjectIdKey;
 extern NSString *const kFTPushPayloadPhotoObjectIdKey;
+
+#pragma mark - FaceBook Keys
+extern NSString *const FBUserFirstNameKey;
+extern NSString *const FBUserLastNameKey;
+extern NSString *const FBUserNameKey;
+extern NSString *const FBUserEmailKey;
+extern NSString *const FBUserIDKey;

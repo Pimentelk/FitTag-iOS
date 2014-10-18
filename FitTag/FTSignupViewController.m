@@ -12,7 +12,6 @@
 #import "UIView+FormScroll.h"
 #import "FTCamRollViewController.h"
 #import "ImageCustomNavigationBar.h"
-#import "FTNavigationBar.h"
 
 @interface FTSignupViewController ()
 @property (nonatomic,strong) UIImageView *separators;
@@ -291,7 +290,7 @@
 - (void)loadCameraRoll:(id)sender{
     FTCamViewController *camViewController = [[FTCamViewController alloc] init];
     camViewController.delegate = (id)self;
-    UINavigationController *navController = [[UINavigationController alloc] initWithNavigationBarClass:[FTNavigationBar class] toolbarClass:NULL];
+    UINavigationController *navController = [[UINavigationController alloc] initWithNavigationBarClass:[UINavigationBar class] toolbarClass:NULL];
     [navController setViewControllers:@[camViewController] animated:NO];
     [self presentViewController:navController animated:YES completion:NULL];
 }

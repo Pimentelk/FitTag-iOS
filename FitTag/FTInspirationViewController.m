@@ -10,7 +10,6 @@
 #import "CollectionHeaderView.h"
 #import "InspirationCellCollectionView.h"
 #import "FTFindFriendsViewController.h"
-#import "FindFriendsViewController.h"
 #import "FindFriendsFlowLayout.h"
 
 @interface FTInspirationViewController ()
@@ -89,9 +88,9 @@
     [layoutFlow setHeaderReferenceSize:CGSizeMake(320,32)];
     
     // Show the interests
-    FindFriendsViewController *findFriendsViewContoller = [[FindFriendsViewController alloc] initWithCollectionViewLayout:layoutFlow];
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:findFriendsViewContoller];
-    [self presentViewController:navController animated:YES completion:NULL];
+    //FindFriendsViewController *findFriendsViewContoller = [[FindFriendsViewController alloc] initWithCollectionViewLayout:layoutFlow];
+    //UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:findFriendsViewContoller];
+    //[self presentViewController:navController animated:YES completion:NULL];
 }
 
 #pragma mark - collection view data source

@@ -104,6 +104,10 @@
     [super viewDidLoad];
     
     // Start Updating Location
+    if(IS_OS_8_OR_LATER) {
+        [self.locationManager requestWhenInUseAuthorization];
+        [self.locationManager requestAlwaysAuthorization];
+    }
     [[self locationManager] startUpdatingLocation];
     
     // NavigationBar & ToolBar
@@ -369,35 +373,32 @@
 #pragma mark - CLLocationManagerDelegate
 
 - (CLLocationManager *)locationManager {
+    //NSLog(@"(CLLocationManager *)locationManager");
     if (locationManager != nil) {
         return locationManager;
     }
-    
     locationManager = [[CLLocationManager alloc] init];
     locationManager.delegate = self;
     locationManager.distanceFilter = kCLDistanceFilterNone;
     locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    
     return locationManager;
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    NSLog(@"didFailWithError: %@", error);
-    /*
+    //NSLog(@"didFailWithError: %@", error);
     UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
                                                          message:@"Failed to Get Your Location"
                                                         delegate:nil
                                                cancelButtonTitle:@"OK"
                                                otherButtonTitles:nil];
     [errorAlert show];
-    */
     postDetailsFooterView.locationTextField.text = @"Please visit privacy settings to enable location tracking.";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+    //NSLog(@"(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations %@",locations);
     [locationManager stopUpdatingLocation];
-    PFUser *user = [PFUser currentUser];
-    if (user) {
+    if ([PFUser currentUser]) {
         CLLocation *location = [locations lastObject];
         //NSLog(@"lat%f - lon%f", location.coordinate.latitude, location.coordinate.longitude);
         self.geoPoint = [PFGeoPoint geoPointWithLatitude:location.coordinate.latitude
@@ -407,8 +408,8 @@
         CLGeocoder * geoCoder = [[CLGeocoder alloc] init];
         [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
             for (CLPlacemark *placemark in placemarks) {
-                NSLog(@"City: %@",[placemark locality]);
-                NSLog(@"State: %@",[placemark administrativeArea]);
+                //NSLog(@"City: %@",[placemark locality]);
+                //NSLog(@"State: %@",[placemark administrativeArea]);
                 self.postLocation = [NSString stringWithFormat:@" %@, %@", [placemark locality], [placemark administrativeArea]];
                 if (postDetailsFooterView) {
                     postDetailsFooterView.locationTextField.text = self.postLocation;

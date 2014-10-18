@@ -222,9 +222,9 @@ static inline NSCalendarUnit NSCalendarUnitFromString(NSString *string) {
         return @"last year";
     } else if ([components month] == -1 && [components year] == 0) {
         return @"last month";
-    } else if ([components week] == -1 && [components year] == 0 && [components month] == 0) {
+    } else if ([components weekOfMonth] == -1 && [components year] == 0 && [components month] == 0) {
         return @"last week";
-    } else if ([components day] == -1 && [components year] == 0 && [components month] == 0 && [components week] == 0) {
+    } else if ([components day] == -1 && [components year] == 0 && [components month] == 0 && [components weekOfMonth] == 0) {
         return @"yesterday";
     }
     
@@ -232,9 +232,9 @@ static inline NSCalendarUnit NSCalendarUnitFromString(NSString *string) {
         return @"next year";
     } else if ([components month] == 1 && [components year] == 0) {
         return @"next month";
-    } else if ([components week] == 1 && [components year] == 0 && [components month] == 0) {
+    } else if ([components weekOfMonth] == 1 && [components year] == 0 && [components month] == 0) {
         return @"next week";
-    } else if ([components day] == 1 && [components year] == 0 && [components month] == 0 && [components week] == 0) {
+    } else if ([components day] == 1 && [components year] == 0 && [components month] == 0 && [components weekOfMonth] == 0) {
         return @"tomorrow";
     }
     
@@ -246,9 +246,9 @@ static inline NSCalendarUnit NSCalendarUnitFromString(NSString *string) {
         return @"año pasado";
     } else if ([components month] == -1 && [components year] == 0) {
         return @"mes pasado";
-    } else if ([components week] == -1 && [components year] == 0 && [components month] == 0) {
+    } else if ([components weekOfMonth] == -1 && [components year] == 0 && [components month] == 0) {
         return @"semana pasada";
-    } else if ([components day] == -1 && [components year] == 0 && [components month] == 0 && [components week] == 0) {
+    } else if ([components day] == -1 && [components year] == 0 && [components month] == 0 && [components weekOfMonth] == 0) {
         return @"ayer";
     }
     
@@ -256,9 +256,9 @@ static inline NSCalendarUnit NSCalendarUnitFromString(NSString *string) {
         return @"próximo año";
     } else if ([components month] == 1 && [components year] == 0) {
         return @"próximo mes";
-    } else if ([components week] == 1 && [components year] == 0 && [components month] == 0) {
+    } else if ([components weekOfMonth] == 1 && [components year] == 0 && [components month] == 0) {
         return @"próxima semana";
-    } else if ([components day] == 1 && [components year] == 0 && [components month] == 0 && [components week] == 0) {
+    } else if ([components day] == 1 && [components year] == 0 && [components month] == 0 && [components weekOfMonth] == 0) {
         return @"mañana";
     }
     
@@ -270,11 +270,11 @@ static inline NSCalendarUnit NSCalendarUnitFromString(NSString *string) {
         return @"vorig jaar";
     } else if ([components month] == -1 && [components year] == 0) {
         return @"vorige maand";
-    } else if ([components week] == -1 && [components year] == 0 && [components month] == 0) {
+    } else if ([components weekOfMonth] == -1 && [components year] == 0 && [components month] == 0) {
         return @"vorige week";
-    } else if ([components day] == -1 && [components year] == 0 && [components month] == 0 && [components week] == 0) {
+    } else if ([components day] == -1 && [components year] == 0 && [components month] == 0 && [components weekOfMonth] == 0) {
         return @"gisteren";
-    } else if ([components day] == -2 && [components year] == 0 && [components month] == 0 && [components week] == 0) {
+    } else if ([components day] == -2 && [components year] == 0 && [components month] == 0 && [components weekOfMonth] == 0) {
         return @"eergisteren";
     }
     
@@ -282,11 +282,11 @@ static inline NSCalendarUnit NSCalendarUnitFromString(NSString *string) {
         return @"volgend jaar";
     } else if ([components month] == 1 && [components year] == 0) {
         return @"volgende maand";
-    } else if ([components week] == 1 && [components year] == 0 && [components month] == 0) {
+    } else if ([components weekOfMonth] == 1 && [components year] == 0 && [components month] == 0) {
         return @"volgende week";
-    } else if ([components day] == 1 && [components year] == 0 && [components month] == 0 && [components week] == 0) {
+    } else if ([components day] == 1 && [components year] == 0 && [components month] == 0 && [components weekOfMonth] == 0) {
         return @"morgern";
-    } else if ([components day] == 2 && [components year] == 0 && [components month] == 0 && [components week] == 0) {
+    } else if ([components day] == 2 && [components year] == 0 && [components month] == 0 && [components weekOfMonth] == 0) {
         return @"overmorgern";
     }
     

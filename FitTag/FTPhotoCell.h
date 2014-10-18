@@ -97,4 +97,16 @@ typedef enum {
 - (void)photoCellView:(FTPhotoCell *)photoCellView didTapMoreButton:(UIButton *)button photo:(PFObject *)photo;
 
 
+/*!
+ Sent to the delegate when the location is tapped
+ @param the video for which the location button will be used
+ */
+- (void)photoCellView:(FTPhotoCell *)photoCellView didTapLocation:(id)sender photo:(PFObject *)photo;
+
+/*!
+ Sent to the delegate when the photo button is tapped
+ @param the button for which the tap was registered
+ */
+- (void)photoCellView:(FTPhotoCell *)photoCellView didTapPhotoButton:(UIButton *)button;
+
 @end

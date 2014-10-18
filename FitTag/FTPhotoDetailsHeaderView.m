@@ -145,7 +145,6 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [FTUtility drawSideDropShadowForRect:self.likeBarView.frame inContext:UIGraphicsGetCurrentContext()];
 }
 
-
 #pragma mark - FTPhotoDetailsHeaderView
 
 + (CGRect)rectForView {
@@ -254,7 +253,6 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [likeButton addTarget:self action:@selector(didTapLikePhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
 }
 
-
 #pragma mark - ()
 
 - (void)createView {
@@ -309,7 +307,8 @@ static TTTTimeIntervalFormatter *timeFormatter;
                                             avatarImageView.frame.origin.y + 10, 88.0f, 20.0f)];
         
         [self.usernameRibbon addTarget:self action:@selector(didTapUserNameButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [self.usernameRibbon setTitle:[self.photographer objectForKey:kFTUserDisplayNameKey] forState:UIControlStateNormal];
+        if ([self.photographer objectForKey:kFTUserDisplayNameKey])
+            [self.usernameRibbon setTitle:[self.photographer objectForKey:kFTUserDisplayNameKey] forState:UIControlStateNormal];
         [self.usernameRibbon.titleLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:10]];
         self.usernameRibbon.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
         self.usernameRibbon.contentEdgeInsets = UIEdgeInsetsMake(0, 5, 0, 0);
@@ -335,6 +334,38 @@ static TTTTimeIntervalFormatter *timeFormatter;
          */
         [self setNeedsDisplay];
     }];
+    
+    /* Location */
+    PFGeoPoint *geoPoint = [self.photo objectForKey:kFTPostLocationKey];
+    if (geoPoint) {
+        CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
+        CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
+        [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+            if (!error) {
+                for (CLPlacemark *placemark in placemarks) {
+                    UILabel *locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 285, 110, 40)];
+                    NSString *postLocation = [NSString stringWithFormat:@" %@, %@", [placemark locality], [placemark administrativeArea]];
+                    if (postLocation) {
+                        [locationLabel setUserInteractionEnabled:YES];
+                        [locationLabel setText:postLocation];
+                        [locationLabel setFont:[UIFont systemFontOfSize:12.0f]];
+                        [locationLabel setBackgroundColor:[UIColor clearColor]];
+                        [locationLabel setTextColor:[UIColor whiteColor]];
+                        
+                        UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
+                        locationTapRecognizer.numberOfTapsRequired = 1;
+                        [locationLabel addGestureRecognizer:locationTapRecognizer];
+                        
+                    }
+                    
+                    [self addSubview:locationLabel];
+                    [self bringSubviewToFront:locationLabel];
+                }
+            } else {
+                NSLog(@"ERROR: %@",error);
+            }
+        }];
+    }
     
     /* Create bottom section fo the header view; the likes */
     UIView *previewButtons = [[UIView alloc] init];
@@ -455,6 +486,13 @@ static TTTTimeIntervalFormatter *timeFormatter;
     NSLog(@"didTapUserButtonAction:");
     if (delegate && [delegate respondsToSelector:@selector(photoDetailsHeaderView:didTapUserButton:user:)]) {
         [delegate photoDetailsHeaderView:self didTapUserButton:button user:self.photographer];
+    }
+}
+
+- (void)didTapLocationAction:(UIButton *)sender {
+    NSLog(@"PFPhotoDetailsHeaderView::didTapLocationAction");
+    if (delegate && [delegate respondsToSelector:@selector(photoDetailsHeaderView:didTapLocation:photo:)]){
+        [delegate photoDetailsHeaderView:self didTapLocation:sender photo:self.photo];
     }
 }
 

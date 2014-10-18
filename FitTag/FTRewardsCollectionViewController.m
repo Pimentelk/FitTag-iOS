@@ -10,10 +10,20 @@
 #import "FTCamViewController.h"
 #import "FTActivityFeedViewController.h"
 #import "FTSearchViewController.h"
-#import "FTAccountViewController.h"
+//#import "FTAccountViewController.h"
+#import "FTUserProfileCollectionViewController.h"
 #import "FTRewardsCollectionViewCell.h"
 #import "FTRewardsDetailView.h"
 #import "MBProgressHUD.h"
+
+// Rewards Filter States
+#define REWARDS_FILTER_ACTIVE @"ACTIVE"
+#define REWARDS_FILTER_EXPIRED @"EXPIRED"
+#define REWARDS_FILTER_USED @"USED"
+
+// Reusable Identifiers
+#define REUSE_IDENTIFIER_DATACELL @"DataCell"
+#define REUSE_IDENTIFIER_HEADERVIEW @"HeaderView"
 
 @interface FTRewardsCollectionViewController () <UICollectionViewDataSource, UICollectionViewDelegate>
 @property (nonatomic, strong) NSArray *rewards;
@@ -25,31 +35,21 @@
     [super viewDidLoad];
         
     // Toolbar & Navigationbar Setup
-    [self.navigationItem setTitle: @"REWARDS"];
-    [self.navigationItem setHidesBackButton:NO];
-    [self.navigationController setNavigationBarHidden:NO animated:NO];
-    
-    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(returnHome:)];
-    UIBarButtonItem *loadCamera = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"fittag_button"] style:UIBarButtonItemStylePlain target:self action:@selector(loadCamera:)];
-    
-    [backIndicator setTintColor:[UIColor whiteColor]];
-    [loadCamera setTintColor:[UIColor whiteColor]];
-
-    [self.navigationItem setLeftBarButtonItem:backIndicator];
-    [self.navigationItem setRightBarButtonItem:loadCamera];
+    [self.navigationItem setTitle:NAVIGATION_TITLE_REWARDS];
 
     // Set Background
     [self.collectionView setBackgroundColor:[UIColor colorWithRed:154/255.0f green:154/255.0f blue:154/255.0f alpha:1]];
     
     // Data view
-    [self.collectionView registerClass:[FTRewardsCollectionViewCell class] forCellWithReuseIdentifier:@"DataCell"];
-    [self.collectionView registerClass:[FTRewardsCollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView"];
-    [self.collectionView setDelegate: self];
-    [self.collectionView setDataSource: self];
+    [self.collectionView registerClass:[FTRewardsCollectionViewCell class] forCellWithReuseIdentifier:REUSE_IDENTIFIER_DATACELL];
+    [self.collectionView registerClass:[FTRewardsCollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+                   withReuseIdentifier:REUSE_IDENTIFIER_HEADERVIEW];
     
-    [self queryForTable:@"ACTIVE"];
+    [self.collectionView setDelegate:self];
+    [self.collectionView setDataSource:self];
+    
+    [self queryForTable:REWARDS_FILTER_ACTIVE];
 }
-
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillDisappear:animated];
@@ -65,7 +65,7 @@
     Class parentVCClass = [parentViewController class];
     NSString *className = NSStringFromClass(parentVCClass);
     
-    if([className isEqual: @"FTCamViewController"]){
+    if([className isEqual:VIEWCONTROLLER_CAM]){
         [self.navigationController setToolbarHidden:YES];
     }
 }
@@ -80,8 +80,7 @@
         [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
         [followingActivitiesQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
         followingActivitiesQuery.cachePolicy = kPFCachePolicyNetworkOnly;
-        followingActivitiesQuery.limit = 100;
-    
+        
         PFQuery *query = [PFQuery queryWithClassName:kFTRewardsClassKey];
         [query whereKey:kFTRewardsUserKey matchesKey:kFTActivityToUserKey inQuery:followingActivitiesQuery];
         [query whereKey:kFTRewardsStatusKey equalTo:status];
@@ -118,13 +117,13 @@
     }
 }
 
-#pragma mark - collection view data source
+#pragma mark - UICollectionView
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
     UICollectionReusableView *reusableview = nil;
     if (kind == UICollectionElementKindSectionHeader) {
         FTRewardsCollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-                                                                                       withReuseIdentifier:@"HeaderView"
+                                                                                       withReuseIdentifier:REUSE_IDENTIFIER_HEADERVIEW
                                                                                               forIndexPath:indexPath];
         headerView.delegate = self;
         reusableview = headerView;
@@ -144,7 +143,7 @@
     return 0;
 }
 
--(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     NSLog(@"indexpath: %ld",(long)indexPath.row);
     FTRewardsDetailView *rewardsDetailView = [[FTRewardsDetailView alloc] initWithReward:self.rewards[indexPath.row]];
     [self.navigationController pushViewController:rewardsDetailView animated:YES];
@@ -152,7 +151,7 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     // Set up cell identifier that matches the Storyboard cell name
-    static NSString *identifier = @"DataCell";
+    static NSString *identifier = REUSE_IDENTIFIER_DATACELL;
     FTRewardsCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
   
     if ([cell isKindOfClass:[FTRewardsCollectionViewCell class]]) {
@@ -176,33 +175,34 @@
 
 #pragma mark - FTRewardsHeaderViewDelegate
 
--(void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapActiveButton:(UIButton *)button {
+- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapActiveButton:(UIButton *)button {
     [rewardsHeaderView clearSelectedButtons];
     [rewardsHeaderView.activeButton setSelected:YES];
-    [self queryForTable:@"ACTIVE"];
+    [self queryForTable:REWARDS_FILTER_ACTIVE];
 }
 
 - (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapExpiredButton:(UIButton *)button {
     [rewardsHeaderView clearSelectedButtons];
     [rewardsHeaderView.expiredButton setSelected:YES];
-    [self queryForTable:@"EXPIRED"];
+    [self queryForTable:REWARDS_FILTER_EXPIRED];
 }
 
 - (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapUsedButton:(UIButton *)button {
     [rewardsHeaderView clearSelectedButtons];
     [rewardsHeaderView.usedButton setSelected:YES];
-    [self queryForTable:@"USED"];
+    [self queryForTable:REWARDS_FILTER_USED];
 }
 
 #pragma mark - Navigation Bar
 
-- (void)loadCamera:(id)sender {
+- (void)didTapLoadCameraAction:(id)sender {
     FTCamViewController *camViewController = [[FTCamViewController alloc] init];
     [self.navigationController pushViewController:camViewController animated:YES];
 }
 
-- (void)returnHome:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
+- (void)didTapBackIndicatorAction:(id)sender {
+    [self.navigationController popViewControllerAnimated:NO];
+    //[self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 @end

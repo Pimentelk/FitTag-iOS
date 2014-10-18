@@ -55,12 +55,9 @@ static TTTTimeIntervalFormatter *timeFormatter;
         self.hasActivityImage = NO; //No until one is set
         
         self.activityImageView = [[FTProfileImageView alloc] init];
-        [self.activityImageView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"profilepic_icon"]]];
-        [self.activityImageView setOpaque:YES];
         [self.mainView addSubview:self.activityImageView];
         
         self.activityImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [self.activityImageButton setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"profilepic_icon"]]];
         [self.activityImageButton addTarget:self action:@selector(didTapActivityButton:) forControlEvents:UIControlEventTouchUpInside];
         [self.mainView addSubview:self.activityImageButton];
     }
@@ -121,7 +118,8 @@ static TTTTimeIntervalFormatter *timeFormatter;
     if ([[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeFollow] || [[activity objectForKey:kFTActivityTypeKey] isEqualToString:kFTActivityTypeJoined]) {
         [self setActivityImageFile:nil];
     } else {
-        [self setActivityImageFile:(PFFile*)[[activity objectForKey:kFTActivityPostKey] objectForKey:kFTPostThumbnailKey]];
+        //[self setActivityImageFile:(PFFile*)[[activity objectForKey:kFTActivityPostKey] objectForKey:kFTPostThumbnailKey]];
+        [self setActivityImageFile:(PFFile *)[[activity objectForKey:kFTActivityPostKey] objectForKey:kFTPostImageKey]];
     }
     
     NSString *activityString = [FTActivityFeedViewController stringForActivityType:(NSString*)[activity objectForKey:kFTActivityTypeKey]];
@@ -133,6 +131,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     NSString *nameString = NSLocalizedString(@"Someone", @"Text when the user's name is unknown");
     if (self.user && [self.user objectForKey:kFTUserDisplayNameKey] && [[self.user objectForKey:kFTUserDisplayNameKey] length] > 0) {
         nameString = [self.user objectForKey:kFTUserDisplayNameKey];
+        //NSLog(@"nameString %@",nameString);
     }
     
     [self.nameButton setTitle:nameString forState:UIControlStateNormal];
@@ -221,6 +220,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
 }
 
 - (void)didTapActivityButton:(id)sender {
+    NSLog(@"self.activity: %@",self.activity);
     if (self.delegate && [self.delegate respondsToSelector:@selector(cell:didTapActivityButton:)]) {
         [self.delegate cell:self didTapActivityButton:self.activity];
     }    

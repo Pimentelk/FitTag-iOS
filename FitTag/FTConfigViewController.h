@@ -8,6 +8,6 @@
 
 #import <CoreLocation/CoreLocation.h>
 
-@interface FTConfigViewController : UIViewController <PFLogInViewControllerDelegate,PFSignUpViewControllerDelegate,CLLocationManagerDelegate>
+@interface FTConfigViewController : UIViewController <PFLogInViewControllerDelegate,/*PFSignUpViewControllerDelegate,*/CLLocationManagerDelegate>
 @property (nonatomic, assign, getter = isFirstLaunch) BOOL firstLaunch;
 @end

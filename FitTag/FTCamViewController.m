@@ -107,14 +107,20 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     self.previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:session];
     self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     
-    // NavigationBar & ToolBar
-    [self.navigationItem setTitle: @"TAG YOUR FIT"];
+    // NavigationBar & TabBar
+    [self.navigationItem setTitle:NAVIGATION_TITLE_CAM];
     [self.navigationItem setHidesBackButton:NO];
+    
+    self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], NSForegroundColorAttributeName,nil];
+    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:234.0f/255.0f
+                                                                           green:37.0f/255.0f
+                                                                            blue:37.0f/255.0f
+                                                                           alpha:1.0f];
     
     nextBarButton = [[UIBarButtonItem alloc] initWithTitle:@"NEXT"
                                                      style:UIBarButtonItemStylePlain
                                                     target:self
-                                                    action:@selector(nextBarButtonAction:)];
+                                                    action:@selector(didTapNextButtonAction:)];
     [nextBarButton setTintColor:[UIColor whiteColor]];
     
     [self.navigationItem setRightBarButtonItem:nextBarButton];
@@ -122,10 +128,10 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     isVideoRecorded = NO;
     
     // Override the back idnicator
-    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"]
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]
                                                                       style:UIBarButtonItemStylePlain
                                                                      target:self
-                                                                     action:@selector(hideCameraView:)];
+                                                                     action:@selector(didTapBackButtonAction:)];
     
     [backIndicator setTintColor:[UIColor whiteColor]];
     [self.navigationItem setLeftBarButtonItem:backIndicator];
@@ -330,7 +336,8 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 			[session addOutput:movieFileOutput];
 			AVCaptureConnection *connection = [movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
 			if ([connection isVideoStabilizationSupported])
-				[connection setEnablesVideoStabilizationWhenAvailable:YES];
+                [connection setPreferredVideoStabilizationMode:AVCaptureVideoStabilizationModeAuto];
+				//[connection setEnablesVideoStabilizationWhenAvailable:YES];
 			[self setMovieFileOutput:movieFileOutput];
 		}
 		
@@ -344,7 +351,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 	});
 }
 
-- (void)nextBarButtonAction:(id)sender {
+- (void)didTapNextButtonAction:(id)sender {
     [self.navigationController pushViewController:editVideoViewController animated:NO];
 }
 
@@ -372,13 +379,14 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
         [recordButton setHidden:YES];
         [takePicture setHidden:NO];
         [progressViewBorder setHidden:YES];
-        [self.navigationItem setTitle: @"TAG YOUR FIT"];
+        [self.navigationItem setTitle:NAVIGATION_TITLE_CAM];
         [self.nextBarButton setEnabled:NO];
     }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [progressView setProgress:0];
+    [self.tabBarController.tabBar setHidden:YES];
     
 	dispatch_async([self sessionQueue], ^{
 		[self addObserver:self
@@ -421,6 +429,9 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+    // Show the tabbar
+    [self.tabBarController.tabBar setHidden:NO];
+    
 	dispatch_async([self sessionQueue], ^{
 		[[self session] stopRunning];
 		
@@ -438,8 +449,8 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     // Dispose of any resources that can be recreated.
 }
 
-- (void)hideCameraView:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
+- (void)didTapBackButtonAction:(id)sender {
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 -(void)toggleFlash:(id)sender {

@@ -8,16 +8,6 @@
 
 #import "FTEditPhotoViewController.h"
 
-@protocol FTTabBarControllerDelegate;
-
-@interface FTTabBarController : UITabBarController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIActionSheetDelegate>
-
-- (BOOL)shouldPresentPhotoCaptureController;
-
-@end
-
-@protocol FTTabBarControllerDelegate <NSObject>
-
-- (void)tabBarController:(UITabBarController *)tabBarController cameraButtonTouchUpInsideAction:(UIButton *)button;
+@interface FTTabBarController : UITabBarController <UINavigationControllerDelegate>
 
 @end

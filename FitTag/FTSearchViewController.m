@@ -8,7 +8,8 @@
 
 #import "FTSearchViewController.h"
 #import "FTPhotoDetailsViewController.h"
-#import "FTAccountViewController.h"
+//#import "FTAccountViewController.h"
+#import "FTUserProfileCollectionViewController.h"
 #import "FTUtility.h"
 #import "FTLoadMoreCell.h"
 #import "FTMapViewController.h"
@@ -198,7 +199,7 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
             if ([[object parseClassName] isEqual: @"_User"]) {
                 NSString *displayName = [object objectForKey:kFTUserFirstnameKey];
                 displayName = [displayName stringByAppendingString:@" "];
-                displayName = [displayName stringByAppendingString:[object objectForKey:kFTUserlastnameKey]];
+                displayName = [displayName stringByAppendingString:[object objectForKey:kFTUserLastnameKey]];
                 displayName = [displayName stringByAppendingString:@" "];
                 displayName = [displayName stringByAppendingString:[object objectForKey:kFTUserDisplayNameKey]];
                 [searchCell setName:displayName];
@@ -234,7 +235,7 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
                 [user fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
                     NSString *displayName = [user objectForKey:kFTUserFirstnameKey];
                     displayName = [displayName stringByAppendingString:@" "];
-                    displayName = [displayName stringByAppendingString:[user objectForKey:kFTUserlastnameKey]];
+                    displayName = [displayName stringByAppendingString:[user objectForKey:kFTUserLastnameKey]];
                     displayName = [displayName stringByAppendingString:@" "];
                     displayName = [displayName stringByAppendingString:[user objectForKey:kFTUserDisplayNameKey]];
                     [searchCell setName:displayName];
@@ -539,9 +540,20 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
 -(void)cellView:(PFTableViewCell *)cellView didTapUserCellIconButton:(UIButton *)button user:(PFUser *)user{
     NSLog(@"cellView:(PFTableViewCell *) %@ didTapUserCellIconButton:(UIButton *) %@ post:(PFObject *) %@",cellView,button,user);
     if (user != nil) {
-        FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
-        [accountViewController setUser:user];
-        [self.navigationController pushViewController:accountViewController animated:YES];
+        //FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
+        //[accountViewController setUser:user];
+        //[self.navigationController pushViewController:accountViewController animated:YES];
+        UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+        [flowLayout setItemSize:CGSizeMake(105.5,105)];
+        [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+        [flowLayout setMinimumInteritemSpacing:0];
+        [flowLayout setMinimumLineSpacing:0];
+        [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+        [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+        
+        FTUserProfileCollectionViewController *profileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
+        [profileViewController setUser:user];
+        [self.navigationController pushViewController:profileViewController animated:YES];
     }
 }
 

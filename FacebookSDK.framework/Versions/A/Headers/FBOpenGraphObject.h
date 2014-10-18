@@ -73,7 +73,7 @@
 /*!
  @deprecated use objectDescription instead
  */
-@property (retain, nonatomic) id                    description __attribute__ ((deprecated("use objectDescription instead")));
+//@property (retain, nonatomic) id                    description __attribute__ ((deprecated("use objectDescription instead")));
 
 /*!
  @abstract Typed access to the object's description property.
@@ -84,7 +84,7 @@
 
 
 /*!
- @property
+ /Users/kevinpimentel/Documents/facebook-ios-sdk-3.19.pkg@property
  @abstract Typed access to action's data, which is a dictionary of custom properties
  */
 @property (retain, nonatomic) id<FBGraphObject>     data;

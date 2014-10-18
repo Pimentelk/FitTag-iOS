@@ -203,6 +203,10 @@
     [super viewDidLoad];
     
     // Start Updating Location
+    if(IS_OS_8_OR_LATER) {
+        [self.locationManager requestWhenInUseAuthorization];
+        [self.locationManager requestAlwaysAuthorization];
+    }
     [[self locationManager] startUpdatingLocation];
 
     // NavigationBar & ToolBar
@@ -335,7 +339,7 @@
                           Mentions:(NSArray *)mentions
                           Hashtags:(NSArray *)hashtags
                        AndUserInfo:(NSDictionary *)userInfo {
-            //NSLog(@"postMultipleWithPhotoFiles;");
+            NSLog(@"postMultipleWithPhotoFiles;");
 
     NSMutableArray *posts = [[NSMutableArray alloc] init];
 
@@ -347,10 +351,6 @@
         [post setObject:photos[i] forKey:kFTPostImageKey];
         [post setObject:thumbs[i] forKey:kFTPostThumbnailKey];
         [post setObject:kFTPostTypeGalleryImage forKey:kFTPostTypeKey];
-        
-        if (self.geoPoint) {
-            [post setObject:self.geoPoint forKey:kFTPostLocationKey];
-        }
         
         //NSLog(@"photos are public, but may only be modified by the user who uploaded them");
         // photos are public, but may only be modified by the user who uploaded them
@@ -369,13 +369,16 @@
     [PFObject saveAllInBackground:posts block:^(BOOL succeeded, NSError *error) {
                 
         if (succeeded) {
-            
             //PFObject *gallery = [PFObject objectWithClassName:@"Gallery"];
-            PFObject *gallery = [PFObject objectWithClassName:@"Post"];
+            PFObject *gallery = [PFObject objectWithClassName:kFTPostClassKey];
             [gallery setObject:[PFUser currentUser] forKey:kFTPostUserKey];
             [gallery setObject:kFTPostTypeGallery forKey:kFTPostTypeKey];
             [gallery setObject:photos[0] forKey:kFTPostImageKey];
             [gallery setObject:posts forKey:@"posts"];
+            
+            if (self.geoPoint) {
+                [gallery setObject:self.geoPoint forKey:kFTPostLocationKey];
+            }
             
             // Save the gallery
             [gallery saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -432,6 +435,7 @@
     
     // Dismiss this screen
     [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
+    
 }
 
 - (void)doneButtonAction:(id)sender {
@@ -863,13 +867,13 @@
 - (void)locationManager:(CLLocationManager *)manager
        didFailWithError:(NSError *)error {
     
-    //NSLog(@"didFailWithError: %@", error);
+    NSLog(@"didFailWithError: %@", error);
     
     UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Location Updating"
-                                                          message:@"Please visit privacy settings to enable location tracking."
-                                                         delegate:nil
-                                                cancelButtonTitle:@"OK"
-                                                otherButtonTitles:nil];
+                                                         message:@"Please visit privacy settings to enable location tracking."
+                                                        delegate:nil
+                                               cancelButtonTitle:@"OK"
+                                               otherButtonTitles:nil];
     [errorAlert show];
     
     postDetailsFooterView.locationTextField.text = @"Please visit privacy settings to enable location tracking.";
@@ -882,13 +886,13 @@
     PFUser *user = [PFUser currentUser];
     if (user) {
         CLLocation *location = [locations lastObject];
-        //NSLog(@"lat%f - lon%f", location.coordinate.latitude, location.coordinate.longitude);
+        NSLog(@"lat%f - lon%f", location.coordinate.latitude, location.coordinate.longitude);
         
         self.geoPoint = [PFGeoPoint geoPointWithLatitude:location.coordinate.latitude
                                                longitude:location.coordinate.longitude];
         
         // Set location
-        CLGeocoder * geoCoder = [[CLGeocoder alloc] init];
+        CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
         [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
             for (CLPlacemark *placemark in placemarks) {
                 self.postLocation = [NSString stringWithFormat:@" %@, %@", [placemark locality], [placemark administrativeArea]];

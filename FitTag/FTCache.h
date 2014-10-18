@@ -30,7 +30,6 @@
 - (BOOL)followStatusForUser:(PFUser *)user;
 - (void)setPostCount:(NSNumber *)count user:(PFUser *)user;
 - (void)setFollowStatus:(BOOL)following user:(PFUser *)user;
-
 - (void)setFacebookFriends:(NSArray *)friends;
 - (NSArray *)facebookFriends;
 @end

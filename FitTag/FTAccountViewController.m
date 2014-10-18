@@ -35,7 +35,10 @@
     [self.navigationItem setHidesBackButton:NO];
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     
-    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(returnHome:)];
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"]
+                                                                      style:UIBarButtonItemStylePlain
+                                                                     target:self
+                                                                     action:@selector(didTapBackButtonAction:)];
     [backIndicator setTintColor:[UIColor whiteColor]];
     [self.navigationItem setLeftBarButtonItem:backIndicator];
     
@@ -229,7 +232,7 @@
     FTLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:LoadMoreCellIdentifier];
     if (!cell) {
         cell = [[FTLoadMoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:LoadMoreCellIdentifier];
-        cell.selectionStyle =UITableViewCellSelectionStyleGray;
+        cell.selectionStyle = UITableViewCellSelectionStyleGray;
         cell.separatorImageTop.image = [UIImage imageNamed:@"SeparatorTimelineDark.png"];
         cell.hideSeparatorBottom = YES;
         cell.mainView.backgroundColor = [UIColor clearColor];
@@ -278,8 +281,8 @@
     return imageView;
 }
 
-- (void)returnHome:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
+- (void)didTapBackButtonAction:(id)sender {
+    [self.navigationController popViewControllerAnimated:NO];
 }
 
 - (void)followButtonAction:(id)sender {
@@ -311,7 +314,10 @@
 }
 
 - (void)configureFollowButton {
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Follow" style:UIBarButtonItemStyleBordered target:self action:@selector(followButtonAction:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Follow"
+                                                                              style:UIBarButtonItemStyleBordered
+                                                                             target:self
+                                                                             action:@selector(followButtonAction:)];
     [[FTCache sharedCache] setFollowStatus:NO user:self.user];
 }
 

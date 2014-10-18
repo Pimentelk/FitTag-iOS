@@ -396,6 +396,31 @@
     }
 }
 
++ (void)unfollowUserEventually:(PFUser *)user block:(void (^)(NSError *error))completionBlock {
+    
+    //[FTUtility unfollowUserEventually:user block:completionBlock];
+    //[[FTCache sharedCache] setFollowStatus:NO user:user];
+    
+    PFQuery *query = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [query whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
+    [query whereKey:kFTActivityToUserKey equalTo:user];
+    [query whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *followActivities, NSError *error) {
+        // While normally there should only be one follow activity returned, we can't guarantee that.
+        
+        if (!error) {
+            for (PFObject *followActivity in followActivities) {
+                [followActivity deleteEventually];
+            }
+        }
+        
+        if (completionBlock) {
+            completionBlock(error);
+        }
+    }];
+    [[FTCache sharedCache] setFollowStatus:NO user:user];
+}
+
 + (void)unfollowUserEventually:(PFUser *)user {
     PFQuery *query = [PFQuery queryWithClassName:kFTActivityClassKey];
     [query whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
@@ -582,6 +607,49 @@
     [gradientView.layer insertSublayer:gradient atIndex:0];
     navigationController.navigationBar.clipsToBounds = NO;
     [navigationController.navigationBar addSubview:gradientView];	    
+}
+
++ (UIImageView *)getProfileHexagonWithX:(CGFloat)hexX
+                                      Y:(CGFloat)hexY
+                                  width:(CGFloat)hexW
+                                 hegiht:(CGFloat)hexH {
+    
+    UIImageView *imageView = [[UIImageView alloc] init];
+    //imageView.frame = CGRectMake( 5.0f, 8.0f, 57.0f, 57.0f);
+    imageView.frame = CGRectMake(hexX, hexY, hexW + 2, hexH + 2);
+    imageView.backgroundColor = [UIColor redColor];
+    
+    CGRect rect = CGRectMake(hexX, hexY, hexW, hexH);
+    
+    CAShapeLayer *hexagonMask = [CAShapeLayer layer];
+    CAShapeLayer *hexagonBorder = [CAShapeLayer layer];
+    hexagonBorder.frame = imageView.layer.bounds;
+    UIBezierPath *hexagonPath = [UIBezierPath bezierPath];
+    
+    CGFloat sideWidth = 2 * ( 0.5 * rect.size.width / 2 );
+    CGFloat lcolumn = rect.size.width - sideWidth;
+    CGFloat height = rect.size.height;
+    CGFloat ty = (rect.size.height - height) / 2;
+    CGFloat tmy = rect.size.height / 4;
+    CGFloat bmy = rect.size.height - tmy;
+    CGFloat by = rect.size.height;
+    CGFloat rightmost = rect.size.width;
+    
+    [hexagonPath moveToPoint:CGPointMake(lcolumn, ty)];
+    [hexagonPath addLineToPoint:CGPointMake(rightmost, tmy)];
+    [hexagonPath addLineToPoint:CGPointMake(rightmost, bmy)];
+    [hexagonPath addLineToPoint:CGPointMake(lcolumn, by)];
+    
+    [hexagonPath addLineToPoint:CGPointMake(0, bmy)];
+    [hexagonPath addLineToPoint:CGPointMake(0, tmy)];
+    [hexagonPath addLineToPoint:CGPointMake(lcolumn, ty)];
+    
+    hexagonMask.path = hexagonPath.CGPath;
+    
+    imageView.layer.mask = hexagonMask;
+    [imageView.layer addSublayer:hexagonBorder];
+    
+    return imageView;
 }
 
 @end

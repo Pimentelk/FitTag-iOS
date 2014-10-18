@@ -6,6 +6,71 @@
 
 #import <Availability.h>
 
+#define IS_OS_8_OR_LATER ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
+
+#define APPDELEGATE_RESPONDER @"AppDelegate"
+
+// VIEW CONTROLLERS NAMES
+#define VIEWCONTROLLER_ACTIVITY @"FTActivityFeedViewController"
+#define VIEWCONTROLLER_MAP @"FTMapViewController"
+#define VIEWCONTROLLER_CAM @"FTCamViewController"
+#define VIEWCONTROLLER_CIRCLE @"FTCircleOverlay"
+#define VIEWCONTROLLER_REWARDS @"FTRewardsCollectionViewController"
+#define VIEWCONTROLLER_BUSINESS_ANNOTATION_VIEW @"FTBusinessAnnotationView"
+#define VIEWCONTROLLER_CONFIG @"FTConfigViewController"
+#define VIEWCONTROLLER_TABBAR @"FTTabBarController"
+
+// TAB NAVIGATION BAR BUTTONS
+#define BUTTON_IMAGE_NOTIFICATIONS @"notifications"
+#define BUTTON_IMAGE_SEARCH @"search"
+#define BUTTON_IMAGE_USER_PROFILE @"myprofile"
+#define BUTTON_IMAGE_REWARDS @"offers"
+#define BUTTON_IMAGE_FEED @"newsfeed_button"
+
+#define BUTTON_IMAGE_NOTIFICATIONS_SELECTED @"notifications"
+#define BUTTON_IMAGE_SEARCH_SELECTED @"search"
+#define BUTTON_IMAGE_USER_PROFILE_SELECTED @"myprofile"
+#define BUTTON_IMAGE_REWARDS_SELECTED @"offers"
+#define BUTTON_IMAGE_FEED_SELECTED @""
+
+// TAB NAVIGATION VIEW CONTROLLER TITLES
+#define NAVIGATION_TITLE_MAP @"MAP"
+#define NAVIGATION_TITLE_FEED @"FEED"
+#define NAVIGATION_TITLE_SEARCH @"SEARCH"
+#define NAVIGATION_TITLE_USER_PROFILE @"PROFILE"
+#define NAVIGATION_TITLE_REWARDS @"REWARDS"
+#define NAVIGATION_TITLE_NOTIFICATIONS @"NOTIFICATIONS"
+#define NAVIGATION_TITLE_CAM @"TAG YOUR FIT"
+
+// NAVIGATION BAR BUTTONS
+#define NAVIGATION_BAR_BUTTON_BACK @"navigate_back"
+#define NAVIGATION_BAR_BUTTON_ADD_CONTACTS @"add_contacts"
+#define NAVIGATION_BAR_BUTTON_CAMERA @"fittag_button"
+
+// DEFAULT STRINGS
+#define EMPTY_STRING @""
+#define IF_USER_NOT_SET_MESSAGE @"user cannot be nil"
+#define DEFAULT_BIO_TEXT @"WHAT MAKES YOU, YOU? (OPTIONAL)"
+
+#define PARSE_HOST @"api.parse.com"
+#define FACEBOOK_GRAPH_PICTURES_URL @"https://graph.facebook.com/%@/picture?type=large&width=600&height=600"
+#define TWITTER_API_USERS @"https://api.twitter.com/1.1/users/show.json?screen_name=%@"
+
+/****************** KEYS *********************/
+
+// GOOGLE
+#define GOOGLE_ANALYTICS_TRACKING_ID @"UA-55852213-1"
+
+// PARSE
+#define PARSE_APPLICATION_ID @"9Cii0KKJr09vtACtVRSccu1BHGFJYR6c6XYkafb1"
+#define PARSE_CLIENT_KEY @"eJxD9HcQ5ZK8GPYxaMz4RkrOjo2mMtujGsgn1HZe"
+
+// TWITTER
+#define TWITTER_CONSUMER_KEY @"oNqZ0kZQxrAEHeMggEvls5VdJ"
+#define TWITTER_CONSUMER_SECRET @"cvltCUyuouYILtFlsf05G1eA1C7J7ZCDUQkO5iawD9RRabnPte"
+
+/****************** KEYS END ******************/
+
 #ifndef __IPHONE_5_0
 #warning "This project uses features only available in iOS SDK 5.0 and later."
 #endif
@@ -20,4 +85,7 @@
     #import "FTConstants.h"
     #import "FTUtility.h"
     #import "FTCache.h"
+    #import "GAI.h"
+    #import "GAIFields.h"
+    #import "GAIDictionaryBuilder.h"
 #endif

@@ -6,6 +6,15 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
+typedef enum ScrollDirection {
+    ScrollDirectionNone,
+    ScrollDirectionRight,
+    ScrollDirectionLeft,
+    ScrollDirectionUp,
+    ScrollDirectionDown,
+    ScrollDirectionCrazy,
+} ScrollDirection;
+
 typedef enum {
     FTGalleryCellButtonsNone = 0,
     FTGalleryCellButtonsLike = 1 << 0,
@@ -17,7 +26,7 @@ typedef enum {
 
 @class PFImageView;
 @protocol FTGalleryCellDelegate;
-@interface FTGalleryCell : PFTableViewCell
+@interface FTGalleryCell : PFTableViewCell <UIScrollViewDelegate>
 
 @property (nonatomic, strong) UIButton *commentCounter;
 @property (nonatomic, strong) UIButton *likeCounter;
@@ -48,6 +57,9 @@ typedef enum {
 /*! @name Delegate */
 @property (nonatomic,weak) id <FTGalleryCellDelegate> delegate;
 
+/*! @name ScrollView */
+@property (nonatomic,strong) UIScrollView *carousel;
+
 /*! @name Modifying Interaction Elements Status */
 
 /*!
@@ -70,6 +82,12 @@ typedef enum {
  */
 @protocol FTGalleryCellDelegate <NSObject>
 @optional
+
+/*!
+ Sent to the delegate when the gallery is tapped
+ @param gallery the PFObject associated with this gesture
+ */
+- (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapImageInGalleryAction:(UIButton *)button gallery:(PFObject *)gallery;
 
 /*!
  Sent to the delegate when the user button is tapped
@@ -95,5 +113,10 @@ typedef enum {
  */
 - (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapMoreButton:(UIButton *)button gallery:(PFObject *)gallery;
 
+/*!
+ Sent to the delegate when the more button is tapped
+ @param the gallery for which the more button will be used
+ */
+- (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapLocation:(UIButton *)button gallery:(PFObject *)gallery;
 
 @end

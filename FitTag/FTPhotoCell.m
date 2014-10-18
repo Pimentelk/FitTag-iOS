@@ -16,7 +16,7 @@
 @property (nonatomic, strong) UIView *containerView;
 @property (nonatomic, strong) FTProfileImageView *avatarImageView;
 @property (nonatomic, strong) UIButton *userButton;
-@property (nonatomic, strong) UILabel *timestampLabel;
+@property (nonatomic, strong) UILabel *locationLabel;
 @property (nonatomic, strong) TTTTimeIntervalFormatter *timeIntervalFormatter;
 @end
 
@@ -25,7 +25,7 @@
 @synthesize containerView;
 @synthesize avatarImageView;
 @synthesize userButton;
-@synthesize timestampLabel;
+@synthesize locationLabel;
 @synthesize timeIntervalFormatter;
 @synthesize photo;
 @synthesize buttons;
@@ -55,9 +55,13 @@
         self.imageView.backgroundColor = [UIColor blackColor];
         self.imageView.contentMode = UIViewContentModeScaleAspectFit;
         
+        UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapPhotoButtonAction:)];
+        singleTap.numberOfTapsRequired = 1;
+        
         self.photoButton = [UIButton buttonWithType:UIButtonTypeCustom];
         self.photoButton.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
         self.photoButton.backgroundColor = [UIColor clearColor];
+        [self.photoButton addGestureRecognizer:singleTap];
         [self.contentView addSubview:self.photoButton];
         
         UIView *photoCellButtonsContainer = [[UIView alloc] init];
@@ -142,6 +146,15 @@
         [moreButton setBackgroundColor:[UIColor clearColor]];
         [moreButton setTitle:@"" forState:UIControlStateNormal];
         [photoCellButtonsContainer addSubview:moreButton];
+        
+        /* location label */
+        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 285, 110, 40)];
+        [locationLabel setText:@""];
+        [locationLabel setFont:[UIFont systemFontOfSize:12.0f]];
+        [locationLabel setBackgroundColor:[UIColor clearColor]];
+        [locationLabel setTextColor:[UIColor whiteColor]];
+        [self addSubview:locationLabel];
+        [self bringSubviewToFront:locationLabel];
     }
     
     return self;
@@ -159,6 +172,7 @@
 
 - (void)setPhoto:(PFObject *)aPhoto {
     photo = aPhoto;
+    NSLog(@"setPhoto FTPhotoViewCell::photo %@",photo);
     
     // User profile image
     PFUser *user = [self.photo objectForKey:kFTPostUserKey];
@@ -187,6 +201,32 @@
     if (self.buttons & FTPhotoCellButtonsMore){
         constrainWidth = self.likeButton.frame.origin.x;
         [self.moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    
+    /* Location */
+    PFGeoPoint *geoPoint = [self.photo objectForKey:kFTPostLocationKey];
+    if (geoPoint) {
+        CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
+        CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
+        [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+            if (!error) {
+                for (CLPlacemark *placemark in placemarks) {
+                    NSString *postLocation = [NSString stringWithFormat:@" %@, %@", [placemark locality], [placemark administrativeArea]];
+                    if (postLocation) {
+                        [locationLabel setText:postLocation];
+                        [locationLabel setUserInteractionEnabled:YES];
+                        
+                        UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
+                        locationTapRecognizer.numberOfTapsRequired = 1;
+                        [locationLabel addGestureRecognizer:locationTapRecognizer];
+                    }
+                }
+            } else {
+                NSLog(@"ERROR: %@",error);
+            }
+        }];
+    } else {
+        [locationLabel setText:@""];
     }
     
     [self setNeedsDisplay];
@@ -291,6 +331,22 @@
 - (void)didTapMoreButtonAction:(UIButton *)sender{
     if (delegate && [delegate respondsToSelector:@selector(photoCellView:didTapMoreButton:photo:)]){
         [delegate photoCellView:self didTapMoreButton:sender photo:self.photo];
+    }
+}
+
+- (void)didTapLocationAction:(FTPhotoCell *)sender {
+    NSLog(@"FTPhotoCell::didTapLocationAction");
+    if (self.photo) {
+        if (delegate && [delegate respondsToSelector:@selector(photoCellView:didTapLocation:photo:)]){
+            [delegate photoCellView:self didTapLocation:sender photo:self.photo];
+        }
+    }
+}
+
+- (void)didTapPhotoButtonAction:(UIButton *)button {
+    NSLog(@"FTPhotoCell::didTapPhotoButtonAction");
+    if (delegate && [delegate respondsToSelector:@selector(photoCellView:didTapPhotoButton:)]){
+        [delegate photoCellView:self didTapPhotoButton:button];
     }
 }
 @end

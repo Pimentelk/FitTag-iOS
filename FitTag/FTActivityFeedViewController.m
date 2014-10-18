@@ -9,7 +9,8 @@
 #import "FTActivityFeedViewController.h"
 #import "FTSettingsActionSheetDelegate.h"
 #import "FTActivityCell.h"
-#import "FTAccountViewController.h"
+//#import "FTAccountViewController.h"
+#import "FTUserProfileCollectionViewController.h"
 #import "FTPhotoDetailsViewController.h"
 #import "FTBaseTextCell.h"
 #import "FTLoadMoreCell.h"
@@ -17,6 +18,7 @@
 #import "FTFindFriendsViewController.h"
 #import "MBProgressHUD.h"
 #import "FTCamViewController.h"
+#import "FTPostDetailsViewController.h"
 
 @interface FTActivityFeedViewController ()
 
@@ -40,6 +42,8 @@
 - (id)initWithStyle:(UITableViewStyle)style {
     self = [super initWithStyle:style];
     if (self) {
+        NSLog(@"%@::initWithStyle:",VIEWCONTROLLER_ACTIVITY);
+        
         // The className to query on
         self.parseClassName = kFTActivityClassKey;
         
@@ -59,88 +63,55 @@
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+    NSLog(@"%@::viewDidLoad",VIEWCONTROLLER_ACTIVITY);
     [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     
     [super viewDidLoad];
     
     // Toolbar & Navigationbar Setup
-    [self.navigationItem setTitle: @"NOTIFICATIONS"];
-    [self.navigationItem setHidesBackButton:NO];
+    [self.navigationItem setTitle:NAVIGATION_TITLE_NOTIFICATIONS];
     [self.navigationController setNavigationBarHidden:NO animated:NO];
-    
-    // Override the back idnicator
-    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(returnHome:)];
-    [backIndicator setTintColor:[UIColor whiteColor]];
-    [self.navigationItem setLeftBarButtonItem:backIndicator];
-    
-    // Load Camera
-    UIBarButtonItem *loadCamera = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"fittag_button"] style:UIBarButtonItemStylePlain target:self action:@selector(loadCamera:)];
-    [loadCamera setTintColor:[UIColor whiteColor]];
-    [self.navigationItem setRightBarButtonItem:loadCamera];
     
     // Set Background
     [self.tableView setBackgroundColor:[UIColor whiteColor]];
     
-    // Add Settings button
-    self.navigationItem.rightBarButtonItem = [[FTSettingsButtonItem alloc] initWithTarget:self action:@selector(settingsButtonAction:)];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification:) name:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil];
-    
-    self.blankTimelineView = [[UIView alloc] initWithFrame:self.tableView.bounds];
-    
-    /*
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [button setBackgroundImage:[UIImage imageNamed:@"ActivityFeedBlank.png"] forState:UIControlStateNormal];
-    [button setFrame:CGRectMake(24.0f, 113.0f, 271.0f, 140.0f)];
-    [button addTarget:self
-               action:@selector(inviteFriendsButtonAction:)
-     forControlEvents:UIControlEventTouchUpInside];
-    
-    [self.blankTimelineView addSubview:button];
-    */
-    
     lastRefresh = [[NSUserDefaults standardUserDefaults] objectForKey:kFTUserDefaultsActivityFeedViewControllerLastRefreshKey];
-    
-    [loadCamera setTintColor:[UIColor whiteColor]];
-    [backIndicator setTintColor:[UIColor whiteColor]];
-    [self.navigationItem setRightBarButtonItem:loadCamera];
-    [self.navigationItem setLeftBarButtonItem:backIndicator];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    [self.navigationController setToolbarHidden:NO];
+    [self.navigationController setToolbarHidden:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    
+    NSLog(@"%@::viewWillDisappear",VIEWCONTROLLER_ACTIVITY);
     // Get the classname of the next view controller
     NSUInteger numberOfViewControllersOnStack = [self.navigationController.viewControllers count];
     UIViewController *parentViewController = self.navigationController.viewControllers[numberOfViewControllersOnStack-1];
     Class parentVCClass = [parentViewController class];
     NSString *className = NSStringFromClass(parentVCClass);
     
-    if([className isEqual: @"FTCamViewController"]){
+    if([className isEqual:VIEWCONTROLLER_CAM]){
         [self.navigationController setToolbarHidden:YES];
     }
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle{
+    NSLog(@"%@::preferredStatusBarStyle",VIEWCONTROLLER_ACTIVITY);
     return UIStatusBarStyleLightContent;
 }
 
-- (void)loadCamera:(id)sender{
+- (void)didTapLoadCamera:(id)sender{
     FTCamViewController *cameraViewController = [[FTCamViewController alloc] init];
     [self.navigationController pushViewController:cameraViewController animated:YES];
 }
 
-- (void)returnHome:(id)sender{
-    [self.navigationController popViewControllerAnimated:YES];
-}
 
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    //NSLog(@"%@::tableView:heightForRowAtIndexPath:",VIEWCONTROLLER_ACTIVITY);
     if (indexPath.row < self.objects.count) {
         PFObject *object = [self.objects objectAtIndex:indexPath.row];
         NSString *activityString = [FTActivityFeedViewController stringForActivityType:(NSString*)[object objectForKey:kFTActivityTypeKey]];
@@ -159,15 +130,26 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    NSLog(@"%@::tableView:didSelectRowAtIndexPath:",VIEWCONTROLLER_ACTIVITY);
     if (indexPath.row < self.objects.count) {
         PFObject *activity = [self.objects objectAtIndex:indexPath.row];
         if ([activity objectForKey:kFTActivityPostKey]) {
-            FTPhotoDetailsViewController *detailViewController = [[FTPhotoDetailsViewController alloc] initWithPhoto:[activity objectForKey:kFTActivityPostKey]];
-            [self.navigationController pushViewController:detailViewController animated:YES];
+            //FTPhotoDetailsViewController *detailViewController = [[FTPhotoDetailsViewController alloc] initWithPhoto:[activity objectForKey:kFTActivityPostKey]];
+            //[self.navigationController pushViewController:detailViewController animated:YES];
+            FTPostDetailsViewController *postDetailViewController = [[FTPostDetailsViewController alloc] initWithPost:[activity objectForKey:kFTActivityPostKey] AndType:nil];
+            [self.navigationController pushViewController:postDetailViewController animated:YES];
         } else if ([activity objectForKey:kFTActivityFromUserKey]) {
-            FTAccountViewController *detailViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
-            [detailViewController setUser:[activity objectForKey:kFTActivityFromUserKey]];
-            [self.navigationController pushViewController:detailViewController animated:YES];
+            UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+            [flowLayout setItemSize:CGSizeMake(105.5,105)];
+            [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+            [flowLayout setMinimumInteritemSpacing:0];
+            [flowLayout setMinimumLineSpacing:0];
+            [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+            [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+            
+            FTUserProfileCollectionViewController *profileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
+            [profileViewController setUser:[PFUser currentUser]];
+            [self.navigationController pushViewController:profileViewController animated:YES];
         }
     } else if (self.paginationEnabled) {
         // load more
@@ -179,16 +161,16 @@
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 
 - (PFQuery *)queryForTable {
-    
+    //NSLog(@"FTActivityFeedViewController::queryForTable");
     if (![PFUser currentUser]) {
         PFQuery *query = [PFQuery queryWithClassName:self.parseClassName];
-        [query setLimit:0];
+        [query setLimit:1000];
         return query;
     }
     
     PFQuery *query = [PFQuery queryWithClassName:self.parseClassName];
     [query whereKey:kFTActivityToUserKey equalTo:[PFUser currentUser]];
-    [query whereKey:kFTActivityFromUserKey notEqualTo:[PFUser currentUser]];
+    //[query whereKey:kFTActivityFromUserKey notEqualTo:[PFUser currentUser]];
     [query whereKeyExists:kFTActivityFromUserKey];
     [query includeKey:kFTActivityFromUserKey];
     [query includeKey:kFTActivityPostKey];
@@ -208,7 +190,9 @@
 }
 
 - (void)objectsDidLoad:(NSError *)error {
+    NSLog(@"FTActivityFeedViewController::objectsDidLoad");
     [super objectsDidLoad:error];
+    NSLog(@"error: %@",error);
     
     lastRefresh = [NSDate date];
     [[NSUserDefaults standardUserDefaults] setObject:lastRefresh forKey:kFTUserDefaultsActivityFeedViewControllerLastRefreshKey];
@@ -216,7 +200,11 @@
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
+    NSLog(@"self.objects.count: %lu",(unsigned long)self.objects.count);
+    NSLog(@"hasCachedResult: %d",[[self queryForTable] hasCachedResult]);
+    
     if (self.objects.count == 0 && ![[self queryForTable] hasCachedResult]) {
+        NSLog(@"No cached results");
         self.tableView.scrollEnabled = NO;
         self.navigationController.tabBarItem.badgeValue = nil;
         
@@ -229,6 +217,7 @@
             }];
         }
     } else {
+        NSLog(@"Cached results");
         self.tableView.tableHeaderView = nil;
         self.tableView.scrollEnabled = YES;
         
@@ -249,7 +238,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath object:(PFObject *)object {
     static NSString *CellIdentifier = @"ActivityCell";
-    
+    //NSLog(@"FTActivityFeedViewController::tableView:cellForRowAtIndexPath:object:");
     FTActivityCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[FTActivityCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
@@ -272,7 +261,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForNextPageAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *LoadMoreCellIdentifier = @"LoadMoreCell";
-    
+    NSLog(@"FTActivityFeedViewController::tableView:cellForNextPageAtIndexPath:");
     FTLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:LoadMoreCellIdentifier];
     if (!cell) {
         cell = [[FTLoadMoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:LoadMoreCellIdentifier];
@@ -286,6 +275,7 @@
 #pragma mark - FTActivityCellDelegate Methods
 
 - (void)cell:(FTActivityCell *)cellView didTapActivityButton:(PFObject *)activity {
+    NSLog(@"FTActivityFeedViewController::didTapActivityButton:");
     // Get image associated with the activity
     PFObject *photo = [activity objectForKey:kFTActivityPostKey];
     
@@ -295,10 +285,11 @@
 }
 
 - (void)cell:(FTBaseTextCell *)cellView didTapUserButton:(PFUser *)user {
+    NSLog(@"FTActivityFeedViewController::didTapUserButton:");
     // Push account view controller
-    FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
-    [accountViewController setUser:user];
-    [self.navigationController pushViewController:accountViewController animated:YES];
+    //FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
+    //[accountViewController setUser:user];
+    //[self.navigationController pushViewController:accountViewController animated:YES];
 }
 
 
@@ -306,28 +297,30 @@
 
 + (NSString *)stringForActivityType:(NSString *)activityType {
     if ([activityType isEqualToString:kFTActivityTypeLike]) {
-        return NSLocalizedString(@"liked your photo", nil);
+        return NSLocalizedString(@"liked your post", nil);
     } else if ([activityType isEqualToString:kFTActivityTypeFollow]) {
         return NSLocalizedString(@"started following you", nil);
     } else if ([activityType isEqualToString:kFTActivityTypeComment]) {
-        return NSLocalizedString(@"commented on your photo", nil);
+        return NSLocalizedString(@"commented on your post", nil);
     } else if ([activityType isEqualToString:kFTActivityTypeJoined]) {
-        return NSLocalizedString(@"joined Anypic", nil);
+        return NSLocalizedString(@"joined #FitTag", nil);
     } else {
         return nil;
     }
 }
 
 #pragma mark - ()
-
+/*
 - (void)settingsButtonAction:(id)sender {
+    NSLog(@"FTActivityFeedViewController::settingsButtonAction:");
     settingsActionSheetDelegate = [[FTSettingsActionSheetDelegate alloc] initWithNavigationController:self.navigationController];
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:settingsActionSheetDelegate cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"My Profile", nil), NSLocalizedString(@"Find Friends", nil), NSLocalizedString(@"Log Out", nil), nil];
     
     [actionSheet showFromTabBar:self.tabBarController.tabBar];
 }
-
+*/
 - (void)inviteFriendsButtonAction:(id)sender {
+    NSLog(@"FTActivityFeedViewController::inviteFriendsButtonAction:");
     FTFindFriendsViewController *detailViewController = [[FTFindFriendsViewController alloc] init];
     [self.navigationController pushViewController:detailViewController animated:YES];
 }

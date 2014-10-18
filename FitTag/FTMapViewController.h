@@ -9,10 +9,12 @@
 #import "FTSearchHeaderView.h"
 #import <MapKit/MapKit.h>
 #import <CoreLocation/CoreLocation.h>
+#import "FTToolbar.h"
 
-@interface FTMapViewController : UITableViewController <MKMapViewDelegate,FTSearchHeaderViewDelegate,UISearchBarDelegate,UITextFieldDelegate>
+@interface FTMapViewController : UIViewController <MKMapViewDelegate,FTSearchHeaderViewDelegate,UISearchBarDelegate,
+                                                   UITextFieldDelegate/*,FTToolBarDelegate*/,CLLocationManagerDelegate>
 @property (nonatomic, strong) PFObject *user;
-@property (nonatomic,strong) MKMapView *mapView;
+@property (nonatomic, strong) MKMapView *mapView;
 
 - (void)setInitialLocation:(CLLocation *)aLocation;
 

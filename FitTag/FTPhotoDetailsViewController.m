@@ -9,13 +9,13 @@
 #import "FTPhotoDetailsViewController.h"
 #import "FTBaseTextCell.h"
 #import "FTActivityCell.h"
-#import "FTPhotoDetailsFooterView.h"
 #import "FTConstants.h"
-#import "FTAccountViewController.h"
+#import "FTUserProfileCollectionViewController.h"
 #import "FTLoadMoreCell.h"
 #import "FTUtility.h"
 #import "MBProgressHUD.h"
 #import "FTCamViewController.h"
+#import "FTMapViewController.h"
 
 enum ActionSheetTags {
     MainActionSheetTag = 0,
@@ -24,16 +24,22 @@ enum ActionSheetTags {
 
 @interface FTPhotoDetailsViewController ()
 @property (nonatomic, strong) UITextField *commentTextField;
+@property (nonatomic, strong) UIButton *commentSendButton;
+
 @property (nonatomic, strong) FTPhotoDetailsHeaderView *headerView;
+@property (nonatomic, strong) FTPhotoDetailsFooterView *footerView;
+
 @property (nonatomic, assign) BOOL likersQueryInProgress;
 @end
 
 static const CGFloat kFTCellInsetWidth = 0.0f;
 
 @implementation FTPhotoDetailsViewController
-
+@synthesize commentSendButton;
 @synthesize commentTextField;
-@synthesize photo, headerView;
+@synthesize photo;
+@synthesize headerView;
+@synthesize footerView;
 
 #pragma mark - Initialization
 
@@ -63,7 +69,6 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     }
     return self;
 }
-
 
 #pragma mark - UIViewController
 
@@ -95,9 +100,12 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     self.tableView.tableHeaderView = self.headerView;
     
     // Set table footer
-    FTPhotoDetailsFooterView *footerView = [[FTPhotoDetailsFooterView alloc] initWithFrame:[FTPhotoDetailsFooterView rectForView]];
+    footerView = [[FTPhotoDetailsFooterView alloc] initWithFrame:[FTPhotoDetailsFooterView rectForView]];
     commentTextField = footerView.commentField;
+    commentSendButton = footerView.commentSendButton;
     commentTextField.delegate = self;
+    footerView.delegate = self;
+    
     self.tableView.tableFooterView = footerView;
     
     /*
@@ -214,8 +222,35 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     return cell;
 }
 
-
 #pragma mark - UITextFieldDelegate
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+    NSString *trimmedComment = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if (trimmedComment.length != 0 && [self.photo objectForKey:kFTPostUserKey]) {
+        [commentSendButton setEnabled:YES];
+    } else {
+        [commentSendButton setEnabled:NO];
+    }
+}
+
+-(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    NSString *trimmedComment = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if (trimmedComment.length != 0 && [self.photo objectForKey:kFTPostUserKey]) {
+        [commentSendButton setEnabled:YES];
+    } else {
+        [commentSendButton setEnabled:NO];
+    }
+    return YES;
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+    NSString *trimmedComment = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if (trimmedComment.length != 0 && [self.photo objectForKey:kFTPostUserKey]) {
+        [commentSendButton setEnabled:YES];
+    } else {
+        [commentSendButton setEnabled:NO];
+    }
+}
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     NSString *trimmedComment = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -259,6 +294,8 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
             [MBProgressHUD hideHUDForView:self.view.superview animated:YES];
             [self loadObjects];
         }];
+    } else {
+        [commentSendButton setEnabled:NO];
     }
     
     [textField setText:@""];
@@ -304,8 +341,28 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 
 #pragma mark - FTPhotoDetailsHeaderViewDelegate
 
--(void)photoDetailsHeaderView:(FTPhotoDetailsHeaderView *)headerView didTapUserButton:(UIButton *)button user:(PFUser *)user {
+- (void)photoDetailsHeaderView:(FTPhotoDetailsHeaderView *)headerView didTapUserButton:(UIButton *)button user:(PFUser *)user {
     [self shouldPresentAccountViewForUser:user];
+}
+
+- (void)photoDetailsHeaderView:(FTPhotoDetailsHeaderView *)headerView didTapLocation:(UIButton *)button photo:(PFObject *)aPhoto {
+    NSLog(@"FTPhotoDetailsHeaderView::galleryCellView:didTapLocation:gallery:");
+    // Map Home View
+    FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
+    PFGeoPoint *geoPoint = [aPhoto objectForKey:kFTPostLocationKey];
+    if (geoPoint) {
+        CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
+        [mapViewController setInitialLocation: location];
+    }
+    
+    [self.navigationController pushViewController:mapViewController animated:YES];
+}
+
+#pragma mark - FTPhotoDetailsFooterViewDelegate
+
+- (void)photoDetailsFooterView:(FTPhotoDetailsFooterView *)footerView didTapSendButton:(UIButton *)button {
+    //NSLog(@"%@::photoDetailsFooterView:didTapSendButtonAction:",CONTROLLER);
+    [self textFieldShouldReturn:commentTextField];
 }
 
 /*
@@ -380,9 +437,23 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 }
 
 - (void)shouldPresentAccountViewForUser:(PFUser *)user {
+    /*
     FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
     [accountViewController setUser:user];
     [self.navigationController pushViewController:accountViewController animated:YES];
+    */
+    
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [flowLayout setItemSize:CGSizeMake(105.5,105)];
+    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [flowLayout setMinimumInteritemSpacing:0];
+    [flowLayout setMinimumLineSpacing:0];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+    
+    FTUserProfileCollectionViewController *profileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
+    [profileViewController setUser:user];
+    [self.navigationController pushViewController:profileViewController animated:YES];
 }
 
 - (void)backButtonAction:(id)sender {

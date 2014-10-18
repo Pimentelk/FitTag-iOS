@@ -13,40 +13,61 @@
 #import "UIImage+ResizeAdditions.h"
 #import "FTConfigViewController.h"
 #import "FTActivityFeedViewController.h"
-#import "FTHomeViewController.h"
-#import "FTAccountViewController.h"
+#import "FTFeedViewController.h"
+#import "FTUserProfileCollectionViewController.h"
 #import "FTPhotoDetailsViewController.h"
-
-@interface AppDelegate()
-{
+#import "FTMapViewController.h"
+#import "FTRewardsCollectionViewController.h"
+#import "FTUserProfileCollectionViewController.h"
+#import "FTLoginViewController.h"
+#import "FTSignupViewController.h"
+#import "FTNavigationController.h"
+@interface AppDelegate() {
     NSMutableData *_data;
     BOOL firstLaunch;
+    
+    FTLoginViewController *loginViewController;
+    FTSignupViewController *signUpViewController;
 }
 
-@property (nonatomic, strong) FTHomeViewController *homeViewController;
+// Welcome View Controller
 @property (nonatomic, strong) FTConfigViewController *welcomeViewController;
-@property (nonatomic, strong) FTActivityFeedViewController *activityViewController;
 
+// TabBar ViewControllers
+@property (nonatomic, strong) FTActivityFeedViewController *activityViewController;
+@property (nonatomic, strong) FTMapViewController *mapViewController;
+@property (nonatomic, strong) FTFeedViewController *feedViewController;
+@property (nonatomic, strong) FTRewardsCollectionViewController *rewardsViewController;
+@property (nonatomic, strong) FTUserProfileCollectionViewController *userProfileViewController;
+
+// Progress HUD (Notification/Loader)
 @property (nonatomic, strong) MBProgressHUD *hud;
 @property (nonatomic, strong) NSTimer *autoFollowTimer;
 
-- (void)setupAppearance;
 - (BOOL)shouldProceedToMainInterface:(PFUser *)user;
-- (BOOL)handleActionURL:(NSURL *)url;
 @end
 
 @implementation AppDelegate
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    NSLog(@"%@::application:didFinishLaunchingWithOptions:",APPDELEGATE_RESPONDER);
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
+    // Google Analytics
+    [GAI sharedInstance].trackUncaughtExceptions = YES;
+    [GAI sharedInstance].dispatchInterval = 20;
+    [[GAI sharedInstance].logger setLogLevel:kGAILogLevelVerbose];
+    [[GAI sharedInstance] trackerWithTrackingId:GOOGLE_ANALYTICS_TRACKING_ID];
+    
     // Parse initialization
-    [Parse setApplicationId:@"9Cii0KKJr09vtACtVRSccu1BHGFJYR6c6XYkafb1"
-                  clientKey:@"eJxD9HcQ5ZK8GPYxaMz4RkrOjo2mMtujGsgn1HZe"];
+    [Parse setApplicationId:PARSE_APPLICATION_ID
+                  clientKey:PARSE_CLIENT_KEY];
     
     // Track app open.
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+    
+    // Register for remote notifications
+    [self registerForRemoteNotification];
     
     if (application.applicationIconBadgeNumber != 0) {
         application.applicationIconBadgeNumber = 0;
@@ -58,16 +79,13 @@
     [defaultACL setPublicReadAccess:YES];
     [PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
     
-    // Set root view controller
-    [self setupAppearance];
-    
     // Use Reachability to monitor connectivity
     [self monitorReachability];
     
     self.welcomeViewController = [[FTConfigViewController alloc] init];
     
     self.navController = [[UINavigationController alloc] initWithRootViewController:self.welcomeViewController];
-    self.navController.navigationBarHidden = YES;
+    [self.navController setNavigationBarHidden: NO];
     
     self.window.rootViewController = self.navController;
     [self.window makeKeyAndVisible];
@@ -75,22 +93,16 @@
     [self handlePush:launchOptions];
     
     [PFFacebookUtils initializeFacebook];
-    [PFTwitterUtils initializeWithConsumerKey:@"oNqZ0kZQxrAEHeMggEvls5VdJ" consumerSecret: @"cvltCUyuouYILtFlsf05G1eA1C7J7ZCDUQkO5iawD9RRabnPte"];
+    [PFTwitterUtils initializeWithConsumerKey:TWITTER_CONSUMER_KEY
+                               consumerSecret:TWITTER_CONSUMER_SECRET];
     
     return YES;
 }
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    if ([self handleActionURL:url]) {
-        return YES;
-    }
-    
-    return [FBAppCall handleOpenURL:url
-                  sourceApplication:sourceApplication
-                        withSession:[PFFacebookUtils session]];
-}
-
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    NSLog(@"%@::application:didRegisterForRemoteNotificationsWithDeviceToken:",APPDELEGATE_RESPONDER);
+ 
+    [self registerForRemoteNotification];
     if (application.applicationIconBadgeNumber != 0) {
         application.applicationIconBadgeNumber = 0;
     }
@@ -101,12 +113,14 @@
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+    NSLog(@"%@::application:didFailToRegisterForRemoteNotificationsWithError:",APPDELEGATE_RESPONDER);
 	if (error.code != 3010) { // 3010 is for the iPhone Simulator
         NSLog(@"Application failed to register for push notifications: %@", error);
 	}
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    NSLog(@"%@::application:didReceiveRemoteNotification:",APPDELEGATE_RESPONDER);
     [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
     
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
@@ -133,6 +147,7 @@
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    NSLog(@"%@::applicationDidBecomeActive:",APPDELEGATE_RESPONDER);
     // Handle an interruption during the authorization flow, such as the user clicking the home button.
     //[FBSession.activeSession handleDidBecomeActive];
     
@@ -153,104 +168,159 @@
 #pragma mark - UITabBarControllerDelegate
 
 - (BOOL)tabBarController:(UITabBarController *)aTabBarController shouldSelectViewController:(UIViewController *)viewController {
+    NSLog(@"%@::tabBarController:shouldSelectViewController:",APPDELEGATE_RESPONDER);
     // The empty UITabBarItem behind our Camera button should not load a view controller
-    return ![viewController isEqual:aTabBarController.viewControllers[FTEmptyTabBarItemIndex]];
-}
-
-
-#pragma mark - PFLoginViewController
-
-- (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
-    // user has logged in - we need to fetch all of their Facebook data before we let them in
-    if (![self shouldProceedToMainInterface:user]) {
-        self.hud = [MBProgressHUD showHUDAddedTo:self.navController.presentedViewController.view animated:YES];
-        self.hud.labelText = NSLocalizedString(@"Loading", nil);
-        self.hud.dimBackground = YES;
-    }
-    
-    [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-        if (!error) {
-            [self facebookRequestDidLoad:result];
-        } else {
-            [self facebookRequestDidFailWithError:error];
-        }
-    }];
+    //return ![viewController isEqual:aTabBarController.viewControllers[FTReardsTabBarItemIndex]];
+    return YES;
 }
 
 #pragma mark - NSURLConnectionDataDelegate
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+    NSLog(@"%@::connection:didReceiveResponse:",APPDELEGATE_RESPONDER);
     _data = [[NSMutableData alloc] init];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+    NSLog(@"%@::connection:didReceiveResponse:",APPDELEGATE_RESPONDER);
     [_data appendData:data];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    NSLog(@"%@::connectionDidFinishLoading:",APPDELEGATE_RESPONDER);
     [FTUtility processFacebookProfilePictureData:_data];
 }
 
 #pragma mark - AppDelegate
 
 - (BOOL)isParseReachable {
+    NSLog(@"%@::isParseReachable:",APPDELEGATE_RESPONDER);
     return self.networkStatus != NotReachable;
 }
 
 - (void)presentLoginViewControllerAnimated:(BOOL)animated {
-    PFLogInViewController *loginViewController = [[PFLogInViewController alloc] init];
+    NSLog(@"%@::presentLoginViewControllerAnimated:",APPDELEGATE_RESPONDER);
+    // Customize the Log In View Controller
+    loginViewController = [[FTLoginViewController alloc] init];
     [loginViewController setDelegate:self];
-    loginViewController.fields = PFLogInFieldsFacebook;
-    loginViewController.facebookPermissions = @[ @"user_about_me" ];
+    loginViewController.facebookPermissions = @[@"email",@"public_profile",@"user_friends"];
+    loginViewController.fields = PFLogInFieldsUsernameAndPassword | PFLogInFieldsTwitter | PFLogInFieldsFacebook | PFLogInFieldsSignUpButton | PFLogInFieldsPasswordForgotten | PFLogInFieldsLogInButton;
+    
+    // Customize the Sign Up View Controller
+    signUpViewController = [[FTSignupViewController alloc] init];
+    signUpViewController.delegate = self;
+    signUpViewController.fields = PFSignUpFieldsDefault;
+    loginViewController.signUpController = signUpViewController;
     
     [self.welcomeViewController presentViewController:loginViewController animated:NO completion:nil];
 }
 
 - (void)presentLoginViewController {
-    [self presentLoginViewControllerAnimated:YES];
+    NSLog(@"%@::presentLoginViewController:",APPDELEGATE_RESPONDER);
+    //[self presentLoginViewControllerAnimated:NO];
 }
 
 - (void)presentTabBarController {
+    
+    NSLog(@"%@::presentTabBarController:",APPDELEGATE_RESPONDER);
+    
+    /** START TAB VIEW CONTROLLERS INIT **/
     self.tabBarController = [[FTTabBarController alloc] init];
-    self.homeViewController = [[FTHomeViewController alloc] initWithStyle:UITableViewStylePlain];
-    [self.homeViewController setFirstLaunch:firstLaunch];
+    
+    // Feed ViewController
+    self.feedViewController = [[FTFeedViewController alloc] initWithClassName:kFTPostClassKey];
+    [self.feedViewController setFirstLaunch:firstLaunch];
+    
+    // Activity ViewController
     self.activityViewController = [[FTActivityFeedViewController alloc] initWithStyle:UITableViewStylePlain];
     
-    UINavigationController *homeNavigationController = [[UINavigationController alloc] initWithRootViewController:self.homeViewController];
-    UINavigationController *emptyNavigationController = [[UINavigationController alloc] init];
-    UINavigationController *activityFeedNavigationController = [[UINavigationController alloc] initWithRootViewController:self.activityViewController];
+    // Map ViewController - Home
+    self.mapViewController = [[FTMapViewController alloc] init];
     
-    [FTUtility addBottomDropShadowToNavigationBarForNavigationController:homeNavigationController];
+    // Profile View Controller
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [flowLayout setItemSize:CGSizeMake(105.5,105)];
+    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [flowLayout setMinimumInteritemSpacing:0];
+    [flowLayout setMinimumLineSpacing:0];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+    
+    self.userProfileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
+    [self.userProfileViewController setUser:[PFUser currentUser]];
+    
+    // Rewards View Controller
+    UICollectionViewFlowLayout *layoutFlow = [[UICollectionViewFlowLayout alloc] init];
+    [layoutFlow setItemSize:CGSizeMake(158,185)];
+    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [layoutFlow setMinimumInteritemSpacing:0];
+    [layoutFlow setMinimumLineSpacing:0];
+    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,160)];
+    
+    self.rewardsViewController = [[FTRewardsCollectionViewController alloc] initWithCollectionViewLayout:layoutFlow];
+    
+    /** END TAB VIEW CONTROLLERS INIT **/
+    FTNavigationController *emptyNavigationController           = [[FTNavigationController alloc] init];
+    FTNavigationController *feedNavigationController            = [[FTNavigationController alloc] initWithRootViewController:self.feedViewController];
+    FTNavigationController *activityFeedNavigationController    = [[FTNavigationController alloc] initWithRootViewController:self.activityViewController];
+    FTNavigationController *mapNavigationController             = [[FTNavigationController alloc] initWithRootViewController:self.mapViewController];
+    FTNavigationController *rewardsFeedNavigationController     = [[FTNavigationController alloc] initWithRootViewController:self.rewardsViewController];
+    FTNavigationController *userProfileNavigationController     = [[FTNavigationController alloc] initWithRootViewController:self.userProfileViewController];
+
     [FTUtility addBottomDropShadowToNavigationBarForNavigationController:emptyNavigationController];
+    [FTUtility addBottomDropShadowToNavigationBarForNavigationController:feedNavigationController];
     [FTUtility addBottomDropShadowToNavigationBarForNavigationController:activityFeedNavigationController];
+    [FTUtility addBottomDropShadowToNavigationBarForNavigationController:mapNavigationController];
+    [FTUtility addBottomDropShadowToNavigationBarForNavigationController:rewardsFeedNavigationController];
+    [FTUtility addBottomDropShadowToNavigationBarForNavigationController:userProfileNavigationController];
     
-    UITabBarItem *homeTabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@"Home", @"Home") image:[[UIImage imageNamed:@"IconHome.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[UIImage imageNamed:@"IconHomeSelected.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
-    [homeTabBarItem setTitleTextAttributes: @{ NSForegroundColorAttributeName: [UIColor colorWithRed:86.0f/255.0f green:55.0f/255.0f blue:42.0f/255.0f alpha:1.0f] } forState:UIControlStateNormal];
-    [homeTabBarItem setTitleTextAttributes: @{ NSForegroundColorAttributeName: [UIColor colorWithRed:129.0f/255.0f green:99.0f/255.0f blue:69.0f/255.0f alpha:1.0f] } forState:UIControlStateSelected];
+    // Feed ViewController
+    UITabBarItem *feedTabBarItem = [[UITabBarItem alloc] initWithTitle:nil
+                                                                 image:[[UIImage imageNamed:BUTTON_IMAGE_FEED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+                                                         selectedImage:[[UIImage imageNamed:BUTTON_IMAGE_FEED_SELECTED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
     
-    UITabBarItem *activityFeedTabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@"Activity", @"Activity") image:[[UIImage imageNamed:@"IconTimeline.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[UIImage imageNamed:@"IconTimelineSelected.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
-    [activityFeedTabBarItem setTitleTextAttributes:@{ NSForegroundColorAttributeName: [UIColor colorWithRed:86.0f/255.0f green:55.0f/255.0f blue:42.0f/255.0f alpha:1.0f] } forState:UIControlStateNormal];
-    [activityFeedTabBarItem setTitleTextAttributes:@{ NSForegroundColorAttributeName: [UIColor colorWithRed:129.0f/255.0f green:99.0f/255.0f blue:69.0f/255.0f alpha:1.0f] } forState:UIControlStateSelected];
+    // Notifications ViewController
+    UITabBarItem *activityFeedTabBarItem = [[UITabBarItem alloc] initWithTitle:nil
+                                                                         image:[[UIImage imageNamed:BUTTON_IMAGE_NOTIFICATIONS] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+                                                                 selectedImage:[[UIImage imageNamed:BUTTON_IMAGE_NOTIFICATIONS_SELECTED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
     
-    [homeNavigationController setTabBarItem:homeTabBarItem];
+    // Rewards ViewController
+    UITabBarItem *rewardsFeedTabBarItem = [[UITabBarItem alloc] initWithTitle:nil
+                                                                        image:[[UIImage imageNamed:BUTTON_IMAGE_REWARDS] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+                                                                selectedImage:[[UIImage imageNamed:BUTTON_IMAGE_REWARDS_SELECTED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+    
+    // Map ViewController
+    UITabBarItem *mapTabBarItem = [[UITabBarItem alloc] initWithTitle:nil
+                                                                image:[[UIImage imageNamed:BUTTON_IMAGE_SEARCH] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+                                                        selectedImage:[[UIImage imageNamed:BUTTON_IMAGE_SEARCH_SELECTED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+
+    // User Profile ViewController
+    UITabBarItem *userProfileTabBarItem = [[UITabBarItem alloc] initWithTitle:nil
+                                                                        image:[[UIImage imageNamed:BUTTON_IMAGE_USER_PROFILE] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+                                                                selectedImage:[[UIImage imageNamed:BUTTON_IMAGE_USER_PROFILE_SELECTED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+
+    
+    [feedNavigationController setTabBarItem:feedTabBarItem];
     [activityFeedNavigationController setTabBarItem:activityFeedTabBarItem];
+    [rewardsFeedNavigationController setTabBarItem:rewardsFeedTabBarItem];
+    [mapNavigationController setTabBarItem:mapTabBarItem];
+    [userProfileNavigationController setTabBarItem:userProfileTabBarItem];
     
     self.tabBarController.delegate = self;
-    self.tabBarController.viewControllers = @[ homeNavigationController, emptyNavigationController, activityFeedNavigationController];
+    self.tabBarController.viewControllers = @[ activityFeedNavigationController,
+                                               mapNavigationController,
+                                               feedNavigationController,
+                                               userProfileNavigationController,
+                                               rewardsFeedNavigationController ];
+    self.tabBarController.selectedIndex = 1;
     
     [self.navController setViewControllers:@[ self.welcomeViewController, self.tabBarController ] animated:NO];
-    
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge|
-     UIRemoteNotificationTypeAlert|
-     UIRemoteNotificationTypeSound];
-    
-    // Download user's profile picture
-    NSURL *profilePictureURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=large", [[PFUser currentUser] objectForKey:kFTUserFacebookIDKey]]];
-    NSURLRequest *profilePictureURLRequest = [NSURLRequest requestWithURL:profilePictureURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:10.0f]; // Facebook profile picture cache policy: Expires in 2 weeks
-    [NSURLConnection connectionWithRequest:profilePictureURLRequest delegate:self];
+    [self registerForRemoteNotification];
 }
 
 - (void)logOut {
+    NSLog(@"%@::logOut:",APPDELEGATE_RESPONDER);
     // clear cache
     [[FTCache sharedCache] clear];
     
@@ -274,27 +344,37 @@
     
     [self presentLoginViewController];
     
-    self.homeViewController = nil;
-    self.activityViewController = nil;
+    self.feedViewController         = nil;
+    self.activityViewController     = nil;
+    self.mapViewController          = nil;
+    self.rewardsViewController      = nil;
+    self.userProfileViewController  = nil;
 }
 
 #pragma mark - ()
 
-- (void)setupAppearance {
-    
+- (void)registerForRemoteNotification {
+    if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+        UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
+        UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+    } else {
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+    }
 }
 
 - (void)monitorReachability {
-    Reachability *hostReach = [Reachability reachabilityWithHostname:@"api.parse.com"];
+    NSLog(@"%@::monitorReachability:",APPDELEGATE_RESPONDER);
+    Reachability *hostReach = [Reachability reachabilityWithHostname:PARSE_HOST];
     
-    hostReach.reachableBlock = ^(Reachability*reach) {
+    hostReach.reachableBlock = ^(Reachability *reach) {
         _networkStatus = [reach currentReachabilityStatus];
         
         //if ([self isParseReachable] && [PFUser currentUser] && self.homeViewController.objects.count == 0) {
-        if ([self isParseReachable] && [PFUser currentUser] && self.homeViewController.objects.count == 0) {        
+        if ([self isParseReachable] && [PFUser currentUser] && self.feedViewController.objects.count == 0) {
             // Refresh home timeline on network restoration. Takes care of a freshly installed app that failed to load the main timeline under bad network conditions.
             // In this case, they'd see the empty timeline placeholder and have no way of refreshing the timeline unless they followed someone.
-            [self.homeViewController loadObjects];
+            [self.feedViewController loadObjects];
         }
     };
     
@@ -306,6 +386,7 @@
 }
 
 - (void)handlePush:(NSDictionary *)launchOptions {
+    NSLog(@"%@::handlePush:",APPDELEGATE_RESPONDER);
     
     // If the app was launched in response to a push notification, we'll handle the payload here
     NSDictionary *remoteNotificationPayload = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
@@ -319,7 +400,7 @@
         // If the push notification payload references a photo, we will attempt to push this view controller into view
         NSString *photoObjectId = [remoteNotificationPayload objectForKey:kFTPushPayloadPhotoObjectIdKey];
         if (photoObjectId && photoObjectId.length > 0) {
-            [self shouldNavigateToPhoto:[PFObject objectWithoutDataWithClassName:kFTPostClassKey objectId:photoObjectId]];
+            //[self shouldNavigateToPhoto:[PFObject objectWithoutDataWithClassName:kFTPostClassKey objectId:photoObjectId]];
             return;
         }
         
@@ -330,26 +411,38 @@
             query.cachePolicy = kPFCachePolicyCacheElseNetwork;
             [query getObjectInBackgroundWithId:fromObjectId block:^(PFObject *user, NSError *error) {
                 if (!error) {
-                    UINavigationController *homeNavigationController = self.tabBarController.viewControllers[FTFeedTabBarItemIndex];
-                    self.tabBarController.selectedViewController = homeNavigationController;
+                    UINavigationController *feedNavigationController = self.tabBarController.viewControllers[FTFeedTabBarItemIndex];
+                    self.tabBarController.selectedViewController = feedNavigationController;
                     
-                    FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
-                    accountViewController.user = (PFUser *)user;
-                    [homeNavigationController pushViewController:accountViewController animated:YES];
+                    //FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
+                    //accountViewController.user = (PFUser *)user;
+                    //[homeNavigationController pushViewController:accountViewController animated:YES];
+                    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+                    [flowLayout setItemSize:CGSizeMake(105.5,105)];
+                    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+                    [flowLayout setMinimumInteritemSpacing:0];
+                    [flowLayout setMinimumLineSpacing:0];
+                    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+                    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+                    
+                    FTUserProfileCollectionViewController *profileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
+                    [profileViewController setUser:[PFUser currentUser]];
+                    [feedNavigationController pushViewController:profileViewController animated:YES];
                 }
             }];
         }
     }
 }
 
-
 - (void)autoFollowTimerFired:(NSTimer *)aTimer {
+    NSLog(@"%@::autoFollowTimerFired:",APPDELEGATE_RESPONDER);
     [MBProgressHUD hideHUDForView:self.navController.presentedViewController.view animated:YES];
-    [MBProgressHUD hideHUDForView:self.homeViewController.view animated:YES];
-    [self.homeViewController loadObjects];
+    [MBProgressHUD hideHUDForView:self.feedViewController.view animated:YES];
+    [self.feedViewController loadObjects];
 }
 
 - (BOOL)shouldProceedToMainInterface:(PFUser *)user {
+    NSLog(@"%@::shouldProceedToMainInterface:",APPDELEGATE_RESPONDER);
     if ([FTUtility userHasValidFacebookData:[PFUser currentUser]]) {
         [MBProgressHUD hideHUDForView:self.navController.presentedViewController.view animated:YES];
         [self presentTabBarController];
@@ -361,45 +454,8 @@
     return NO;
 }
 
-- (BOOL)handleActionURL:(NSURL *)url {
-    if ([[url host] isEqualToString:kFTLaunchURLHostTakePicture]) {
-        if ([PFUser currentUser]) {
-            return [self.tabBarController shouldPresentPhotoCaptureController];
-        }
-    } else {
-        if ([[url fragment] rangeOfString:@"^pic/[A-Za-z0-9]{10}$" options:NSRegularExpressionSearch].location != NSNotFound) {
-            NSString *photoObjectId = [[url fragment] substringWithRange:NSMakeRange(4, 10)];
-            if (photoObjectId && photoObjectId.length > 0) {
-                [self shouldNavigateToPhoto:[PFObject objectWithoutDataWithClassName:kFTPostClassKey objectId:photoObjectId]];
-                return YES;
-            }
-        }
-    }
-    
-    return NO;
-}
-
-- (void)shouldNavigateToPhoto:(PFObject *)targetPhoto {
-    for (PFObject *photo in self.homeViewController.objects) {
-        if ([photo.objectId isEqualToString:targetPhoto.objectId]) {
-            targetPhoto = photo;
-            break;
-        }
-    }
-    
-    // if we have a local copy of this photo, this won't result in a network fetch
-    [targetPhoto fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-        if (!error) {
-            UINavigationController *homeNavigationController = [[self.tabBarController viewControllers] objectAtIndex:FTFeedTabBarItemIndex];
-            [self.tabBarController setSelectedViewController:homeNavigationController];
-            
-            FTPhotoDetailsViewController *detailViewController = [[FTPhotoDetailsViewController alloc] initWithPhoto:object];
-            [homeNavigationController pushViewController:detailViewController animated:YES];
-        }
-    }];
-}
-
 - (void)facebookRequestDidLoad:(id)result {
+    NSLog(@"%@::facebookRequestDidLoad:",APPDELEGATE_RESPONDER);
     // This method is called twice - once for the user's /me profile, and a second time when obtaining their friends. We will try and handle both scenarios in a single method.
     PFUser *user = [PFUser currentUser];
     
@@ -470,11 +526,11 @@
                 if (!error) {
                     [MBProgressHUD hideHUDForView:self.navController.presentedViewController.view animated:NO];
                     if (anypicFriends.count > 0) {
-                        self.hud = [MBProgressHUD showHUDAddedTo:self.homeViewController.view animated:NO];
+                        self.hud = [MBProgressHUD showHUDAddedTo:self.feedViewController.view animated:NO];
                         self.hud.dimBackground = YES;
                         self.hud.labelText = NSLocalizedString(@"Following Friends", nil);
                     } else {
-                        [self.homeViewController loadObjects];
+                        [self.feedViewController loadObjects];
                     }
                 }
             }
@@ -515,6 +571,7 @@
 }
 
 - (void)facebookRequestDidFailWithError:(NSError *)error {
+    NSLog(@"%@::facebookRequestDidFailWithError:",APPDELEGATE_RESPONDER);
     NSLog(@"Facebook error: %@", error);
     
     if ([PFUser currentUser]) {
@@ -524,5 +581,280 @@
         }
     }
 }
+
+#pragma mark - DidLoginWithSocialMedia
+
+- (BOOL)isLoggedInWithTwitter {
+    NSLog(@"%@::isLoggedInWithTwitter:",APPDELEGATE_RESPONDER);
+    return [PFTwitterUtils isLinkedWithUser:[PFUser currentUser]];
+}
+
+- (BOOL)isLoggedInWithFacebook {
+    NSLog(@"%@::isLoggedInWithFacebook:",APPDELEGATE_RESPONDER);
+    return [PFFacebookUtils isLinkedWithUser:[PFUser currentUser]];
+}
+
+- (BOOL)didLogInWithTwitter:(PFObject *)user {
+    NSLog(@"%@::didLogInWithTwitter:",APPDELEGATE_RESPONDER);
+
+    if ([self isLoggedInWithTwitter]) {
+        NSLog(@"User is logged in with twitter...");
+        NSString * requestString = [NSString stringWithFormat:TWITTER_API_USERS,[PFTwitterUtils twitter].screenName];
+        NSURL *verify = [NSURL URLWithString:requestString];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:verify];
+        [[PFTwitterUtils twitter] signRequest:request];
+        NSURLResponse *response = nil;
+        NSError *error = nil;
+        NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+        
+        if (error == nil){
+            NSDictionary* TWuser = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+            NSString *profile_image_normal = TWuser[@"profile_image_url_https"];
+            NSString *profile_image = [profile_image_normal stringByReplacingOccurrencesOfString:@"_normal" withString:@""];
+            NSData *profileImageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:profile_image]];
+            
+            NSString *names = [TWuser objectForKey:@"name"];
+            NSMutableArray *array = [NSMutableArray arrayWithArray:[names componentsSeparatedByString:@" "]];
+            
+            if ( array.count > 1){
+                [user setObject:[array lastObject] forKey:@"lastname"];
+                [array removeLastObject];
+                [user setObject:[array componentsJoinedByString:@" "] forKey:@"firstname"];
+            }
+            
+            user[@"displayName"]            = TWuser[@"name"];
+            user[@"twitterId"]              = [NSString stringWithFormat:@"%@",TWuser[@"id"]];
+            user[@"bio"]                    = @"WHAT MAKES YOU, YOU? (OPTIONAL)";
+            user[@"profilePictureMedium"]   = [PFFile fileWithName:@"medium.jpeg" data:profileImageData];
+            user[@"profilePictureSmall"]    = [PFFile fileWithName:@"small.png" data:profileImageData];
+            user[@"lastLogin"]              = [NSDate date];
+            
+            [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (error) {
+                    [user saveEventually];
+                    NSLog(@"%@::ERROR... %@",APPDELEGATE_RESPONDER,error);
+                }
+            }];
+        }
+        return YES;
+    } else {
+        NSLog(@"%@::User is not logged in to twitter...",APPDELEGATE_RESPONDER);
+        return NO;
+    }
+    return NO;
+}
+
+- (BOOL)didLogInWithFacebook:(PFObject *)user {
+    NSLog(@"%@::didLogInWithFacebook:",APPDELEGATE_RESPONDER);
+    if([self isLoggedInWithFacebook]){ // Is the user logged in via facebook
+        NSLog(@"User is logged in with facebook...");
+        [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *FBuser, NSError *error) {
+            if (!error) {
+                NSData* profileImageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[NSString stringWithFormat:FACEBOOK_GRAPH_PICTURES_URL,[FBuser objectForKey:FBUserIDKey]]]];
+                
+                // Get the data from facebook and put it into the user object
+                [user setValue:[FBuser objectForKey:FBUserFirstNameKey] forKey:kFTUserFirstnameKey];
+                [user setValue:[FBuser objectForKey:FBUserLastNameKey] forKey:kFTUserLastnameKey];
+                [user setValue:[FBuser objectForKey:FBUserNameKey] forKey:kFTUserDisplayNameKey];
+                [user setValue:[FBuser objectForKey:FBUserEmailKey] forKey:kFTUserEmailKey];
+                [user setValue:[FBuser objectForKey:FBUserIDKey] forKey:kFTUserFacebookIDKey];
+                [user setValue:DEFAULT_BIO_TEXT forKey:kFTUserBioKey];
+                [user setValue:[PFFile fileWithName:@"medium.jpeg" data:profileImageData] forKey:kFTUserProfilePicMediumKey];
+                [user setValue:[PFFile fileWithName:@"small.png" data:profileImageData] forKey:kFTUserProfilePicSmallKey];
+                [user setValue:[NSDate date] forKey:kFTUserLastLoginKey];
+                [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    if (error) {
+                        [user saveEventually];
+                        NSLog(@"error... %@", error);
+                    }
+                }];
+                
+            } else {
+                NSLog(@"%@::Facebook Error: %@",APPDELEGATE_RESPONDER,error);
+            }
+        }];
+        return YES;
+    } else {
+        NSLog(@"%@::User is not logged in to facebook",APPDELEGATE_RESPONDER);
+        return NO;
+    }
+    return NO;
+}
+
+#pragma mark - PFLogInViewControllerDelegate
+
+- (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
+    NSLog(@"%@::logInViewController:didLogInUser:",APPDELEGATE_RESPONDER);
+    // Check if user first login
+    
+    NSLog(@"user: %@",[user objectForKey:kFTUserLastLoginKey]);
+    
+    if (![user objectForKey:kFTUserLastLoginKey]) {
+        NSLog(@"This is a first time user...");
+        
+        if ([self didLogInWithFacebook:user]) {
+            [self presentTabBarController];
+            return;
+        }
+        
+        if ([self didLogInWithTwitter:user]) {
+            [self presentTabBarController];
+            return;
+        }
+        
+    } else {
+        NSLog(@"This is a returning user...");
+        
+        // save the total number of rewards the user has earned
+        PFQuery *queryPosts = [PFQuery queryWithClassName:kFTPostClassKey];
+        [queryPosts whereKey:kFTPostUserKey equalTo:user];
+        [queryPosts findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            if (!error) {
+                
+                NSNumber *count = [NSNumber numberWithUnsignedInteger:objects.count];
+                NSNumber *rewardCount = [NSNumber numberWithUnsignedInteger:(objects.count / 10)];
+                [user setObject:count forKey:kFTUserPostCountKey];
+                [user setObject:rewardCount forKey:kFTUserRewardsEarnedKey];
+                [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    if (error) {
+                        NSLog(@"error %@",error);
+                        [user saveEventually];
+                    }
+                }];
+            }
+        }];
+        
+        
+        if ([PFUser currentUser]) {
+            [self presentTabBarController];
+        }
+    }
+}
+
+// Sent to the delegate to determine whether the log in request should be submitted to the server.
+- (BOOL)logInViewController:(PFLogInViewController *)logInController
+shouldBeginLogInWithUsername:(NSString *)username
+                   password:(NSString *)password {
+    
+    //NSLog(@"logInViewController shouldBeginLogInWithUsername");
+    if (username && password && username.length && password.length) {
+        return YES;
+    }
+    
+    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Missing Information", nil)
+                                message:NSLocalizedString(@"Make sure you fill out all of the information!", nil)
+                               delegate:nil
+                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                      otherButtonTitles:nil] show];
+    
+    return NO;
+}
+
+// Sent to the delegate when the log in attempt fails.
+- (void)logInViewController:(PFLogInViewController *)logInController
+    didFailToLogInWithError:(NSError *)error {
+    NSLog(@"%@::logInViewController:loInController:didFailToLogInWithError:",APPDELEGATE_RESPONDER);
+    NSLog(@"Failed to log in... ERROR: %@",error);
+}
+
+// Sent to the delegate when the log in screen is dismissed.
+- (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController {
+    NSLog(@"%@::logInViewControllerDidCancelLogIn:",APPDELEGATE_RESPONDER);
+    NSLog(@"User dismissed the logInViewController");
+}
+
+#pragma mark - PFSignUpViewControllerDelegate
+
+// Sent to the delegate to determine whether the sign up request should be submitted to the server.
+- (BOOL)signUpViewController:(PFSignUpViewController *)signUpController
+           shouldBeginSignUp:(NSDictionary *)info {
+    NSLog(@"%@::signUpViewController:shouldBeginSignUp:",APPDELEGATE_RESPONDER);
+    NSString *firstname = signUpViewController.firstname;
+    NSString *lastname = signUpViewController.lastname;
+    BOOL isPasswordConfirmed = signUpViewController.isPasswordConfirmed;
+    
+    BOOL informationComplete = YES;
+    for (id key in info) {
+        NSString *field = [info objectForKey:key];
+        if (!field || field.length == 0) {
+            informationComplete = NO;
+            break;
+        }
+    }
+    
+    // Make sure first and last name have been defined
+    if([firstname isEqual:nil] || [(NSNull *)firstname isEqual: [NSNull null]] || [lastname isEqual: nil] || [(NSNull *)lastname isEqual: [NSNull null]] || !isPasswordConfirmed){
+        informationComplete = NO;
+    }
+    
+    if (!informationComplete) {
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Missing Information", nil)
+                                    message:NSLocalizedString(@"Make sure you fill out all required information!", nil)
+                                   delegate:nil
+                          cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                          otherButtonTitles:nil] show];
+    }
+    
+    return informationComplete;
+}
+
+// Sent to the delegate when a PFUser is signed up.
+- (void)signUpViewController:(PFSignUpViewController *)signUpController didSignUpUser:(PFUser *)user {
+    NSLog(@"%@::signUpViewController:didSignUpUser:",APPDELEGATE_RESPONDER);
+    
+    if(user && [PFUser currentUser]){
+        
+        user[@"firstname"]      = signUpViewController.firstname;
+        user[@"lastname"]       = signUpViewController.lastname;
+        user[@"lastLogin"]      = [NSDate date];
+        user[@"displayName"]    = [NSString stringWithFormat:@"%@ %@",signUpViewController.firstname,signUpViewController.lastname];
+        
+        if(![signUpViewController.about isEqual:nil] && ![signUpViewController.about isEqual: @""]){
+            user[@"bio"] = signUpViewController.about;
+        } else {
+            user[@"bio"] = @"Tell us about yourself(Optional)";
+        }
+        
+        UIImage *resizedImage = [signUpViewController.coverPhoto resizedImageWithContentMode:UIViewContentModeScaleAspectFit
+                                                                                      bounds:CGSizeMake(560.0f, 560.0f)
+                                                                        interpolationQuality:kCGInterpolationHigh];
+        
+        UIImage *thumbImage = [signUpViewController.coverPhoto thumbnailImage:86.0f
+                                                            transparentBorder:0.0f
+                                                                 cornerRadius:10.0f
+                                                         interpolationQuality:kCGInterpolationDefault];
+        
+        // JPEG to decrease file size and enable faster uploads & downloads
+        NSData *imageData           = UIImageJPEGRepresentation(resizedImage, 0.8f);
+        NSData *thumbnailImageData  = UIImagePNGRepresentation(thumbImage);
+        
+        if (imageData || thumbnailImageData) {
+            user[@"profilePictureMedium"]   = [PFFile fileWithName:@"medium.jpeg" data:imageData];
+            user[@"profilePictureSmall"]    = [PFFile fileWithName:@"small.png" data:imageData];
+        }
+        
+        [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if (error) {
+                [user saveEventually];
+                NSLog(@"error... %@", error);
+            }
+        }];
+        
+    } else {
+        NSLog(@"User is NOT logged in.");
+    }
+}
+
+// Sent to the delegate when the sign up attempt fails.
+- (void)signUpViewController:(PFSignUpViewController *)signUpController didFailToSignUpWithError:(NSError *)error {
+    NSLog(@"%@::signUpViewController:didFailToSignUpWithError:%@",APPDELEGATE_RESPONDER,error);
+}
+
+// Sent to the delegate when the sign up screen is dismissed.
+- (void)signUpViewControllerDidCancelSignUp:(PFSignUpViewController *)signUpController {
+    NSLog(@"%@::signUpViewControllerDidCancelSignUp:",APPDELEGATE_RESPONDER);
+}
+
+
 
 @end

@@ -68,7 +68,7 @@ NSString *const kFTActivityTypeReward     = @"reward";
 // Field keys
 NSString *const kFTUserDisplayNameKey                          = @"displayName";
 NSString *const kFTUserFirstnameKey                            = @"firstname";
-NSString *const kFTUserlastnameKey                             = @"lastname";
+NSString *const kFTUserLastnameKey                             = @"lastname";
 NSString *const kFTUserInterestsKey                            = @"interests";
 NSString *const kFTUserBioKey                                  = @"bio";
 NSString *const kFTUserFacebookIDKey                           = @"facebookId";
@@ -86,6 +86,7 @@ NSString *const kFTUserDescriptionKey                          = @"description";
 NSString *const kFTUserEmailKey                                = @"email";
 NSString *const kFTUserPostCountKey                            = @"postCount";
 NSString *const kFTUserRewardsEarnedKey                        = @"rewardsEarned";
+NSString *const kFTUserLastLoginKey                            = @"lastLogin";
 
 // Type values
 NSString *const kFTUserTypeUser                                = @"user";
@@ -124,6 +125,7 @@ NSString *const kFTPostThumbnailKey         = @"thumbnail";
 NSString *const kFTPostTypeKey              = @"type";
 NSString *const kFTPostOpenGraphIDKey       = @"fbOpenGraphID";
 NSString *const kFTPostLocationKey          = @"location";
+NSString *const kFTPostPostsKey             = @"posts";
 
 NSString *const kFTPostTypeGallery          = @"gallery";
 NSString *const kFTPostTypeGalleryImage     = @"galleryImage";
@@ -164,3 +166,12 @@ NSString *const kFTPushPayloadActivityFollowKey   = @"f";
 NSString *const kFTPushPayloadFromUserObjectIdKey = @"fu";
 NSString *const kFTPushPayloadToUserObjectIdKey   = @"tu";
 NSString *const kFTPushPayloadPhotoObjectIdKey    = @"pid";
+
+#pragma mark - FaceBook Keys
+NSString *const FBUserFirstNameKey  = @"first_name";
+NSString *const FBUserLastNameKey   = @"last_name";
+NSString *const FBUserNameKey       = @"name";
+NSString *const FBUserEmailKey      = @"email";
+NSString *const FBUserIDKey         = @"id";
+
+

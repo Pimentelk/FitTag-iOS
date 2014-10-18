@@ -22,6 +22,7 @@
 + (void)followUserInBackground:(PFUser *)user block:(void (^)(BOOL succeeded, NSError *error))completionBlock;
 + (void)followUserEventually:(PFUser *)user block:(void (^)(BOOL succeeded, NSError *error))completionBlock;
 + (void)followUsersEventually:(NSArray *)users block:(void (^)(BOOL succeeded, NSError *error))completionBlock;
++ (void)unfollowUserEventually:(PFUser *)user block:(void (^)(NSError *error))completionBlock;
 + (void)unfollowUserEventually:(PFUser *)user;
 + (void)unfollowUsersEventually:(NSArray *)users;
 
@@ -29,6 +30,10 @@
 + (void)drawSideAndBottomDropShadowForRect:(CGRect)rect inContext:(CGContextRef)context;
 + (void)drawSideAndTopDropShadowForRect:(CGRect)rect inContext:(CGContextRef)context;
 + (void)addBottomDropShadowToNavigationBarForNavigationController:(UINavigationController *)navigationController;
++ (UIImageView *)getProfileHexagonWithX:(CGFloat)hexX
+                                      Y:(CGFloat)hexY
+                                  width:(CGFloat)hexW
+                                 hegiht:(CGFloat)hexH;
 
 //+ (PFQuery *)queryForActivitiesOnPhoto:(PFObject *)photo cachePolicy:(PFCachePolicy)cachePolicy;
 //+ (PFQuery *)queryForActivitiesOnVideo:(PFObject *)video cachePolicy:(PFCachePolicy)cachePolicy;

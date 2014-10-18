@@ -1,5 +1,5 @@
 //
-//  CameraImagePickerViewController.m
+//  FTCamRollViewController.m
 //  FitTag
 //
 //  Created by Kevin Pimentel on 6/26/14.
@@ -12,7 +12,6 @@
 #import "ImageCustomNavigationBar.h"
 #import "FTEditPhotoViewController.h"
 #import "FTOverlayView.h"
-#import "FTNavigationBar.h"
 #import "FTToolBar.h"
 #import "FTEditPostViewController.h"
 
@@ -78,7 +77,7 @@
     
     ELCImagePickerController *elcPicker = [[ELCImagePickerController alloc] initImagePicker];
     
-    elcPicker.maximumImagesCount = 100; //Set the maximum number of images to select to 100
+    elcPicker.maximumImagesCount = 4; //Set the maximum number of images to select to 100
     elcPicker.returnsOriginalImage = YES; //Only return the fullScreenImage, not the fullResolutionImage
     elcPicker.returnsImage = YES; //Return UIimage if YES. If NO, only return asset location information
     elcPicker.onOrder = YES; //For multiple image selection, display and return order of selected images

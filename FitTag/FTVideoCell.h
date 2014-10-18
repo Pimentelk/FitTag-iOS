@@ -27,6 +27,7 @@ typedef enum {
 @property (nonatomic, strong) UIButton *usernameRibbon;
 @property (nonatomic, retain) MPMoviePlayerController *moviePlayer;
 
+
 /*! @name Creating Video Header View */
 /*!
  Initializes the view with the specified interaction elements.
@@ -107,5 +108,19 @@ typedef enum {
  @param the video for which the more button will be used
  */
 //- (void)videoCellView:(FTVideoCell *)videoCellView didTapPlayButton:(UIButton *)button forVideoFile:(PFFile *)videoFile;
+
+
+/*!
+ Sent to the delegate when the location is tapped
+ @param the video for which the location button will be used
+ */
+- (void)videoCellView:(FTVideoCell *)videoCellView didTapLocation:(id)sender video:(PFObject *)video;
+
+/*!
+ Sent to the delegate when the video button is tapped
+ @param the button for which the tap was registered
+ */
+- (void)videoCellView:(FTVideoCell *)videoCellView didTapVideoButton:(UIButton *)button;
+
 @end
 

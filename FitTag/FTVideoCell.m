@@ -15,7 +15,7 @@
 @property (nonatomic, strong) UIButton *moreButton;
 @property (nonatomic, strong) UIButton *userButton;
 @property (nonatomic, strong) UIView *containerView;
-@property (nonatomic, strong) UILabel *timestampLabel;
+@property (nonatomic, strong) UILabel *locationLabel;
 @property (nonatomic, strong) FTProfileImageView *avatarImageView;
 @property (nonatomic, strong) TTTTimeIntervalFormatter *timeIntervalFormatter;
 @end
@@ -26,7 +26,7 @@
 @synthesize containerView;
 @synthesize avatarImageView;
 @synthesize userButton;
-@synthesize timestampLabel;
+@synthesize locationLabel;
 @synthesize timeIntervalFormatter;
 @synthesize video;
 @synthesize buttons;
@@ -50,13 +50,18 @@
         
         self.backgroundColor = [UIColor clearColor];
         
-        self.imageView.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
+        self.imageView.frame = CGRectMake( 0.0f, 0.0f, self.frame.size.width, 320.0f);
         self.imageView.backgroundColor = [UIColor clearColor];
         self.imageView.contentMode = UIViewContentModeScaleAspectFill;
         
+        UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapVideoButtonAction:)];
+        singleTap.numberOfTapsRequired = 1;
+        
         self.videoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.videoButton.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
+        self.videoButton.frame = CGRectMake( 0.0f, 0.0f, self.frame.size.width, 320.0f);
         self.videoButton.backgroundColor = [UIColor clearColor];
+        
+        [self.videoButton addGestureRecognizer:singleTap];
         [self.contentView addSubview:self.videoButton];
         
         UIView *videoCellButtonsContainer = [[UIView alloc] init];
@@ -165,6 +170,14 @@
         [moviePlayer.view setHidden:YES];
         [videoButton addSubview:moviePlayer.view];
         
+        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 285, 110, 40)];
+        [locationLabel setText:@""];
+        [locationLabel setFont:[UIFont systemFontOfSize:12.0f]];
+        [locationLabel setBackgroundColor:[UIColor clearColor]];
+        [locationLabel setTextColor:[UIColor whiteColor]];
+        [self addSubview:locationLabel];
+        [self bringSubviewToFront:locationLabel];
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieFinishedCallBack:) name:MPMoviePlayerPlaybackDidFinishNotification object:moviePlayer];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerStateChange:) name:MPMoviePlayerPlaybackStateDidChangeNotification object:moviePlayer];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadStateDidChange:) name:MPMoviePlayerLoadStateDidChangeNotification object:moviePlayer];
@@ -219,14 +232,40 @@
         [self.moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
+    /* Location */
+    PFGeoPoint *geoPoint = [self.video objectForKey:kFTPostLocationKey];
+    if (geoPoint) {
+        CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
+        CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
+        [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+            if (!error) {
+                for (CLPlacemark *placemark in placemarks) {
+                    NSString *postLocation = [NSString stringWithFormat:@" %@, %@", [placemark locality], [placemark administrativeArea]];
+                    if (postLocation) {
+                        [locationLabel setText:postLocation];
+                        [locationLabel setUserInteractionEnabled:YES];
+                        
+                        UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
+                        locationTapRecognizer.numberOfTapsRequired = 1;
+                        [locationLabel addGestureRecognizer:locationTapRecognizer];
+                    }
+                }
+            } else {
+                NSLog(@"ERROR: %@",error);
+            }
+        }];
+    } else {
+        [locationLabel setText:@""];
+    }
+    
     [self setNeedsDisplay];
 }
 
--(void)movieFinishedCallBack:(NSNotification *)notification{
+- (void)movieFinishedCallBack:(NSNotification *)notification{
     [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:self.moviePlayer];
 }
 
--(void)loadStateDidChange:(NSNotification *)notification{
+- (void)loadStateDidChange:(NSNotification *)notification{
     //NSLog(@"loadStateDidChange: %@",notification);
     
     if (self.moviePlayer.loadState & MPMovieLoadStatePlayable) {
@@ -248,7 +287,7 @@
     }
 }
 
--(void)moviePlayerStateChange:(NSNotification *)notification{
+- (void)moviePlayerStateChange:(NSNotification *)notification{
     
     //NSLog(@"moviePlayerStateChange: %@",notification);
     
@@ -367,6 +406,7 @@
 }
 
 - (void)didTapUserButtonAction:(UIButton *)sender{
+    NSLog(@"FTVideoCell::didTapUserButtonAction");
     if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapUserButton:user:)]) {
         [delegate videoCellView:self didTapUserButton:sender user:[self.video objectForKey:kFTPostUserKey]];
     }
@@ -397,6 +437,22 @@
         [delegate videoCellView:self didTapPlayButton:sender forVideoFile:[self.video objectForKey:kFTPostVideoKey]];
     }
     */
+}
+
+- (void)didTapLocationAction:(FTVideoCell *)sender {
+    NSLog(@"FTVideoCell::didTapLocationAction");
+    if (self.video) {
+        if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapLocation:video:)]){
+            [delegate videoCellView:self didTapLocation:sender video:self.video];
+        }
+    }
+}
+
+- (void)didTapVideoButtonAction:(UIButton *)button {
+    NSLog(@"FTVideoCell::didTapVideoButtonAction");
+    if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapVideoButton:)]){
+        [delegate videoCellView:self didTapVideoButton:button];
+    }
 }
 
 @end

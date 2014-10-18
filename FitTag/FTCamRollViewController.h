@@ -1,5 +1,5 @@
 //
-//  CameraImagePickerViewController.h
+//  FTCamRollViewController.h
 //  FitTag
 //
 //  Created by Kevin Pimentel on 6/26/14.

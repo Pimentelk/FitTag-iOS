@@ -1,14 +1,14 @@
 //
-//  FeedViewController.h
+//  FTFeedViewController.h
 //  FitTag
 //
-//  Created by Kevin Pimentel on 7/13/14.
+//  Created by Kevin Pimentel on 8/16/14.
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-#import "FTToolBar.h"
-#import "FTPhotoTimelineViewController.h"
+#import "FTTimelineViewController.h"
+//#import "FTToolbar.h"
 
-@interface FTFeedViewController : PFQueryTableViewController <FTToolBarDelegate>
+@interface FTFeedViewController : FTTimelineViewController //<FTToolBarDelegate>
 @property (nonatomic, assign, getter = isFirstLaunch) BOOL firstLaunch;
 @end

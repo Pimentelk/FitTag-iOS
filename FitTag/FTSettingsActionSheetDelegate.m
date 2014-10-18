@@ -8,7 +8,8 @@
 
 #import "FTSettingsActionSheetDelegate.h"
 #import "FTFindFriendsViewController.h"
-#import "FTAccountViewController.h"
+//#import "FTAccountViewController.h"
+#import "FTUserProfileCollectionViewController.h"
 #import "AppDelegate.h"
 
 // ActionSheet button indexes
@@ -49,9 +50,20 @@ typedef enum {
     switch ((kFTSettingsActionSheetButtons)buttonIndex) {
         case kFTSettingsProfile:
         {
-            FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
-            [accountViewController setUser:[PFUser currentUser]];
-            [navController pushViewController:accountViewController animated:YES];
+            //FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
+            //[accountViewController setUser:[PFUser currentUser]];
+            //[navController pushViewController:accountViewController animated:YES];
+            UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+            [flowLayout setItemSize:CGSizeMake(105.5,105)];
+            [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+            [flowLayout setMinimumInteritemSpacing:0];
+            [flowLayout setMinimumLineSpacing:0];
+            [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+            [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+            
+            FTUserProfileCollectionViewController *profileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
+            [profileViewController setUser:[PFUser currentUser]];
+            [navController pushViewController:profileViewController animated:YES];
             break;
         }
         case kFTSettingsFindFriends:

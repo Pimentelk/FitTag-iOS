@@ -10,14 +10,26 @@
 #import "FTProfileImageView.h"
 #import "TTTTimeIntervalFormatter.h"
 #import "FTUtility.h"
+#import "FTGallerySwiperView.h"
+
+#define EXTRA_PADDING 3
+#define REMOVE_EXTRA_PADDING 4
 
 @interface FTGalleryCell ()
 @property (nonatomic, strong) UIButton *moreButton;
-@property (nonatomic, strong) UIView *containerView;
-@property (nonatomic, strong) FTProfileImageView *avatarImageView;
 @property (nonatomic, strong) UIButton *userButton;
-@property (nonatomic, strong) UILabel *timestampLabel;
+
+@property (nonatomic, strong) UIView *containerView;
+
+@property (nonatomic, strong) FTProfileImageView *avatarImageView;
+
+@property (nonatomic, strong) UILabel *locationLabel;
+
 @property (nonatomic, strong) TTTTimeIntervalFormatter *timeIntervalFormatter;
+
+@property (nonatomic, assign) CGFloat lastContentOffset;
+
+@property (nonatomic, strong) FTGallerySwiperView *swiperView;
 @end
 
 @implementation FTGalleryCell
@@ -25,7 +37,7 @@
 @synthesize containerView;
 @synthesize avatarImageView;
 @synthesize userButton;
-@synthesize timestampLabel;
+@synthesize locationLabel;
 @synthesize timeIntervalFormatter;
 @synthesize gallery;
 @synthesize buttons;
@@ -36,26 +48,25 @@
 @synthesize likeCounter;
 @synthesize moreButton;
 @synthesize usernameRibbon;
+@synthesize carousel;
+@synthesize swiperView;
 
 #pragma mark - NSObject
 
 - (id)initWithStyle:(UITableViewCellStyle)style
     reuseIdentifier:(NSString *)reuseIdentifier {
-    
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    
     if (self) {
         // Initialization code
         self.opaque = NO;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.accessoryType = UITableViewCellAccessoryNone;
-        self.clipsToBounds = NO;
         
         self.backgroundColor = [UIColor clearColor];
         
         self.imageView.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
-        self.imageView.backgroundColor = [UIColor blackColor];
-        self.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        self.imageView.backgroundColor = [UIColor clearColor];
+        self.imageView.contentMode = UIViewContentModeScaleAspectFill;
         
         self.galleryButton = [UIButton buttonWithType:UIButtonTypeCustom];
         self.galleryButton.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
@@ -71,9 +82,9 @@
         [FTGalleryCell validateButtons:otherButtons];
         buttons = otherButtons;
         
-        self.clipsToBounds = NO;
-        self.containerView.clipsToBounds = NO;
-        self.superview.clipsToBounds = NO;
+        self.clipsToBounds = YES;
+        self.containerView.clipsToBounds = YES;
+        self.superview.clipsToBounds = YES;
         [self setBackgroundColor:[UIColor clearColor]];
         
         UIImageView *profileHexagon = [self getProfileHexagon];
@@ -98,6 +109,14 @@
         self.usernameRibbon.contentEdgeInsets = UIEdgeInsetsMake(0, 5, 0, 0);
         [self.contentView addSubview:self.usernameRibbon];
         [self.contentView bringSubviewToFront:self.avatarImageView];
+        
+        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 285, 110, 40)];
+        [locationLabel setText:@""];
+        [locationLabel setFont:[UIFont systemFontOfSize:12.0f]];
+        [locationLabel setBackgroundColor:[UIColor clearColor]];
+        [locationLabel setTextColor:[UIColor whiteColor]];
+        [self addSubview:locationLabel];
+        [self bringSubviewToFront:locationLabel];
         
         if (self.buttons & FTGalleryCellButtonsLike) {
             // like button
@@ -144,6 +163,23 @@
         [moreButton setBackgroundColor:[UIColor clearColor]];
         [moreButton setTitle:@"" forState:UIControlStateNormal];
         [galleryCellButtonsContainer addSubview:moreButton];
+        
+        swiperView = [[FTGallerySwiperView alloc] initWithFrame:CGRectMake(usernameRibbon.frame.origin.x + EXTRA_PADDING,
+                                                                           usernameRibbon.frame.origin.y + usernameRibbon.frame.size.height,
+                                                                           usernameRibbon.frame.size.width - REMOVE_EXTRA_PADDING,
+                                                                           usernameRibbon.frame.size.height)];
+        
+        carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 320.0f,320.0f)];
+        [carousel setDelegate:self];
+        [carousel setUserInteractionEnabled:YES];
+        [carousel setDelaysContentTouches:YES];
+        [carousel setExclusiveTouch:YES];
+        [carousel setCanCancelContentTouches:YES];
+        [carousel setBackgroundColor:[UIColor clearColor]];
+        [carousel setPagingEnabled: YES];
+        [carousel setAlwaysBounceVertical:NO];
+        [carousel setHidden:YES];
+        [self.galleryButton addSubview:carousel];
     }
     
     return self;
@@ -162,6 +198,47 @@
 - (void)setGallery:(PFObject *)aGallery {
     gallery = aGallery;
     
+    /* Fetch all images and add them to the scrollview */
+    [PFObject fetchAllIfNeededInBackground:[gallery objectForKey:kFTPostPostsKey] block:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            
+            // Clear the carousel
+            for (UIView *carouseSubView in carousel.subviews) {
+                [carouseSubView removeFromSuperview];
+            }
+            
+            int i = 0;
+            for (PFObject *post in objects) {
+                PFFile *file = [post objectForKey:kFTPostImageKey];
+                [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                    if (!error) {
+                        
+                        UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapImageInGalleryAction:)];
+                        singleTap.numberOfTapsRequired = 1;
+                        
+                        CGFloat xOrigin = i * 320;
+                        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, 320.0f, 320.0f)];
+                        [imageView setBackgroundColor:[UIColor clearColor]];
+                        UIImage *image = [UIImage imageWithData:data];
+                        [imageView setImage:image];
+                        [imageView setClipsToBounds:YES];
+                        [imageView setContentMode:UIViewContentModeScaleAspectFill];
+                        [imageView setUserInteractionEnabled:YES];
+                        [imageView addGestureRecognizer:singleTap];
+                        [carousel addSubview:imageView];
+                    }
+                }];
+                i++;
+            }
+            
+            [self.swiperView setNumberOfDashes:i];
+            [self.contentView addSubview:self.swiperView];
+            
+            [carousel setContentSize: CGSizeMake(320.0f * objects.count, 320.0f)];
+            [carousel setHidden:NO];
+       } 
+    }];
+     
     // User profile image
     PFUser *user = [self.gallery objectForKey:kFTPostUserKey];
     PFFile *profilePictureSmall = [user objectForKey:kFTUserProfilePicSmallKey];
@@ -191,6 +268,32 @@
         [self.moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
+    /* Location */
+    PFGeoPoint *geoPoint = [self.gallery objectForKey:kFTPostLocationKey];
+    if (geoPoint) {
+        CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
+        CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
+        [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+            if (!error) {
+                for (CLPlacemark *placemark in placemarks) {
+                    NSString *postLocation = [NSString stringWithFormat:@" %@, %@", [placemark locality], [placemark administrativeArea]];
+                    if (postLocation) {
+                        [locationLabel setText:postLocation];
+                        [locationLabel setUserInteractionEnabled:YES];
+                        
+                        UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
+                        locationTapRecognizer.numberOfTapsRequired = 1;
+                        [locationLabel addGestureRecognizer:locationTapRecognizer];
+                    }
+                }
+            } else {
+                NSLog(@"ERROR: %@",error);
+            }
+        }];
+    } else {
+        [locationLabel setText:@""];
+    }
+    
     [self setNeedsDisplay];
 }
 
@@ -214,13 +317,54 @@
     }
 }
 
+#pragma mark - UIScrollViewDelegate
+
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if (scrollView.contentOffset.x < 0 || scrollView.contentOffset.x > (scrollView.contentSize.width - 320))
+        [self killScroll];
+    
+    static NSInteger previousPage = 0;
+    CGFloat pageWidth = scrollView.frame.size.width;
+    float fractionalPage = scrollView.contentOffset.x / pageWidth;
+    NSInteger page = lround(fractionalPage);
+    if (previousPage != page) {
+        if (previousPage < page) {
+            [self.swiperView onGallerySwipedLeft: page];
+        } else if (previousPage > page) {
+            [self.swiperView onGallerySwipedRight: page];
+        }
+        previousPage = page;
+    }
+}
+
+- (void)killScroll {
+    self.carousel.scrollEnabled = NO;
+    self.carousel.scrollEnabled = YES;
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    //NSLog(@"FTGalleryCell::scrollViewDidScroll");
+    /*
+    ScrollDirection scrollDirection;
+    if (self.lastContentOffset > scrollView.contentOffset.x) {
+        scrollDirection = ScrollDirectionRight;
+        [self.swiperView onGallerySwipedRight];
+    } else if (self.lastContentOffset < scrollView.contentOffset.x) {
+        scrollDirection = ScrollDirectionLeft;
+        [self.swiperView onGallerySwipedLeft];        
+    }
+    
+    self.lastContentOffset = scrollView.contentOffset.x;
+    */
+}
+
 #pragma mark - ()
 
-- (UIImageView *)getProfileHexagon{
+- (UIImageView *)getProfileHexagon {
     
     UIImageView *imageView = [[UIImageView alloc] init];
     imageView.frame = CGRectMake( 4.0f, 4.0f, 42.0f, 42.0f);
-    imageView.backgroundColor = [UIColor redColor];
+    imageView.backgroundColor = [UIColor clearColor];
     
     CGRect rect = CGRectMake( 4.0f, 4.0f, 40.0f, 40.0f);
     
@@ -273,27 +417,46 @@
 }
 
 - (void)didTapUserButtonAction:(UIButton *)sender{
+    NSLog(@"FTGalleryCell::didTapUserButtonAction");
     if (delegate && [delegate respondsToSelector:@selector(galleryCellView:didTapUserButton:user:)]) {
         [delegate galleryCellView:self didTapUserButton:sender user:[self.gallery objectForKey:kFTPostUserKey]];
     }
 }
 
-- (void)didTapLikeGalleryButtonAction:(UIButton *)button{
+- (void)didTapLikeGalleryButtonAction:(UIButton *)button {
+    NSLog(@"FTGalleryCell::didTapLikeGalleryButtonAction");
     if (delegate && [delegate respondsToSelector:@selector(galleryCellView:didTapLikeGalleryButton:counter:gallery:)]) {
         [delegate galleryCellView:self didTapLikeGalleryButton:button counter:self.likeCounter gallery:self.gallery];
     }
 }
 
-- (void)didTapCommentOnGalleryButtonAction:(UIButton *)sender{
+- (void)didTapCommentOnGalleryButtonAction:(UIButton *)sender {
+    NSLog(@"FTGalleryCell::didTapCommentOnGalleryButtonAction");
     if (delegate && [delegate respondsToSelector:@selector(galleryCellView:didTapCommentOnGalleryButton:gallery:)]) {
         [delegate galleryCellView:self didTapCommentOnGalleryButton:sender gallery:self.gallery];
     }
 }
 
-- (void)didTapMoreButtonAction:(UIButton *)sender{
+-(void)didTapImageInGalleryAction:(UIButton *)sender {
+    NSLog(@"FTGalleryCell::didTapImageInGalleryAction");
+    if (delegate && [delegate respondsToSelector:@selector(galleryCellView:didTapImageInGalleryAction:gallery:)]) {
+        [delegate galleryCellView:self didTapImageInGalleryAction:sender gallery:self.gallery];
+    }
+}
+
+- (void)didTapMoreButtonAction:(UIButton *)sender {
+    NSLog(@"FTGalleryCell::didTapMoreButtonAction");
     if (delegate && [delegate respondsToSelector:@selector(galleryCellView:didTapMoreButton:gallery:)]){
         [delegate galleryCellView:self didTapMoreButton:sender gallery:self.gallery];
     }
 }
+
+- (void)didTapLocationAction:(UIButton *)sender {
+    NSLog(@"FTGalleryCell::didTapLocationAction");
+    if (delegate && [delegate respondsToSelector:@selector(galleryCellView:didTapLocation:gallery:)]){
+        [delegate galleryCellView:self didTapLocation:sender gallery:self.gallery];
+    }
+}
+
 @end
 

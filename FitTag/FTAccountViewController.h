@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-#import "FTPhotoTimelineViewController.h"
+#import "FTTimelineViewController.h"
 
-@interface FTAccountViewController : FTPhotoTimelineViewController
+@interface FTAccountViewController : FTTimelineViewController
 
 @property (nonatomic, strong) PFUser *user;
 

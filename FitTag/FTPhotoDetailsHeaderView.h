@@ -62,4 +62,11 @@
  */
 - (void)photoDetailsHeaderView:(FTPhotoDetailsHeaderView *)headerView didTapUserButton:(UIButton *)button user:(PFUser *)user;
 
+/*!
+ Sent to the delegate when the photgrapher's name/avatar is tapped
+ @param button the tapped UIButton
+ @param user the PFUser for the photograper
+ */
+- (void)photoDetailsHeaderView:(FTPhotoDetailsHeaderView *)headerView didTapLocation:(UIButton *)button photo:(PFObject *)photo;
+
 @end

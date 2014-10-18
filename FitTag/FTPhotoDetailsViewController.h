@@ -7,9 +7,10 @@
 //
 
 #import "FTPhotoDetailsHeaderView.h"
+#import "FTPhotoDetailsFooterView.h"
 #import "FTBaseTextCell.h"
 
-@interface FTPhotoDetailsViewController : PFQueryTableViewController <UITextFieldDelegate, /* UIActionSheetDelegate, */ FTPhotoDetailsHeaderViewDelegate, FTBaseTextCellDelegate>
+@interface FTPhotoDetailsViewController : PFQueryTableViewController <UITextFieldDelegate, FTPhotoDetailsHeaderViewDelegate, FTPhotoDetailsFooterViewDelegate, FTBaseTextCellDelegate>
 
 @property (nonatomic, strong) PFObject *photo;
 

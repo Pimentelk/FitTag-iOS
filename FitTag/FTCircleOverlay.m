@@ -12,10 +12,13 @@
 @synthesize radius = _radius;
 @synthesize coordinate = _coordinate;
 
-
 #pragma mark - Initialization
 
 - (id)initWithCoordinate:(CLLocationCoordinate2D)aCoordinate radius:(CLLocationDistance)aRadius {
+    NSLog(@"%@::initWithCoordinate:radius:",VIEWCONTROLLER_CIRCLE);
+    NSLog(@"aCoordinate: %f - %f",aCoordinate.latitude,aCoordinate.longitude);
+    NSLog(@"aRadius: %f",aRadius);
+    
     self = [super init];
     if (self) {
         _coordinate = aCoordinate;
@@ -28,13 +31,15 @@
 #pragma mark - MKAnnotation
 
 - (void)setCoordinate:(CLLocationCoordinate2D)newCoordinate {
+    NSLog(@"%@::setCoordinate:",VIEWCONTROLLER_CIRCLE);
+    NSLog(@"newCoordinate: %f - %f",newCoordinate.latitude,newCoordinate.longitude);
     _coordinate = newCoordinate;
 }
 
 - (MKMapRect)boundingMapRect {
+    NSLog(@"%@::boundingMapRect:",VIEWCONTROLLER_CIRCLE);
     MKMapPoint centerMapPoint = MKMapPointForCoordinate(_coordinate);
-    MKCoordinateRegion region =
-    MKCoordinateRegionMakeWithDistance(_coordinate, _radius * 2, _radius * 2);
+    MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(_coordinate, _radius * 2, _radius * 2);
     return MKMapRectMake(centerMapPoint.x,
                          centerMapPoint.y,
                          region.span.latitudeDelta,

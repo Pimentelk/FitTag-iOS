@@ -43,13 +43,13 @@
 -(void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.navigationItem setTitle:@"REWARDS"];
+    [self.navigationItem setTitle:NAVIGATION_TITLE_REWARDS];
     
     // Override the back idnicator
     UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"]
                                                                       style:UIBarButtonItemStylePlain
                                                                      target:self
-                                                                     action:@selector(popDetailViewController:)];
+                                                                     action:@selector(didTapBackButtonAction:)];
     [backIndicator setTintColor:[UIColor whiteColor]];
     [self.navigationItem setLeftBarButtonItem:backIndicator];
     
@@ -192,7 +192,7 @@
         } else {
             user.email = nil;
             UIAlertView *invalidEmail = [[UIAlertView alloc] initWithTitle:@"Invalid Email"
-                                                                    message:@"You did not enter a valid email, reward could not be sent."
+                                                                   message:@"You did not enter a valid email, reward could not be sent."
                                                                   delegate:nil
                                                          cancelButtonTitle:@"OK"
                                                          otherButtonTitles:nil];
@@ -227,8 +227,8 @@
     }];
 }
 
-- (void)popDetailViewController:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
+- (void)didTapBackButtonAction:(id)sender {
+    [self.navigationController popViewControllerAnimated:NO];
 }
 
 - (void)removeReward:(id)sender {

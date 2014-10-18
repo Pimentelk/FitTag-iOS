@@ -107,6 +107,10 @@
     [super viewDidLoad];
     
     // Start Updating Location
+    if(IS_OS_8_OR_LATER) {
+        [self.locationManager requestWhenInUseAuthorization];
+        [self.locationManager requestAlwaysAuthorization];
+    }
     [[self locationManager] startUpdatingLocation];
     
     // NavigationBar & ToolBar
@@ -476,7 +480,7 @@
             }
         }];
         
-        // Dismiss this screen
+        // Dismiss this screen        
         [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
         
     } else {

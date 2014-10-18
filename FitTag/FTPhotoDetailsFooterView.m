@@ -9,15 +9,41 @@
 #import "FTPhotoDetailsFooterView.h"
 #import "FTUtility.h"
 
+// Send button constants
+#define SEND_BUTTON_WIDTH 47
+#define SEND_BUTTON_HEIGHT 25
+#define SEND_BUTTON_PADDING_RIGHT 6
+#define SEND_BUTTON_PADDING_TOP 9
+
+// MainView constants
+#define MAIN_VIEW_X 0
+#define MAIN_VIEW_Y 0
+#define MAIN_VIEW_HEIGHT 200
+
+// Comment box
+#define COMMENT_BOX_X 0
+#define COMMENT_BOX_Y 0
+#define COMMENT_BOX_HEIGHT 43
+
+// Comment field
+#define COMMENT_FIELD_X 7
+#define COMMENT_FIELD_Y 6
+#define COMMENT_FIELD_WIDTH 252
+#define COMMENT_FIELD_HEIGHT 31
+
+// System font size
+#define DEFAULT_SYSTEM_FONT_SIZE 12
+
 @interface FTPhotoDetailsFooterView ()
 @property (nonatomic, strong) UIView *mainView;
 @end
 
 @implementation FTPhotoDetailsFooterView
-
 @synthesize commentField;
+@synthesize commentSendButton;
 @synthesize mainView;
 @synthesize hideDropShadow;
+@synthesize delegate;
 
 #pragma mark - NSObject
 
@@ -27,20 +53,28 @@
         // Initialization code
         self.backgroundColor = [UIColor clearColor];
         
-        mainView = [[UIView alloc] initWithFrame:CGRectMake( 0.0f, 0.0f, 320.0f, 200.0f)];
+        mainView = [[UIView alloc] initWithFrame:CGRectMake( MAIN_VIEW_X, MAIN_VIEW_Y, self.frame.size.width, MAIN_VIEW_HEIGHT)];
         mainView.backgroundColor = [UIColor whiteColor];
         [self addSubview:mainView];
         
         UIImageView *commentBox = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"comment_bar"]];
-        commentBox.frame = CGRectMake(0.0f, 0.0f, 320.0f, 43.0f);
+        commentBox.frame = CGRectMake(COMMENT_BOX_X, COMMENT_BOX_Y, self.frame.size.width, COMMENT_BOX_HEIGHT);
         [mainView addSubview:commentBox];
         
-        UIImageView *commentBoxButton = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"send_button"]];
-        commentBoxButton.frame = CGRectMake(264.0f, 9.0f, 47.0f, 25.0f);
-        [commentBox addSubview:commentBoxButton];
+        commentSendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [commentSendButton setEnabled:NO];
+        [commentSendButton setBackgroundImage:[UIImage imageNamed:@"send_button"] forState:UIControlStateNormal];
+        [commentSendButton addTarget:self action:@selector(didTapSendButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [commentSendButton setFrame: CGRectMake(self.frame.size.width - SEND_BUTTON_WIDTH - SEND_BUTTON_PADDING_RIGHT,
+                                               self.frame.origin.y + SEND_BUTTON_PADDING_TOP,
+                                               SEND_BUTTON_WIDTH, SEND_BUTTON_HEIGHT)];
         
-        commentField = [[UITextField alloc] initWithFrame:CGRectMake( 7.0f, 6.0f, 252.0f, 31.0f)];
-        commentField.font = [UIFont systemFontOfSize:12.0f];
+        [commentSendButton setUserInteractionEnabled:YES];
+        [mainView addSubview:commentSendButton];
+        [mainView bringSubviewToFront:commentSendButton];
+        
+        commentField = [[UITextField alloc] initWithFrame:CGRectMake( COMMENT_FIELD_X, COMMENT_FIELD_Y, COMMENT_FIELD_WIDTH, COMMENT_FIELD_HEIGHT)];
+        commentField.font = [UIFont systemFontOfSize:DEFAULT_SYSTEM_FONT_SIZE];
         commentField.returnKeyType = UIReturnKeySend;
         commentField.textColor = [UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f];
         commentField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
@@ -65,6 +99,15 @@
 
 + (CGRect)rectForView {
     return CGRectMake( 0.0f, 0.0f, [UIScreen mainScreen].bounds.size.width, 69.0f);
+}
+
+#pragma mark - ()
+
+- (void)didTapSendButtonAction:(UIButton *)button {
+    NSLog(@"FTPhotoDetailsFooterView::didTapSendButtonAction");
+    if (delegate && [delegate respondsToSelector:@selector(photoDetailsFooterView:didTapSendButton:)]){
+        [delegate photoDetailsFooterView:self didTapSendButton:button];
+    }
 }
 
 @end
