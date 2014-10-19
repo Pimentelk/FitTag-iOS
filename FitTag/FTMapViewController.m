@@ -14,21 +14,11 @@
 #import "FTBusinessGeoPointAnnotation.h"
 #import "FTMapScrollView.h"
 #import "FTMapScrollViewItem.h"
-
-/* HomeViewController Imports for testing */
-#import "FeedCollectionViewFlowLayout.h"
-#import "FTFeedViewController.h"
-#import "FTSettingsActionSheetDelegate.h"
-#import "FTSettingsButtonItem.h"
+#import "FTInterestsViewController.h"
+#import "FTInterestViewFlowLayout.h"
 #import "FTFindFriendsViewController.h"
 #import "MBProgressHUD.h"
-#import "ImageCustomNavigationBar.h"
-#import "FindFriendsFlowLayout.h"
-#import "FTActivityFeedViewController.h"
-#import "FTCamViewController.h"
-#import "FTRewardsCollectionViewController.h"
 #import "FTSearchViewController.h"
-#import "FTUserProfileCollectionViewController.h"
 
 // CONSTANTS
 
@@ -176,6 +166,8 @@ enum PinAnnotationTypeTag {
 
     [self.mapView addSubview:mapScrollView];
     [self.mapView bringSubviewToFront:mapScrollView];
+    
+    [self isFirstTimeUser:[PFUser currentUser]];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -209,11 +201,12 @@ enum PinAnnotationTypeTag {
 #pragma mark - Navigation Bar
 
 - (void)didTapLoadCameraButtonAction:(UIBarButtonItem *)button {
-    FTCamViewController *camViewController = [[FTCamViewController alloc] init];
-    [self.navigationController pushViewController:camViewController animated:YES];
+    //FTCamViewController *camViewController = [[FTCamViewController alloc] init];
+    //[self.navigationController pushViewController:camViewController animated:YES];
 }
 
 - (void)didTapAddFriendsButtonAction:(UIBarButtonItem *)button {
+    /*
     // Layout param
     FindFriendsFlowLayout *layoutFlow = [[FindFriendsFlowLayout alloc] init];
     [layoutFlow setItemSize:CGSizeMake(320,42)];
@@ -226,6 +219,7 @@ enum PinAnnotationTypeTag {
     // Show the interests
     FTFindFriendsViewController *detailViewController = [[FTFindFriendsViewController alloc] init];
     [self.navigationController pushViewController:detailViewController animated:YES];
+    */
 }
 
 - (void)dismissKeyboard:(id)sender {
@@ -337,6 +331,35 @@ enum PinAnnotationTypeTag {
 }
 
 #pragma mark - ()
+
+- (BOOL) isFirstTimeUser:(PFUser *)user {
+    NSLog(@"%@::isFirstTimeUser:",VIEWCONTROLLER_CONFIG);
+    // Check if the user has logged in before
+    if (![user objectForKey:kFTUserLastLoginKey]) {
+        FTInterestViewFlowLayout *layoutFlow = [[FTInterestViewFlowLayout alloc] init];
+        [layoutFlow setItemSize:CGSizeMake(159.5,42)];
+        [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
+        [layoutFlow setMinimumInteritemSpacing:0];
+        [layoutFlow setMinimumLineSpacing:0];
+        [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+        [layoutFlow setHeaderReferenceSize:CGSizeMake(320,80)];
+        
+        // Show the interests
+        FTInterestsViewController *interestsViewController = [[FTInterestsViewController alloc] initWithCollectionViewLayout:layoutFlow];
+        UINavigationController *navController = [[UINavigationController alloc] init];
+        [navController setViewControllers:@[interestsViewController] animated:NO];
+        [self presentViewController:navController animated:YES completion: ^(){
+            [user setValue:[NSDate date] forKey:kFTUserLastLoginKey];
+            [user saveEventually];
+            [self.tabBarController setSelectedIndex:1];
+        }];
+        NSLog(FIRSTTIME_USER);
+        return YES;
+    }
+    
+    NSLog(RETURNING_USER);
+    return NO;
+}
 
 - (void)configureOverlay {
     NSLog(@"%@::configureOverlay",VIEWCONTROLLER_MAP);
@@ -531,68 +554,6 @@ enum PinAnnotationTypeTag {
     [textField setText:EMPTY_STRING];
     return [textField resignFirstResponder];
 }
-
-#pragma mark - FTToolBarDelegate
-
-/*
-- (void)didTapNotificationsButton:(id)sender {
-    NSLog(@"%@::didTapNotificationsButton:",VIEWCONTROLLER_MAP);
-    FTActivityFeedViewController *activityFeedViewController = [[FTActivityFeedViewController alloc] initWithStyle:UITableViewStylePlain];
-    [self.navigationController pushViewController:activityFeedViewController animated:NO];
-}
-
-- (void)didTapSearchButton:(id)sender {
-    //NSLog(@"FTFeedViewController::toolbarView:didTapSearchButton:");
-    //FTSearchViewController *searchViewController = [[FTSearchViewController alloc] init];
-    //[self.navigationController pushViewController:searchViewController animated:YES];
-    
-    // Homeviewcontroller feed
-    FeedCollectionViewFlowLayout *layoutFlow = [[FeedCollectionViewFlowLayout alloc] init];
-    [layoutFlow setItemSize:CGSizeMake(320,320)];
-    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [layoutFlow setMinimumInteritemSpacing:0];
-    [layoutFlow setMinimumLineSpacing:0];
-    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,80)];
-    
-    // Show the interests
-    FTFeedViewController *homeViewController = [[FTFeedViewController alloc] initWithClassName:kFTPostClassKey];
-    
-    // Present the Home View Controller
-    [self.navigationController pushViewController:homeViewController animated:NO];
-}
-
-- (void)didTapMyProfileButton:(id)sender {
-    NSLog(@"%@::didTapMyProfileButton:",VIEWCONTROLLER_MAP);
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(105.5,105)];
-    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [flowLayout setMinimumInteritemSpacing:0];
-    [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
-    
-    FTUserProfileCollectionViewController *profileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController setUser:[PFUser currentUser]];
-    [self.navigationController pushViewController:profileViewController animated:NO];
-}
-
-- (void)didTapRewardsButton:(id)sender {
-    NSLog(@"%@::didTapRewardsButton:",VIEWCONTROLLER_MAP);
-    // Layout param
-    FindFriendsFlowLayout *layoutFlow = [[FindFriendsFlowLayout alloc] init];
-    [layoutFlow setItemSize:CGSizeMake(158,185)];
-    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [layoutFlow setMinimumInteritemSpacing:0];
-    [layoutFlow setMinimumLineSpacing:0];
-    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,160)];
-    
-    FTRewardsCollectionViewController *rewardsViewController = [[FTRewardsCollectionViewController alloc] initWithCollectionViewLayout:layoutFlow];
-    [self.navigationController pushViewController:rewardsViewController animated:NO];
-    
-}
-*/
 
 #pragma mark - CLLocationManagerDelegate
 
