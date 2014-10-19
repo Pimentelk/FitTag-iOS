@@ -49,11 +49,12 @@
 #pragma mark - FTProfileImageView
 
 - (void)setFile:(PFFile *)file {    
-    if (!file) {
-        return;
-    }
-    
+
     self.profileImageView.image = [UIImage imageNamed:IMAGE_PROFILE_DEFAULT];
+    
+    if (!file)
+        return;
+    
     self.profileImageView.file = file;
     [self.profileImageView loadInBackground];
 }
