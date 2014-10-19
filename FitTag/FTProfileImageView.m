@@ -48,12 +48,12 @@
 
 #pragma mark - FTProfileImageView
 
-- (void)setFile:(PFFile *)file {
+- (void)setFile:(PFFile *)file {    
     if (!file) {
         return;
     }
     
-    self.profileImageView.image = [UIImage imageNamed:@"AvatarPlaceholder"];
+    self.profileImageView.image = [UIImage imageNamed:IMAGE_PROFILE_DEFAULT];
     self.profileImageView.file = file;
     [self.profileImageView loadInBackground];
 }
