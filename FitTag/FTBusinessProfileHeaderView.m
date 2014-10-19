@@ -161,7 +161,7 @@
         [profileBiography setBackgroundColor:[UIColor whiteColor]];
         [profileBiography setTextColor:[UIColor blackColor]];
         [profileBiography setFont:[UIFont boldSystemFontOfSize:14.0f]];
-        [profileBiography setText:DEFAULT_BIO_TEXT];
+        [profileBiography setText:DEFAULT_BIO_TEXT_B];
         [profileBiography setUserInteractionEnabled:NO];
         [self.containerView addSubview:profileBiography];
         
@@ -288,7 +288,7 @@
 - (void)fetchBusinessProfileData:(PFUser *)aBusiness {
     
     if (!aBusiness) {
-        [NSException raise:NSInvalidArgumentException format:@"user cannot be nil"];
+        [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
     }
     
     PFFile *imageFile = [self.business objectForKey:kFTUserProfilePicMediumKey];
