@@ -9,16 +9,16 @@
 #import "FTFeedViewController.h"
 #import "FTSettingsActionSheetDelegate.h"
 #import "FTSettingsButtonItem.h"
-#import "FTFindFriendsViewController.h"
 #import "MBProgressHUD.h"
 #import "ImageCustomNavigationBar.h"
-#import "FindFriendsFlowLayout.h"
-#import "FTActivityFeedViewController.h"
-#import "FTCamViewController.h"
-#import "FTRewardsCollectionViewController.h"
-#import "FTSearchViewController.h"
-//#import "FTAccountViewController.h"
-#import "FTUserProfileCollectionViewController.h"
+#import "FTFindFriendsViewController.h"
+
+#define IMAGE_WIDTH 253.0f
+#define IMAGE_HEIGHT 173.0f
+#define IMAGE_X 33.0f
+#define IMAGE_Y 96.0f
+
+#define ANIMATION_DURATION 0.200f
 
 @interface FTFeedViewController ()
 @property (nonatomic, strong) FTSettingsActionSheetDelegate *settingsActionSheetDelegate;
@@ -44,29 +44,16 @@
     self.blankTimelineView = [[UIView alloc] initWithFrame:self.tableView.bounds];
     
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.frame = CGRectMake( 33.0f, 96.0f, 253.0f, 173.0f);
-    [button setBackgroundImage:[UIImage imageNamed:@"HomeTimelineBlank.png"] forState:UIControlStateNormal];
+    button.frame = CGRectMake( IMAGE_X, IMAGE_Y, IMAGE_WIDTH, IMAGE_HEIGHT);
+    [button setBackgroundImage:[UIImage imageNamed:IMAGE_TIMELINE_BLANK] forState:UIControlStateNormal];
     [button addTarget:self action:@selector(inviteFriendsButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.blankTimelineView addSubview:button];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    [self.navigationController setToolbarHidden:YES];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-
-    // Get the classname of the next view controller
-    NSUInteger numberOfViewControllersOnStack = [self.navigationController.viewControllers count];
-    UIViewController *parentViewController = self.navigationController.viewControllers[numberOfViewControllersOnStack-1];
-    Class parentVCClass = [parentViewController class];
-    NSString *className = NSStringFromClass(parentVCClass);
-    
-    if([className isEqual:VIEWCONTROLLER_CAM]){
-        [self.navigationController setToolbarHidden:YES];
-    }
+- (void)viewDidAppear:(BOOL)animated {    
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_MAP];
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
 }
 
 #pragma mark - PFQueryTableViewController
@@ -81,7 +68,7 @@
             self.blankTimelineView.alpha = 0.0f;
             self.tableView.tableHeaderView = self.blankTimelineView;
         
-            [UIView animateWithDuration:0.200f animations:^{
+            [UIView animateWithDuration:ANIMATION_DURATION animations:^{
                 self.blankTimelineView.alpha = 1.0f;
             }];
         }
@@ -95,96 +82,10 @@
 
 #pragma mark - ()
 
-- (void)settingsButtonAction:(id)sender {
-    self.settingsActionSheetDelegate = [[FTSettingsActionSheetDelegate alloc] initWithNavigationController:self.navigationController];
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-                                                             delegate:self.settingsActionSheetDelegate
-                                                    cancelButtonTitle:@"Cancel"
-                                               destructiveButtonTitle:nil
-                                                    otherButtonTitles:@"My Profile",@"Find Friends",@"Log Out", nil];
-    
-    [actionSheet showFromTabBar:self.tabBarController.tabBar];
-}
-
 - (void)inviteFriendsButtonAction:(id)sender {
     FTFindFriendsViewController *detailViewController = [[FTFindFriendsViewController alloc] init];
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
-
-#pragma mark - Navigation Bar
-
-- (void)didTapLoadCameraButtonAction:(id)sender {
-    FTCamViewController *camViewController = [[FTCamViewController alloc] init];
-    [self.navigationController pushViewController:camViewController animated:YES];
-}
-
-/*
-- (void)addFriends:(id)sender {
-    // Layout param
-    FindFriendsFlowLayout *layoutFlow = [[FindFriendsFlowLayout alloc] init];
-    [layoutFlow setItemSize:CGSizeMake(320,42)];
-    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [layoutFlow setMinimumInteritemSpacing:0];
-    [layoutFlow setMinimumLineSpacing:0];
-    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,32)];
-    
-    // Show the interests
-    FTFindFriendsViewController *detailViewController = [[FTFindFriendsViewController alloc] init];
-    [self.navigationController pushViewController:detailViewController animated:YES];
-}
-*/
-
-- (void)didTapBackButtonAction:(id)sender{
-    [self.navigationController popViewControllerAnimated:NO];
-    //[self.navigationController popToRootViewControllerAnimated:YES];
-}
-/*
-#pragma mark - FTToolBarDelegate
-
-- (void)didTapNotificationsButton:(id)sender {
-    NSLog(@"FTFeedViewController::toolbarView:didTapNotificationsButton:");
-    FTActivityFeedViewController *activityFeedViewController = [[FTActivityFeedViewController alloc] init];
-    [self.navigationController pushViewController:activityFeedViewController animated:YES];
-}
-
-- (void)didTapSearchButton:(id)sender {
-    NSLog(@"FTFeedViewController::toolbarView:didTapSearchButton:");
-    FTSearchViewController *searchViewController = [[FTSearchViewController alloc] init];
-    [self.navigationController pushViewController:searchViewController animated:YES];
-}
-
-- (void)didTapMyProfileButton:(id)sender {
-    NSLog(@"FTFeedViewController::toolbarView:didTapMyProfileButton:");
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(105.5,105)];
-    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [flowLayout setMinimumInteritemSpacing:0];
-    [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
-    
-    FTUserProfileCollectionViewController *profileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController setUser:[PFUser currentUser]];
-    [self.navigationController pushViewController:profileViewController animated:YES];
-}
-
-- (void)didTapRewardsButton:(id)sender {
-    NSLog(@"FTFeedViewController::toolbarView:didTapRewardsButton:");
-    // Layout param
-    FindFriendsFlowLayout *layoutFlow = [[FindFriendsFlowLayout alloc] init];
-    [layoutFlow setItemSize:CGSizeMake(158,185)];
-    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [layoutFlow setMinimumInteritemSpacing:0];
-    [layoutFlow setMinimumLineSpacing:0];
-    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,160)];
-    
-    FTRewardsCollectionViewController *rewardsViewController = [[FTRewardsCollectionViewController alloc] initWithCollectionViewLayout:layoutFlow];
-    [self.navigationController pushViewController:rewardsViewController animated:YES];
-
-}
-*/
 
 @end
 
