@@ -432,6 +432,10 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     // Show the tabbar
     [self.tabBarController.tabBar setHidden:NO];
     
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_CAM];
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
+    
 	dispatch_async([self sessionQueue], ^{
 		[[self session] stopRunning];
 		
