@@ -50,7 +50,7 @@
     [self.blankTimelineView addSubview:button];
 }
 
-- (void)viewDidAppear:(BOOL)animated {    
+- (void)viewDidAppear:(BOOL)animated {
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_MAP];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];

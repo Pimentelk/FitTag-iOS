@@ -100,18 +100,8 @@ enum PinAnnotationTypeTag {
     // Update the users location
     [[self locationManager] startUpdatingLocation];
     
-    // UIBarbutton items
-    UIBarButtonItem *addFriendsButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_ADD_CONTACTS]
-                                                                             style:UIBarButtonItemStylePlain target:self
-                                                                            action:@selector(didTapAddFriendsButtonAction:)];
-    
-    [addFriendsButtonItem setTintColor:[UIColor whiteColor]];
-    [self.navigationItem setLeftBarButtonItem:addFriendsButtonItem];
-    
     // Set title
     [self.navigationItem setTitle:NAVIGATION_TITLE_SEARCH];
-    [self.navigationItem setHidesBackButton:NO];
-    [self.navigationController setToolbarHidden:YES];
     
     // Set Background
     [self.view setBackgroundColor:[UIColor whiteColor]];
@@ -170,68 +160,20 @@ enum PinAnnotationTypeTag {
     [self isFirstTimeUser:[PFUser currentUser]];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    [self.navigationController setToolbarHidden:YES];
-}
-
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_MAP];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
-    
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    
-    // Get the classname of the next view controller
-    NSUInteger numberOfViewControllersOnStack = [self.navigationController.viewControllers count];
-    UIViewController *parentViewController = self.navigationController.viewControllers[numberOfViewControllersOnStack-1];
-    Class parentVCClass = [parentViewController class];
-    NSString *className = NSStringFromClass(parentVCClass);
-    
-    if([className isEqual:VIEWCONTROLLER_CAM]){
-        [self.navigationController setToolbarHidden:YES];
-    }
 }
 
 #pragma mark - Navigation Bar
-
-- (void)didTapLoadCameraButtonAction:(UIBarButtonItem *)button {
-    //FTCamViewController *camViewController = [[FTCamViewController alloc] init];
-    //[self.navigationController pushViewController:camViewController animated:YES];
-}
-
-- (void)didTapAddFriendsButtonAction:(UIBarButtonItem *)button {
-    /*
-    // Layout param
-    FindFriendsFlowLayout *layoutFlow = [[FindFriendsFlowLayout alloc] init];
-    [layoutFlow setItemSize:CGSizeMake(320,42)];
-    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [layoutFlow setMinimumInteritemSpacing:0];
-    [layoutFlow setMinimumLineSpacing:0];
-    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,32)];
-    
-    // Show the interests
-    FTFindFriendsViewController *detailViewController = [[FTFindFriendsViewController alloc] init];
-    [self.navigationController pushViewController:detailViewController animated:YES];
-    */
-}
 
 - (void)dismissKeyboard:(id)sender {
     if (searchHeaderView.searchbar != nil)
         [searchHeaderView.searchbar resignFirstResponder];
 }
-
-/*
-- (void)returnHome:(id)sender{    
-    [self.navigationController popViewControllerAnimated:YES];
-}
-*/
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
     

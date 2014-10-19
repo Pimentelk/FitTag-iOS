@@ -64,11 +64,6 @@
     return self;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    NSLog(@"Memory warning on Edit");
-}
-
 #pragma mark - UIViewController
 
 - (void)loadView {
@@ -128,6 +123,14 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     
     [self shouldUploadImage:self.image];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_EDIT_PHOTO];
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
 }
 
 #pragma mark - UITextFieldDelegate

@@ -292,6 +292,14 @@
     }
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_EDIT_POST];
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
+}
+
 #pragma mark - checkForHashTag & Mention
 
 - (NSArray *) checkForHashtag {

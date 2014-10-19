@@ -69,6 +69,14 @@
     }];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_CAM_ROLL];
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
+}
+
 - (void)closeCameraRollAction:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -159,9 +167,6 @@
 -(void)elcImagePickerControllerDidCancel:(ELCImagePickerController *)picker {
     [self dismissViewControllerAnimated:NO completion:nil];
     [self.navigationController popViewControllerAnimated:NO];
-    
-    
-    
 }
 
 @end

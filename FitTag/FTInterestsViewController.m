@@ -87,16 +87,17 @@
     
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    NSLog(@"InterestsViewController::didReceiveMemoryWarning");
-    // Dispose of any resources that can be recreated.
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_INTERESTS];
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
 }
 
 #pragma mark - InterestViewController
 
-- (void)submitUserInterests
-{
+- (void)submitUserInterests {
     if( selectedInterests.count < 3){
         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Missing Information", nil)
                                     message:NSLocalizedString(@"Make sure you select 3 interests!", nil)

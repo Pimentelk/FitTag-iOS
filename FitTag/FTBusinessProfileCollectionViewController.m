@@ -13,6 +13,13 @@
 //#import "MBProgressHUD.h"
 #import "FTMapViewController.h"
 
+#define GRID_SMALL @"SMALLGRID"
+#define GRID_FULL @"FULLGRID"
+#define GRID_BUSINESS @"BUSINESSES"
+#define GRID_TAGGED @"TAGGED"
+#define REUSEABLE_IDENTIFIER_DATA @"DataCell"
+#define REUSEABLE_IDENTIFIER_HEADER @"HeaderView"
+
 @interface FTBusinessProfileCollectionViewController() <UICollectionViewDataSource,UICollectionViewDelegate> {
     NSString *cellTab;
 }
@@ -28,66 +35,43 @@
     [super viewDidLoad];
     
     if (!self.business) {
-        [NSException raise:NSInvalidArgumentException format:@"user cannot be nil"];
+        [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
     }
     
-    cellTab = @"SMALLGRID"; // SMALLGRIDE | FULLGRID | BUSINESSES | TAGGED
+    cellTab = GRID_SMALL;
     
     // Toolbar & Navigationbar Setup
     [self.navigationItem setTitle:[business objectForKey:kFTUserDisplayNameKey]];
-    [self.navigationItem setHidesBackButton:NO];
-    [self.navigationController setNavigationBarHidden:NO animated:NO];
     
-    UIBarButtonItem *backIndicatorButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"]
+    UIBarButtonItem *backIndicatorButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]
                                                                                 style:UIBarButtonItemStylePlain
                                                                                target:self
                                                                                action:@selector(didTapBackButtonAction:)];
     
-    UIBarButtonItem *loadCameraButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"fittag_button"]
-                                                                             style:UIBarButtonItemStylePlain
-                                                                            target:self
-                                                                            action:@selector(loadCameraAction:)];
-    
     [backIndicatorButtonItem setTintColor:[UIColor whiteColor]];
-    [loadCameraButtonItem setTintColor:[UIColor whiteColor]];
-    
     [self.navigationItem setLeftBarButtonItem:backIndicatorButtonItem];
-    [self.navigationItem setRightBarButtonItem:loadCameraButtonItem];
     
     // Set Background
     [self.collectionView setBackgroundColor:[UIColor whiteColor]];
-    
+
     // Data view
     [self.collectionView registerClass:[FTUserProfileCollectionViewCell class]
-            forCellWithReuseIdentifier:@"DataCell"];
+            forCellWithReuseIdentifier:REUSEABLE_IDENTIFIER_DATA];
     
     [self.collectionView registerClass:[FTBusinessProfileHeaderView class]
             forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-                   withReuseIdentifier:@"HeaderView"];
+                   withReuseIdentifier:REUSEABLE_IDENTIFIER_HEADER];
     
     [self.collectionView setDelegate: self];
     [self.collectionView setDataSource: self];
-    
     [self queryForTable:self.business];
 }
 
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillDisappear:animated];
-    [self.navigationController setToolbarHidden:NO];
-}
-
-- (void)viewWillDisappear:(BOOL)animated{
-    [super viewWillDisappear:animated];
-    
-    // Get the classname of the next view controller
-    NSUInteger numberOfViewControllersOnStack = [self.navigationController.viewControllers count];
-    UIViewController *parentViewController = self.navigationController.viewControllers[numberOfViewControllersOnStack-1];
-    Class parentVCClass = [parentViewController class];
-    NSString *className = NSStringFromClass(parentVCClass);
-    
-    if([className isEqual: @"FTCamViewController"]){
-        [self.navigationController setToolbarHidden:YES];
-    }
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];    
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_BUSINESS];
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
 }
 
 - (void)queryForTable:(PFUser *)aUser {
@@ -163,7 +147,7 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     // Set up cell identifier that matches the Storyboard cell name
-    static NSString *identifier = @"DataCell";
+    static NSString *identifier = REUSEABLE_IDENTIFIER_DATA;
     FTUserProfileCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
     
     if ([cell isKindOfClass:[FTUserProfileCollectionViewCell class]]) {
@@ -337,7 +321,7 @@
 
 - (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
                            didTapGridButton:(UIButton *)button {
-    cellTab = @"SMALLGRID";
+    cellTab = GRID_SMALL;
     [self queryForTable:self.business];
 }
 
@@ -372,7 +356,7 @@
 - (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
                          didTapTaggedButton:(UIButton *)button {
     
-    cellTab = @"TAGGED"; // kFTUserTypeBusiness | SMALLGRID | FULLGRID | TAGGED
+    cellTab = GRID_TAGGED;
     NSMutableString *displayName = [[self.business objectForKey:kFTUserDisplayNameKey] mutableCopy];
     NSString *mentionTag = [displayName stringByReplacingOccurrencesOfString:@"@"
                                                                   withString:@""];

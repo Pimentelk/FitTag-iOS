@@ -122,6 +122,13 @@
 
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_REWARDS_DETAIL];
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
+}
+
 - (void)yesButtonClickHandlerAction {
     
     [self removePopup];

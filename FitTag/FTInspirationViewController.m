@@ -10,25 +10,11 @@
 #import "CollectionHeaderView.h"
 #import "InspirationCellCollectionView.h"
 #import "FTFindFriendsViewController.h"
-#import "FindFriendsFlowLayout.h"
-
-@interface FTInspirationViewController ()
-
-@end
+#import "FTFindFriendsFlowLayout.h"
 
 @implementation FTInspirationViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
 
     // View layout
@@ -68,18 +54,20 @@
     
     [self.navigationController.toolbar addSubview:nextMessage];
     [self.navigationController.toolbar addSubview:nextButton];
-    
 }
 
-- (void)didReceiveMemoryWarning{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_INSPIRATION];
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
 }
 
 - (void)submitUserInspiration:(id)sender{
     // Layout param
     // Layout param
-    FindFriendsFlowLayout *layoutFlow = [[FindFriendsFlowLayout alloc] init];
+    FTFindFriendsFlowLayout *layoutFlow = [[FTFindFriendsFlowLayout alloc] init];
     [layoutFlow setItemSize:CGSizeMake(320,42)];
     [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
     [layoutFlow setMinimumInteritemSpacing:0];

@@ -49,6 +49,11 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     NSLog(@"%@::viewDidAppear:",VIEWCONTROLLER_CONFIG);
+    [super viewDidAppear:animated];
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_CONFIG];
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
+    
     if (![PFUser currentUser]) {
         // Customize the Log In View Controller
         loginViewController = [[FTLoginViewController alloc] init];
@@ -66,9 +71,8 @@
     }
 }
 
-- (void)refreshCurrentUserCallbackWithResult:(PFObject *)refreshedObject error:(NSError *)error {
-    
-}
+//- (void)refreshCurrentUserCallbackWithResult:(PFObject *)refreshedObject error:(NSError *)error {
+//}
 
 #pragma mark - DidLoginWithSocialMedia
 
@@ -126,15 +130,7 @@
             
             [user setValue:[PFFile fileWithName:SMALL_JPEG data:profileImageData]
                     forKey:kFTUserProfilePicSmallKey];
-            
-            
-            //user[@"displayName"]            = TWuser[@"name"];
-            //user[@"twitterId"]              = [NSString stringWithFormat:@"%@",TWuser[@"id"]];
-            //user[@"bio"]                    = @"WHAT MAKES YOU, YOU? (OPTIONAL)";
-            //user[@"profilePictureMedium"]   = [PFFile fileWithName:@"medium.jpeg" data:profileImageData];
-            //user[@"profilePictureSmall"]    = [PFFile fileWithName:@"small.png" data:profileImageData];
-            //user[@"lastLogin"]              = [NSDate date];
-            
+  
             [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (error) {
                     NSLog(@"%@%@",ERROR_MESSAGE,error);

@@ -64,11 +64,6 @@
     return self;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    //NSLog(@"Memory warning on Edit");
-}
-
 #pragma mark - UIViewController
 
 - (void)loadView {
@@ -171,6 +166,14 @@
     [self.scrollView bringSubviewToFront:self.playButton];
     
     [self shouldUploadVideo:self.video];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_EDIT_VIDEO];
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
 }
 
 -(void)movieFinishedCallBack:(NSNotification *)notification{

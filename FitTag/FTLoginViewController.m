@@ -164,6 +164,14 @@
     [self.logInView.passwordField setFrame:CGRectMake((self.view.frame.size.width)/4.0f - 5.0f,240.0f,190.0f,50.0f)];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_LOGIN];
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
+}
+
 - (float)getCenterX:(float)elementWith {
     return (self.view.frame.size.width)/2.0f - elementWith/2.0f;
 }
