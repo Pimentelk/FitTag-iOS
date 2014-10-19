@@ -22,6 +22,17 @@
 #define VIEWCONTROLLER_BUSINESS_ANNOTATION_VIEW @"FTBusinessAnnotationView"
 #define VIEWCONTROLLER_CONFIG @"FTConfigViewController"
 #define VIEWCONTROLLER_TABBAR @"FTTabBarController"
+#define VIEWCONTROLLER_REWARDS_DETAIL @"FTRewardsDetailView"
+#define VIEWCONTROLLER_USER @"FTUserProfileCollectionViewController"
+#define VIEWCONTROLLER_BUSINESS @"FTUserBusinessProfileCollectionViewController"
+#define VIEWCONTROLLER_LOGIN @"FTLoginViewController"
+#define VIEWCONTROLLER_SIGNUP @"FTSignupViewController"
+#define VIEWCONTROLLER_INTERESTS @"FTInterestsViewController"
+#define VIEWCONTROLLER_INSPIRATION @"FTInspirationViewController"
+#define VIEWCONTROLLER_CAM_ROLL @"FTCamRollViewController"
+#define VIEWCONTROLLER_EDIT_POST @"FTEditPostViewController"
+#define VIEWCONTROLLER_EDIT_PHOTO @"FTEditPhotoViewController"
+#define VIEWCONTROLLER_EDIT_VIDEO @"FTEditVideoViewController"
 
 // COLOR
 #define FT_COLOR_RED 234.0f/255.0f
