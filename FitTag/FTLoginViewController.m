@@ -19,33 +19,15 @@
 @end
 
 @implementation FTLoginViewController
+@synthesize loginHex;
+@synthesize signupBackground;
+@synthesize fitTagMotto;
+@synthesize signupMessage;
+@synthesize redSignupButton;
 
-- (float)getCenterX:(float)elementWith
-{
-    return (self.view.frame.size.width)/2.0f - elementWith/2.0f;
-}
 
-#pragma mark - UIViewController
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
-@synthesize loginHex, signupBackground, fitTagMotto, signupMessage, redSignupButton;
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [self.navigationController setNavigationBarHidden:YES animated:animated];
-    [super viewWillAppear:animated];
-}
-
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
+    
     [super viewDidLoad];
     
     // Set background image
@@ -182,19 +164,11 @@
     [self.logInView.passwordField setFrame:CGRectMake((self.view.frame.size.width)/4.0f - 5.0f,240.0f,190.0f,50.0f)];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [self.navigationController setNavigationBarHidden:NO animated:animated];
-    [super viewWillDisappear:animated];
+- (float)getCenterX:(float)elementWith {
+    return (self.view.frame.size.width)/2.0f - elementWith/2.0f;
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (void)hideKeyboard
-{
+- (void)hideKeyboard {
     [self.logInView.usernameField resignFirstResponder];
     [self.logInView.passwordField resignFirstResponder];
     [self.logInView scrollToY:0];
@@ -202,8 +176,7 @@
 
 #pragma mark - UITextFieldDelegate
 
-- (void)textFieldDidBeginEditing:(UITextField *)textField
-{
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
     [self.logInView scrollToView:textField];
 }
 
