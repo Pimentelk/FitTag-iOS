@@ -23,11 +23,12 @@
     [super viewDidLoad];
     
     //[[self tabBar] setBackgroundImage:[UIImage imageNamed:@"BackgroundTabBar.png"]];
-    //    [[self tabBar] setSelectionIndicatorImage:[UIImage imageNamed:@"BackgroundTabBarItemSelected.png"]];
-    self.tabBar.tintColor = [UIColor colorWithRed:234.0f/255.0f green:37.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+    //[[self tabBar] setSelectionIndicatorImage:[UIImage imageNamed:@"BackgroundTabBarItemSelected.png"]];
+    
+    self.tabBar.tintColor = [UIColor colorWithRed:FT_COLOR_RED green:FT_COLOR_GREEN blue:FT_COLOR_BLUE alpha:1.0f];
     
     // iOS 7 style
-    self.tabBar.tintColor = [UIColor colorWithRed:234.0f/255.0f green:37.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+    self.tabBar.tintColor = [UIColor colorWithRed:FT_COLOR_RED green:FT_COLOR_GREEN blue:FT_COLOR_BLUE alpha:1.0f];
     self.tabBar.barTintColor = [UIColor whiteColor];
     
     self.navController = [[UINavigationController alloc] init];
@@ -37,7 +38,7 @@
 #pragma mark - UITabBarController
 
 - (void)setViewControllers:(NSArray *)viewControllers animated:(BOOL)animated {
-    NSLog(@"%@::setViewControllers:animated:",VIEWCONTROLLER_TABBAR);
+    //NSLog(@"%@::setViewControllers:animated:",VIEWCONTROLLER_TABBAR);
     [super setViewControllers:viewControllers animated:animated];
 }
 
