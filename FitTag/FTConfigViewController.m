@@ -28,7 +28,6 @@
 @end
 
 @implementation FTConfigViewController
-@synthesize firstLaunch;
 
 #pragma mark - UIViewController
 
@@ -186,43 +185,6 @@
     NSLog(@"%@ %@",ERROR_MESSAGE,USER_NOT_LOGIN_FACEBOOK);
     return NO;
 }
-
-/*
-- (BOOL) isFirstTimeUser:(PFUser *)user {
-    NSLog(@"%@::isFirstTimeUser:",VIEWCONTROLLER_CONFIG);
-    
-    // Check if user first login
-    if (![user objectForKey:kFTUserLastLoginKey]) {
-        
-        [self didLogInWithFacebook:user];
-        [self didLogInWithTwitter:user];
-        
-        InterestCollectionViewFlowLayout *layoutFlow = [[InterestCollectionViewFlowLayout alloc] init];
-        [layoutFlow setItemSize:CGSizeMake(159.5,42)];
-        [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-        [layoutFlow setMinimumInteritemSpacing:0];
-        [layoutFlow setMinimumLineSpacing:0];
-        [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-        [layoutFlow setHeaderReferenceSize:CGSizeMake(320,80)];
-        
-        // Show the interests
-        FTInterestsViewController *interestsViewController = [[FTInterestsViewController alloc] initWithCollectionViewLayout:layoutFlow];
-        UINavigationController *navController = [[UINavigationController alloc] init];
-        [navController setViewControllers:@[interestsViewController] animated:NO];
-        [self presentViewController:navController animated:YES completion: ^(){
-            [user setValue:[NSDate date] forKey:kFTUserLastLoginKey];
-            [user saveEventually];
-            [self.tabBarController setSelectedIndex:1];
-        }];
-
-        NSLog(FIRSTTIME_USER);
-        return YES;
-    }
-
-    NSLog(RETURNING_USER);
-    return NO;
-}
-*/
 
 - (void)presentTabBarController:(PFUser *)user {
     
