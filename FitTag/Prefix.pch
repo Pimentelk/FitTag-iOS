@@ -10,6 +10,9 @@
 
 #define APPDELEGATE_RESPONDER @"AppDelegate"
 
+// ERROR CODES
+#define ERROR_MESSAGE @"::::ERROR::::"
+
 // VIEW CONTROLLERS NAMES
 #define VIEWCONTROLLER_ACTIVITY @"FTActivityFeedViewController"
 #define VIEWCONTROLLER_MAP @"FTMapViewController"
@@ -19,6 +22,15 @@
 #define VIEWCONTROLLER_BUSINESS_ANNOTATION_VIEW @"FTBusinessAnnotationView"
 #define VIEWCONTROLLER_CONFIG @"FTConfigViewController"
 #define VIEWCONTROLLER_TABBAR @"FTTabBarController"
+
+// COLOR
+#define FT_COLOR_RED 234.0f/255.0f
+#define FT_COLOR_BLUE 37.0f/255.0f
+#define FT_COLOR_GREEN 37.0f/255.0f
+
+// IMAGES
+#define IMAGE_PROFILE_DEFAULT @"posts_active"
+#define IMAGE_TIMELINE_BLANK @"HomeTimelineBlank.png"
 
 // TAB NAVIGATION BAR BUTTONS
 #define BUTTON_IMAGE_NOTIFICATIONS @"notifications"
@@ -47,10 +59,25 @@
 #define NAVIGATION_BAR_BUTTON_ADD_CONTACTS @"add_contacts"
 #define NAVIGATION_BAR_BUTTON_CAMERA @"fittag_button"
 
-// DEFAULT STRINGS
+// STRINGS
 #define EMPTY_STRING @""
 #define IF_USER_NOT_SET_MESSAGE @"user cannot be nil"
-#define DEFAULT_BIO_TEXT @"WHAT MAKES YOU, YOU? (OPTIONAL)"
+#define DEFAULT_BIO_TEXT_A @"Tell us about yourself"
+#define DEFAULT_BIO_TEXT_B @"WHAT MAKES YOU, YOU?"
+#define STRING_MISSING_INFORMATION @"Make sure you fill out all required information!"
+#define SMALL_JPEG @"medium.jpeg"
+#define MEDIUM_JPEG @"small.jpeg"
+#define USER_DID_LOGIN @"User is logged in."
+#define USER_NOT_LOGGEDIN @"User is NOT logged in."
+#define USER_DID_LOGIN_FACEBOOK @"User is logged in with facebook"
+#define USER_NOT_LOGIN_FACEBOOK @"User is not logged in to facebook"
+#define USER_DID_LOGIN_TWITTER @"User is logged in with Twitter"
+#define USER_NOT_LOGIN_TWITTER @"User is not logged in to Twitter"
+#define RETURNING_USER @"This is a returning user."
+#define FIRSTTIME_USER @"This is a firsttime user."
+
+// Twitter Object Keys
+#define TWITTER_PROFILE_HTTPS @"profile_image_url_https"
 
 #define PARSE_HOST @"api.parse.com"
 #define FACEBOOK_GRAPH_PICTURES_URL @"https://graph.facebook.com/%@/picture?type=large&width=600&height=600"
