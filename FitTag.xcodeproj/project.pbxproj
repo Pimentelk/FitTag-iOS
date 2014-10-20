@@ -38,14 +38,13 @@
 		2D53D33719E8AC0600273D7E /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D53D22019E8AB9800273D7E /* FacebookSDK.framework */; };
 		2D6E0224196A24A1004DC010 /* InterestFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D6E0223196A24A1004DC010 /* InterestFlowLayout.m */; };
 		2D77353419DF4C0400F05FC0 /* FTGalleryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D77353319DF4C0400F05FC0 /* FTGalleryCell.m */; };
-		2D9949731996905E000E321E /* FTOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D9949721996905E000E321E /* FTOverlayView.m */; };
 		2D9949761996A9B0000E321E /* FTCameraToolBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D9949751996A9B0000E321E /* FTCameraToolBar.m */; };
 		2DAA63DE1957A51F003B1DDF /* UIView+FormScroll.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DAA63DD1957A51F003B1DDF /* UIView+FormScroll.m */; };
 		2DABDA03195DA48200379891 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DABDA02195DA48200379891 /* AssetsLibrary.framework */; };
 		2DABDA06195DC0E500379891 /* PhotoCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DABDA05195DC0E500379891 /* PhotoCellCollectionView.m */; };
 		2DABDA0A195DE15900379891 /* ImageCustomNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DABDA09195DE15900379891 /* ImageCustomNavigationBar.m */; };
 		2DACD9751962D62200833C14 /* InterestCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD9741962D62200833C14 /* InterestCellCollectionView.m */; };
-		2DACD97819656F8900833C14 /* InterestCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD97719656F8900833C14 /* InterestCollectionViewFlowLayout.m */; };
+		2DACD97819656F8900833C14 /* FTInterestViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD97719656F8900833C14 /* FTInterestViewFlowLayout.m */; };
 		2DACD97B196578DA00833C14 /* FTInspirationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD97A196578DA00833C14 /* FTInspirationViewController.m */; };
 		2DACE8141966FF7200154504 /* CollectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACE8131966FF7200154504 /* CollectionHeaderView.m */; };
 		2DAF5BA119B2A28E00E5E10B /* FTEditVideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF5BA019B2A28E00E5E10B /* FTEditVideoViewController.m */; };
@@ -85,7 +84,6 @@
 		2DD2B67D19840FB500600A42 /* FTActivityCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B67C19840FB500600A42 /* FTActivityCell.m */; };
 		2DD2B6801984100000600A42 /* FTBaseTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B67F1984100000600A42 /* FTBaseTextCell.m */; };
 		2DD2B683198414B700600A42 /* FTPhotoDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B682198414B700600A42 /* FTPhotoDetailsViewController.m */; };
-		2DD2B6861984164E00600A42 /* FTAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B6851984164E00600A42 /* FTAccountViewController.m */; };
 		2DD2B6891984167200600A42 /* FTTimelineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B6881984167200600A42 /* FTTimelineViewController.m */; };
 		2DD2B68D1984170800600A42 /* FTPhotoHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B68C1984170800600A42 /* FTPhotoHeaderView.m */; };
 		2DD2B691198417D500600A42 /* FTLoadMoreCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B690198417D500600A42 /* FTLoadMoreCell.m */; };
@@ -127,7 +125,7 @@
 		2DDBF14A19F1460D009037E2 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DDBF14919F1460D009037E2 /* CoreData.framework */; };
 		2DDBF15119F23E75009037E2 /* FTNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DDBF15019F23E75009037E2 /* FTNavigationController.m */; };
 		2DE7C77F19ECD07100F72188 /* FTGallerySwiperView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DE7C77E19ECD07100F72188 /* FTGallerySwiperView.m */; };
-		2DFE736C197316A700114541 /* FindFriendsFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DFE736B197316A700114541 /* FindFriendsFlowLayout.m */; };
+		2DFE736C197316A700114541 /* FTFindFriendsFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DFE736B197316A700114541 /* FTFindFriendsFlowLayout.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -243,7 +241,6 @@
 		2D53D21819E6396F00273D7E /* FTBusinessProfileHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTBusinessProfileHeaderView.h; sourceTree = "<group>"; };
 		2D53D21919E6396F00273D7E /* FTBusinessProfileHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTBusinessProfileHeaderView.m; sourceTree = "<group>"; };
 		2D53D21E19E8AB9800273D7E /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bolts.framework; sourceTree = "<group>"; };
-		2D53D21F19E8AB9800273D7E /* facebook-ios-sdk-3.19.pkg */ = {isa = PBXFileReference; lastKnownFileType = file; path = "facebook-ios-sdk-3.19.pkg"; sourceTree = "<group>"; };
 		2D53D22019E8AB9800273D7E /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		2D53D22219E8AB9800273D7E /* FBAudienceNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBAudienceNetwork.framework; sourceTree = "<group>"; };
 		2D53D22319E8AB9800273D7E /* README.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
@@ -450,8 +447,6 @@
 		2D6E0223196A24A1004DC010 /* InterestFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterestFlowLayout.m; sourceTree = "<group>"; };
 		2D77353219DF4C0400F05FC0 /* FTGalleryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGalleryCell.h; sourceTree = "<group>"; };
 		2D77353319DF4C0400F05FC0 /* FTGalleryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGalleryCell.m; sourceTree = "<group>"; };
-		2D9949711996905E000E321E /* FTOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTOverlayView.h; sourceTree = "<group>"; };
-		2D9949721996905E000E321E /* FTOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTOverlayView.m; sourceTree = "<group>"; };
 		2D9949741996A9AF000E321E /* FTCameraToolBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCameraToolBar.h; sourceTree = "<group>"; };
 		2D9949751996A9B0000E321E /* FTCameraToolBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCameraToolBar.m; sourceTree = "<group>"; };
 		2DAA63DC1957A51F003B1DDF /* UIView+FormScroll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+FormScroll.h"; sourceTree = "<group>"; };
@@ -463,8 +458,8 @@
 		2DABDA09195DE15900379891 /* ImageCustomNavigationBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCustomNavigationBar.m; sourceTree = "<group>"; };
 		2DACD9731962D62200833C14 /* InterestCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterestCellCollectionView.h; sourceTree = "<group>"; };
 		2DACD9741962D62200833C14 /* InterestCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterestCellCollectionView.m; sourceTree = "<group>"; };
-		2DACD97619656F8900833C14 /* InterestCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterestCollectionViewFlowLayout.h; sourceTree = "<group>"; };
-		2DACD97719656F8900833C14 /* InterestCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterestCollectionViewFlowLayout.m; sourceTree = "<group>"; };
+		2DACD97619656F8900833C14 /* FTInterestViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTInterestViewFlowLayout.h; sourceTree = "<group>"; };
+		2DACD97719656F8900833C14 /* FTInterestViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTInterestViewFlowLayout.m; sourceTree = "<group>"; };
 		2DACD979196578DA00833C14 /* FTInspirationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTInspirationViewController.h; sourceTree = "<group>"; };
 		2DACD97A196578DA00833C14 /* FTInspirationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTInspirationViewController.m; sourceTree = "<group>"; };
 		2DACE8121966FF7200154504 /* CollectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionHeaderView.h; sourceTree = "<group>"; };
@@ -541,8 +536,6 @@
 		2DD2B67F1984100000600A42 /* FTBaseTextCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTBaseTextCell.m; sourceTree = "<group>"; };
 		2DD2B681198414B700600A42 /* FTPhotoDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTPhotoDetailsViewController.h; sourceTree = "<group>"; };
 		2DD2B682198414B700600A42 /* FTPhotoDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTPhotoDetailsViewController.m; sourceTree = "<group>"; };
-		2DD2B6841984164E00600A42 /* FTAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAccountViewController.h; sourceTree = "<group>"; };
-		2DD2B6851984164E00600A42 /* FTAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTAccountViewController.m; sourceTree = "<group>"; };
 		2DD2B6871984167200600A42 /* FTTimelineViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTTimelineViewController.h; sourceTree = "<group>"; };
 		2DD2B6881984167200600A42 /* FTTimelineViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTTimelineViewController.m; sourceTree = "<group>"; };
 		2DD2B68B1984170800600A42 /* FTPhotoHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTPhotoHeaderView.h; sourceTree = "<group>"; };
@@ -580,7 +573,6 @@
 		2DD6915B1949AF5B00B59E75 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2DD6915C1949AF5B00B59E75 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		2DD691641949AF5B00B59E75 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		2DD6916B1949AF5B00B59E75 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		2DD691731949AF5B00B59E75 /* FitTagTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FitTagTests-Info.plist"; sourceTree = "<group>"; };
 		2DD691751949AF5B00B59E75 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		2DD691771949AF5B00B59E75 /* FitTagTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FitTagTests.m; sourceTree = "<group>"; };
@@ -623,8 +615,8 @@
 		2DDBF15019F23E75009037E2 /* FTNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTNavigationController.m; sourceTree = "<group>"; };
 		2DE7C77D19ECD07100F72188 /* FTGallerySwiperView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGallerySwiperView.h; sourceTree = "<group>"; };
 		2DE7C77E19ECD07100F72188 /* FTGallerySwiperView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGallerySwiperView.m; sourceTree = "<group>"; };
-		2DFE736A197316A700114541 /* FindFriendsFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindFriendsFlowLayout.h; sourceTree = "<group>"; };
-		2DFE736B197316A700114541 /* FindFriendsFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindFriendsFlowLayout.m; sourceTree = "<group>"; };
+		2DFE736A197316A700114541 /* FTFindFriendsFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTFindFriendsFlowLayout.h; sourceTree = "<group>"; };
+		2DFE736B197316A700114541 /* FTFindFriendsFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTFindFriendsFlowLayout.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -692,10 +684,10 @@
 		2D410F49197357E900CE2940 /* Layouts */ = {
 			isa = PBXGroup;
 			children = (
-				2DFE736A197316A700114541 /* FindFriendsFlowLayout.h */,
-				2DFE736B197316A700114541 /* FindFriendsFlowLayout.m */,
-				2DACD97619656F8900833C14 /* InterestCollectionViewFlowLayout.h */,
-				2DACD97719656F8900833C14 /* InterestCollectionViewFlowLayout.m */,
+				2DFE736A197316A700114541 /* FTFindFriendsFlowLayout.h */,
+				2DFE736B197316A700114541 /* FTFindFriendsFlowLayout.m */,
+				2DACD97619656F8900833C14 /* FTInterestViewFlowLayout.h */,
+				2DACD97719656F8900833C14 /* FTInterestViewFlowLayout.m */,
 				2D6E0222196A24A1004DC010 /* InterestFlowLayout.h */,
 				2D6E0223196A24A1004DC010 /* InterestFlowLayout.m */,
 				2D410F4A1973581A00CE2940 /* FeedCollectionViewFlowLayout.h */,
@@ -774,7 +766,6 @@
 			isa = PBXGroup;
 			children = (
 				2D53D21E19E8AB9800273D7E /* Bolts.framework */,
-				2D53D21F19E8AB9800273D7E /* facebook-ios-sdk-3.19.pkg */,
 				2D53D22019E8AB9800273D7E /* FacebookSDK.framework */,
 				2D53D22119E8AB9800273D7E /* FBAudienceNetwork */,
 				2D53D24D19E8AB9800273D7E /* LICENSE */,
@@ -1312,8 +1303,6 @@
 				2D4DF05F19E0ED6C00E2E71E /* FTUserProfileCollectionViewController.m */,
 				2D429A091977ED6000F8A9A0 /* FTBusinessProfileCollectionViewController.h */,
 				2D429A0A1977ED6000F8A9A0 /* FTBusinessProfileCollectionViewController.m */,
-				2DD2B6841984164E00600A42 /* FTAccountViewController.h */,
-				2DD2B6851984164E00600A42 /* FTAccountViewController.m */,
 			);
 			name = Profiles;
 			sourceTree = "<group>";
@@ -1458,8 +1447,6 @@
 			children = (
 				2DD2B69919841BC700600A42 /* FTSettingsActionSheetDelegate.h */,
 				2DD2B69A19841BC700600A42 /* FTSettingsActionSheetDelegate.m */,
-				2D9949711996905E000E321E /* FTOverlayView.h */,
-				2D9949721996905E000E321E /* FTOverlayView.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -1496,35 +1483,34 @@
 		2DD6914B1949AF5B00B59E75 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2DDBF14919F1460D009037E2 /* CoreData.framework */,
-				2DDBF14719F145A8009037E2 /* libGoogleAnalyticsServices.a */,
-				2D53D21D19E8AB9700273D7E /* FacebookSDK */,
-				2D007B6019B4074F006E1484 /* MediaPlayer.framework */,
-				2D429A29197B341400F8A9A0 /* UIImageEffects */,
-				2D429A28197B340700F8A9A0 /* TTTTimeIntervalFormatter */,
-				2D429A27197B33F500F8A9A0 /* MBProgressHUD */,
-				2D429A25197B339900F8A9A0 /* libsqlite3.dylib */,
-				2D429A23197B321E00F8A9A0 /* AVFoundation.framework */,
-				2D429A21197B320C00F8A9A0 /* ImageIO.framework */,
-				2D429A18197AF32E00F8A9A0 /* Reachability */,
-				2DABDA02195DA48200379891 /* AssetsLibrary.framework */,
-				2DD691A31949C7E300B59E75 /* FacebookSDK.framework */,
 				2DD691A11949C7C700B59E75 /* Accounts.framework */,
-				2DD6919F1949C7BA00B59E75 /* Social.framework */,
+				2DABDA02195DA48200379891 /* AssetsLibrary.framework */,
+				2DD691831949B04F00B59E75 /* AudioToolbox.framework */,
+				2D429A23197B321E00F8A9A0 /* AVFoundation.framework */,
+				2DD691841949B04F00B59E75 /* CFNetwork.framework */,
+				2DDBF14919F1460D009037E2 /* CoreData.framework */,
+				2DD6914E1949AF5B00B59E75 /* CoreGraphics.framework */,
+				2DD691851949B04F00B59E75 /* CoreLocation.framework */,
+				2D53D21D19E8AB9700273D7E /* FacebookSDK */,
+				2DD691A31949C7E300B59E75 /* FacebookSDK.framework */,
+				2DD6914C1949AF5B00B59E75 /* Foundation.framework */,
+				2D429A21197B320C00F8A9A0 /* ImageIO.framework */,
+				2DDBF14719F145A8009037E2 /* libGoogleAnalyticsServices.a */,
+				2D429A25197B339900F8A9A0 /* libsqlite3.dylib */,
+				2DD691861949B04F00B59E75 /* libz.dylib */,
+				2D429A27197B33F500F8A9A0 /* MBProgressHUD */,
+				2D007B6019B4074F006E1484 /* MediaPlayer.framework */,
 				2DD6918B1949B07C00B59E75 /* MobileCoreServices.framework */,
+				2DD691811949AFA100B59E75 /* Parse.framework */,
 				2DD6918C1949B07C00B59E75 /* QuartzCore.framework */,
+				2D429A18197AF32E00F8A9A0 /* Reachability */,
 				2DD6918D1949B07C00B59E75 /* Security.framework */,
+				2DD6919F1949C7BA00B59E75 /* Social.framework */,
 				2DD6918E1949B07C00B59E75 /* StoreKit.framework */,
 				2DD6918F1949B07C00B59E75 /* SystemConfiguration.framework */,
-				2DD691831949B04F00B59E75 /* AudioToolbox.framework */,
-				2DD691841949B04F00B59E75 /* CFNetwork.framework */,
-				2DD691851949B04F00B59E75 /* CoreLocation.framework */,
-				2DD691861949B04F00B59E75 /* libz.dylib */,
-				2DD691811949AFA100B59E75 /* Parse.framework */,
-				2DD6914C1949AF5B00B59E75 /* Foundation.framework */,
-				2DD6914E1949AF5B00B59E75 /* CoreGraphics.framework */,
+				2D429A28197B340700F8A9A0 /* TTTTimeIntervalFormatter */,
+				2D429A29197B341400F8A9A0 /* UIImageEffects */,
 				2DD691501949AF5B00B59E75 /* UIKit.framework */,
-				2DD6916B1949AF5B00B59E75 /* XCTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1797,7 +1783,6 @@
 				2DAF5BA119B2A28E00E5E10B /* FTEditVideoViewController.m in Sources */,
 				2D77353419DF4C0400F05FC0 /* FTGalleryCell.m in Sources */,
 				2DBE021419D37AF900CD278C /* FTRewardsDetailView.m in Sources */,
-				2DD2B6861984164E00600A42 /* FTAccountViewController.m in Sources */,
 				2DD2B67D19840FB500600A42 /* FTActivityCell.m in Sources */,
 				2DD691981949B24300B59E75 /* FTConfigViewController.m in Sources */,
 				2D007B6A19B6C6BB006E1484 /* FTSearchCell.m in Sources */,
@@ -1824,7 +1809,7 @@
 				2D429A1B197AF37000F8A9A0 /* Reachability.m in Sources */,
 				2DE7C77F19ECD07100F72188 /* FTGallerySwiperView.m in Sources */,
 				2DBE023819D6FB7F00CD278C /* ELCAssetCell.m in Sources */,
-				2DACD97819656F8900833C14 /* InterestCollectionViewFlowLayout.m in Sources */,
+				2DACD97819656F8900833C14 /* FTInterestViewFlowLayout.m in Sources */,
 				2D4DF06619E0FEB700E2E71E /* FTUserProfileCollectionViewCell.m in Sources */,
 				2DAA63DE1957A51F003B1DDF /* UIView+FormScroll.m in Sources */,
 				2DD491E519EF769500A50F5B /* FTBusinessAnnotationView.m in Sources */,
@@ -1835,7 +1820,6 @@
 				2DD2B69E19841C3100600A42 /* FTFindFriendsCell.m in Sources */,
 				2D429A141977EE9E00F8A9A0 /* FTRewardsCollectionViewController.m in Sources */,
 				2DBEEE5719AB4F1E00AAD238 /* FTPostDetailsFooterView.m in Sources */,
-				2D9949731996905E000E321E /* FTOverlayView.m in Sources */,
 				2DBE023919D6FB7F00CD278C /* ELCAssetTablePicker.m in Sources */,
 				2D429A0E1977EE7700F8A9A0 /* FTSearchViewController.m in Sources */,
 				2DBE024719DCF84000CD278C /* FTEditPostViewController.m in Sources */,
@@ -1876,7 +1860,7 @@
 				2DD2B6891984167200600A42 /* FTTimelineViewController.m in Sources */,
 				2DD2B66D198402BB00600A42 /* FTEditPhotoViewController.m in Sources */,
 				2DD6919E1949B74400B59E75 /* FTSignupViewController.m in Sources */,
-				2DFE736C197316A700114541 /* FindFriendsFlowLayout.m in Sources */,
+				2DFE736C197316A700114541 /* FTFindFriendsFlowLayout.m in Sources */,
 				2DBE021A19D44F9F00CD278C /* TTTAttributedLabel.m in Sources */,
 				2DABDA06195DC0E500379891 /* PhotoCellCollectionView.m in Sources */,
 				2DBC6E5A195C783C008B5AD3 /* FTCamRollViewController.m in Sources */,

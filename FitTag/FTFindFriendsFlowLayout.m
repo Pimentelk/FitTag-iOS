@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-#import "FindFriendsFlowLayout.h"
+#import "FTFindFriendsFlowLayout.h"
 
-@implementation FindFriendsFlowLayout
+@implementation FTFindFriendsFlowLayout
 
 @end

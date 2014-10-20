@@ -6,11 +6,11 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-#import "InterestCollectionViewFlowLayout.h"
+#import "FTInterestViewFlowLayout.h"
 
-@implementation InterestCollectionViewFlowLayout
-- (NSArray *) layoutAttributesForElementsInRect:(CGRect)rect
-{
+@implementation FTInterestViewFlowLayout
+- (NSArray *) layoutAttributesForElementsInRect:(CGRect)rect {
+    
     NSArray *answer = [[super layoutAttributesForElementsInRect:rect] mutableCopy];
     
     for(int i = 1; i < [answer count]; ++i) {

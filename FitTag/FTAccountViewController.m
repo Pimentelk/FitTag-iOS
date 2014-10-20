@@ -28,7 +28,7 @@
     [super viewDidLoad];
     
     if (!self.user) {
-        [NSException raise:NSInvalidArgumentException format:@"user cannot be nil"];
+        [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
     }
     
     [self.navigationItem setTitle: self.user[@"displayName"]];

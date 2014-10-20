@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
-@interface InterestCollectionViewFlowLayout : UICollectionViewFlowLayout
+@interface FTInterestViewFlowLayout : UICollectionViewFlowLayout
 
 @end
