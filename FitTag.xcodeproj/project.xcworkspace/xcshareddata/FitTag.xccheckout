@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>2C7979F0-6232-471E-A283-43E2E7535BC5</string>
+	<key>IDESourceControlProjectName</key>
+	<string>FitTag</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>9F9DD96782BCB6F7AC35170A7589B39AD43D8633</key>
+		<string>ssh://github.com/Pimentelk/FitTag.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>FitTag.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>9F9DD96782BCB6F7AC35170A7589B39AD43D8633</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>ssh://github.com/Pimentelk/FitTag.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>9F9DD96782BCB6F7AC35170A7589B39AD43D8633</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>9F9DD96782BCB6F7AC35170A7589B39AD43D8633</string>
+			<key>IDESourceControlWCCName</key>
+			<string>FitTag</string>
+		</dict>
+	</array>
+</dict>
+</plist>
