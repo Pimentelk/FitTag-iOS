@@ -33,11 +33,38 @@
 #define VIEWCONTROLLER_EDIT_POST @"FTEditPostViewController"
 #define VIEWCONTROLLER_EDIT_PHOTO @"FTEditPhotoViewController"
 #define VIEWCONTROLLER_EDIT_VIDEO @"FTEditVideoViewController"
+#define VIEWCONTROLLER_SETTINGS @"FTSettingsViewController"
+#define VIEWCONTROLLER_SETTINGS_DETAIL @"FTSettingsDetailViewController"
 
-// COLOR
-#define FT_COLOR_RED 234.0f/255.0f
-#define FT_COLOR_BLUE 37.0f/255.0f
-#define FT_COLOR_GREEN 37.0f/255.0f
+// SETTINGS FIELDS
+#define SECTION_SETTINGS @"SETTINGS"
+#define SECTION_EDIT_PROFILE @"EDIT PROFILE"
+#define SECTION_APP_SETTINGS @"APP SETTINGS"
+#define SECTION_ADDITIONAL_INFO @"ADDITIONAL INFO"
+
+#define PROFILE_PICTURE @"Change Profile Picture"
+#define COVER_PHOTO @"Change Cover Photo"
+#define EDIT_BIO @"Edit Bio"
+
+#define ADD_INTERESTS @"Add Interests"
+#define INVITE_FRIENDS @"Invite Your Friends to FitTag"
+
+#define SHARE_SETTINGS @"Share Settings"
+#define NOTIFICATION_SETTINGS @"Notification Settings"
+#define REWARD_SETTIGNS @"Reward Settings"
+
+#define REVIEW_US @"Review Us"
+#define GIVE_FEEDBACK @"Give Us Some Feedback"
+#define ABOUT_US @"About Us"
+
+// FT COLORS
+#define FT_RED_COLOR_RED 234.0f/255.0f
+#define FT_RED_COLOR_BLUE 37.0f/255.0f
+#define FT_RED_COLOR_GREEN 37.0f/255.0f
+
+#define FT_GRAY_COLOR_RED 234/255.0f
+#define FT_GRAY_COLOR_BLUE 234/255.0f
+#define FT_GRAY_COLOR_GREEN 234/255.0f
 
 // IMAGES
 #define IMAGE_PROFILE_DEFAULT @"posts_active"
@@ -64,6 +91,7 @@
 #define NAVIGATION_TITLE_REWARDS @"REWARDS"
 #define NAVIGATION_TITLE_NOTIFICATIONS @"NOTIFICATIONS"
 #define NAVIGATION_TITLE_CAM @"TAG YOUR FIT"
+#define NAVIGATION_TITLE_SETTINGS @"SETTINGS"
 
 // NAVIGATION BAR BUTTONS
 #define NAVIGATION_BAR_BUTTON_BACK @"navigate_back"
