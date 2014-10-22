@@ -292,7 +292,9 @@ enum PinAnnotationTypeTag {
         [navController setViewControllers:@[interestsViewController] animated:NO];
         [self presentViewController:navController animated:YES completion: ^(){
             [user setValue:[NSDate date] forKey:kFTUserLastLoginKey];
-            [user saveEventually];
+            if (user) {
+                [user saveEventually];
+            }
             [self.tabBarController setSelectedIndex:1];
         }];
         NSLog(FIRSTTIME_USER);
