@@ -11,7 +11,7 @@
 #import "FTUserProfileCollectionViewCell.h"
 #import "FTPostDetailsViewController.h"
 #import "FTCamViewController.h"
-
+#import "FTSettingsViewController.h"
 
 #define GRID_SMALL @"SMALLGRID"
 #define GRID_FULL @"FULGRID"
@@ -269,7 +269,12 @@
 
 - (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileCollectionHeaderView
                    didTapSettingsButton:(id)sender {
-    
+    FTSettingsViewController *settingsViewController = [[FTSettingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    UINavigationController *navController = [[UINavigationController alloc] init];
+    [navController setViewControllers:@[settingsViewController] animated:NO];
+    [self presentViewController:navController animated:YES completion:^(){
+        
+    }];
 }
 
 @end
