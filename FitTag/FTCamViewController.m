@@ -6,6 +6,10 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
+#define FLASH_IMAGE_ON @"flash"
+#define FLASH_IMAGE_OFF @"no_flash"
+#define FLASH_IMAGE_AUTO @"auto_flash"
+
 #include <math.h>
 
 #import "FTCamViewController.h"
@@ -23,6 +27,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 @end
 
 @interface FTCamViewController () <AVCaptureFileOutputRecordingDelegate>
+@property (nonatomic, readonly, assign) FTCamFlashButtonState camFlashButtonState;
 @property (nonatomic, strong) FTEditPhotoViewController *editPhotoViewController;
 @property (nonatomic, strong) FTEditVideoViewController *editVideoViewController;
 @property (nonatomic, strong) UIView *liveView;
@@ -33,12 +38,11 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 @property (nonatomic, strong) UIBarButtonItem *nextBarButton;
 @property (nonatomic) UIImageView *crosshairs;
 @property (nonatomic) UIImageView *cameraOverlay;
-@property (nonatomic) UIButton *toggleFlash;
+@property (nonatomic) UIButton *toggleFlashButton;
 @property (nonatomic) UIButton *toggleCrosshairs;
 
 // Track flash mode
 @property (nonatomic) NSArray *flashImages;
-@property (nonatomic) NSString *currentFlashMode;
 @property (nonatomic) UIView *progressViewBorder;
 @property (nonatomic) UIProgressView *progressView;
 
@@ -67,14 +71,14 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 @synthesize crosshairs;
 @synthesize delegate;
 @synthesize flashImages;
-@synthesize toggleFlash;
-@synthesize currentFlashMode;
+@synthesize toggleFlashButton;
 @synthesize toggleCrosshairs;
 @synthesize recordButton;
 @synthesize progressViewBorder;
 @synthesize progressView;
 @synthesize nextBarButton;
 @synthesize editPhotoViewController;
+@synthesize camFlashButtonState;
 
 - (BOOL)isSessionRunningAndDeviceAuthorized{
 	return [[self session] isRunning] && [self isDeviceAuthorized];
@@ -178,16 +182,13 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     [toggleCamera setTintColor:[UIColor grayColor]];
     [toggleCamera setTranslatesAutoresizingMaskIntoConstraints:NO];
     
-    flashImages = @[@"auto_flash",@"flash",@"no_flash"];
-    currentFlashMode = @"auto_flash";
-    
     // Toggle Flash
-    toggleFlash = [UIButton buttonWithType:UIButtonTypeCustom];
-    [toggleFlash setFrame:CGRectMake(250.0f, 4.0f, 15.0f, 24.0f)];
-    [toggleFlash setImage:[UIImage imageNamed:@"auto_flash"] forState:UIControlStateNormal];
-    [toggleFlash addTarget:self action:@selector(toggleFlash:) forControlEvents:UIControlEventTouchUpInside];
-    [toggleFlash setTintColor:[UIColor grayColor]];
-    [toggleFlash setTranslatesAutoresizingMaskIntoConstraints:NO];
+    toggleFlashButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [toggleFlashButton setFrame:CGRectMake(250.0f, 4.0f, 15.0f, 24.0f)];
+    [toggleFlashButton setImage:[UIImage imageNamed:FLASH_IMAGE_AUTO] forState:UIControlStateNormal];
+    [toggleFlashButton addTarget:self action:@selector(didTapToggleFlashButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [toggleFlashButton setTintColor:[UIColor grayColor]];
+    [toggleFlashButton setTranslatesAutoresizingMaskIntoConstraints:NO];
     
     // Toggle Crosshairs
     toggleCrosshairs = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -200,7 +201,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     // Add buttons to the overlay bar
     [cameraBarOverlay addSubview:toggleCrosshairs];
     [cameraBarOverlay addSubview:toggleCamera];
-    [cameraBarOverlay addSubview:toggleFlash];
+    [cameraBarOverlay addSubview:toggleFlashButton];
 
     // Setup the progressview
     progressViewBorder = [[UIView alloc] initWithFrame:CGRectMake(0.0f,cameraBarOverlay.frame.size.height + cameraBarOverlay.frame.origin.y,self.view.frame.size.width,10.0f)];
@@ -317,6 +318,10 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 				// Note: As an exception to the above rule, it is not necessary to serialize video orientation changes on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
                 
 				[[(AVCaptureVideoPreviewLayer *)[self previewLayer] connection] setVideoOrientation:(AVCaptureVideoOrientation)[self interfaceOrientation]];
+                
+                // Set the default flash state to auto
+                camFlashButtonState = FTCamFlashButtonStateAuto;
+                [FTCamViewController setFlashMode:AVCaptureFlashModeAuto forDevice:[[self videoDeviceInput] device]];
 			});
 		}
 		
@@ -332,12 +337,12 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 		}
 		
         AVCaptureMovieFileOutput *movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
+
 		if ([session canAddOutput:movieFileOutput]) {
 			[session addOutput:movieFileOutput];
 			AVCaptureConnection *connection = [movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
 			if ([connection isVideoStabilizationSupported])
                 [connection setPreferredVideoStabilizationMode:AVCaptureVideoStabilizationModeAuto];
-				//[connection setEnablesVideoStabilizationWhenAvailable:YES];
 			[self setMovieFileOutput:movieFileOutput];
 		}
 		
@@ -359,7 +364,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     
     if ([recordButton isHidden]) {
         [crosshairs setHidden:YES];
-        [toggleFlash setHidden:YES];
+        [toggleFlashButton setHidden:YES];
         [toggleCrosshairs setHidden:YES];
         [recordButton setHidden:NO];
         [takePicture setHidden:YES];
@@ -374,7 +379,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
         
     } else {
         [crosshairs setHidden:NO];
-        [toggleFlash setHidden:NO];
+        [toggleFlashButton setHidden:NO];
         [toggleCrosshairs setHidden:NO];
         [recordButton setHidden:YES];
         [takePicture setHidden:NO];
@@ -457,35 +462,28 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
--(void)toggleFlash:(id)sender {
-    
-    NSNumber *index;
-    
-    for (NSString *string in flashImages) {
-        if ([string isEqualToString:currentFlashMode]) {
-            index = [NSNumber numberWithInteger:[flashImages indexOfObject:string]];
-        }
-    }
-    
-    if ([flashImages count] == [index integerValue] + 1) {
-        currentFlashMode = [flashImages objectAtIndex:0];
-        [toggleFlash setImage:[UIImage imageNamed:[flashImages objectAtIndex:0]] forState:UIControlStateNormal];
-    } else {
-        currentFlashMode = [flashImages objectAtIndex:[index integerValue] + 1];
-        [toggleFlash setImage:[UIImage imageNamed:[flashImages objectAtIndex:[index integerValue]+1]] forState:UIControlStateNormal];
-    }
-    
-    switch ([index integerValue] + 1) {
-        case 0:
-            [FTCamViewController setFlashMode:AVCaptureFlashModeAuto forDevice:[[self videoDeviceInput] device]];
-            break;
-        case 1:
+-(void)didTapToggleFlashButtonAction:(UIButton *)sender {
+    switch (camFlashButtonState) {
+        case FTCamFlashButtonStateAuto:
+            //NSLog(@"FTCamFlashButtonStateAuto -> FTCamFlashButtonStateOn");
+            camFlashButtonState = FTCamFlashButtonStateOn;
+            [toggleFlashButton setImage:[UIImage imageNamed:FLASH_IMAGE_ON] forState:UIControlStateNormal];
             [FTCamViewController setFlashMode:AVCaptureFlashModeOn forDevice:[[self videoDeviceInput] device]];
             break;
-        case 2:
+        case FTCamFlashButtonStateOn:
+            //NSLog(@"FTCamFlashButtonStateOn -> FTCamFlashButtonStateOff");
+            camFlashButtonState = FTCamFlashButtonStateOff;
+            [toggleFlashButton setImage:[UIImage imageNamed:FLASH_IMAGE_OFF] forState:UIControlStateNormal];
             [FTCamViewController setFlashMode:AVCaptureFlashModeOff forDevice:[[self videoDeviceInput] device]];
             break;
+        case FTCamFlashButtonStateOff:
+            //NSLog(@"FTCamFlashButtonStateOff -> FTCamFlashButtonStateAuto");
+            camFlashButtonState = FTCamFlashButtonStateAuto;
+            [toggleFlashButton setImage:[UIImage imageNamed:FLASH_IMAGE_AUTO] forState:UIControlStateNormal];
+            [FTCamViewController setFlashMode:AVCaptureFlashModeAuto forDevice:[[self videoDeviceInput] device]];
+            break;
         default:
+            //NSLog(@"Default");
             [FTCamViewController setFlashMode:AVCaptureFlashModeAuto forDevice:[[self videoDeviceInput] device]];
             break;
     }
@@ -536,7 +534,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 		if ([[self session] canAddInput:videoDeviceInput]) {
 			[[NSNotificationCenter defaultCenter] removeObserver:self name:AVCaptureDeviceSubjectAreaDidChangeNotification object:currentVideoDevice];
 			
-			[FTCamViewController setFlashMode:AVCaptureFlashModeAuto forDevice:videoDevice];
+			//[FTCamViewController setFlashMode:AVCaptureFlashModeAuto forDevice:videoDevice];
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(subjectAreaDidChange:) name:AVCaptureDeviceSubjectAreaDidChangeNotification object:videoDevice];
 			
 			[[self session] addInput:videoDeviceInput];
@@ -578,8 +576,8 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     //NSLog(@"video data length: %lu",(unsigned long)[videodata length]);
     
     if ([videodata length] > 10485760) {
-        [[[UIAlertView alloc] initWithTitle:@"Couldn't post your video, too large."
-                                    message:nil
+        [[[UIAlertView alloc] initWithTitle:@"Error"
+                                    message:@"Couldn't post your video, too large."
                                    delegate:nil
                           cancelButtonTitle:nil
                           otherButtonTitles:@"Dismiss", nil] show];
@@ -764,6 +762,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 #pragma mark Actions
 
 - (void)startMovieRecording:(id)sender {
+    NSLog(@"startMovieRecording");
     [[self recordButton] setEnabled:NO];
     CMTime maxDuration = CMTimeMakeWithSeconds(15, 50);
 	[[self movieFileOutput] setMaxRecordedDuration:maxDuration];
@@ -782,23 +781,21 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 			[[[self movieFileOutput] connectionWithMediaType:AVMediaTypeVideo] setVideoOrientation:[[(AVCaptureVideoPreviewLayer *)[self previewLayer] connection] videoOrientation]];
 			
 			// Turning OFF flash for video recording
-			[FTCamViewController setFlashMode:AVCaptureFlashModeOff
-                                    forDevice:[[self videoDeviceInput] device]];
-            
-            [toggleFlash setImage:[UIImage imageNamed:[flashImages objectAtIndex:2]]
-                         forState:UIControlStateNormal];
-            
-            currentFlashMode = [flashImages objectAtIndex:2];
+            camFlashButtonState = FTCamFlashButtonStateOff;
+			[FTCamViewController setFlashMode:AVCaptureFlashModeOff forDevice:[[self videoDeviceInput] device]];
+            [toggleFlashButton setImage:[UIImage imageNamed:FLASH_IMAGE_OFF] forState:UIControlStateNormal];
             
 			// Start recording to a temporary file.
 			NSString *outputFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[@"movie" stringByAppendingPathExtension:@"mov"]];
 			[[self movieFileOutput] startRecordingToOutputFileURL:[NSURL fileURLWithPath:outputFilePath] recordingDelegate:self];
 
+            NSLog(@"[[self movieFileOutput] isRecording]: %d",[[self movieFileOutput] isRecording]);
+            
             while ([[self movieFileOutput] isRecording]) {
                 double duration = CMTimeGetSeconds([[self movieFileOutput] recordedDuration]);
                 double time = CMTimeGetSeconds([[self movieFileOutput] maxRecordedDuration]);
                 CGFloat progress = (CGFloat) (duration / time);
-                
+                NSLog(@"progress: %f",progress);
                 [self performSelectorInBackground:@selector(updateProgress:) withObject:[NSNumber numberWithFloat:progress]];
             }
             
@@ -808,11 +805,9 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 	});
 }
 
-
-
 - (void)updateProgress:(NSNumber *)progress {
     if (![progress isEqualToNumber:[NSDecimalNumber notANumber]]) {
-        //NSLog(@"progress: %f",[progress floatValue]);
+        NSLog(@"progress: %f",[progress floatValue]);
         [self.progressView setProgress:[progress floatValue] animated:YES];
     }
 }
@@ -836,7 +831,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 		[[[self stillImageOutput] connectionWithMediaType:AVMediaTypeVideo] setVideoOrientation:[[(AVCaptureVideoPreviewLayer *)[self previewLayer] connection] videoOrientation]];
 		
 		// Flash set to Auto for Still Capture
-		[FTCamViewController setFlashMode:AVCaptureFlashModeAuto forDevice:[[self videoDeviceInput] device]];
+		//[FTCamViewController setFlashMode:AVCaptureFlashModeAuto forDevice:[[self videoDeviceInput] device]];
 		
 		// Capture a still image.
 		[[self stillImageOutput] captureStillImageAsynchronouslyFromConnection:[[self stillImageOutput] connectionWithMediaType:AVMediaTypeVideo] completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error) {
