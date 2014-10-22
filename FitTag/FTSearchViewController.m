@@ -79,7 +79,7 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
     [[self locationManager] startUpdatingLocation];
     
     // Set title
-    [self.navigationItem setTitle: @"SEARCH"];
+    [self.navigationItem setTitle:NAVIGATION_TITLE_SEARCH];
     [self.navigationItem setHidesBackButton:NO];
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     
