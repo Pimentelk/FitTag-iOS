@@ -66,6 +66,10 @@
 #define FT_GRAY_COLOR_BLUE 234/255.0f
 #define FT_GRAY_COLOR_GREEN 234/255.0f
 
+#define FT_DARKGRAY_COLOR_RED 154/255.0f
+#define FT_DARKGRAY_COLOR_BLUE 154/255.0f
+#define FT_DARKGRAY_COLOR_GREEN 154/255.0f
+
 // IMAGES
 #define IMAGE_PROFILE_DEFAULT @"posts_active"
 #define IMAGE_TIMELINE_BLANK @"HomeTimelineBlank.png"
@@ -97,15 +101,14 @@
 #define NAVIGATION_BAR_BUTTON_BACK @"navigate_back"
 #define NAVIGATION_BAR_BUTTON_ADD_CONTACTS @"add_contacts"
 #define NAVIGATION_BAR_BUTTON_CAMERA @"fittag_button"
+#define NAVIGATION_BAR_BUTTON_TRASH @"trash"
 
-// STRINGS
+// Messages
 #define EMPTY_STRING @""
 #define IF_USER_NOT_SET_MESSAGE @"user cannot be nil"
 #define DEFAULT_BIO_TEXT_A @"Tell us about yourself"
 #define DEFAULT_BIO_TEXT_B @"WHAT MAKES YOU, YOU?"
 #define STRING_MISSING_INFORMATION @"Make sure you fill out all required information!"
-#define SMALL_JPEG @"medium.jpeg"
-#define MEDIUM_JPEG @"small.jpeg"
 #define USER_DID_LOGIN @"User is logged in."
 #define USER_NOT_LOGGEDIN @"User is NOT logged in."
 #define USER_DID_LOGIN_FACEBOOK @"User is logged in with facebook"
@@ -114,6 +117,39 @@
 #define USER_NOT_LOGIN_TWITTER @"User is not logged in to Twitter"
 #define RETURNING_USER @"This is a returning user."
 #define FIRSTTIME_USER @"This is a firsttime user."
+
+// File defaults
+#define SMALL_JPEG @"medium.jpeg"
+#define MEDIUM_JPEG @"small.jpeg"
+
+// Mail Strings
+#define MAIL_CANCELLED @"Mail cancelled: you cancelled the operation and no email message was queued."
+#define MAIL_SAVED @"Mail saved: you saved the email message in the drafts folder."
+#define MAIL_SEND @"Mail send: the email message is queued in the outbox. It is ready to send."
+#define MAIL_SENT @"Mail sent"
+#define MAIL_FAIL @"Mail not sent"
+#define MAIL_FEEDBACK_EMAIL @"feedback@fittag.com"
+#define MAIL_FEEDBACK_SUBJECT @"FitTag IOS Feedback"
+#define MAIL_NOT_SUPPORTED @"Your device doesn't support the composer sheet"
+
+#define HUD_MESSAGE_BIOGRAPHY_LIMIT @"150 character limit"
+#define HUD_MESSAGE_BIOGRAPHY_UPDATED @"Biography updated.."
+#define EMPTY_BIOGRAPHY_TITLE @"Empty Biography"
+#define EMPTY_BIOGRAPHY_MESSAGE @"You can not submit an empty biography."
+
+// Switch messages
+#define SWITCH_REWARD_ON @"rewards enabled"
+#define SWITCH_REWARD_OFF @"rewards disabled"
+#define SWITCH_NOTIFICATIONS_ON @"notifications enabled"
+#define SWITCH_NOTIFICATIONS_OFF @"notifications disabled"
+#define SWITCH_FACEBOOK_ON @"facebook sharing enabled"
+#define SWITCH_FACEBOOK_OFF @"facebook sharing disabled"
+#define SWITCH_TWITTER_ON @"twitter sharing enabled"
+#define SWITCH_TWITTER_OFF @"twitter sharing disabled"
+
+// Socail
+#define SOCIAL_TWITTER @"Twitter"
+#define SOCIAL_FACEBOOK @"Facebook"
 
 // Twitter Object Keys
 #define TWITTER_PROFILE_HTTPS @"profile_image_url_https"
