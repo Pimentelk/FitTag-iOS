@@ -25,10 +25,15 @@
     //[[self tabBar] setBackgroundImage:[UIImage imageNamed:@"BackgroundTabBar.png"]];
     //[[self tabBar] setSelectionIndicatorImage:[UIImage imageNamed:@"BackgroundTabBarItemSelected.png"]];
     
-    self.tabBar.tintColor = [UIColor colorWithRed:FT_COLOR_RED green:FT_COLOR_GREEN blue:FT_COLOR_BLUE alpha:1.0f];
+    self.tabBar.tintColor = [UIColor colorWithRed:FT_RED_COLOR_RED
+                                            green:FT_RED_COLOR_GREEN
+                                             blue:FT_RED_COLOR_BLUE alpha:1.0f];
     
     // iOS 7 style
-    self.tabBar.tintColor = [UIColor colorWithRed:FT_COLOR_RED green:FT_COLOR_GREEN blue:FT_COLOR_BLUE alpha:1.0f];
+    self.tabBar.tintColor = [UIColor colorWithRed:FT_RED_COLOR_RED
+                                            green:FT_RED_COLOR_GREEN
+                                             blue:FT_RED_COLOR_BLUE alpha:1.0f];
+    
     self.tabBar.barTintColor = [UIColor whiteColor];
     
     self.navController = [[UINavigationController alloc] init];
