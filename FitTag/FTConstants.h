@@ -134,7 +134,7 @@ extern NSString *const kFTUserEmailKey;
 extern NSString *const kFTUserPostCountKey;
 extern NSString *const kFTUserRewardsEarnedKey;
 extern NSString *const kFTUserLastLoginKey;
-extern NSString *const kFTUserTwitterIDKey;
+extern NSString *const kFTUserTwitterIdKey;
 
 // Type values
 extern NSString *const kFTUserTypeUser;

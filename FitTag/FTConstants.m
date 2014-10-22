@@ -87,7 +87,7 @@ NSString *const kFTUserEmailKey                                = @"email";
 NSString *const kFTUserPostCountKey                            = @"postCount";
 NSString *const kFTUserRewardsEarnedKey                        = @"rewardsEarned";
 NSString *const kFTUserLastLoginKey                            = @"lastLogin";
-NSString *const kFTUserTwitterIDKey                            = @"twitterid";
+NSString *const kFTUserTwitterIdKey                            = @"twitterId";
 
 // Type values
 NSString *const kFTUserTypeUser                                = @"user";
