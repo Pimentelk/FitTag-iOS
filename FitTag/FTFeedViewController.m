@@ -7,8 +7,6 @@
 //
 
 #import "FTFeedViewController.h"
-#import "FTSettingsActionSheetDelegate.h"
-#import "FTSettingsButtonItem.h"
 #import "MBProgressHUD.h"
 #import "ImageCustomNavigationBar.h"
 #import "FTFindFriendsViewController.h"
@@ -21,13 +19,11 @@
 #define ANIMATION_DURATION 0.200f
 
 @interface FTFeedViewController ()
-@property (nonatomic, strong) FTSettingsActionSheetDelegate *settingsActionSheetDelegate;
 @property (nonatomic, strong) UIView *blankTimelineView;
 @end
 
 @implementation FTFeedViewController
 @synthesize firstLaunch;
-@synthesize settingsActionSheetDelegate;
 @synthesize blankTimelineView;
 
 #pragma mark - UIViewController
