@@ -98,6 +98,9 @@ enum PinAnnotationTypeTag {
     [self.mapView setHidden:NO];
     
     // Update the users location
+    if (IS_OS_8_OR_LATER) {
+        [[self locationManager] requestAlwaysAuthorization];
+    }    
     [[self locationManager] startUpdatingLocation];
     
     // Set title
