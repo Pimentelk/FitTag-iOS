@@ -14,18 +14,24 @@
 @property (nonatomic, strong) PFObject *business;
 @property (nonatomic, strong) PFObject *reward;
 @property (nonatomic, strong) UIImageView *rewardPhoto;
+
+@property (nonatomic, strong) UILabel *businessName;
+@property (nonatomic, strong) UILabel *businessAddress;
+@property (nonatomic, strong) TTTAttributedLabel *businessWebsite;
 @end
 
 @implementation FTRewardsDetailsHeaderView
 @synthesize business;
 @synthesize rewardPhoto;
 @synthesize reward;
+@synthesize businessName;
+@synthesize businessAddress;
+@synthesize businessWebsite;
 
 -(id)initWithFrame:(CGRect)frame reward:(PFObject *)aReward {
     self = [super initWithFrame:frame];
     if (self) {
         self.reward = aReward;
-        self.business = [self.reward objectForKey:kFTRewardsUserKey];
         
         self.containerView = [[UIView alloc] initWithFrame:frame];
         [self addSubview:self.containerView];
@@ -34,44 +40,65 @@
         
         UIImageView *profileHexagon = [self getProfileHexagon];
         FTProfileImageView *avatarImageView = [[FTProfileImageView alloc] initWithFrame:CGRectMake(6.0f, 8.0f, 50.0f, 50.0f)];
-        [avatarImageView setFile:[self.business objectForKey:kFTUserProfilePicSmallKey]];
         [avatarImageView setBackgroundColor:[UIColor clearColor]];
         [avatarImageView setFrame:profileHexagon.frame];
         [avatarImageView.layer setMask:profileHexagon.layer.mask];
         [avatarImageView.profileButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [self.containerView addSubview:avatarImageView];
         
-        // UILabels
-        UILabel *name = [[UILabel alloc] initWithFrame:CGRectMake(63.0f,13.0f,150.0f,18.0)];
-        name.textAlignment =  NSTextAlignmentLeft;
-        name.textColor = [UIColor colorWithRed:149/255.0f green:149/255.0f blue:149/255.0f alpha:1];
-        name.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(15.0)];
-        name.text = [self.business objectForKey:kFTUserCompanyNameKey];
-        [self.containerView addSubview:name];
+        // Business name
+        businessName = [[UILabel alloc] initWithFrame:CGRectMake(63.0f,13.0f,150.0f,18.0)];
+        businessName.textAlignment =  NSTextAlignmentLeft;
+        businessName.textColor = [UIColor colorWithRed:149/255.0f green:149/255.0f blue:149/255.0f alpha:1];
+        businessName.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(15.0)];
+        [self.containerView addSubview:businessName];
         
-        UILabel *address = [[UILabel alloc] initWithFrame:CGRectMake(63.0f,30.0f,150.0f,18.0)];
-        address.textAlignment =  NSTextAlignmentLeft;
-        address.textColor = [UIColor colorWithRed:149/255.0f green:149/255.0f blue:149/255.0f alpha:1];
-        address.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(15.0)];
-        address.text = [self.business objectForKey:kFTUserAddressKey];
-        [self.containerView addSubview:address];
+        // Business address
+        businessAddress = [[UILabel alloc] initWithFrame:CGRectMake(63.0f,30.0f,150.0f,18.0)];
+        businessAddress.textAlignment =  NSTextAlignmentLeft;
+        businessAddress.textColor = [UIColor colorWithRed:149/255.0f green:149/255.0f blue:149/255.0f alpha:1];
+        businessAddress.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(15.0)];
+        [self.containerView addSubview:businessAddress];
         
-        TTTAttributedLabel *website = [[TTTAttributedLabel alloc] initWithFrame:CGRectMake(63.0f,47.0f,200.0f,18.0)];
-        website.textAlignment =  NSTextAlignmentLeft;
-        website.textColor = [UIColor colorWithRed:149/255.0f green:149/255.0f blue:149/255.0f alpha:1];
-        website.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(15.0)];
-        website.text = @"Website";
-        website.delegate = self;
-        NSRange range = [website.text rangeOfString:@"Website"];
-        [website addLinkToURL:[NSURL URLWithString:[self.business objectForKey:kFTUserWebsiteKey]] withRange:range];
+        // Business website
+        businessWebsite = [[TTTAttributedLabel alloc] initWithFrame:CGRectMake(63.0f,47.0f,200.0f,18.0)];
+        businessWebsite.textAlignment =  NSTextAlignmentLeft;
+        businessWebsite.textColor = [UIColor colorWithRed:149/255.0f green:149/255.0f blue:149/255.0f alpha:1];
+        businessWebsite.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(15.0)];
+        businessWebsite.text = @"Website";
+        businessWebsite.delegate = self;
+        NSRange range = [businessWebsite.text rangeOfString:@"Website"];
         
-        [self.containerView addSubview:website];
+        [self.containerView addSubview:businessWebsite];
         
         UILabel *mention = [[UILabel alloc] initWithFrame:CGRectMake(self.containerView.frame.size.width - 110,3.0f,100.0f,25.0f)];
         mention.textAlignment =  NSTextAlignmentRight;
         mention.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(13.0)];
-        mention.text = [self.business objectForKey:kFTUserDisplayNameKey];
         [self.containerView addSubview:mention];
+        
+        [[reward objectForKey:kFTRewardsUserKey] fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+            if (!error) {
+                
+                NSLog(@"object: %@",object);
+                
+                self.business = object;
+                
+                // Set the avatar image
+                [avatarImageView setFile:[self.business objectForKey:kFTUserProfilePicSmallKey]];
+                
+                // Set the business name
+                businessName.text = [self.business objectForKey:kFTUserCompanyNameKey];
+                
+                // Set the business address
+                businessAddress.text = [self.business objectForKey:kFTUserAddressKey];
+                
+                // set the website
+                [businessWebsite addLinkToURL:[NSURL URLWithString:[self.business objectForKey:kFTUserWebsiteKey]] withRange:range];
+                
+                // handle
+                mention.text = [self.business objectForKey:kFTUserDisplayNameKey];
+            }
+        }];
         
         
         PFFile *file = [reward objectForKey:kFTRewardsImageKey];
@@ -85,6 +112,7 @@
                                                                                        rewardPhoto.frame.size.width,72.0f)];
                 
                 description.textAlignment =  NSTextAlignmentLeft;
+                description.userInteractionEnabled = NO;
                 description.textColor = [UIColor colorWithRed:149/255.0f green:149/255.0f blue:149/255.0f alpha:1];
                 description.backgroundColor = [UIColor whiteColor];
                 description.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(15.0)];
