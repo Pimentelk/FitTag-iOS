@@ -9,7 +9,6 @@
 #import "FTNavigationController.h"
 #import "FTCamViewController.h"
 #import "FTFindFriendsViewController.h"
-#import "FTFindFriendsFlowLayout.h"
 
 #define VIEWCONTROLLER_NAVIGATION @"FTNavigationController"
 
@@ -51,15 +50,6 @@
 #pragma mark - ()
 
 - (void)didTapAddFriendsButtonAction:(UIButton *)button {
-    // Layout param
-    FTFindFriendsFlowLayout *layoutFlow = [[FTFindFriendsFlowLayout alloc] init];
-    [layoutFlow setItemSize:CGSizeMake(320,42)];
-    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [layoutFlow setMinimumInteritemSpacing:0];
-    [layoutFlow setMinimumLineSpacing:0];
-    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,32)];
-    
     // Show the interests
     FTFindFriendsViewController *fiendFriendsViewController = [[FTFindFriendsViewController alloc] init];
     [self pushViewController:fiendFriendsViewController animated:YES];
