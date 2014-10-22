@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-#import <CoreLocation/CoreLocation.h>
-
 @interface FTConfigViewController : UIViewController <PFLogInViewControllerDelegate,PFSignUpViewControllerDelegate>
 
 @end

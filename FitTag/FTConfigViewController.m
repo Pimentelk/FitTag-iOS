@@ -23,7 +23,6 @@
 @interface FTConfigViewController () {
     FTLoginViewController *loginViewController;
     FTSignupViewController *signUpViewController;
-    CLLocationManager *locationManager;
 }
 @end
 
@@ -43,8 +42,12 @@
         [(AppDelegate *)[[UIApplication sharedApplication] delegate] presentLoginViewControllerAnimated:NO];
         return;
     }
+    
     // Present FitTag UI
     [(AppDelegate *)[[UIApplication sharedApplication] delegate] presentTabBarController];
+    
+    // Refresh current user with server side data -- checks if user is still valid and so on
+    [[PFUser currentUser] refreshInBackgroundWithTarget:self selector:@selector(refreshCurrentUserCallbackWithResult:error:)];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -71,8 +74,13 @@
     }
 }
 
-//- (void)refreshCurrentUserCallbackWithResult:(PFObject *)refreshedObject error:(NSError *)error {
-//}
+#pragma mark - ()
+
+- (void)refreshCurrentUserCallbackWithResult:(PFObject *)refreshedObject error:(NSError *)error {
+    if (!error) {
+        NSLog(@"refreshObject: %@",refreshedObject);
+    }
+}
 
 #pragma mark - DidLoginWithSocialMedia
 
@@ -120,10 +128,9 @@
                     forKey:kFTUserDisplayNameKey];
             
             [user setValue:[NSString stringWithFormat:@"%@",[TWuser objectForKey:@"id"]]
-                    forKey:kFTUserTwitterIDKey];
+                    forKey:kFTUserTwitterIdKey];
             
-            [user setValue:DEFAULT_BIO_TEXT_B
-                    forKey:kFTUserBioKey];
+            //[user setValue:DEFAULT_BIO_TEXT_B forKey:kFTUserBioKey];
             
             [user setValue:[PFFile fileWithName:MEDIUM_JPEG data:profileImageData]
                     forKey:kFTUserProfilePicMediumKey];
@@ -161,7 +168,7 @@
                 [user setValue:[FBuser objectForKey:FBUserNameKey] forKey:kFTUserDisplayNameKey];
                 [user setValue:[FBuser objectForKey:FBUserEmailKey] forKey:kFTUserEmailKey];
                 [user setValue:[FBuser objectForKey:FBUserIDKey] forKey:kFTUserFacebookIDKey];
-                [user setValue:DEFAULT_BIO_TEXT_B forKey:kFTUserBioKey];
+                //[user setValue:DEFAULT_BIO_TEXT_B forKey:kFTUserBioKey];
                 [user setValue:[PFFile fileWithName:MEDIUM_JPEG data:profileImageData] forKey:kFTUserProfilePicMediumKey];
                 [user setValue:[PFFile fileWithName:SMALL_JPEG data:profileImageData] forKey:kFTUserProfilePicSmallKey];
                 [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -212,6 +219,7 @@
 }
 
 #pragma mark - PFLogInViewControllerDelegate
+
 - (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
     NSLog(@"%@::logInViewController:didLogInUser:",VIEWCONTROLLER_CONFIG);
     [self didLogInWithFacebook:user];
@@ -258,6 +266,7 @@ shouldBeginLogInWithUsername:(NSString *)username
 }
 
 #pragma mark - PFSignUpViewControllerDelegate
+
 // Sent to the delegate to determine whether the sign up request should be submitted to the server.
 - (BOOL)signUpViewController:(PFSignUpViewController *)signUpController
            shouldBeginSignUp:(NSDictionary *)info {
