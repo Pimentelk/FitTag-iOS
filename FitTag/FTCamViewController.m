@@ -10,6 +10,20 @@
 #define FLASH_IMAGE_OFF @"no_flash"
 #define FLASH_IMAGE_AUTO @"auto_flash"
 
+// GUI Images
+
+#define BUTTON_IMAGE_CAMERA_ROLL @"camera_roll"
+#define BUTTON_IMAGE_VIDEO @"video_button"
+#define BUTTON_IMAGE_RECORD @"record_video_button"
+#define BUTTON_IMAGE_TAKE_PICTURE @"take_picture"
+#define BUTTON_IMAGE_TOGGLE_CAMERA @"toggle_camera"
+#define BUTTON_IMAGE_TOGGLE_CROSSHAIRS @"toggle_crosshairs"
+#define BUTTON_IMAGE_CAMERA_CROSSHAIRS @"crosshairs"
+#define BUTTON_IMAGE_CAMERA_OVERLAY @"camera_overlay"
+
+#define BUTTON_TITTLE_NEXT @"NEXT"
+
+
 #include <math.h>
 
 #import "FTCamViewController.h"
@@ -91,7 +105,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 - (void)viewDidLoad{
     [super viewDidLoad];
     
-    NSLog(@"FTCamViewController::viewDidLoad");
+    NSLog(@"%@viewDidLoad:",VIEWCONTROLLER_CAM);
     
     // Background color
     [self.view setBackgroundColor:[UIColor blackColor]];
@@ -107,7 +121,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     // Check for device authorization
 	[self checkDeviceAuthorizationStatus];
     
-    //-- Configure the preview layer
+    // Configure the preview layer
     self.previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:session];
     self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     
@@ -116,14 +130,13 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     [self.navigationItem setHidesBackButton:NO];
     
     self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], NSForegroundColorAttributeName,nil];
-    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:234.0f/255.0f
-                                                                           green:37.0f/255.0f
-                                                                            blue:37.0f/255.0f
+    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:FT_RED_COLOR_RED
+                                                                           green:FT_RED_COLOR_GREEN
+                                                                            blue:FT_RED_COLOR_BLUE
                                                                            alpha:1.0f];
     
-    nextBarButton = [[UIBarButtonItem alloc] initWithTitle:@"NEXT"
-                                                     style:UIBarButtonItemStylePlain
-                                                    target:self
+    nextBarButton = [[UIBarButtonItem alloc] initWithTitle:BUTTON_TITTLE_NEXT
+                                                     style:UIBarButtonItemStylePlain target:self
                                                     action:@selector(didTapNextButtonAction:)];
     [nextBarButton setTintColor:[UIColor whiteColor]];
     
@@ -132,10 +145,9 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     isVideoRecorded = NO;
     
     // Override the back idnicator
+    
     UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]
-                                                                      style:UIBarButtonItemStylePlain
-                                                                     target:self
-                                                                     action:@selector(didTapBackButtonAction:)];
+                                                                      style:UIBarButtonItemStylePlain target:self action:@selector(didTapBackButtonAction:)];
     
     [backIndicator setTintColor:[UIColor whiteColor]];
     [self.navigationItem setLeftBarButtonItem:backIndicator];
@@ -144,23 +156,26 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     float navigationBarHeight = self.navigationController.navigationBar.frame.size.height;
     
     // Camera Overlay
-    cameraOverlay = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"camera_overlay"]];
+    
+    cameraOverlay = [[UIImageView alloc] initWithImage:[UIImage imageNamed:BUTTON_IMAGE_CAMERA_OVERLAY]];
     [cameraOverlay setFrame:CGRectMake(0.0f,navigationBarHeight,320.0f,33.0f)];
     [self.view addSubview:cameraOverlay];
     
     // Add crosshairs
-    crosshairs = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"crosshairs"]];
+    
+    crosshairs = [[UIImageView alloc] initWithImage:[UIImage imageNamed:BUTTON_IMAGE_CAMERA_CROSSHAIRS]];
     [crosshairs setFrame:CGRectMake(0.0f,33.0f,320.0f,previewHeight-66.0f)];
     
     // Camera View
+    
     UIView *liveView = [[UIView alloc] initWithFrame:CGRectMake(0.0f,0.0f,320.0f,previewHeight)];
-    //[liveView setBackgroundColor:[UIColor blueColor]];
     [liveView setBackgroundColor:[UIColor blackColor]];
     
     [self.previewLayer setFrame:CGRectMake(0,0,liveView.frame.size.width,liveView.frame.size.height)];
     [liveView.layer addSublayer:self.previewLayer];
     
     // Container
+    
     UIView *container = [[UIView alloc] initWithFrame:CGRectMake(0.0f,cameraOverlay.frame.origin.y,crosshairs.frame.size.width,
                                                                  crosshairs.frame.size.height + (cameraOverlay.frame.size.height * 2))];
     [self.view addSubview:container];
@@ -170,40 +185,46 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     [self.view bringSubviewToFront:cameraOverlay];
     
     // Camera Overlay
+    
     UIView *cameraBarOverlay = [[UIView alloc] initWithFrame:CGRectMake(0.0f,previewHeight+11, 320.0f, 33.0f)];
-    [cameraBarOverlay setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"camera_overlay"]]];
+    [cameraBarOverlay setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:BUTTON_IMAGE_CAMERA_OVERLAY]]];
     [self.view addSubview:cameraBarOverlay];
     
     // Toggle Camera
+    
     toggleCamera = [UIButton buttonWithType:UIButtonTypeCustom];
     [toggleCamera setFrame:CGRectMake((self.view.frame.size.width - 26.0f)/2, 4.0f, 26.0f, 25.0f)];
-    [toggleCamera setBackgroundImage:[UIImage imageNamed:@"toggle_camera"] forState:UIControlStateNormal];
+    [toggleCamera setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_TOGGLE_CAMERA] forState:UIControlStateNormal];
     [toggleCamera addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
     [toggleCamera setTintColor:[UIColor grayColor]];
     [toggleCamera setTranslatesAutoresizingMaskIntoConstraints:NO];
     
     // Toggle Flash
+    
     toggleFlashButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [toggleFlashButton setFrame:CGRectMake(250.0f, 4.0f, 15.0f, 24.0f)];
+    [toggleFlashButton setFrame:CGRectMake(250.0f, 4.0f, 18.0f, 24.0f)];
     [toggleFlashButton setImage:[UIImage imageNamed:FLASH_IMAGE_AUTO] forState:UIControlStateNormal];
     [toggleFlashButton addTarget:self action:@selector(didTapToggleFlashButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [toggleFlashButton setTintColor:[UIColor grayColor]];
     [toggleFlashButton setTranslatesAutoresizingMaskIntoConstraints:NO];
     
     // Toggle Crosshairs
+    
     toggleCrosshairs = [UIButton buttonWithType:UIButtonTypeCustom];
     [toggleCrosshairs setFrame:CGRectMake(40.0f, 4.0f, 25.0f, 25.0f)];
-    [toggleCrosshairs setBackgroundImage:[UIImage imageNamed:@"toggle_crosshairs"] forState:UIControlStateNormal];
+    [toggleCrosshairs setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_TOGGLE_CROSSHAIRS] forState:UIControlStateNormal];
     [toggleCrosshairs addTarget:self action:@selector(toggleCrosshairs:) forControlEvents:UIControlEventTouchUpInside];
     [toggleCrosshairs setTintColor:[UIColor grayColor]];
     [toggleCrosshairs setTranslatesAutoresizingMaskIntoConstraints:NO];
     
     // Add buttons to the overlay bar
+    
     [cameraBarOverlay addSubview:toggleCrosshairs];
     [cameraBarOverlay addSubview:toggleCamera];
     [cameraBarOverlay addSubview:toggleFlashButton];
 
     // Setup the progressview
+    
     progressViewBorder = [[UIView alloc] initWithFrame:CGRectMake(0.0f,cameraBarOverlay.frame.size.height + cameraBarOverlay.frame.origin.y,self.view.frame.size.width,10.0f)];
     [progressViewBorder setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"progress_bg"]]];
 
@@ -224,7 +245,8 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     
     [self.view addSubview:progressViewBorder];
     
-    // Take picture
+    // Take picture button
+    
     takePicture = [UIButton buttonWithType:UIButtonTypeCustom];
     [takePicture setFrame:CGRectMake((self.view.frame.size.width - 74.0f)/2,
                                      (long)[self getTopPaddingNavigationBarHeight:navigationBarHeight
@@ -232,61 +254,49 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
                                                                     elementHeight:74.0f
                                                                       frameHeight:self.view.frame.size.height], 74.0f, 74.0f)];
     
-    [takePicture setBackgroundImage:[UIImage imageNamed:@"take_picture"] forState:UIControlStateNormal];
+    [takePicture setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_TAKE_PICTURE] forState:UIControlStateNormal];
     [takePicture addTarget:self action:@selector(snapStillImage:) forControlEvents:UIControlEventTouchUpInside];
     [takePicture setTintColor:[UIColor grayColor]];
     [takePicture setHidden:NO];
     
     [self.view addSubview:takePicture];
     
-    // Record Video Button
+    // Record record Video Button
+    
     recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [recordButton setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_RECORD] forState:UIControlStateNormal];
+    [recordButton addTarget:self action:@selector(startMovieRecording:) forControlEvents:UIControlEventTouchDown];
+    [recordButton addTarget:self action:@selector(stopMovieRecording:) forControlEvents:UIControlEventTouchUpInside];
+    [recordButton setHidden:YES];
     [recordButton setFrame:CGRectMake((self.view.frame.size.width - 74.0f)/2,
                                       (long)[self getTopPaddingNavigationBarHeight:navigationBarHeight
                                                                      previewHeight:previewHeight
                                                                      elementHeight:74.0f
                                                                        frameHeight:self.view.frame.size.height], 74.0f, 74.0f)];
-    
-    [recordButton setBackgroundImage:[UIImage imageNamed:@"record_video_button"]
-                            forState:UIControlStateNormal];
-    
-    [recordButton addTarget:self
-                     action:@selector(startMovieRecording:)
-           forControlEvents:UIControlEventTouchDown];
-    
-    [recordButton addTarget:self
-                     action:@selector(stopMovieRecording:)
-           forControlEvents:UIControlEventTouchUpInside];
-    
-    [recordButton setHidden:YES];
-    
     [self.view addSubview:recordButton];
     
     // Show Camera Button
+    
     showCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [showCameraButton setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_VIDEO] forState:UIControlStateNormal];
+    [showCameraButton addTarget:self action:@selector(toggleVideoControlsAction:) forControlEvents:UIControlEventTouchDown];
+    [showCameraButton setTintColor:[UIColor grayColor]];
     [showCameraButton setFrame:CGRectMake(250.0f, [self getTopPaddingNavigationBarHeight:navigationBarHeight
                                                                            previewHeight:previewHeight
                                                                            elementHeight:39.0f
                                                                              frameHeight:self.view.frame.size.height], 44.0f, 39.0f)];
     
-    [showCameraButton setBackgroundImage:[UIImage imageNamed:@"video_button"]
-                                forState:UIControlStateNormal];
-    
-    [showCameraButton addTarget:self action:@selector(toggleVideoControlsAction:)
-               forControlEvents:UIControlEventTouchDown];
-    
-    [showCameraButton setTintColor:[UIColor grayColor]];
-    
     [self.view addSubview:showCameraButton];
     
-    // Go to camera roll
+    // Camera roll button
+    
     UIButton *cameraRoll = [UIButton buttonWithType:UIButtonTypeCustom];
     [cameraRoll setFrame:CGRectMake(40.0f, [self getTopPaddingNavigationBarHeight:navigationBarHeight
                                                                     previewHeight:previewHeight
                                                                     elementHeight:50.0f
                                                                       frameHeight:self.view.frame.size.height], 44.0f, 50.0f)];
-    
-    [cameraRoll setBackgroundImage:[UIImage imageNamed:@"camera_roll"] forState:UIControlStateNormal];
+
+    [cameraRoll setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_CAMERA_ROLL] forState:UIControlStateNormal];
     [cameraRoll addTarget:self action:@selector(cameraRoll:) forControlEvents:UIControlEventTouchUpInside];
     [cameraRoll setTintColor:[UIColor grayColor]];
     
@@ -468,22 +478,27 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
             //NSLog(@"FTCamFlashButtonStateAuto -> FTCamFlashButtonStateOn");
             camFlashButtonState = FTCamFlashButtonStateOn;
             [toggleFlashButton setImage:[UIImage imageNamed:FLASH_IMAGE_ON] forState:UIControlStateNormal];
+            [toggleFlashButton setFrame:CGRectMake(250, 4, 15, 24)];
             [FTCamViewController setFlashMode:AVCaptureFlashModeOn forDevice:[[self videoDeviceInput] device]];
             break;
         case FTCamFlashButtonStateOn:
             //NSLog(@"FTCamFlashButtonStateOn -> FTCamFlashButtonStateOff");
             camFlashButtonState = FTCamFlashButtonStateOff;
             [toggleFlashButton setImage:[UIImage imageNamed:FLASH_IMAGE_OFF] forState:UIControlStateNormal];
+            [toggleFlashButton setFrame:CGRectMake(250, 4, 25, 25)];
             [FTCamViewController setFlashMode:AVCaptureFlashModeOff forDevice:[[self videoDeviceInput] device]];
             break;
         case FTCamFlashButtonStateOff:
             //NSLog(@"FTCamFlashButtonStateOff -> FTCamFlashButtonStateAuto");
             camFlashButtonState = FTCamFlashButtonStateAuto;
             [toggleFlashButton setImage:[UIImage imageNamed:FLASH_IMAGE_AUTO] forState:UIControlStateNormal];
+            [toggleFlashButton setFrame:CGRectMake(250, 4, 18, 24)];
             [FTCamViewController setFlashMode:AVCaptureFlashModeAuto forDevice:[[self videoDeviceInput] device]];
             break;
         default:
             //NSLog(@"Default");
+            camFlashButtonState = FTCamFlashButtonStateAuto;
+            [toggleFlashButton setFrame:CGRectMake(250, 4.0f, 18.0f, 24)];
             [FTCamViewController setFlashMode:AVCaptureFlashModeAuto forDevice:[[self videoDeviceInput] device]];
             break;
     }
