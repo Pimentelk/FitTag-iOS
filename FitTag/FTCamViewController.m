@@ -265,8 +265,9 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     
     recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [recordButton setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_RECORD] forState:UIControlStateNormal];
-    [recordButton addTarget:self action:@selector(startMovieRecording:) forControlEvents:UIControlEventTouchDown];
-    [recordButton addTarget:self action:@selector(stopMovieRecording:) forControlEvents:UIControlEventTouchUpInside];
+    [recordButton addTarget:self action:@selector(didTapStartRecordingButtonAction:) forControlEvents:UIControlEventTouchDown];
+    [recordButton addTarget:self action:@selector(didReleaseRecordingButtonAction:) forControlEvents:UIControlEventTouchDragExit];
+    [recordButton addTarget:self action:@selector(didReleaseRecordingButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [recordButton setHidden:YES];
     [recordButton setFrame:CGRectMake((self.view.frame.size.width - 74.0f)/2,
                                       (long)[self getTopPaddingNavigationBarHeight:navigationBarHeight
@@ -743,18 +744,32 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 	} else if (context == RecordingContext) {
         
 		BOOL isRecording = [change[NSKeyValueChangeNewKey] boolValue];
-		
-		dispatch_async(dispatch_get_main_queue(), ^{
-			if (isRecording){
-				[[self toggleCamera] setEnabled:NO];
-				[[self recordButton] setTitle:NSLocalizedString(@"", @"Recording button stop title") forState:UIControlStateNormal];
-				[[self recordButton] setEnabled:YES];
-			} else {
-				[[self toggleCamera] setEnabled:YES];
-				[[self recordButton] setTitle:NSLocalizedString(@"", @"Recording button record title") forState:UIControlStateNormal];
-				[[self recordButton] setEnabled:YES];
-			}
-		});
+        
+        dispatch_async([self sessionQueue], ^{ // Background queue started
+            // While the movie is recording, update the progress bar
+            while ([[self movieFileOutput] isRecording]) {
+                double duration = CMTimeGetSeconds([[self movieFileOutput] recordedDuration]);
+                double time = CMTimeGetSeconds([[self movieFileOutput] maxRecordedDuration]);
+                CGFloat progress = (CGFloat) (duration / time);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.progressView setProgress:progress animated:YES];
+                });
+            }
+            
+            // Dispatch changes to the view to main queue, they can't be updated in the background.
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (isRecording){
+                    [[self toggleCamera] setEnabled:NO];
+                    [[self recordButton] setTitle:NSLocalizedString(@"", @"Recording button stop title") forState:UIControlStateNormal];
+                    [[self recordButton] setEnabled:YES];
+                } else {
+                    [[self toggleCamera] setEnabled:YES];
+                    [[self recordButton] setTitle:NSLocalizedString(@"", @"Recording button record title") forState:UIControlStateNormal];
+                    [[self recordButton] setEnabled:YES];
+                }
+            });
+        });
+        
 	} else if (context == SessionRunningAndDeviceAuthorizedContext) {
 		BOOL isRunning = [change[NSKeyValueChangeNewKey] boolValue];
 		
@@ -776,11 +791,12 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 
 #pragma mark Actions
 
-- (void)startMovieRecording:(id)sender {
-    NSLog(@"startMovieRecording");
+- (void)didTapStartRecordingButtonAction:(UIButton *)button {
+    NSLog(@"%@::didTapStartRecordingButtonAction",VIEWCONTROLLER_CAM);
     [[self recordButton] setEnabled:NO];
-    CMTime maxDuration = CMTimeMakeWithSeconds(15, 50);
+    CMTime maxDuration = CMTimeMakeWithSeconds(10, 50);
 	[[self movieFileOutput] setMaxRecordedDuration:maxDuration];
+    [self.progressView setProgress:0 animated:NO];
     
 	dispatch_async([self sessionQueue], ^{
 		if (![[self movieFileOutput] isRecording]) {
@@ -803,16 +819,6 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 			// Start recording to a temporary file.
 			NSString *outputFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[@"movie" stringByAppendingPathExtension:@"mov"]];
 			[[self movieFileOutput] startRecordingToOutputFileURL:[NSURL fileURLWithPath:outputFilePath] recordingDelegate:self];
-
-            NSLog(@"[[self movieFileOutput] isRecording]: %d",[[self movieFileOutput] isRecording]);
-            
-            while ([[self movieFileOutput] isRecording]) {
-                double duration = CMTimeGetSeconds([[self movieFileOutput] recordedDuration]);
-                double time = CMTimeGetSeconds([[self movieFileOutput] maxRecordedDuration]);
-                CGFloat progress = (CGFloat) (duration / time);
-                NSLog(@"progress: %f",progress);
-                [self performSelectorInBackground:@selector(updateProgress:) withObject:[NSNumber numberWithFloat:progress]];
-            }
             
 		} else {
 			[[self movieFileOutput] stopRecording];
@@ -820,7 +826,8 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 	});
 }
 
-- (void)updateProgress:(NSNumber *)progress {
+- (void)shouldUpdateProgressView:(NSNumber *)progress {
+    NSLog(@"%@::updateProgress:",VIEWCONTROLLER_CAM);
     if (![progress isEqualToNumber:[NSDecimalNumber notANumber]]) {
         NSLog(@"progress: %f",[progress floatValue]);
         [self.progressView setProgress:[progress floatValue] animated:YES];
@@ -833,7 +840,8 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     }
 }
 
-- (void)stopMovieRecording:(id)sender {
+- (void)didReleaseRecordingButtonAction:(UIButton *)button {
+    NSLog(@"%@::didTapStopRecordingButtonAction:",VIEWCONTROLLER_CAM);
     if ([[self movieFileOutput] isRecording]) {
         [[self movieFileOutput] stopRecording];
     }
@@ -841,6 +849,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 
 - (void)snapStillImage:(id)sender {
     
+    NSLog(@"%@::snapStillImage:",VIEWCONTROLLER_CAM);
 	dispatch_async([self sessionQueue], ^{
 		// Update the orientation on the still image output video connection before capturing.
 		[[[self stillImageOutput] connectionWithMediaType:AVMediaTypeVideo] setVideoOrientation:[[(AVCaptureVideoPreviewLayer *)[self previewLayer] connection] videoOrientation]];
