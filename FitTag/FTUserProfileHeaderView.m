@@ -68,7 +68,7 @@
         self.containerView = [[UIView alloc] initWithFrame:frame];
         [self.containerView setBackgroundColor:[UIColor whiteColor]];
         
-        // Profile Picture Backgroudn
+        // Profile Picture Background
         profilePictureBackgroundView = [[UIView alloc] initWithFrame:CGRectMake( 0, 0, 320.0f, 160.0f)];
         [profilePictureBackgroundView setBackgroundColor:[UIColor clearColor]];
         [profilePictureBackgroundView setAlpha: 0.0f];
@@ -145,7 +145,7 @@
         [gridViewButton setFrame:CGRectMake(0, 0, 35, 35)];
         [gridViewButton setCenter:CGPointMake( 20 + gridViewButton.frame.size.width, profileFilter.frame.size.height / 2)];
         [gridViewButton addTarget:self action:@selector(didTapGridButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [gridViewButton setSelected:NO];
+        [gridViewButton setSelected:YES];
         [profileFilter addSubview:gridViewButton];
         
         businessButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -188,7 +188,7 @@
 #pragma mark - ()
 
 - (void)didTapGridButtonAction:(UIButton *)button {
-    //NSLog(@"didTapGridButtonAction");
+    NSLog(@"%@::didTapTaggedButtonAction:",VIEWCONTROLLER_USER_HEADER);
     if (![gridViewButton isSelected]) {
         [self resetSelectedProfileFilterButtons];
         [gridViewButton setSelected:YES];
@@ -199,7 +199,7 @@
 }
 
 - (void)didTapBusinessButtonAction:(UIButton *)button {
-    NSLog(@"didTapBusinessButtonAction");
+    NSLog(@"%@::didTapBusinessButtonAction:",VIEWCONTROLLER_USER_HEADER);
     if (![businessButton isSelected]) {
         [self resetSelectedProfileFilterButtons];
         [businessButton setSelected:YES];
@@ -210,7 +210,7 @@
 }
 
 - (void)didTapTaggedButtonAction:(UIButton *)button {
-    NSLog(@"didTapTaggedButtonAction");
+    NSLog(@"%@::didTapTaggedButtonAction:",VIEWCONTROLLER_USER_HEADER);
     if (![taggedInButton isSelected]) {
         [self resetSelectedProfileFilterButtons];
         [taggedInButton setSelected:YES];
@@ -221,7 +221,7 @@
 }
 
 - (void)didTapSettingsButtonAction:(id)sender {
-    NSLog(@"didTapSettingsButtonAction");
+    NSLog(@"%@::didTapTaggedButtonAction:",VIEWCONTROLLER_USER_HEADER);
     if(delegate && [delegate respondsToSelector:@selector(userProfileCollectionHeaderView:didTapSettingsButton:)]){
         [delegate userProfileCollectionHeaderView:self didTapSettingsButton:sender];
     }
