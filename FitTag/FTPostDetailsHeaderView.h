@@ -8,7 +8,7 @@
 
 @class PFImageView;
 @protocol FTPostDetailsHeaderViewDelegate;
-@interface FTPostDetailsHeaderView : UIView
+@interface FTPostDetailsHeaderView : UIView <UIScrollViewDelegate>
 
 
 /*! @name Managing View Properties */
