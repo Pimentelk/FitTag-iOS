@@ -745,8 +745,8 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
         
 		BOOL isRecording = [change[NSKeyValueChangeNewKey] boolValue];
         
-        dispatch_async([self sessionQueue], ^{
-            
+        dispatch_async([self sessionQueue], ^{ // Background queue started
+            // While the movie is recording, update the progress bar
             while ([[self movieFileOutput] isRecording]) {
                 double duration = CMTimeGetSeconds([[self movieFileOutput] recordedDuration]);
                 double time = CMTimeGetSeconds([[self movieFileOutput] maxRecordedDuration]);
@@ -756,6 +756,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
                 });
             }
             
+            // Dispatch changes to the view to main queue, they can't be updated in the background.
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (isRecording){
                     [[self toggleCamera] setEnabled:NO];
