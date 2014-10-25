@@ -10,7 +10,6 @@
 #import "FTProfileImageView.h"
 #import "AppDelegate.h"
 #import "FTLoadMoreCell.h"
-#import "FTAccountViewController.h"
 #import "MBProgressHUD.h"
 
 typedef enum {
@@ -289,9 +288,9 @@ typedef enum {
 
 - (void)cell:(FTFindFriendsCell *)cellView didTapUserButton:(PFUser *)aUser {
     // Push account view controller
-    FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
-    [accountViewController setUser:aUser];
-    [self.navigationController pushViewController:accountViewController animated:YES];
+    //FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
+    //[accountViewController setUser:aUser];
+    //[self.navigationController pushViewController:accountViewController animated:YES];
 }
 
 - (void)cell:(FTFindFriendsCell *)cellView didTapFollowButton:(PFUser *)aUser {
