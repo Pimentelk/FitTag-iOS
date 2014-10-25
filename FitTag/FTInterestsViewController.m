@@ -33,6 +33,21 @@
     [self.navigationController.navigationBar setBarTintColor:[UIColor redColor]];
     [self.navigationItem setTitleView: [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fittag_logo"]]];
     
+    // Override the back idnicator
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
+    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:FT_RED_COLOR_RED
+                                                                             green:FT_RED_COLOR_GREEN
+                                                                              blue:FT_RED_COLOR_BLUE alpha:1.0f]];
+    
+    // Back button
+    UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] init];
+    [backButtonItem setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backButtonItem setStyle:UIBarButtonItemStylePlain];
+    [backButtonItem setTarget:self];
+    [backButtonItem setAction:@selector(didTapBackButtonAction:)];
+    [backButtonItem setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setLeftBarButtonItem:backButtonItem];
+    
     // Data view
     [self.collectionView registerClass:[InterestCellCollectionView class] forCellWithReuseIdentifier:@"DataCell"];
     [self.collectionView registerClass:[CollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView"];
@@ -93,6 +108,11 @@
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_INTERESTS];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];    
+    [self.navigationController setToolbarHidden:YES animated:NO];
 }
 
 #pragma mark - InterestViewController
@@ -192,8 +212,7 @@
 
 #pragma mark - collection view data source
 
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
-{
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
     UICollectionReusableView *reusableview = nil;
     
     if (kind == UICollectionElementKindSectionHeader) {
@@ -212,13 +231,12 @@
     return reusableview;
 }
 
-- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
+- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return self.interests.count;
 }
 
-- (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    
     InterestCellCollectionView *cell = (InterestCellCollectionView *)[collectionView dequeueReusableCellWithReuseIdentifier:@"DataCell" forIndexPath:indexPath];
     
     if ([cell isKindOfClass:[InterestCellCollectionView class]]) {
@@ -241,23 +259,31 @@
     return cell;
 }
 
-- (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
-{
+- (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
     return 0;
 }
 
-- (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
-{
+- (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
     return 0;
 }
 
--(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     InterestCellCollectionView *cell = (InterestCellCollectionView *)[collectionView cellForItemAtIndexPath:indexPath];
-    if([cell isSelectedToggle]){
+    if ([cell isSelectedToggle]) {
         [selectedInterests addObject:self.interests[indexPath.row]];
     } else {
         [selectedInterests removeObject:self.interests[indexPath.row]];
     }
 }
+
+#pragma mark - ()
+
+- (void)didTapBackButtonAction:(id)sender {
+    if (self != [self.navigationController.viewControllers objectAtIndex:0]) {
+        [self.navigationController popViewControllerAnimated:YES];
+    } else {
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
 @end
