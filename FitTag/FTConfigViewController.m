@@ -31,12 +31,10 @@
 #pragma mark - UIViewController
 
 - (void)viewWillAppear:(BOOL)animated {
+    //NSLog(@"%@::viewWillAppear:",VIEWCONTROLLER_CONFIG);
+    
     [self.navigationController setNavigationBarHidden:YES animated:animated];
     [super viewWillAppear:animated];
-    NSLog(@"%@::viewWillAppear:",VIEWCONTROLLER_CONFIG);
-    
-    // If not logged in, present login view controller
-    //[(AppDelegate *)[[UIApplication sharedApplication] delegate] logOut];
     
     if (![PFUser currentUser]) {
         [(AppDelegate *)[[UIApplication sharedApplication] delegate] presentLoginViewControllerAnimated:NO];
@@ -51,7 +49,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    NSLog(@"%@::viewDidAppear:",VIEWCONTROLLER_CONFIG);
+    //NSLog(@"%@::viewDidAppear:",VIEWCONTROLLER_CONFIG);
     [super viewDidAppear:animated];
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_CONFIG];
@@ -78,29 +76,26 @@
 
 - (void)refreshCurrentUserCallbackWithResult:(PFObject *)refreshedObject error:(NSError *)error {
     if (!error) {
-        NSLog(@"refreshObject: %@",refreshedObject);
+        //NSLog(@"refreshObject: %@",refreshedObject);
     }
 }
 
 #pragma mark - DidLoginWithSocialMedia
 
 - (BOOL)isLoggedInWithTwitter {
-    NSLog(@"%@::isLoggedInWithTwitter:",VIEWCONTROLLER_CONFIG);
+    //NSLog(@"%@::isLoggedInWithTwitter:",VIEWCONTROLLER_CONFIG);
     return [PFTwitterUtils isLinkedWithUser:[PFUser currentUser]];
 }
 
 - (BOOL)isLoggedInWithFacebook {
-    NSLog(@"%@::isLoggedInWithFacebook:",VIEWCONTROLLER_CONFIG);
+    //NSLog(@"%@::isLoggedInWithFacebook:",VIEWCONTROLLER_CONFIG);
     return [PFFacebookUtils isLinkedWithUser:[PFUser currentUser]];
 }
 
 - (BOOL)didLogInWithTwitter:(PFObject *)user {
-    NSLog(@"%@::didLogInWithTwitter:",VIEWCONTROLLER_CONFIG);
-    
+    //NSLog(@"%@::didLogInWithTwitter:",VIEWCONTROLLER_CONFIG);
     if ([self isLoggedInWithTwitter]) {
-        
         NSLog(USER_DID_LOGIN_TWITTER);
-        
         NSString * requestString = [NSString stringWithFormat:TWITTER_API_USERS,[PFTwitterUtils twitter].screenName];
         NSURL *verify = [NSURL URLWithString:requestString];
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:verify];
@@ -118,7 +113,7 @@
             NSString *names = [TWuser objectForKey:@"name"];
             NSMutableArray *array = [NSMutableArray arrayWithArray:[names componentsSeparatedByString:@" "]];
             
-            if ( array.count > 1){
+            if (array.count > 1){
                 [user setObject:[array lastObject] forKey:kFTUserLastnameKey];
                 [array removeLastObject];
                 [user setObject:[array componentsJoinedByString:@" "] forKey:kFTUserFirstnameKey];
@@ -221,7 +216,7 @@
 #pragma mark - PFLogInViewControllerDelegate
 
 - (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
-    NSLog(@"%@::logInViewController:didLogInUser:",VIEWCONTROLLER_CONFIG);
+    //NSLog(@"%@::logInViewController:didLogInUser:",VIEWCONTROLLER_CONFIG);
     [self didLogInWithFacebook:user];
     [self didLogInWithTwitter:user];
     [self presentTabBarController:user];
