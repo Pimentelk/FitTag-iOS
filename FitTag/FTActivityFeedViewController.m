@@ -7,29 +7,22 @@
 //
 
 #import "FTActivityFeedViewController.h"
-#import "FTSettingsActionSheetDelegate.h"
 #import "FTActivityCell.h"
-//#import "FTAccountViewController.h"
-#import "FTUserProfileCollectionViewController.h"
-#import "FTPhotoDetailsViewController.h"
+#import "FTUserProfileViewController.h"
 #import "FTBaseTextCell.h"
 #import "FTLoadMoreCell.h"
-#import "FTSettingsButtonItem.h"
-#import "FTFindFriendsViewController.h"
 #import "MBProgressHUD.h"
-#import "FTCamViewController.h"
 #import "FTPostDetailsViewController.h"
+#import "FTFindFriendsViewController.h"
 
 @interface FTActivityFeedViewController ()
 
-@property (nonatomic, strong) FTSettingsActionSheetDelegate *settingsActionSheetDelegate;
 @property (nonatomic, strong) NSDate *lastRefresh;
 @property (nonatomic, strong) UIView *blankTimelineView;
 @end
 
 @implementation FTActivityFeedViewController
 
-@synthesize settingsActionSheetDelegate;
 @synthesize lastRefresh;
 @synthesize blankTimelineView;
 
@@ -78,35 +71,17 @@
     lastRefresh = [[NSUserDefaults standardUserDefaults] objectForKey:kFTUserDefaultsActivityFeedViewControllerLastRefreshKey];
 }
 
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillDisappear:animated];
-    [self.navigationController setToolbarHidden:YES];
-}
-
-- (void)viewWillDisappear:(BOOL)animated{
-    [super viewWillDisappear:animated];
-    NSLog(@"%@::viewWillDisappear",VIEWCONTROLLER_ACTIVITY);
-    // Get the classname of the next view controller
-    NSUInteger numberOfViewControllersOnStack = [self.navigationController.viewControllers count];
-    UIViewController *parentViewController = self.navigationController.viewControllers[numberOfViewControllersOnStack-1];
-    Class parentVCClass = [parentViewController class];
-    NSString *className = NSStringFromClass(parentVCClass);
-    
-    if([className isEqual:VIEWCONTROLLER_CAM]){
-        [self.navigationController setToolbarHidden:YES];
-    }
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_ACTIVITY];
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle{
     NSLog(@"%@::preferredStatusBarStyle",VIEWCONTROLLER_ACTIVITY);
     return UIStatusBarStyleLightContent;
 }
-
-- (void)didTapLoadCamera:(id)sender{
-    FTCamViewController *cameraViewController = [[FTCamViewController alloc] init];
-    [self.navigationController pushViewController:cameraViewController animated:YES];
-}
-
 
 #pragma mark - UITableViewDelegate
 
@@ -134,11 +109,10 @@
     if (indexPath.row < self.objects.count) {
         PFObject *activity = [self.objects objectAtIndex:indexPath.row];
         if ([activity objectForKey:kFTActivityPostKey]) {
-            //FTPhotoDetailsViewController *detailViewController = [[FTPhotoDetailsViewController alloc] initWithPhoto:[activity objectForKey:kFTActivityPostKey]];
-            //[self.navigationController pushViewController:detailViewController animated:YES];
             FTPostDetailsViewController *postDetailViewController = [[FTPostDetailsViewController alloc] initWithPost:[activity objectForKey:kFTActivityPostKey] AndType:nil];
             [self.navigationController pushViewController:postDetailViewController animated:YES];
         } else if ([activity objectForKey:kFTActivityFromUserKey]) {
+            // Push user profile
             UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
             [flowLayout setItemSize:CGSizeMake(105.5,105)];
             [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -147,8 +121,17 @@
             [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
             [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
             
-            FTUserProfileCollectionViewController *profileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
+            // Override the back idnicator
+            UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
+            [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+            [dismissProfileButton setStyle:UIBarButtonItemStylePlain];
+            [dismissProfileButton setTarget:self];
+            [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
+            [dismissProfileButton setTintColor:[UIColor whiteColor]];
+            
+            FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
             [profileViewController setUser:[PFUser currentUser]];
+            [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
             [self.navigationController pushViewController:profileViewController animated:YES];
         }
     } else if (self.paginationEnabled) {
@@ -192,7 +175,6 @@
 - (void)objectsDidLoad:(NSError *)error {
     NSLog(@"FTActivityFeedViewController::objectsDidLoad");
     [super objectsDidLoad:error];
-    NSLog(@"error: %@",error);
     
     lastRefresh = [NSDate date];
     [[NSUserDefaults standardUserDefaults] setObject:lastRefresh forKey:kFTUserDefaultsActivityFeedViewControllerLastRefreshKey];
@@ -200,11 +182,7 @@
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
-    NSLog(@"self.objects.count: %lu",(unsigned long)self.objects.count);
-    NSLog(@"hasCachedResult: %d",[[self queryForTable] hasCachedResult]);
-    
     if (self.objects.count == 0 && ![[self queryForTable] hasCachedResult]) {
-        NSLog(@"No cached results");
         self.tableView.scrollEnabled = NO;
         self.navigationController.tabBarItem.badgeValue = nil;
         
@@ -275,21 +253,36 @@
 #pragma mark - FTActivityCellDelegate Methods
 
 - (void)cell:(FTActivityCell *)cellView didTapActivityButton:(PFObject *)activity {
-    NSLog(@"FTActivityFeedViewController::didTapActivityButton:");
+    NSLog(@"%@::didTapActivityButton:",VIEWCONTROLLER_ACTIVITY);
     // Get image associated with the activity
     PFObject *photo = [activity objectForKey:kFTActivityPostKey];
-    
-    // Push single photo view controller
-    FTPhotoDetailsViewController *photoViewController = [[FTPhotoDetailsViewController alloc] initWithPhoto:photo];
-    [self.navigationController pushViewController:photoViewController animated:YES];
+    FTPostDetailsViewController *postViewController = [[FTPostDetailsViewController alloc] initWithPost:photo AndType:kFTPostTypeImage];
+    [self.navigationController pushViewController:postViewController animated:YES];
 }
 
 - (void)cell:(FTBaseTextCell *)cellView didTapUserButton:(PFUser *)user {
-    NSLog(@"FTActivityFeedViewController::didTapUserButton:");
-    // Push account view controller
-    //FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
-    //[accountViewController setUser:user];
-    //[self.navigationController pushViewController:accountViewController animated:YES];
+    NSLog(@"%@::didTapUserButton:",VIEWCONTROLLER_ACTIVITY);
+    // Push user profile
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [flowLayout setItemSize:CGSizeMake(105.5,105)];
+    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [flowLayout setMinimumInteritemSpacing:0];
+    [flowLayout setMinimumLineSpacing:0];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+    
+    // Override the back idnicator
+    UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
+    [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [dismissProfileButton setStyle:UIBarButtonItemStylePlain];
+    [dismissProfileButton setTarget:self];
+    [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
+    [dismissProfileButton setTintColor:[UIColor whiteColor]];
+    
+    FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    [profileViewController setUser:[PFUser currentUser]];
+    [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
+    [self.navigationController pushViewController:profileViewController animated:YES];
 }
 
 
@@ -310,15 +303,7 @@
 }
 
 #pragma mark - ()
-/*
-- (void)settingsButtonAction:(id)sender {
-    NSLog(@"FTActivityFeedViewController::settingsButtonAction:");
-    settingsActionSheetDelegate = [[FTSettingsActionSheetDelegate alloc] initWithNavigationController:self.navigationController];
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:settingsActionSheetDelegate cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"My Profile", nil), NSLocalizedString(@"Find Friends", nil), NSLocalizedString(@"Log Out", nil), nil];
-    
-    [actionSheet showFromTabBar:self.tabBarController.tabBar];
-}
-*/
+
 - (void)inviteFriendsButtonAction:(id)sender {
     NSLog(@"FTActivityFeedViewController::inviteFriendsButtonAction:");
     FTFindFriendsViewController *detailViewController = [[FTFindFriendsViewController alloc] init];
@@ -327,6 +312,10 @@
 
 - (void)applicationDidReceiveRemoteNotification:(NSNotification *)note {
     [self loadObjects];
+}
+
+- (void)didTapPopProfileButtonAction:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end
