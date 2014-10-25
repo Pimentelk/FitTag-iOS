@@ -14,6 +14,10 @@ typedef enum {
     FTReardsTabBarItemIndex = 4
 } FTTabBarControllerViewControllerIndex;
 
+#pragma mark - AppStoreURLFormat
+NSString *const iOS7AppStoreURLFormat;
+NSString *const iOSAppStoreURLFormat;
+
 #pragma mark - NSUserDefaults
 extern NSString *const kFTUserDefaultsActivityFeedViewControllerLastRefreshKey;
 extern NSString *const kFTUserDefaultsCacheFacebookFriendsKey;
