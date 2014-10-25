@@ -109,7 +109,7 @@
 
         //This method returns nil for assets from a shared photo stream that are not yet available locally. If the asset becomes available in the future, an ALAssetsLibraryChangedNotification notification is posted.
         ALAssetRepresentation *assetRep = [asset defaultRepresentation];
-
+        
         if(assetRep != nil) {
             if (_returnsImage) {
                 CGImageRef imgRef = nil;
@@ -119,17 +119,16 @@
             
                 if (_returnsOriginalImage) {
                     imgRef = [assetRep fullResolutionImage];
-                    //orientation = [assetRep orientation];
                     
                     NSNumber *orientationValue = [asset valueForProperty:@"ALAssetPropertyOrientation"];
                     if (orientationValue != nil) {
                         orientation = [orientationValue intValue];
                     }
 
-                    
                 } else {
                     imgRef = [assetRep fullScreenImage];
                 }
+                
                 UIImage *img = [UIImage imageWithCGImage:imgRef
                                                    scale:1.0f
                                              orientation:orientation];
