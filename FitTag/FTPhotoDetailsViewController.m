@@ -10,7 +10,7 @@
 #import "FTBaseTextCell.h"
 #import "FTActivityCell.h"
 #import "FTConstants.h"
-#import "FTUserProfileCollectionViewController.h"
+#import "FTUserProfileViewController.h"
 #import "FTLoadMoreCell.h"
 #import "FTUtility.h"
 #import "MBProgressHUD.h"
@@ -55,7 +55,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
         self.parseClassName = kFTActivityClassKey;
         
         // Whether the built-in pull-to-refresh is enabled
-        self.pullToRefreshEnabled = YES;
+        self.pullToRefreshEnabled = NO;
         
         // Whether the built-in pagination is enabled
         self.paginationEnabled = YES;
@@ -451,7 +451,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
     
-    FTUserProfileCollectionViewController *profileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
+    FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     [profileViewController setUser:user];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
@@ -504,7 +504,17 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
             }
         }
         
-        [[FTCache sharedCache] setAttributesForPost:photo likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+        [[photo objectForKey:kFTPostUserKey] fetchIfNeededInBackgroundWithBlock:^(PFObject *user, NSError *error) {
+            if (!error) {
+                [[FTCache sharedCache] setAttributesForPost:photo
+                                                     likers:likers
+                                                 commenters:commenters
+                                         likedByCurrentUser:isLikedByCurrentUser
+                                                displayName:[user objectForKey:kFTUserDisplayNameKey]];
+            } else {
+                NSLog(@"ERROR##: %@",error);
+            }
+        }];
         [self.headerView reloadLikeBar];
     }];
 }

@@ -10,20 +10,12 @@
 #import "FTBaseTextCell.h"
 #import "FTActivityCell.h"
 #import "FTConstants.h"
-#import "FTUserProfileCollectionViewController.h"
+#import "FTUserProfileViewController.h"
 #import "FTLoadMoreCell.h"
 #import "FTUtility.h"
 #import "MBProgressHUD.h"
 #import "FTCamViewController.h"
 #import "FTMapViewController.h"
-
-// Default Screen Constants
-#define CONTROLLER @"FTPostDetailsViewController"
-#define SCREEN_TITLE @"COMMENT"
-
-// Images
-#define NAVIGATE_BACK_IMAGE @"navigate_back"
-#define OPEN_CAMERA_BUTTON @"fittag_button"
 
 @interface FTPostDetailsViewController()
 @property (nonatomic, strong) UITextField *commentTextField;
@@ -67,7 +59,6 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
         self.objectsPerPage = 30;
         
         self.post = aPost;
-        
         self.type = aType;
         
         self.likersQueryInProgress = NO;
@@ -82,10 +73,10 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     
     [super viewDidLoad];
     
-    [self.navigationItem setTitle:SCREEN_TITLE];
+    [self.navigationItem setTitle:NAVIGATION_TITLE_COMMENT];
     
     // Override the back idnicator
-    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATE_BACK_IMAGE]
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]
                                                                       style:UIBarButtonItemStylePlain
                                                                      target:self
                                                                      action:@selector(didTapBackButtonAction:)];
@@ -94,7 +85,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [self.navigationItem setLeftBarButtonItem:backIndicator];
     
     // Load Camera
-    UIBarButtonItem *loadCamera = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:OPEN_CAMERA_BUTTON]
+    UIBarButtonItem *loadCamera = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_CAMERA]
                                                                    style:UIBarButtonItemStylePlain
                                                                   target:self action:@selector(loadCamera:)];
     [loadCamera setTintColor:[UIColor whiteColor]];
@@ -122,7 +113,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    //[self.headerView reloadLikeBar];
+    [self.headerView reloadLikeBar];
     
     // we will only hit the network if we have no cached data for this photo
     BOOL hasCachedLikers = [[FTCache sharedCache] attributesForPost:self.post] != nil;
@@ -143,7 +134,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
             
             PFUser *commentAuthor = (PFUser *)[object objectForKey:kFTActivityFromUserKey];
             
-            NSString *nameString = @"";
+            NSString *nameString = EMPTY_STRING;
             if (commentAuthor) {
                 nameString = [commentAuthor objectForKey:kFTUserDisplayNameKey];
             }
@@ -181,8 +172,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 
 - (void)objectsDidLoad:(NSError *)error {
     [super objectsDidLoad:error];
-    
-    //[self.headerView reloadLikeBar];
+    [self.headerView reloadLikeBar];
     [self loadLikers];
 }
 
@@ -353,6 +343,11 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+- (void)didTapPopProfileButtonAction:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+/*
 - (void)showShareSheet {
     [[self.post objectForKey:kFTPostImageKey] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
         if (!error) {
@@ -375,19 +370,19 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
         }
     }];
 }
+*/
 
 - (void)handleCommentTimeout:(NSTimer *)aTimer {
     [MBProgressHUD hideHUDForView:self.view.superview animated:YES];
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"New Comment", nil) message:NSLocalizedString(@"Your comment will be posted next time there is an Internet connection.", nil)  delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Dismiss", nil), nil];
-    [alert show];
+    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"New Comment", nil)
+                                message:NSLocalizedString(@"Your comment will be posted next time there is an Internet connection.", nil)
+                               delegate:nil
+                      cancelButtonTitle:nil
+                      otherButtonTitles:NSLocalizedString(@"Dismiss", nil), nil] show];
 }
 
 - (void)shouldPresentAccountViewForUser:(PFUser *)user {
-    /*
-    FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
-    [accountViewController setUser:user];
-    [self.navigationController pushViewController:accountViewController animated:YES];
-    */
+    // Push account view controller
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     [flowLayout setItemSize:CGSizeMake(105.5,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -396,17 +391,22 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
     
-    FTUserProfileCollectionViewController *profileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController setUser:user];
+    // Override the back idnicator
+    UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
+    [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [dismissProfileButton setStyle:UIBarButtonItemStylePlain];
+    [dismissProfileButton setTarget:self];
+    [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
+    [dismissProfileButton setTintColor:[UIColor whiteColor]];
+    
+    FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    [profileViewController setUser:[PFUser currentUser]];
+    [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
 
-- (void)backButtonAction:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
 - (void)userLikedOrUnlikedPhoto:(NSNotification *)note {
-    //[self.headerView reloadLikeBar];
+    [self.headerView reloadLikeBar];
 }
 
 - (void)keyboardWillShow:(NSNotification*)note {
@@ -426,7 +426,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         self.likersQueryInProgress = NO;
         if (error) {
-            //[self.headerView reloadLikeBar];
+            [self.headerView reloadLikeBar];
             return;
         }
         
@@ -449,8 +449,20 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
             }
         }
         
-        [[FTCache sharedCache] setAttributesForPost:post likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
-        //[self.headerView reloadLikeBar];
+        [[post objectForKey:kFTPostUserKey] fetchIfNeededInBackgroundWithBlock:^(PFObject *user, NSError *error) {
+            if (!error) {
+                [[FTCache sharedCache] setAttributesForPost:post
+                                                     likers:likers
+                                                 commenters:commenters
+                                         likedByCurrentUser:isLikedByCurrentUser
+                                                displayName:[user objectForKey:kFTUserDisplayNameKey]];
+            } else {
+                NSLog(@"ERROR##: %@",error);
+            }
+        }];
+
+        [self.headerView.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:post] description] forState:UIControlStateNormal];
+        [self.headerView reloadLikeBar];
     }];
 }
 

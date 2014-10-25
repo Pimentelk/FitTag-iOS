@@ -392,7 +392,12 @@
             [gallery saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (succeeded) {
                     
-                    [[FTCache sharedCache] setAttributesForPost:gallery likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
+                    [[FTCache sharedCache] setAttributesForPost:gallery
+                                                         likers:[NSArray array]
+                                                     commenters:[NSArray array]
+                                             likedByCurrentUser:NO
+                                                    displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
+                    
                     //NSLog(@"userInfo might contain any caption which might have been posted by the uploader");
                     
                     // userInfo might contain any caption which might have been posted by the uploader
@@ -543,7 +548,11 @@
             [post saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (succeeded) {
                 
-                    [[FTCache sharedCache] setAttributesForPost:post likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
+                    [[FTCache sharedCache] setAttributesForPost:post
+                                                         likers:[NSArray array]
+                                                     commenters:[NSArray array]
+                                             likedByCurrentUser:NO
+                                                    displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
                 
                     // userInfo might contain any caption which might have been posted by the uploader
                     if (userInfo) {

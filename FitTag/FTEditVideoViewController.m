@@ -406,8 +406,11 @@
     //NSLog(@"FTEditVideoViewController::doneButtonAction:%@",sender);
     // Make sure there were no errors creating the image files
     if (!self.videoFile || !self.imageFile){
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your video" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
-        [alert show];
+        [[[UIAlertView alloc] initWithTitle:@"Couldn't post your video"
+                                    message:nil
+                                   delegate:nil
+                          cancelButtonTitle:nil
+                          otherButtonTitles:@"Dismiss", nil] show];
         return;
     }
     
@@ -447,7 +450,11 @@
         // Save the video PFObject
         [video saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
-                [[FTCache sharedCache] setAttributesForPost:video likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
+                [[FTCache sharedCache] setAttributesForPost:video
+                                                     likers:[NSArray array]
+                                                 commenters:[NSArray array]
+                                         likedByCurrentUser:NO
+                                                displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
                 
                 // userInfo might contain any caption which might have been posted by the uploader
                 if (userInfo) {

@@ -7,9 +7,7 @@
 //
 
 #import "FTTimelineViewController.h"
-//#import "FTAccountViewController.h"
-#import "FTUserProfileCollectionViewController.h"
-#import "FTPhotoDetailsViewController.h"
+#import "FTUserProfileViewController.h"
 #import "FTPostDetailsViewController.h"
 #import "FTUtility.h"
 #import "FTLoadMoreCell.h"
@@ -112,16 +110,10 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    if (section == self.objects.count) {
-        return 0.0f;
-    }
     return 0.0f;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    if (section == self.objects.count) {
-        return 0.0f;
-    }
     return 0.0f;
 }
 
@@ -135,15 +127,11 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [super tableView:tableView didSelectRowAtIndexPath:indexPath];
-    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
     if (indexPath.section == self.objects.count && self.paginationEnabled) {
         // Load More Cell
         [self loadNextPage];
     }
-    
-    NSLog(@"tableView:didSelectRowAtIndexPath:");
 }
 
 #pragma mark - PFQueryTableViewController
@@ -270,16 +258,26 @@
                                 }
                             }
                             
-                            [[FTCache sharedCache] setAttributesForPost:gallery likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
-                            
                             if (galleryCell.tag != indexPath.section) {
                                 return;
                             }
                             
-                            [galleryCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:gallery]];
-                            [galleryCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:gallery] description] forState:UIControlStateNormal];
-                            [galleryCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:gallery] description] forState:UIControlStateNormal];
-                            [galleryCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:gallery] description] forState:UIControlStateNormal];
+                            [[object objectForKey:kFTPostUserKey] fetchIfNeededInBackgroundWithBlock:^(PFObject *user, NSError *error) {
+                                if (!error) {
+                                    [[FTCache sharedCache] setAttributesForPost:gallery
+                                                                         likers:likers
+                                                                     commenters:commenters
+                                                             likedByCurrentUser:isLikedByCurrentUser
+                                                                    displayName:[user objectForKey:kFTUserDisplayNameKey]];
+                                    
+                                    [galleryCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:gallery]];
+                                    [galleryCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:gallery] description] forState:UIControlStateNormal];
+                                    [galleryCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:gallery] description] forState:UIControlStateNormal];
+                                    [galleryCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:gallery] description] forState:UIControlStateNormal];
+                                } else {
+                                    NSLog(@"ERROR##: %@",error);
+                                }
+                            }];
                         }
                     }];
                 }
@@ -307,11 +305,6 @@
         videoCell = [[FTVideoCell alloc] initWithStyle:UITableViewCellStyleDefault
                                        reuseIdentifier:videoCellIdentifier];
         videoCell.delegate = self;
-        /*
-        [videoCell.videoButton addTarget:self
-                                  action:@selector(didTapOnVideoAction:)
-                        forControlEvents:UIControlEventTouchUpInside];
-        */
     }
     
     // If the cell is a video
@@ -365,16 +358,27 @@
                                 }
                             }
                             
-                            [[FTCache sharedCache] setAttributesForPost:video likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
                             
                             if (videoCell.tag != indexPath.section) {
                                 return;
                             }
                             
-                            [videoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:video]];
-                            [videoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:video] description] forState:UIControlStateNormal];
-                            [videoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:video] description] forState:UIControlStateNormal];
-                            [videoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:video] description] forState:UIControlStateNormal];
+                            [[object objectForKey:kFTPostUserKey] fetchIfNeededInBackgroundWithBlock:^(PFObject *user, NSError *error) {
+                                if (!error) {
+                                    [[FTCache sharedCache] setAttributesForPost:video
+                                                                         likers:likers
+                                                                     commenters:commenters
+                                                             likedByCurrentUser:isLikedByCurrentUser
+                                                                    displayName:[user objectForKey:kFTUserDisplayNameKey]];
+                                    
+                                    [videoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:video]];
+                                    [videoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:video] description] forState:UIControlStateNormal];
+                                    [videoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:video] description] forState:UIControlStateNormal];
+                                    [videoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:video] description] forState:UIControlStateNormal];
+                                } else {
+                                    NSLog(@"ERROR##: %@",error);
+                                }
+                            }];
                         }
                     }];
                 }
@@ -402,11 +406,6 @@
         photoCell = [[FTPhotoCell alloc] initWithStyle:UITableViewCellStyleDefault
                                        reuseIdentifier:photoCellIdentifier];
         photoCell.delegate = self;
-        /*
-        [photoCell.photoButton addTarget:self
-                                  action:@selector(didTapOnPhotoAction:)
-                        forControlEvents:UIControlEventTouchUpInside];
-        */
     }
     
     if([[object objectForKey:kFTPostTypeKey] isEqualToString:kFTPostTypeImage]) {
@@ -458,16 +457,26 @@
                                 }
                             }
                             
-                            [[FTCache sharedCache] setAttributesForPost:photo likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
-                            
                             if (photoCell.tag != indexPath.section) {
                                 return;
                             }
                             
-                            [photoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:photo]];
-                            [photoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:photo] description] forState:UIControlStateNormal];
-                            [photoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:photo] description] forState:UIControlStateNormal];
-                            [photoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:photo] description] forState:UIControlStateNormal];
+                            [[object objectForKey:kFTPostUserKey] fetchIfNeededInBackgroundWithBlock:^(PFObject *user, NSError *error) {
+                                if (!error) {
+                                    [[FTCache sharedCache] setAttributesForPost:photo
+                                                                         likers:likers
+                                                                     commenters:commenters
+                                                             likedByCurrentUser:isLikedByCurrentUser
+                                                                    displayName:[user objectForKey:kFTUserDisplayNameKey]];
+                                    
+                                    [photoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:photo]];
+                                    [photoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:photo] description] forState:UIControlStateNormal];
+                                    [photoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:photo] description] forState:UIControlStateNormal];
+                                    [photoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:photo] description] forState:UIControlStateNormal];
+                                } else {
+                                    NSLog(@"ERROR##: %@",error);
+                                }
+                            }];
                         }
                     }];
                 }
@@ -491,22 +500,6 @@
     return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
 }
 
-/*
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForNextPageAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *LoadMoreCellIdentifier = @"LoadMoreCell";
-    
-    FTLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:LoadMoreCellIdentifier];
-    if (!cell) {
-        cell = [[FTLoadMoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:LoadMoreCellIdentifier];
-        cell.selectionStyle = UITableViewCellSelectionStyleGray;
-        cell.separatorImageTop.image = [UIImage imageNamed:@"SeparatorTimelineDark.png"];
-        cell.hideSeparatorBottom = YES;
-        cell.mainView.backgroundColor = [UIColor clearColor];
-    }
-    return cell;
-}
-*/
-
 #pragma mark - FTPhotoTimelineViewController
 
 - (FTPhotoCell *)dequeueReusableSectionHeaderView {
@@ -523,13 +516,8 @@
 #pragma mark - FTGalleryCellViewDelegate
 
 - (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapUserButton:(UIButton *)button user:(PFUser *)user {
-    /*
-    NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapUserButton:user:");
-    FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
-    [accountViewController setUser:user];
-    [self.navigationController pushViewController:accountViewController animated:YES];
-    */
     
+    // Push account view controller
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     [flowLayout setItemSize:CGSizeMake(105.5,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -538,8 +526,17 @@
     [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
     
-    FTUserProfileCollectionViewController *profileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController setUser:user];
+    // Override the back idnicator
+    UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
+    [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [dismissProfileButton setStyle:UIBarButtonItemStylePlain];
+    [dismissProfileButton setTarget:self];
+    [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
+    [dismissProfileButton setTintColor:[UIColor whiteColor]];
+    
+    FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    [profileViewController setUser:[PFUser currentUser]];
+    [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
 
@@ -603,16 +600,15 @@
             }
             
             if(error){
-                NSLog(@"ERROR###: %@",error);
+                NSLog(@"ERROR#: %@",error);
             }
-            
         }];
     }
 }
 
 - (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapCommentOnGalleryButton:(UIButton *)button  gallery:(PFObject *)gallery {
     NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapCommentOnGalleryButton:gallery:");
-    FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:gallery];
+    FTPostDetailsViewController *photoDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:gallery AndType:kFTPostTypeGallery];
     [self.navigationController pushViewController:photoDetailsVC animated:YES];
 }
 
@@ -649,10 +645,7 @@
 
 - (void)videoCellView:(FTVideoCell *)videoCellView didTapUserButton:(UIButton *)button user:(PFUser *)user{
     NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapUserButton:user:");
-    //FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
-    //[accountViewController setUser:user];
-    //[self.navigationController pushViewController:accountViewController animated:YES];
-    
+    // Push account view controller
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     [flowLayout setItemSize:CGSizeMake(105.5,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -661,14 +654,23 @@
     [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
     
-    FTUserProfileCollectionViewController *profileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController setUser:user];
+    // Override the back idnicator
+    UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
+    [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [dismissProfileButton setStyle:UIBarButtonItemStylePlain];
+    [dismissProfileButton setTarget:self];
+    [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
+    [dismissProfileButton setTintColor:[UIColor whiteColor]];
+    
+    FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    [profileViewController setUser:[PFUser currentUser]];
+    [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
 
 - (void)videoCellView:(FTVideoCell *)videoCellView didTapCommentOnVideoButton:(UIButton *)button video:(PFObject *)video {
     NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapCommentOnVideoButton:video:");
-    FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:video];
+    FTPostDetailsViewController *photoDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:video AndType:kFTPostTypeVideo];
     [self.navigationController pushViewController:photoDetailsVC animated:YES];
 }
 
@@ -769,12 +771,7 @@
 
 - (void)photoCellView:(FTPhotoCell *)photoCellView didTapUserButton:(UIButton *)button user:(PFUser *)user {
     NSLog(@"FTPhotoTimelineViewController::photoCellView:didTapUserButton:user:");
-    /*
-    FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
-    [accountViewController setUser:user];
-    [self.navigationController pushViewController:accountViewController animated:YES];
-    */
-    
+    // Push account view controller
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     [flowLayout setItemSize:CGSizeMake(105.5,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -783,8 +780,17 @@
     [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
     
-    FTUserProfileCollectionViewController *profileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController setUser:user];
+    // Override the back idnicator
+    UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
+    [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [dismissProfileButton setStyle:UIBarButtonItemStylePlain];
+    [dismissProfileButton setTarget:self];
+    [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
+    [dismissProfileButton setTintColor:[UIColor whiteColor]];
+    
+    FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    [profileViewController setUser:[PFUser currentUser]];
+    [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
 
@@ -856,8 +862,8 @@
 
 - (void)photoCellView:(FTPhotoCell *)photoCellView didTapCommentOnPhotoButton:(UIButton *)button  photo:(PFObject *)photo {
     NSLog(@"FTPhotoTimelineViewController::photoCellView:didTapCommentOnPhotoButton:photo:");
-    FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:photo];
-    [self.navigationController pushViewController:photoDetailsVC animated:YES];
+    FTPostDetailsViewController *postDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:photo AndType:kFTPostTypeVideo];
+    [self.navigationController pushViewController:postDetailsVC animated:YES];
 }
 
 - (void)photoCellView:(FTPhotoCell *)photoCellView didTapMoreButton:(UIButton *)button photo:(PFObject *)photo{
@@ -886,8 +892,8 @@
 - (void)photoCellView:(FTPhotoCell *)photoCellView didTapPhotoButton:(UIButton *)button {
     PFObject *photo = [self.objects objectAtIndex:photoCellView.tag];
     if (photo) {
-        FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:photo];
-        [self.navigationController pushViewController:photoDetailsVC animated:YES];
+        FTPostDetailsViewController *postDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:photo AndType:kFTPostTypeVideo];
+        [self.navigationController pushViewController:postDetailsVC animated:YES];
     }
 }
 
@@ -938,6 +944,10 @@
 - (void)userFollowingChanged:(NSNotification *)note {
     //NSLog(@"User following changed.");
     self.shouldReloadOnAppear = YES;
+}
+
+- (void)didTapPopProfileButtonAction:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 /*

@@ -317,7 +317,11 @@
         [photo saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
             
-                [[FTCache sharedCache] setAttributesForPost:photo likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
+                [[FTCache sharedCache] setAttributesForPost:photo
+                                                     likers:[NSArray array]
+                                                 commenters:[NSArray array]
+                                         likedByCurrentUser:NO
+                                                displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
             
                 // userInfo might contain any caption which might have been posted by the uploader
                 if (userInfo) {

@@ -21,10 +21,8 @@
         // Initialization code
         [self setTitleTextAttributes: [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:NSForegroundColorAttributeName]];
         [self setBarTintColor:[UIColor redColor]];
-        [self setBackIndicatorImage:[UIImage imageNamed: @"navigate_back"]];
-        [self setBackIndicatorTransitionMaskImage:[UIImage imageNamed: @"navigate_back"]];
-        
-    
+        [self setBackIndicatorImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+        [self setBackIndicatorTransitionMaskImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
     }
     return self;
 }

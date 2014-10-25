@@ -77,7 +77,11 @@
                         }
                     }
                     
-                    [[FTCache sharedCache] setAttributesForPost:photo likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+                    [[FTCache sharedCache] setAttributesForPost:photo
+                                                         likers:likers
+                                                     commenters:commenters
+                                             likedByCurrentUser:isLikedByCurrentUser
+                                                    displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
                 }
                 
                 [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification object:photo userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:succeeded] forKey:FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey]];
@@ -142,7 +146,11 @@
                         }
                     }
                     
-                    [[FTCache sharedCache] setAttributesForPost:video likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+                    [[FTCache sharedCache] setAttributesForPost:video
+                                                         likers:likers
+                                                     commenters:commenters
+                                             likedByCurrentUser:isLikedByCurrentUser
+                                                    displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
                 }
                 
                 [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification object:video userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:succeeded] forKey:FTVideoDetailsViewControllerUserLikedUnlikedVideoNotificationUserInfoLikedKey]];
@@ -194,7 +202,11 @@
                         }
                     }
                     
-                    [[FTCache sharedCache] setAttributesForPost:video likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+                    [[FTCache sharedCache] setAttributesForPost:video
+                                                         likers:likers
+                                                     commenters:commenters
+                                             likedByCurrentUser:isLikedByCurrentUser
+                                                    displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
                 }
                 
                 [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification object:video userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:FTVideoDetailsViewControllerUserLikedUnlikedVideoNotificationUserInfoLikedKey]];
@@ -250,7 +262,11 @@
                         }
                     }
                     
-                    [[FTCache sharedCache] setAttributesForPost:photo likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+                    [[FTCache sharedCache] setAttributesForPost:photo
+                                                         likers:likers
+                                                     commenters:commenters
+                                             likedByCurrentUser:isLikedByCurrentUser
+                                                    displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];                    
                 }
                 
                 [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification object:photo userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey]];
