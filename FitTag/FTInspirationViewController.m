@@ -10,7 +10,6 @@
 #import "CollectionHeaderView.h"
 #import "InspirationCellCollectionView.h"
 #import "FTFindFriendsViewController.h"
-#import "FTFindFriendsFlowLayout.h"
 
 @implementation FTInspirationViewController
 
@@ -66,14 +65,6 @@
 
 - (void)submitUserInspiration:(id)sender{
     // Layout param
-    // Layout param
-    FTFindFriendsFlowLayout *layoutFlow = [[FTFindFriendsFlowLayout alloc] init];
-    [layoutFlow setItemSize:CGSizeMake(320,42)];
-    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [layoutFlow setMinimumInteritemSpacing:0];
-    [layoutFlow setMinimumLineSpacing:0];
-    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,32)];
     
     // Show the interests
     //FindFriendsViewController *findFriendsViewContoller = [[FindFriendsViewController alloc] initWithCollectionViewLayout:layoutFlow];
