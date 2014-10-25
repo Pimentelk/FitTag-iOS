@@ -19,11 +19,8 @@
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-    NSLog(@"%@::viewDidLoad",VIEWCONTROLLER_TABBAR);
+    //NSLog(@"%@::viewDidLoad",VIEWCONTROLLER_TABBAR);
     [super viewDidLoad];
-    
-    //[[self tabBar] setBackgroundImage:[UIImage imageNamed:@"BackgroundTabBar.png"]];
-    //[[self tabBar] setSelectionIndicatorImage:[UIImage imageNamed:@"BackgroundTabBarItemSelected.png"]];
     
     self.tabBar.tintColor = [UIColor colorWithRed:FT_RED_COLOR_RED
                                             green:FT_RED_COLOR_GREEN
