@@ -319,7 +319,7 @@
 
 #pragma mark - UIScrollViewDelegate
 
--(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if (scrollView.contentOffset.x < 0 || scrollView.contentOffset.x > (scrollView.contentSize.width - 320))
         [self killScroll];
     
@@ -340,22 +340,6 @@
 - (void)killScroll {
     self.carousel.scrollEnabled = NO;
     self.carousel.scrollEnabled = YES;
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-    //NSLog(@"FTGalleryCell::scrollViewDidScroll");
-    /*
-    ScrollDirection scrollDirection;
-    if (self.lastContentOffset > scrollView.contentOffset.x) {
-        scrollDirection = ScrollDirectionRight;
-        [self.swiperView onGallerySwipedRight];
-    } else if (self.lastContentOffset < scrollView.contentOffset.x) {
-        scrollDirection = ScrollDirectionLeft;
-        [self.swiperView onGallerySwipedLeft];        
-    }
-    
-    self.lastContentOffset = scrollView.contentOffset.x;
-    */
 }
 
 #pragma mark - ()
