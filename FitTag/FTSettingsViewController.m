@@ -36,7 +36,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
     
     // Toolbar & Navigationbar Setup
     [self.navigationItem setTitle:NAVIGATION_TITLE_SETTINGS];
@@ -68,10 +68,11 @@
     settingsDictionary = @{ SECTION_EDIT_PROFILE : @[ PROFILE_PICTURE, COVER_PHOTO, EDIT_BIO ],
                             SECTION_ADDITIONAL_INFO : @[ ADD_INTERESTS, INVITE_FRIENDS ],
                             SECTION_SETTINGS : @[ SHARE_SETTINGS, NOTIFICATION_SETTINGS, REWARD_SETTIGNS ],
-                            SECTION_APP_SETTINGS : @[ REVIEW_US, GIVE_FEEDBACK, ABOUT_US ] };
+                            SECTION_APP_SETTINGS : @[ REVIEW_US, GIVE_FEEDBACK, FITTAG_BLOG ] };
     settingsSectionTitles = [settingsDictionary allKeys];
     
     // Interests flow layout
+    
     FTInterestViewFlowLayout *interestFlowLayout = [[FTInterestViewFlowLayout alloc] init];
     [interestFlowLayout setItemSize:CGSizeMake(159.5,42)];
     [interestFlowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -81,11 +82,13 @@
     [interestFlowLayout setHeaderReferenceSize:CGSizeMake(320,80)];
     
     // View controllers
+    
     self.interestsViewController = [[FTInterestsViewController alloc] initWithCollectionViewLayout:interestFlowLayout];
     self.findFriendsViewController = [[FTFindFriendsViewController alloc] init];
     self.settingsDetailViewController = [[FTSettingsDetailViewController alloc] init];
     
     // Table view footer
+    
     UIButton *signout = [UIButton buttonWithType:UIButtonTypeCustom];
     [signout setFrame:CGRectMake( SETTINGS_BUTTON_X, SETTINGS_BUTTON_Y, self.tableView.frame.size.width, SETTINGS_BUTTON_HEIGHT )];
     [signout setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:SETTINGS_BUTTON]]];
@@ -107,6 +110,10 @@
 }
 
 #pragma mark - Table View
+
+- (NSInteger)tableView:(UITableView *)tableView indentationLevelForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 0;
+}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return [settingsSectionTitles count];
@@ -155,6 +162,7 @@
     NSArray *sectionSettings = [settingsDictionary objectForKey:sectionTitle];
     NSString *setting = [sectionSettings objectAtIndex:indexPath.row];
     cell.textLabel.text = setting;
+
     return cell;
 }
 
@@ -172,103 +180,13 @@
         [self.settingsDetailViewController setDetailItem:setting];
     } else if([setting isEqualToString:GIVE_FEEDBACK]) {
         [self presentFeedbackMessage];
+    } else if([setting isEqualToString:REVIEW_US]) {
+        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:iOS7AppStoreURLFormat,APP_STORE_ID]];
+        [[UIApplication sharedApplication] openURL:url];
     } else {
         [self.navigationController pushViewController:self.settingsDetailViewController animated:YES];
         [self.settingsDetailViewController setDetailItem:setting];
     }
-    
-    /*
-    switch (indexPath.section) {
-
-        case 0:
-            
-            switch (indexPath.row) {
-
-                case 0:
-                    NSLog(PROFILE_PICTURE);
-                    
-                    break;
-                
-                case 1:
-                    NSLog(COVER_PHOTO);
-                    break;
-                
-                case 2:
-                    NSLog(EDIT_BIO);
-                    break;
-                    
-                default:
-                    break;
-            }
-            
-            break;
-            
-        case 1:
-            
-            switch (indexPath.row) {
-                    
-                case 0:
-                    NSLog(ADD_INTERESTS);
-                    break;
-                    
-                case 1:
-                    NSLog(INVITE_FRIENDS);
-                    break;
-                    
-                default:
-                    break;
-            }
-            
-            break;
-            
-        case 2:
-            
-            switch (indexPath.row) {
-                    
-                case 0:
-                    NSLog(SHARE_SETTINGS);
-                    break;
-                    
-                case 1:
-                    NSLog(NOTIFICATION_SETTINGS);
-                    break;
-                    
-                case 2:
-                    NSLog(REWARD_SETTIGNS);
-                    break;
-                    
-                default:
-                    break;
-            }
-            
-            break;
-            
-        case 3:
-            
-            switch (indexPath.row) {
-                    
-                case 0:
-                    NSLog(REVIEW_US);
-                    break;
-                    
-                case 1:
-                    NSLog(GIVE_FEEDBACK);
-                    break;
-                    
-                case 2:
-                    NSLog(ABOUT_US);
-                    break;
-                    
-                default:
-                    break;
-            }
-            
-            break;
-            
-        default:
-            break;
-    }
-    */
 }
 
 #pragma mark - ()
