@@ -15,7 +15,7 @@
 @implementation FTNavigationController
 
 - (id)initWithRootViewController:(UIViewController *)rootViewController {
-    NSLog(@"%@::initWithRootViewController:",VIEWCONTROLLER_NAVIGATION);
+    //NSLog(@"%@::initWithRootViewController:",VIEWCONTROLLER_NAVIGATION);
     self = [super initWithRootViewController:rootViewController];
     if (self) {
         // UIBarbutton items
@@ -39,7 +39,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];    
-    NSLog(@"%@::viewDidLoad:",VIEWCONTROLLER_NAVIGATION);
+    //NSLog(@"%@::viewDidLoad:",VIEWCONTROLLER_NAVIGATION);
     self.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], NSForegroundColorAttributeName,nil];
     self.navigationBar.barTintColor = [UIColor colorWithRed:234.0f/255.0f
                                                       green:37.0f/255.0f
