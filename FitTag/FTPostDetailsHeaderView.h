@@ -62,7 +62,7 @@
 @end
 
 /*!
- The protocol defines methods a delegate of a FTPhotoDetailsHeaderView should implement.
+ The protocol defines methods a delegate of a FTPostDetailsHeaderView should implement.
  */
 @protocol FTPostDetailsHeaderViewDelegate <NSObject>
 @optional
