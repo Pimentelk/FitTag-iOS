@@ -14,19 +14,14 @@
 #import "FTConfigViewController.h"
 #import "FTActivityFeedViewController.h"
 #import "FTFeedViewController.h"
-#import "FTUserProfileCollectionViewController.h"
-#import "FTPhotoDetailsViewController.h"
+#import "FTUserProfileViewController.h"
 #import "FTMapViewController.h"
 #import "FTRewardsCollectionViewController.h"
-#import "FTUserProfileCollectionViewController.h"
 #import "FTNavigationController.h"
 
 @interface AppDelegate() {
     NSMutableData *_data;
     BOOL firstLaunch;
-    
-    //FTLoginViewController *loginViewController;
-    //FTSignupViewController *signUpViewController;
 }
 
 // Welcome View Controller
@@ -37,7 +32,7 @@
 @property (nonatomic, strong) FTMapViewController *mapViewController;
 @property (nonatomic, strong) FTFeedViewController *feedViewController;
 @property (nonatomic, strong) FTRewardsCollectionViewController *rewardsViewController;
-@property (nonatomic, strong) FTUserProfileCollectionViewController *userProfileViewController;
+@property (nonatomic, strong) FTUserProfileViewController *userProfileViewController;
 
 // Progress HUD (Notification/Loader)
 @property (nonatomic, strong) MBProgressHUD *hud;
@@ -49,13 +44,13 @@
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    NSLog(@"%@::application:didFinishLaunchingWithOptions:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::application:didFinishLaunchingWithOptions:",APPDELEGATE_RESPONDER);
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     // Google Analytics
     [GAI sharedInstance].trackUncaughtExceptions = YES;
     [GAI sharedInstance].dispatchInterval = 20;
-    [[GAI sharedInstance].logger setLogLevel:kGAILogLevelVerbose];
+    [[GAI sharedInstance].logger setLogLevel:kGAILogLevelNone];
     [[GAI sharedInstance] trackerWithTrackingId:GOOGLE_ANALYTICS_TRACKING_ID];
     
     // Parse initialization
@@ -100,12 +95,10 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     NSLog(@"%@::application:didRegisterForRemoteNotificationsWithDeviceToken:",APPDELEGATE_RESPONDER);
- 
     [self registerForRemoteNotification];
     if (application.applicationIconBadgeNumber != 0) {
         application.applicationIconBadgeNumber = 0;
     }
-    
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
     [currentInstallation setDeviceTokenFromData:deviceToken];
     [currentInstallation saveInBackground];
@@ -146,7 +139,7 @@
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    NSLog(@"%@::applicationDidBecomeActive:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::applicationDidBecomeActive:",APPDELEGATE_RESPONDER);
     // Handle an interruption during the authorization flow, such as the user clicking the home button.
     //[FBSession.activeSession handleDidBecomeActive];
     
@@ -155,7 +148,6 @@
         application.applicationIconBadgeNumber = 0;
         [[PFInstallation currentInstallation] saveInBackground];
     }
-    
     // Clears out all notifications from Notification Center.
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
     application.applicationIconBadgeNumber = 1;
@@ -167,7 +159,7 @@
 #pragma mark - UITabBarControllerDelegate
 
 - (BOOL)tabBarController:(UITabBarController *)aTabBarController shouldSelectViewController:(UIViewController *)viewController {
-    NSLog(@"%@::tabBarController:shouldSelectViewController:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::tabBarController:shouldSelectViewController:",APPDELEGATE_RESPONDER);
     // The empty UITabBarItem behind our Camera button should not load a view controller
     //return ![viewController isEqual:aTabBarController.viewControllers[FTReardsTabBarItemIndex]];
     return YES;
@@ -176,24 +168,24 @@
 #pragma mark - NSURLConnectionDataDelegate
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-    NSLog(@"%@::connection:didReceiveResponse:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::connection:didReceiveResponse:",APPDELEGATE_RESPONDER);
     _data = [[NSMutableData alloc] init];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    NSLog(@"%@::connection:didReceiveResponse:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::connection:didReceiveResponse:",APPDELEGATE_RESPONDER);
     [_data appendData:data];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    NSLog(@"%@::connectionDidFinishLoading:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::connectionDidFinishLoading:",APPDELEGATE_RESPONDER);
     //[FTUtility processFacebookProfilePictureData:_data];
 }
 
 #pragma mark - AppDelegate
 
 - (BOOL)isParseReachable {
-    NSLog(@"%@::isParseReachable:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::isParseReachable:",APPDELEGATE_RESPONDER);
     return self.networkStatus != NotReachable;
 }
 
@@ -203,13 +195,13 @@
 }
 
 - (void)presentLoginViewController {
-    NSLog(@"%@::presentLoginViewController:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::presentLoginViewController:",APPDELEGATE_RESPONDER);
     //[self presentLoginViewControllerAnimated:NO];
 }
 
 - (void)presentTabBarController {
     
-    NSLog(@"%@::presentTabBarController:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::presentTabBarController:",APPDELEGATE_RESPONDER);
     
     /** START TAB VIEW CONTROLLERS INIT **/
     self.tabBarController = [[FTTabBarController alloc] init];
@@ -233,7 +225,7 @@
     [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
     
-    self.userProfileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
+    self.userProfileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     [self.userProfileViewController setUser:[PFUser currentUser]];
     
     // Rewards View Controller
@@ -307,7 +299,7 @@
 }
 
 - (void)logOut {
-    NSLog(@"%@::logOut:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::logOut:",APPDELEGATE_RESPONDER);
     // clear cache
     [[FTCache sharedCache] clear];
     
@@ -351,7 +343,7 @@
 }
 
 - (void)monitorReachability {
-    NSLog(@"%@::monitorReachability:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::monitorReachability:",APPDELEGATE_RESPONDER);
     Reachability *hostReach = [Reachability reachabilityWithHostname:PARSE_HOST];
     
     hostReach.reachableBlock = ^(Reachability *reach) {
@@ -373,7 +365,7 @@
 }
 
 - (void)handlePush:(NSDictionary *)launchOptions {
-    NSLog(@"%@::handlePush:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::handlePush:",APPDELEGATE_RESPONDER);
     
     // If the app was launched in response to a push notification, we'll handle the payload here
     NSDictionary *remoteNotificationPayload = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
@@ -412,7 +404,7 @@
                     [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
                     [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
                     
-                    FTUserProfileCollectionViewController *profileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
+                    FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
                     [profileViewController setUser:[PFUser currentUser]];
                     [feedNavigationController pushViewController:profileViewController animated:YES];
                 }
@@ -422,14 +414,14 @@
 }
 
 - (void)autoFollowTimerFired:(NSTimer *)aTimer {
-    NSLog(@"%@::autoFollowTimerFired:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::autoFollowTimerFired:",APPDELEGATE_RESPONDER);
     [MBProgressHUD hideHUDForView:self.navController.presentedViewController.view animated:YES];
     [MBProgressHUD hideHUDForView:self.feedViewController.view animated:YES];
     [self.feedViewController loadObjects];
 }
 
 - (BOOL)shouldProceedToMainInterface:(PFUser *)user {
-    NSLog(@"%@::shouldProceedToMainInterface:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::shouldProceedToMainInterface:",APPDELEGATE_RESPONDER);
     if ([FTUtility userHasValidFacebookData:[PFUser currentUser]]) {
         [MBProgressHUD hideHUDForView:self.navController.presentedViewController.view animated:YES];
         [self presentTabBarController];
