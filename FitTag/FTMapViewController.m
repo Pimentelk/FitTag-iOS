@@ -187,7 +187,7 @@ enum PinAnnotationTypeTag {
 - (MKAnnotationView *)mapView:(MKMapView *)mapView
             viewForAnnotation:(id<MKAnnotation>)annotation {
     
-    NSLog(@"%@::mapView:viewForAnnotation:",VIEWCONTROLLER_MAP);
+    //NSLog(@"%@::mapView:viewForAnnotation:",VIEWCONTROLLER_MAP);
     static NSString *GeoPointBusinessAnnotationIdentifier = ANNOTATION_IDENTIFIER_BUSINESSES;
     static NSString *GeoPointAmbassadorAnnotationIdentifier = ANNOTATION_IDENTIFIER_AMBASSADOR;
 
@@ -220,7 +220,7 @@ enum PinAnnotationTypeTag {
 -(MKOverlayRenderer *)mapView:(MKMapView *)mapView
            rendererForOverlay:(id<MKOverlay>)overlay {
     
-    NSLog(@"%@::mapView:rendererForOverlay:",VIEWCONTROLLER_MAP);
+    //NSLog(@"%@::mapView:rendererForOverlay:",VIEWCONTROLLER_MAP);
     static NSString *CircleOverlayIdentifier = CIRCLE_OVERLAY_IDENTIFIER;
     
     if ([overlay isKindOfClass:[FTCircleOverlay class]]) {
@@ -252,7 +252,7 @@ enum PinAnnotationTypeTag {
  annotationView:(MKAnnotationView *)view didChangeDragState:(MKAnnotationViewDragState)newState
    fromOldState:(MKAnnotationViewDragState)oldState {
 
-    NSLog(@"%@::mapView:annotationView:fromOldState:",VIEWCONTROLLER_MAP);
+    //NSLog(@"%@::mapView:annotationView:fromOldState:",VIEWCONTROLLER_MAP);
     if (![view isKindOfClass:[MKPinAnnotationView class]] || view.tag != PinAnnotationTypeTagGeoQuery)
         return;
     
@@ -270,7 +270,7 @@ enum PinAnnotationTypeTag {
 #pragma mark - SearchViewController
 
 - (void)setInitialLocation:(CLLocation *)aLocation {
-    NSLog(@"%@::setInitialLocation: %@",VIEWCONTROLLER_MAP,aLocation);
+    //NSLog(@"%@::setInitialLocation: %@",VIEWCONTROLLER_MAP,aLocation);
     self.location = aLocation;
     [self configureOverlay];
 }
@@ -278,7 +278,7 @@ enum PinAnnotationTypeTag {
 #pragma mark - ()
 
 - (BOOL) isFirstTimeUser:(PFUser *)user {
-    NSLog(@"%@::isFirstTimeUser:",VIEWCONTROLLER_CONFIG);
+    //NSLog(@"%@::isFirstTimeUser:",VIEWCONTROLLER_CONFIG);
     // Check if the user has logged in before
     if (![user objectForKey:kFTUserLastLoginKey]) {
         FTInterestViewFlowLayout *layoutFlow = [[FTInterestViewFlowLayout alloc] init];
@@ -309,7 +309,7 @@ enum PinAnnotationTypeTag {
 }
 
 - (void)configureOverlay {
-    NSLog(@"%@::configureOverlay",VIEWCONTROLLER_MAP);
+    //NSLog(@"%@::configureOverlay",VIEWCONTROLLER_MAP);
     /*
     if (self.location) {
         [self.mapView removeAnnotations:self.mapView.annotations];
@@ -354,7 +354,7 @@ enum PinAnnotationTypeTag {
 }
 
 - (void)updateLocations {
-    NSLog(@"%@::updateLocations:",VIEWCONTROLLER_MAP);
+    //NSLog(@"%@::updateLocations:",VIEWCONTROLLER_MAP);
     CGFloat miles = self.radius/1000.0f;
     
     for (UIView *mapScrollViewSubView in mapScrollView.subviews) {
@@ -436,7 +436,7 @@ enum PinAnnotationTypeTag {
             [queryAmbassadorPosts orderByAscending:kFTPostLocationKey];
             [queryAmbassadorPosts findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 if (!error) {
-                    NSLog(@"Ambassador Posts: %@", objects);
+                    //NSLog(@"Ambassador Posts: %@", objects);
                     for (PFObject *object in objects) {
                         [mapItems addObject:object];
                         //[mapScrollView addSubview: [[FTMapScrollViewItem alloc] initWithFrame:CGRectMake(0, 0, self.mapView.frame.size.width, 120)]];
@@ -505,7 +505,7 @@ enum PinAnnotationTypeTag {
 #pragma mark - CLLocationManagerDelegate
 
 - (CLLocationManager *)locationManager {
-    NSLog(@"%@::locationManager",VIEWCONTROLLER_MAP);
+    //NSLog(@"%@::locationManager",VIEWCONTROLLER_MAP);
     if (locationManager != nil) {
         return locationManager;
     }
@@ -526,7 +526,7 @@ enum PinAnnotationTypeTag {
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-    NSLog(@"%@::locationManager:didUpdateLocations:",VIEWCONTROLLER_MAP);
+    //NSLog(@"%@::locationManager:didUpdateLocations:",VIEWCONTROLLER_MAP);
     [locationManager stopUpdatingLocation];
     PFUser *user = [PFUser currentUser];
     if (user) {
@@ -536,7 +536,7 @@ enum PinAnnotationTypeTag {
         [user setValue:geoPoint forKey:kFTUserLocationKey];
         [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
-                NSLog(@"%@::locationManager:didUpdateLocations: - User location updated successfully.",VIEWCONTROLLER_MAP);
+                //NSLog(@"%@::locationManager:didUpdateLocations: - User location updated successfully.",VIEWCONTROLLER_MAP);
                 [self setInitialLocation:location];
             }
         }];

@@ -7,9 +7,8 @@
 //
 
 #import "FTSearchViewController.h"
-#import "FTPhotoDetailsViewController.h"
-//#import "FTAccountViewController.h"
-#import "FTUserProfileCollectionViewController.h"
+#import "FTPostDetailsViewController.h"
+#import "FTUserProfileViewController.h"
 #import "FTUtility.h"
 #import "FTLoadMoreCell.h"
 #import "FTMapViewController.h"
@@ -256,6 +255,10 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
 
 #pragma mark - ()
 
+- (void)didTapPopProfileButtonAction:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 - (NSInteger)getIconTypeInteger:(NSString *)type{
     
     if([type isEqualToString:@"popular"]){
@@ -500,8 +503,8 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
 -(void)cellView:(PFTableViewCell *)cellView didTapCellLabelButton:(UIButton *)button post:(PFObject *)post{
     NSLog(@"cellView:(PFTableViewCell *) %@ didTapCellLabelButton:(UIButton *) %@ post:(PFObject *) %@",cellView,button,post);
     if (post != nil) {
-        FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:post];
-        [self.navigationController pushViewController:photoDetailsVC animated:YES];
+        //FTPostDetailsViewController *postDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:post AndType:nil];
+        //[self.navigationController pushViewController:postDetailsVC animated:YES];
     }
 }
 
@@ -512,8 +515,8 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
 -(void)cellView:(PFTableViewCell *)cellView didTapHashtagCellIconButton:(UIButton *)button post:(PFObject *)post{
     NSLog(@"cellView:(PFTableViewCell *) %@ didTapHashtagCellIconButton:(UIButton *) %@ post:(PFObject *) %@",cellView,button,post);
     if (post != nil) {
-        FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:post];
-        [self.navigationController pushViewController:photoDetailsVC animated:YES];
+        //FTPostDetailsViewController *postDetailsVC = [[FTPostDetailsViewController alloc] initWithPhoto:post];
+        //[self.navigationController pushViewController:postDetailsVC animated:YES];
     }
 }
 
@@ -524,25 +527,23 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
 -(void)cellView:(PFTableViewCell *)cellView didTapPopularCellIconButton:(UIButton *)button post:(PFObject *)post{
     NSLog(@"cellView:(PFTableViewCell *) %@ didTapPopularCellIconButton:(UIButton *) %@ post:(PFObject *) %@",cellView,button,post);
     if (post != nil) {
-        FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:post];
-        [self.navigationController pushViewController:photoDetailsVC animated:YES];
+        //FTPostDetailsViewController *postDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:post AndType:nil];
+        //[self.navigationController pushViewController:postDetailsVC animated:YES];
     }
 }
 
 -(void)cellView:(PFTableViewCell *)cellView didTapTrendingCellIconButton:(UIButton *)button post:(PFObject *)post{
     NSLog(@"cellView:(PFTableViewCell *) %@ didTapTrendingCellIconButton:(UIButton *) %@ post:(PFObject *) %@",cellView,button,post);
     if (post != nil) {
-        FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:post];
-        [self.navigationController pushViewController:photoDetailsVC animated:YES];
+        //FTPostDetailsViewController *postDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:post AndType:nil];
+        //[self.navigationController pushViewController:postDetailsVC animated:YES];
     }
 }
 
 -(void)cellView:(PFTableViewCell *)cellView didTapUserCellIconButton:(UIButton *)button user:(PFUser *)user{
     NSLog(@"cellView:(PFTableViewCell *) %@ didTapUserCellIconButton:(UIButton *) %@ post:(PFObject *) %@",cellView,button,user);
     if (user != nil) {
-        //FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
-        //[accountViewController setUser:user];
-        //[self.navigationController pushViewController:accountViewController animated:YES];
+        // Push user profile
         UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
         [flowLayout setItemSize:CGSizeMake(105.5,105)];
         [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -551,8 +552,17 @@ static NSString *const NothingFoundCellIdentifier = @"NothingFoundCell";
         [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
         [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
         
-        FTUserProfileCollectionViewController *profileViewController = [[FTUserProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
-        [profileViewController setUser:user];
+        // Override the back idnicator
+        UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
+        [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+        [dismissProfileButton setStyle:UIBarButtonItemStylePlain];
+        [dismissProfileButton setTarget:self];
+        [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
+        [dismissProfileButton setTintColor:[UIColor whiteColor]];
+        
+        FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+        [profileViewController setUser:[PFUser currentUser]];
+        [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
         [self.navigationController pushViewController:profileViewController animated:YES];
     }
 }
