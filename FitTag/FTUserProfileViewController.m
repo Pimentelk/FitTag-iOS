@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-#import "FTBusinessProfileCollectionViewController.h"
+#import "FTBusinessProfileViewController.h"
 #import "FTUserProfileViewController.h"
 #import "FTUserProfileCollectionViewCell.h"
 #import "FTPostDetailsViewController.h"
@@ -148,7 +148,7 @@
         PFUser *business = self.cells[indexPath.row];
         NSLog(@"FTUserProfileCollectionViewController:: business: %@",business);
         if (business) {
-            FTBusinessProfileCollectionViewController *businessProfileViewController = [[FTBusinessProfileCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
+            FTBusinessProfileViewController *businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
             [businessProfileViewController setBusiness:business];
             [self.navigationController pushViewController:businessProfileViewController animated:YES];
         }
