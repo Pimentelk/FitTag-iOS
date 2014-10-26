@@ -17,6 +17,7 @@
 @property (nonatomic, assign) BOOL shouldReloadOnAppear;
 @property (nonatomic, strong) NSMutableSet *reusableSectionHeaderViews;
 @property (nonatomic, strong) NSMutableDictionary *outstandingSectionHeaderQueries;
+@property (nonatomic, strong) UIBarButtonItem *dismissProfileButton;
 //@property (nonatomic, retain) MPMoviePlayerController *moviePlayer;
 @end
 
@@ -24,6 +25,7 @@
 @synthesize reusableSectionHeaderViews;
 @synthesize shouldReloadOnAppear;
 @synthesize outstandingSectionHeaderQueries;
+@synthesize dismissProfileButton;
 
 #pragma mark - Initialization
 
@@ -67,6 +69,14 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     [super viewDidLoad];
+    
+    // Override the back idnicator
+    dismissProfileButton = [[UIBarButtonItem alloc] init];
+    [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [dismissProfileButton setStyle:UIBarButtonItemStylePlain];
+    [dismissProfileButton setTarget:self];
+    [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
+    [dismissProfileButton setTintColor:[UIColor whiteColor]];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidPublishPhoto:) name:FTTabBarControllerDidFinishEditingPhotoNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userFollowingChanged:) name:FTUtilityUserFollowingChangedNotification object:nil];
@@ -526,14 +536,6 @@
     [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
     
-    // Override the back idnicator
-    UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
-    [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
-    [dismissProfileButton setStyle:UIBarButtonItemStylePlain];
-    [dismissProfileButton setTarget:self];
-    [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
-    [dismissProfileButton setTintColor:[UIColor whiteColor]];
-    
     FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     [profileViewController setUser:[PFUser currentUser]];
     [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
@@ -638,6 +640,7 @@
             [mapViewController setInitialLocation: location];
     }
     
+    [mapViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:mapViewController animated:YES];
 }
 
@@ -653,14 +656,6 @@
     [flowLayout setMinimumLineSpacing:0];
     [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
-    
-    // Override the back idnicator
-    UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
-    [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
-    [dismissProfileButton setStyle:UIBarButtonItemStylePlain];
-    [dismissProfileButton setTarget:self];
-    [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
-    [dismissProfileButton setTintColor:[UIColor whiteColor]];
     
     FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     [profileViewController setUser:[PFUser currentUser]];
@@ -755,7 +750,7 @@
         CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
         [mapViewController setInitialLocation: location];
     }
-    
+    [mapViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:mapViewController animated:YES];
 }
 
@@ -779,14 +774,6 @@
     [flowLayout setMinimumLineSpacing:0];
     [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
-    
-    // Override the back idnicator
-    UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
-    [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
-    [dismissProfileButton setStyle:UIBarButtonItemStylePlain];
-    [dismissProfileButton setTarget:self];
-    [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
-    [dismissProfileButton setTintColor:[UIColor whiteColor]];
     
     FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     [profileViewController setUser:[PFUser currentUser]];
@@ -885,7 +872,7 @@
         CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
         [mapViewController setInitialLocation: location];
     }
-    
+    [mapViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:mapViewController animated:YES];
 }
 
