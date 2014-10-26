@@ -7,8 +7,9 @@
 //
 
 #import "FTSocialCell.h"
+#import "FTCamViewController.h"
 
-@interface FTSettingsDetailViewController : UIViewController <UITextViewDelegate,UITableViewDataSource,UITableViewDelegate,FTSocialCellDelegate>
+@interface FTSettingsDetailViewController : UIViewController <UITextViewDelegate,UITableViewDataSource,UITableViewDelegate,FTSocialCellDelegate,FTCamViewControllerDelegate>
 
 @property (strong, nonatomic) id detailItem;
 @end

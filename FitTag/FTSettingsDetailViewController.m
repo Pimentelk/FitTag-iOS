@@ -7,6 +7,7 @@
 //
 
 #import "FTSettingsDetailViewController.h"
+#import "UIImage+ResizeAdditions.h"
 #import "MBProgressHUD.h"
 #import "FTSocialCell.h"
 
@@ -14,11 +15,12 @@
 
 // Profile Image Options
 #define PROFILE_BUTTON_HEIGHT 40
-#define PROFILE_BUTTON_COUNT 4
+#define PROFILE_BUTTON_COUNT 3
 #define FACEBOOK_PHOTO @"Facebook Profile Image"
 #define TWITTER_PHOTO @"Twitter Profile Image"
 #define TAKE_PHOTO @"Take Photo"
 #define SELECT_PHOTO @"Select Photo"
+#define PROFILE_UPDATED @"Profile image updated"
 
 #define REUSABLE_IDENTIFIER_SOCIAL @"SocialCell"
 
@@ -171,7 +173,6 @@
     [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
         if (!error) {
             UIImage *profileImage = [UIImage imageWithData:data];
-            
             [userProfileImageView setImage:profileImage];
             [self.view addSubview:userProfileImageView];
         }
@@ -215,6 +216,7 @@
     [takePhotoButton addTarget:self action:@selector(clearProfileImageButtons) forControlEvents:UIControlEventTouchDragExit];
     [self.view addSubview:takePhotoButton];
     
+    /*
     CGFloat selectPhotoPosition = takePhotoButton.frame.size.height + takePhotoButton.frame.origin.y + 1;
     selectPhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [selectPhotoButton setFrame:CGRectMake(0, selectPhotoPosition, frameWidth, PROFILE_BUTTON_HEIGHT)];
@@ -225,6 +227,7 @@
     [selectPhotoButton addTarget:self action:@selector(didHighlightButtonAction:) forControlEvents:UIControlEventTouchDown];
     [selectPhotoButton addTarget:self action:@selector(clearProfileImageButtons) forControlEvents:UIControlEventTouchDragExit];
     [self.view addSubview:selectPhotoButton];
+    */
 }
 
 - (void)configureCoverPhoto {
@@ -477,6 +480,32 @@
     }
 }
 
+#pragma mark - FTCamViewControllerDelegate
+
+- (void)camViewController:(FTCamViewController *)camViewController photo:(UIImage *)photo {
+    [userProfileImageView setImage:photo];
+    
+    UIImage *resizedImage = [photo resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(560.0f, 560.0f) interpolationQuality:kCGInterpolationHigh];
+    NSData *profileImageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
+    
+    PFUser *user = [PFUser currentUser];
+    [user setValue:[PFFile fileWithName:MEDIUM_JPEG data:profileImageData] forKey:kFTUserProfilePicMediumKey];
+    [user setValue:[PFFile fileWithName:SMALL_JPEG data:profileImageData] forKey:kFTUserProfilePicSmallKey];
+    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            [self showHudMessage:PROFILE_UPDATED WithDuration:3];
+        }
+        
+        if (error) {
+            [[[UIAlertView alloc] initWithTitle:@"Error"
+                                        message:@"Unable to save your profile picture. Please try again later, if the problem continues contact support."
+                                       delegate:self
+                              cancelButtonTitle:@"ok"
+                              otherButtonTitles:nil] show];
+        }
+    }];
+}
+
 #pragma mark - ()
 
 - (void)clearProfileImageButtons {
@@ -522,6 +551,7 @@
                                 [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
                                 UIImage *profileImage = [UIImage imageWithData:data];
                                 [userProfileImageView setImage:profileImage];
+                                [self showHudMessage:PROFILE_UPDATED WithDuration:3];
                             }
                         }];
                     }
@@ -597,6 +627,7 @@
                             [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
                             UIImage *profileImage = [UIImage imageWithData:data];
                             [userProfileImageView setImage:profileImage];
+                            [self showHudMessage:PROFILE_UPDATED WithDuration:3];
                         }
                     }];
                 }
@@ -623,12 +654,22 @@
 - (void)didTapTakePhotoButtonAction:(id)sender {
     NSLog(@"didTapTakePhotoButtonAction");
     [self clearProfileImageButtons];
+    
+    FTCamViewController *camViewController = [[FTCamViewController alloc] init];
+    camViewController.delegate = self;
+    camViewController.isProfilePciture = YES;
+    
+    UINavigationController *navController = [[UINavigationController alloc] init];
+    [navController setViewControllers:@[ camViewController ] animated:NO];
+    [self presentViewController:navController animated:YES completion:nil];
 }
 
+/*
 - (void)didTapSelectPhotoButtonAction:(id)sender {
     NSLog(@"didTapSelectPhotoButtonAction");
     [self clearProfileImageButtons];
 }
+*/
 
 - (void)showHudMessage:(NSString *)message WithDuration:(NSTimeInterval)duration {
     //NSLog(@"%@::showHudMessage:WithDuration:",VIEWCONTROLLER_SETTINGS_DETAIL);
