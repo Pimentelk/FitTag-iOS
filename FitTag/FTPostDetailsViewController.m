@@ -21,6 +21,7 @@
 @property (nonatomic, strong) UITextField *commentTextField;
 @property (nonatomic, strong) UIButton *commentSendButton;
 @property (nonatomic, assign) BOOL likersQueryInProgress;
+@property (nonatomic, strong) UIBarButtonItem *dismissProfileButton;
 
 /* Header Views */
 @property (nonatomic, strong) FTPostDetailsHeaderView *headerView;
@@ -35,6 +36,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 @synthesize headerView;
 @synthesize footerView;
 @synthesize post;
+@synthesize dismissProfileButton;
 
 #pragma mark - Initialization
 
@@ -76,11 +78,20 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [self.navigationItem setTitle:NAVIGATION_TITLE_COMMENT];
     
     // Override the back idnicator
-    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]
-                                                                      style:UIBarButtonItemStylePlain
-                                                                     target:self
-                                                                     action:@selector(didTapBackButtonAction:)];
+    dismissProfileButton = [[UIBarButtonItem alloc] init];
+    [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [dismissProfileButton setStyle:UIBarButtonItemStylePlain];
+    [dismissProfileButton setTarget:self];
+    [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
+    [dismissProfileButton setTintColor:[UIColor whiteColor]];
     
+    // Override the back idnicator
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
+    [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backIndicator setStyle:UIBarButtonItemStylePlain];
+    [backIndicator setTarget:self];
+    [backIndicator setAction:@selector(didTapBackButtonAction:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
     [backIndicator setTintColor:[UIColor whiteColor]];
     [self.navigationItem setLeftBarButtonItem:backIndicator];
     
@@ -322,6 +333,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
         [mapViewController setInitialLocation: location];
     }
     
+    [mapViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:mapViewController animated:YES];
 }
 
@@ -390,14 +402,6 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [flowLayout setMinimumLineSpacing:0];
     [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
-    
-    // Override the back idnicator
-    UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
-    [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
-    [dismissProfileButton setStyle:UIBarButtonItemStylePlain];
-    [dismissProfileButton setTarget:self];
-    [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
-    [dismissProfileButton setTintColor:[UIColor whiteColor]];
     
     FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     [profileViewController setUser:[PFUser currentUser]];
