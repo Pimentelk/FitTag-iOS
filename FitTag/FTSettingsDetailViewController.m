@@ -8,20 +8,28 @@
 
 #import "FTSettingsDetailViewController.h"
 #import "MBProgressHUD.h"
+#import "FTSocialCell.h"
 
-#define TEXTVIEW_PADDING 20
+#define TOP_PADDING 20
 
 // Profile Image Options
-
+#define PROFILE_BUTTON_HEIGHT 40
+#define PROFILE_BUTTON_COUNT 4
 #define FACEBOOK_PHOTO @"Facebook Profile Image"
 #define TWITTER_PHOTO @"Twitter Profile Image"
 #define TAKE_PHOTO @"Take Photo"
 #define SELECT_PHOTO @"Select Photo"
 
+#define REUSABLE_IDENTIFIER_SOCIAL @"SocialCell"
+
 #define TABLE_CELL_HEIGHT 45
 
 @interface FTSettingsDetailViewController () {
     CGFloat navigationBarEnd;
+    UIButton *facebookImageButton;
+    UIButton *twitterImageButton;
+    UIButton *takePhotoButton;
+    UIButton *selectPhotoButton;
 }
 @property (nonatomic, strong) UIImageView *userProfileImageView;
 @property (nonatomic, strong) UITextView *userBiography;
@@ -29,6 +37,9 @@
 @property (nonatomic, strong) MBProgressHUD *hud;
 @property (nonatomic, strong) UIWebView *webView;
 @property (nonatomic, strong) UIView *webViewNavigationBar;
+@property (nonatomic, strong) NSArray *objects;
+@property (nonatomic, strong) UIBarButtonItem *doneButtonItem;
+@property (nonatomic, strong) UIBarButtonItem *backButtonItem;
 @end
 
 @implementation FTSettingsDetailViewController
@@ -36,6 +47,8 @@
 @synthesize webView;
 @synthesize webViewNavigationBar;
 @synthesize userProfileImageView;
+@synthesize doneButtonItem;
+@synthesize backButtonItem;
 
 #pragma mark - Managing the detail item
 
@@ -122,7 +135,7 @@
     
     // Back button
     
-    UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] init];
+    backButtonItem = [[UIBarButtonItem alloc] init];
     [backButtonItem setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
     [backButtonItem setStyle:UIBarButtonItemStylePlain];
     [backButtonItem setTarget:self];
@@ -132,9 +145,7 @@
     
     // Done button
     
-    UIBarButtonItem *doneButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                    target:self
-                                                                                    action:@selector(didTapDoneButtonAction:)];
+    doneButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(didTapDoneButtonAction:)];
     [doneButtonItem setStyle:UIBarButtonItemStylePlain];
     [doneButtonItem setTintColor:[UIColor whiteColor]];
     [self.navigationItem setRightBarButtonItem:doneButtonItem];
@@ -150,7 +161,7 @@
 - (void)configureProfilePicture {
     //NSLog(@"%@::configureProfilePicture",VIEWCONTROLLER_SETTINGS_DETAIL);
     
-    // Set profile image
+    // Set current profile image
     
     userProfileImageView = [[UIImageView alloc] init];
     [userProfileImageView setFrame:CGRectMake(0, navigationBarEnd, self.view.frame.size.width, self.view.frame.size.width)];
@@ -166,34 +177,54 @@
         }
     }];
     
-    // Set profile image buttons
+    // Setup and position the profile buttons
     
     CGFloat profileImageViewEnd = userProfileImageView.frame.size.height + userProfileImageView.frame.origin.y;
-    CGFloat profileImageHeight = self.view.frame.size.height - userProfileImageView.frame.size.height;
+    CGFloat frameWidth = self.view.frame.size.width;
+    CGFloat firstButtonPositionY = profileImageViewEnd + (((self.view.frame.size.height - profileImageViewEnd) - (PROFILE_BUTTON_HEIGHT * PROFILE_BUTTON_COUNT)) / 2);
     
-    UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, profileImageViewEnd, self.view.frame.size.width, profileImageHeight)
-                                                          style:UITableViewStylePlain];
-    [tableView setBackgroundColor:[UIColor whiteColor]];
-    [tableView setScrollEnabled:NO];
-    [tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLineEtched];
-    [tableView setSeparatorInset:UIEdgeInsetsZero];
+    facebookImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [facebookImageButton setFrame:CGRectMake(0, firstButtonPositionY, frameWidth, PROFILE_BUTTON_HEIGHT)];
+    [facebookImageButton setBackgroundColor:[UIColor whiteColor]];
+    [facebookImageButton setTitle:FACEBOOK_PHOTO forState:UIControlStateNormal];
+    [facebookImageButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [facebookImageButton addTarget:self action:@selector(didTapFacebookImageButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [facebookImageButton addTarget:self action:@selector(didHighlightButtonAction:) forControlEvents:UIControlEventTouchDown];
+    [facebookImageButton addTarget:self action:@selector(clearProfileImageButtons) forControlEvents:UIControlEventTouchDragExit];
+    [self.view addSubview:facebookImageButton];
     
-    // Create buttons
+    CGFloat twitterButtonPosition = facebookImageButton.frame.size.height + facebookImageButton.frame.origin.y + 1;
+    twitterImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [twitterImageButton setFrame:CGRectMake(0, twitterButtonPosition, frameWidth, PROFILE_BUTTON_HEIGHT)];
+    [twitterImageButton setBackgroundColor:[UIColor whiteColor]];
+    [twitterImageButton setTitle:TWITTER_PHOTO forState:UIControlStateNormal];
+    [twitterImageButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [twitterImageButton addTarget:self action:@selector(didTapTwitterImageButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [twitterImageButton addTarget:self action:@selector(didHighlightButtonAction:) forControlEvents:UIControlEventTouchDown];
+    [twitterImageButton addTarget:self action:@selector(clearProfileImageButtons) forControlEvents:UIControlEventTouchDragExit];
+    [self.view addSubview:twitterImageButton];
     
-    NSArray *imageOption = @[ FACEBOOK_PHOTO, TWITTER_PHOTO, TAKE_PHOTO, SELECT_PHOTO ];
+    CGFloat takePhotoPosition = twitterImageButton.frame.size.height + twitterImageButton.frame.origin.y + 1;
+    takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [takePhotoButton setFrame:CGRectMake(0, takePhotoPosition, frameWidth, PROFILE_BUTTON_HEIGHT)];
+    [takePhotoButton setBackgroundColor:[UIColor whiteColor]];
+    [takePhotoButton setTitle:TAKE_PHOTO forState:UIControlStateNormal];
+    [takePhotoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [takePhotoButton addTarget:self action:@selector(didTapTakePhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [takePhotoButton addTarget:self action:@selector(didHighlightButtonAction:) forControlEvents:UIControlEventTouchDown];
+    [takePhotoButton addTarget:self action:@selector(clearProfileImageButtons) forControlEvents:UIControlEventTouchDragExit];
+    [self.view addSubview:takePhotoButton];
     
-    for (int i = 0; i < imageOption.count; i++) {
-        NSString *option = [imageOption objectAtIndex:i];
-        UILabel *label = [[UILabel alloc] initWithFrame: CGRectMake(0, TABLE_CELL_HEIGHT * i, tableView.frame.size.width, TABLE_CELL_HEIGHT)];
-        label.textAlignment =  NSTextAlignmentCenter;
-        label.textColor = [UIColor blackColor];
-        label.backgroundColor = [UIColor clearColor];
-        label.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(18.0)];
-        label.text = option;
-        [tableView insertSubview:label atIndex:i];
-    }
-    
-    [self.view addSubview:tableView];
+    CGFloat selectPhotoPosition = takePhotoButton.frame.size.height + takePhotoButton.frame.origin.y + 1;
+    selectPhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [selectPhotoButton setFrame:CGRectMake(0, selectPhotoPosition, frameWidth, PROFILE_BUTTON_HEIGHT)];
+    [selectPhotoButton setBackgroundColor:[UIColor whiteColor]];
+    [selectPhotoButton setTitle:SELECT_PHOTO forState:UIControlStateNormal];
+    [selectPhotoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [selectPhotoButton addTarget:self action:@selector(didTapSelectPhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [selectPhotoButton addTarget:self action:@selector(didHighlightButtonAction:) forControlEvents:UIControlEventTouchDown];
+    [selectPhotoButton addTarget:self action:@selector(clearProfileImageButtons) forControlEvents:UIControlEventTouchDragExit];
+    [self.view addSubview:selectPhotoButton];
 }
 
 - (void)configureCoverPhoto {
@@ -205,7 +236,7 @@
     
     // User bio text view
     
-    userBiography = [[UITextView alloc] initWithFrame:CGRectMake(10, navigationBarEnd + TEXTVIEW_PADDING, self.view.frame.size.width - 20, 150)];
+    userBiography = [[UITextView alloc] initWithFrame:CGRectMake(10, navigationBarEnd + TOP_PADDING, self.view.frame.size.width - 20, 150)];
     [userBiography setBackgroundColor:[UIColor whiteColor]];
     [userBiography setTextColor:[UIColor blackColor]];
     [userBiography setFont:[UIFont boldSystemFontOfSize:14.0f]];
@@ -220,37 +251,43 @@
     
     // Share settings
     
-    UILabel *facebookLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 100, 300, 32)];
-    facebookLabel.textAlignment =  NSTextAlignmentLeft;
-    facebookLabel.textColor = [UIColor colorWithRed:FT_RED_COLOR_RED
-                                              green:FT_RED_COLOR_GREEN
-                                               blue:FT_RED_COLOR_BLUE alpha:1.0f];
-                              
-    facebookLabel.backgroundColor = [UIColor clearColor];
-    facebookLabel.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(16.0)];
-    facebookLabel.text = SOCIAL_FACEBOOK;
-    [self.view addSubview:facebookLabel];
+    CGFloat navigationViewEnd = self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y;
     
-    UISwitch *facebookSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 80, 100, 0, 0)];
-    [facebookSwitch setOn:NO animated:YES];
-    [facebookSwitch addTarget:self action:@selector(didTapFacebookSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:facebookSwitch];
+    UITableView *tableView = [[UITableView alloc] init];
+    [tableView setFrame:CGRectMake(0, navigationViewEnd + TOP_PADDING, self.view.frame.size.width, 80)];
+    [tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
     
-    UILabel *twitterLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 170, 300, 32)];
-    twitterLabel.textAlignment =  NSTextAlignmentLeft;
-    twitterLabel.textColor = [UIColor colorWithRed:FT_RED_COLOR_RED
-                                             green:FT_RED_COLOR_GREEN
-                                              blue:FT_RED_COLOR_BLUE alpha:1.0f];
+    // Facebook table view cell
     
-    twitterLabel.backgroundColor = [UIColor clearColor];
-    twitterLabel.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(16.0)];
-    twitterLabel.text = SOCIAL_TWITTER;
-    [self.view addSubview:twitterLabel];
+    UILabel *facebookLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 120, 40)];
+    [facebookLabel setTextAlignment: NSTextAlignmentLeft];
+    [facebookLabel setUserInteractionEnabled: YES];
+    [facebookLabel setFont:[UIFont fontWithName:FITTAG_FONT size:(18.0)]];
+    [facebookLabel setTextColor: [UIColor blackColor]];
+    [facebookLabel setText:SOCIAL_FACEBOOK];
+    [facebookLabel setTag:0];
+    // Twitter table view cell
     
-    UISwitch *twitterSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 80, 170, 0, 0)];
-    [twitterSwitch setOn:NO animated:YES];
-    [twitterSwitch addTarget:self action:@selector(didTapTwitterSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:twitterSwitch];
+    UILabel *twitterLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 120, 40)];
+    [twitterLabel setTextAlignment: NSTextAlignmentLeft];
+    [twitterLabel setUserInteractionEnabled: YES];
+    [twitterLabel setFont:[UIFont fontWithName:FITTAG_FONT size:(18.0)]];
+    [twitterLabel setTextColor: [UIColor blackColor]];
+    [twitterLabel setText:SOCIAL_TWITTER];
+    [twitterLabel setTag:1];
+    // UITableView setup
+    
+    [tableView setBackgroundColor:[UIColor whiteColor]];
+    [tableView setScrollEnabled:NO];
+    [tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLineEtched];
+    [tableView setSeparatorInset:UIEdgeInsetsZero];
+    [tableView setRowHeight:40];
+    [tableView setDataSource:self];
+    [tableView setDelegate:self];
+    
+    self.objects = [[NSArray alloc] initWithObjects:facebookLabel, twitterLabel, nil];
+    [tableView reloadData];
+    [self.view addSubview:tableView];
 }
 
 - (void)configureNotificationsSettings {
@@ -264,7 +301,7 @@
                                                blue:FT_RED_COLOR_BLUE alpha:1.0f];
     
     notificationLabel.backgroundColor = [UIColor clearColor];
-    notificationLabel.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(16.0)];
+    notificationLabel.font = [UIFont fontWithName:FITTAG_FONT size:(16.0)];
     notificationLabel.text = @"Notifications";
     [self.view addSubview:notificationLabel];
     
@@ -285,7 +322,7 @@
                                              blue:FT_RED_COLOR_BLUE alpha:1.0f];
     
     rewardLabel.backgroundColor = [UIColor clearColor];
-    rewardLabel.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(16.0)];
+    rewardLabel.font = [UIFont fontWithName:FITTAG_FONT size:(16.0)];
     rewardLabel.text = @"Rewards";
     [self.view addSubview:rewardLabel];
     
@@ -338,7 +375,260 @@
     [self.view addSubview:webView];
 }
 
+#pragma mark - UITableView
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    FTSocialCell *cell = [[FTSocialCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:REUSABLE_IDENTIFIER_SOCIAL];
+    
+    UILabel *label = self.objects[indexPath.row];
+    [cell setDelegate:self];
+    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+    [cell setUserInteractionEnabled:YES];
+    [cell.contentView addSubview:label];
+    if (label.tag == 0) {
+        cell.type = FTSocialMediaTypeFacebook;
+    } else if(label.tag == 1) {
+        cell.type = FTSocialMediaTypeTwitter;
+    }
+    return cell;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.objects.count;
+}
+
+#pragma mark - FTSocialCellDelegate
+
+- (void)socialCell:(FTSocialCell *)socialCell didChangeFacebookSwitch:(UISwitch *)lever {
+    if ([lever isOn]) {
+        NSArray *permissions = [[NSArray alloc] initWithObjects:@"email",@"public_profile",@"user_friends",nil];
+        [PFFacebookUtils linkUser:[PFUser currentUser] permissions:permissions block:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+                NSLog(@"Facebook linked");
+                [lever setOn:YES];
+            }
+            
+            if (error) {
+                NSLog(@"%@ %@",ERROR_MESSAGE,error);
+                [lever setOn:NO];
+                [[[UIAlertView alloc] initWithTitle:@"Facebook Error"
+                                            message:@"Failed to link with your facebook account. Please try again, if the problem continues contact support. :("
+                                           delegate:nil
+                                  cancelButtonTitle:@"ok"
+                                  otherButtonTitles:nil] show];
+            }
+        }];
+    } else {
+        [PFFacebookUtils unlinkUserInBackground:[PFUser currentUser] block:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+                NSLog(@"Facebook unlinked");
+                [lever setOn:NO];
+            }
+            
+            if (error) {
+                NSLog(@"%@ %@",ERROR_MESSAGE,error);
+                [lever setOn:YES];
+                [[[UIAlertView alloc] initWithTitle:@"Facebook Error"
+                                            message:@"Failed to unlink with your facebook account. Please try again, if the problem continues contact support. :("
+                                           delegate:nil
+                                  cancelButtonTitle:@"ok"
+                                  otherButtonTitles:nil] show];
+            }
+        }];
+    }
+}
+
+- (void)socialCell:(FTSocialCell *)socialCell didChangeTwitterSwitch:(UISwitch *)lever {
+    NSLog(@"socialCell:didChangeTwitterSwitch:");
+    if ([lever isOn]) {
+        [PFTwitterUtils linkUser:[PFUser currentUser] block:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+                NSLog(@"Twitter linked");
+                [lever setOn:YES];
+            }
+            
+            if (error) {
+                NSLog(@"%@ %@",ERROR_MESSAGE,error);
+                [lever setOn:NO];
+                [[[UIAlertView alloc] initWithTitle:@"Twitter Error"
+                                            message:@"Failed to link with your twitter account. Please try again, if the problem continues contact support. :("
+                                           delegate:nil
+                                  cancelButtonTitle:@"ok"
+                                  otherButtonTitles:nil] show];
+            }
+        }];
+    } else {
+        [PFTwitterUtils unlinkUserInBackground:[PFUser currentUser] block:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+                NSLog(@"Twitter unlinked");
+                [lever setOn:NO];
+            }
+            
+            if (error) {
+                NSLog(@"%@ %@",ERROR_MESSAGE,error);
+                [lever setOn:YES];
+                [[[UIAlertView alloc] initWithTitle:@"Twitter Error"
+                                            message:@"Failed to unlink with your twitter account. Please try again, if the problem continues contact support. :("
+                                           delegate:nil
+                                  cancelButtonTitle:@"ok"
+                                  otherButtonTitles:nil] show];
+            }
+        }];
+    }
+}
+
 #pragma mark - ()
+
+- (void)clearProfileImageButtons {
+    [facebookImageButton setBackgroundColor:[UIColor whiteColor]];
+    [twitterImageButton setBackgroundColor:[UIColor whiteColor]];
+    [takePhotoButton setBackgroundColor:[UIColor whiteColor]];
+    [selectPhotoButton setBackgroundColor:[UIColor whiteColor]];
+    [facebookImageButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [twitterImageButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [takePhotoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [selectPhotoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+}
+
+- (void)didHighlightButtonAction:(UIButton *)button {
+    [self clearProfileImageButtons];
+    UIColor *titleColor = [UIColor colorWithRed:FT_RED_COLOR_RED green:FT_RED_COLOR_GREEN blue:FT_RED_COLOR_BLUE alpha:1.0f];
+    UIColor *backgroundColor = [UIColor colorWithRed:FT_GRAY_COLOR_RED green:FT_GRAY_COLOR_GREEN blue:FT_GRAY_COLOR_BLUE alpha:1.0f];
+    [button setBackgroundColor:backgroundColor];
+    [button setTitleColor:titleColor forState:UIControlStateNormal];
+    [button setTitleColor:titleColor forState:UIControlStateHighlighted];
+}
+
+- (void)didTapFacebookImageButtonAction:(id)sender {
+    NSLog(@"didTapFacebookImageButtonAction");
+    [self clearProfileImageButtons];
+    
+    if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
+        NSLog(USER_DID_LOGIN_FACEBOOK);
+        [MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
+        [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *FBuser, NSError *error) {
+            if (!error) {
+                NSData* profileImageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[NSString stringWithFormat:FACEBOOK_GRAPH_PICTURES_URL,[FBuser objectForKey:FBUserIDKey]]]];
+                
+                PFUser *user = [PFUser currentUser];
+                [user setValue:[PFFile fileWithName:MEDIUM_JPEG data:profileImageData] forKey:kFTUserProfilePicMediumKey];
+                [user setValue:[PFFile fileWithName:SMALL_JPEG data:profileImageData] forKey:kFTUserProfilePicSmallKey];
+                [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    if (succeeded) {
+                        // Update profile image
+                        PFFile *file = [PFFile fileWithName:MEDIUM_JPEG data:profileImageData];
+                        [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                            if (!error) {
+                                [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
+                                UIImage *profileImage = [UIImage imageWithData:data];
+                                [userProfileImageView setImage:profileImage];
+                            }
+                        }];
+                    }
+                    
+                    if (error) {
+                        [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
+                        [[[UIAlertView alloc] initWithTitle:@"Error"
+                                                    message:@"Unable to update your profile picture. Please try again later, if the problem continues contact support."
+                                                   delegate:self
+                                          cancelButtonTitle:@"ok"
+                                          otherButtonTitles:nil] show];
+                    }
+                }];
+                
+            } else {
+                NSLog(@"Facebook%@%@",ERROR_MESSAGE,error);
+                [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
+                [[[UIAlertView alloc] initWithTitle:@"Error"
+                                            message:@"Unable to update your profile picture. Please try again later, if the problem continues contact support."
+                                           delegate:self
+                                  cancelButtonTitle:@"ok"
+                                  otherButtonTitles:nil] show];
+            }
+        }];
+    } else {
+        [[[UIAlertView alloc] initWithTitle:@"Error"
+                                    message:@"Could not pull facebook profile picture. Make sure that your account is linked to facebook."
+                                   delegate:self
+                          cancelButtonTitle:@"ok"
+                          otherButtonTitles:nil] show];
+    }
+}
+
+- (void)didTapTwitterImageButtonAction:(id)sender {
+    NSLog(@"didTapTwitterImageButtonAction");
+    [self clearProfileImageButtons];
+    if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
+        NSLog(USER_DID_LOGIN_TWITTER);
+        [MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
+        NSString *requestString = [NSString stringWithFormat:TWITTER_API_USERS,[PFTwitterUtils twitter].screenName];
+        NSURL *verify = [NSURL URLWithString:requestString];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:verify];
+        
+        [[PFTwitterUtils twitter] signRequest:request];
+        
+        NSURLResponse *response = nil;
+        NSError *error = nil;
+        NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+        
+        if (error == nil){
+            NSDictionary* TWuser = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+            NSString *profile_image_normal = [TWuser objectForKey:TWITTER_PROFILE_HTTPS];
+            NSString *profile_image = [profile_image_normal stringByReplacingOccurrencesOfString:@"_normal" withString:@""];
+            NSData *profileImageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:profile_image]];
+            
+            PFUser *user = [PFUser currentUser];
+            [user setValue:[PFFile fileWithName:MEDIUM_JPEG data:profileImageData] forKey:kFTUserProfilePicMediumKey];
+            [user setValue:[PFFile fileWithName:SMALL_JPEG data:profileImageData] forKey:kFTUserProfilePicSmallKey];
+            [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (error) {
+                    NSLog(@"%@%@",ERROR_MESSAGE,error);
+                    [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
+                    [[[UIAlertView alloc] initWithTitle:@"Error"
+                                                message:@"Unable to update your profile picture. Please try again later, if the problem continues contact support."
+                                               delegate:self
+                                      cancelButtonTitle:@"ok"
+                                      otherButtonTitles:nil] show];
+                } else {
+                    // Update profile image
+                    PFFile *file = [PFFile fileWithName:MEDIUM_JPEG data:profileImageData];
+                    [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                        if (!error) {
+                            [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
+                            UIImage *profileImage = [UIImage imageWithData:data];
+                            [userProfileImageView setImage:profileImage];
+                        }
+                    }];
+                }
+            }];
+        } else {
+            NSLog(@"Twitter%@%@",ERROR_MESSAGE,error);
+            [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
+            [[[UIAlertView alloc] initWithTitle:@"Error"
+                                        message:@"Unable to update your profile picture. Please try again later, if the problem continues contact support."
+                                       delegate:self
+                              cancelButtonTitle:@"ok"
+                              otherButtonTitles:nil] show];
+        }
+        
+    } else {
+        [[[UIAlertView alloc] initWithTitle:@"Error"
+                                    message:@"Could not pull facebook profile picture. Make sure that your account is linked to facebook."
+                                   delegate:self
+                          cancelButtonTitle:@"ok"
+                          otherButtonTitles:nil] show];
+    }
+}
+
+- (void)didTapTakePhotoButtonAction:(id)sender {
+    NSLog(@"didTapTakePhotoButtonAction");
+    [self clearProfileImageButtons];
+}
+
+- (void)didTapSelectPhotoButtonAction:(id)sender {
+    NSLog(@"didTapSelectPhotoButtonAction");
+    [self clearProfileImageButtons];
+}
 
 - (void)showHudMessage:(NSString *)message WithDuration:(NSTimeInterval)duration {
     //NSLog(@"%@::showHudMessage:WithDuration:",VIEWCONTROLLER_SETTINGS_DETAIL);
@@ -410,6 +700,14 @@
         NSLog(SWITCH_TWITTER_OFF);
         [self showHudMessage:SWITCH_TWITTER_OFF WithDuration:3];
     }
+}
+
+- (void)didTapFacebookLabelAction:(id)sender {
+    NSLog(@"%@::didTapFacebookLabelAction:",VIEWCONTROLLER_SETTINGS_DETAIL);
+}
+
+- (void)didTapTwitterLabelAction:(id)sender {
+    NSLog(@"%@::didTapTwitterLabelAction:",VIEWCONTROLLER_SETTINGS_DETAIL);
 }
 
 - (void)didTapBackButtonAction:(id)sender {
