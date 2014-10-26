@@ -9,17 +9,10 @@
 #import "FTPostDetailsFooterView.h"
 #import <CoreLocation/CoreLocation.h>
 
-@protocol FTEditVideoViewControllerDelegate;
-
 @interface FTEditVideoViewController : UIViewController <UITextFieldDelegate,UIScrollViewDelegate,FTPostDetailsFooterViewDelegate,CLLocationManagerDelegate>
 
-@property (nonatomic,weak) id <FTEditVideoViewControllerDelegate> delegate;
-/// The Play Video button
 @property (nonatomic,readonly) UIButton *playButton;
-- (id)initWithVideo:(NSData *)aVideo;
-@end
 
-@protocol FTEditVideoViewControllerDelegate <NSObject>
-@optional
+- (id)initWithVideo:(NSData *)aVideo;
 
 @end

@@ -39,7 +39,6 @@
 @synthesize thumbnailFile;
 @synthesize fileUploadBackgroundTaskId;
 @synthesize photoPostBackgroundTaskId;
-@synthesize delegate;
 @synthesize tagTextField;
 @synthesize scrollViewHeight;
 
@@ -359,22 +358,13 @@
     
         // Dismiss this screen
         [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
-        
     } else {
-        NSString *caption = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        [self setCoverPhoto:self.image Caption:caption];
         [self.navigationController dismissViewControllerAnimated:NO completion:nil];
     }
 }
 
 - (void)cancelButtonAction:(id)sender {
     [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)setCoverPhoto:(UIImage *)photo Caption:(NSString *)caption{
-    if ([delegate respondsToSelector:@selector(setCoverPhoto:Caption:)]){
-        [delegate setCoverPhoto:photo Caption:caption];
-    }
 }
 
 #pragma mark - CLLocationManagerDelegate

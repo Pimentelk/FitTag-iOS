@@ -9,14 +9,8 @@
 #import "FTPostDetailsFooterView.h"
 #import <CoreLocation/CoreLocation.h>
 
-@protocol FTEditPhotoViewControllerDelegate;
 @interface FTEditPhotoViewController : UIViewController <UITextFieldDelegate,UIScrollViewDelegate,FTPostDetailsFooterViewDelegate,CLLocationManagerDelegate>
 
-@property (nonatomic,weak) id <FTEditPhotoViewControllerDelegate> delegate;
 - (id)initWithImage:(UIImage *)aImage;
-@end
 
-@protocol FTEditPhotoViewControllerDelegate <NSObject>
-@optional
-- (void)setCoverPhoto:(UIImage *)image Caption:(NSString *)caption;
 @end
