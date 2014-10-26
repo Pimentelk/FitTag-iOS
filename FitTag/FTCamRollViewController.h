@@ -18,5 +18,10 @@
 @property (nonatomic, strong) ELCAssetTablePicker *tableView;
 @property (nonatomic,weak) id <FTCamRollViewControllerDelegate> delegate;
 @property (nonatomic, copy) NSArray *chosenImages;
+@property (nonatomic) BOOL isProfilePicture;
+@end
 
+@protocol FTCamRollViewControllerDelegate <NSObject>
+@optional
+- (void)camRollViewController:(FTCamRollViewController *)camRollViewController photo:(UIImage *)photo;
 @end

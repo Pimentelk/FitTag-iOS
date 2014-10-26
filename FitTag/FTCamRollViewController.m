@@ -22,10 +22,11 @@
 @end
 
 @implementation FTCamRollViewController
+@synthesize delegate;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    NSLog(@"CameraImagePickerViewController::viewDidLoad");    
+    NSLog(@"FTCamRollViewController::viewDidLoad");
     
     //self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, self.view.frame.size.height)];
     //[self.view addSubview:self.scrollView];
@@ -84,8 +85,14 @@
 - (void)displayPickerForGroup:(ALAssetsGroup *)group {
     
     ELCImagePickerController *elcPicker = [[ELCImagePickerController alloc] initImagePicker];
+
+    //Set the maximum number of images to select to 100
+    if (self.isProfilePicture) {
+        elcPicker.maximumImagesCount = 1;
+    } else {
+        elcPicker.maximumImagesCount = 4;
+    }
     
-    elcPicker.maximumImagesCount = 4; //Set the maximum number of images to select to 100
     elcPicker.returnsOriginalImage = YES; //Only return the fullScreenImage, not the fullResolutionImage
     elcPicker.returnsImage = YES; //Return UIimage if YES. If NO, only return asset location information
     elcPicker.onOrder = YES; //For multiple image selection, display and return order of selected images
@@ -149,6 +156,7 @@
             } else {
                 //NSLog(@"UIImagePickerControllerReferenceURL = %@", dict);
             }
+            
         } else {
             NSLog(@"Uknown asset type");
         }
@@ -158,15 +166,25 @@
     
     self.chosenImages = images;
     
-    FTEditPostViewController *editPostViewController = [[FTEditPostViewController alloc] initWithArray:self.chosenImages];
-    editPostViewController.delegate = self;
-    
-    [self.navigationController pushViewController:editPostViewController animated:NO];
+    if (self.isProfilePicture) {
+        UIImage *profileImage = [images objectAtIndex:0];
+        [self didSelectProfilePictureAction:profileImage];
+    } else {
+        FTEditPostViewController *editPostViewController = [[FTEditPostViewController alloc] initWithArray:self.chosenImages];
+        editPostViewController.delegate = self;
+        [self.navigationController pushViewController:editPostViewController animated:NO];
+    }
 }
 
--(void)elcImagePickerControllerDidCancel:(ELCImagePickerController *)picker {
+- (void)elcImagePickerControllerDidCancel:(ELCImagePickerController *)picker {
     [self dismissViewControllerAnimated:NO completion:nil];
     [self.navigationController popViewControllerAnimated:NO];
+}
+
+- (void)didSelectProfilePictureAction:(UIImage *)photo {
+    if ([delegate respondsToSelector:@selector(camRollViewController:photo:)]){
+        [delegate camRollViewController:self photo:photo];
+    }
 }
 
 @end
