@@ -11,17 +11,17 @@
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>9F9DD96782BCB6F7AC35170A7589B39AD43D8633</key>
-		<string>ssh://github.com/Pimentelk/FitTag.git</string>
+		<string>github.com:Pimentelk/FitTag.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>FitTag.xcodeproj/project.xcworkspace</string>
+	<string>FitTag.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>9F9DD96782BCB6F7AC35170A7589B39AD43D8633</key>
 		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>ssh://github.com/Pimentelk/FitTag.git</string>
+	<string>github.com:Pimentelk/FitTag.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
