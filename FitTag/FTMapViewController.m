@@ -301,6 +301,8 @@ enum PinAnnotationTypeTag {
             [self.tabBarController setSelectedIndex:1];
         }];
         NSLog(FIRSTTIME_USER);
+        [self didLogInWithFacebook:user];
+        [self didLogInWithTwitter:user];
         return YES;
     }
     
@@ -478,6 +480,100 @@ enum PinAnnotationTypeTag {
 
 - (void)didTapImageInGalleryAction:(UIButton *)button {
     
+}
+
+- (BOOL)didLogInWithTwitter:(PFObject *)user {
+    //NSLog(@"%@::didLogInWithTwitter:",VIEWCONTROLLER_CONFIG);
+    if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
+        NSLog(USER_DID_LOGIN_TWITTER);
+        NSString *requestString = [NSString stringWithFormat:TWITTER_API_USERS,[PFTwitterUtils twitter].screenName];
+        NSURL *verify = [NSURL URLWithString:requestString];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:verify];
+        
+        [[PFTwitterUtils twitter] signRequest:request];
+        
+        NSURLResponse *response = nil;
+        NSError *error = nil;
+        NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+        
+        if (error == nil){
+            NSDictionary* TWuser = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+            NSString *profile_image_normal = [TWuser objectForKey:TWITTER_PROFILE_HTTPS];
+            NSString *profile_image = [profile_image_normal stringByReplacingOccurrencesOfString:@"_normal" withString:@""];
+            NSData *profileImageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:profile_image]];
+            
+            NSString *names = [TWuser objectForKey:@"name"];
+            NSMutableArray *array = [NSMutableArray arrayWithArray:[names componentsSeparatedByString:@" "]];
+            
+            if (array.count > 1){
+                [user setObject:[array lastObject] forKey:kFTUserLastnameKey];
+                [array removeLastObject];
+                [user setObject:[array componentsJoinedByString:@" "] forKey:kFTUserFirstnameKey];
+            }
+            
+            [user setValue:[TWuser objectForKey:@"name"]
+                    forKey:kFTUserDisplayNameKey];
+            
+            [user setValue:[NSString stringWithFormat:@"%@",[TWuser objectForKey:@"id"]]
+                    forKey:kFTUserTwitterIdKey];
+            
+            //[user setValue:DEFAULT_BIO_TEXT_B forKey:kFTUserBioKey];
+            
+            [user setValue:[PFFile fileWithName:MEDIUM_JPEG data:profileImageData]
+                    forKey:kFTUserProfilePicMediumKey];
+            
+            [user setValue:[PFFile fileWithName:SMALL_JPEG data:profileImageData]
+                    forKey:kFTUserProfilePicSmallKey];
+            
+            [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (error) {
+                    NSLog(@"%@%@",ERROR_MESSAGE,error);
+                    [user saveEventually];
+                }
+            }];
+        }
+        return YES;
+    }
+    
+    NSLog(USER_NOT_LOGIN_TWITTER);
+    return NO;
+}
+
+- (BOOL)didLogInWithFacebook:(PFObject *)user {
+    NSLog(@"%@::didLogInWithFacebook:",VIEWCONTROLLER_CONFIG);
+    
+    if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
+        NSLog(USER_DID_LOGIN_FACEBOOK);
+        
+        [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *FBuser, NSError *error) {
+            if (!error) {
+                NSData* profileImageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[NSString stringWithFormat:FACEBOOK_GRAPH_PICTURES_URL,[FBuser objectForKey:FBUserIDKey]]]];
+                
+                // Get the data from facebook and put it into the user object
+                [user setValue:[FBuser objectForKey:FBUserFirstNameKey] forKey:kFTUserFirstnameKey];
+                [user setValue:[FBuser objectForKey:FBUserLastNameKey] forKey:kFTUserLastnameKey];
+                [user setValue:[FBuser objectForKey:FBUserNameKey] forKey:kFTUserDisplayNameKey];
+                [user setValue:[FBuser objectForKey:FBUserEmailKey] forKey:kFTUserEmailKey];
+                [user setValue:[FBuser objectForKey:FBUserIDKey] forKey:kFTUserFacebookIDKey];
+                //[user setValue:DEFAULT_BIO_TEXT_B forKey:kFTUserBioKey];
+                [user setValue:[PFFile fileWithName:MEDIUM_JPEG data:profileImageData] forKey:kFTUserProfilePicMediumKey];
+                [user setValue:[PFFile fileWithName:SMALL_JPEG data:profileImageData] forKey:kFTUserProfilePicSmallKey];
+                [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    if (error) {
+                        [user saveEventually];
+                        NSLog(@"%@ %@", ERROR_MESSAGE, error);
+                    }
+                }];
+                
+            } else {
+                NSLog(@"Facebook%@%@",ERROR_MESSAGE,error);
+            }
+        }];
+        return YES;
+    }
+    
+    NSLog(@"%@ %@",ERROR_MESSAGE,USER_NOT_LOGIN_FACEBOOK);
+    return NO;
 }
 
 #pragma mark - FT
