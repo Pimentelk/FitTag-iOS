@@ -17,15 +17,17 @@ typedef enum {
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "FTEditPhotoViewController.h"
 #import "FTEditVideoViewController.h"
+#import "FTCamRollViewController.h"
 
 @protocol FTCamViewControllerDelegate;
 
-@interface FTCamViewController : UIViewController <FTEditPhotoViewControllerDelegate,FTEditVideoViewControllerDelegate>
+@interface FTCamViewController : UIViewController <FTCamRollViewControllerDelegate>
 @property (nonatomic,weak) id <FTCamViewControllerDelegate> delegate;
 @property (nonatomic) AVCaptureVideoPreviewLayer *previewLayer;
+@property (nonatomic) BOOL isProfilePciture;
 @end
 
 @protocol FTCamViewControllerDelegate <NSObject>
 @optional
-- (void)setCoverPhoto:(UIImage *)image Caption:(NSString *)caption;
+- (void)camViewController:(FTCamViewController *)camViewController photo:(UIImage *)photo;
 @end

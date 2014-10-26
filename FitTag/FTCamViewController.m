@@ -279,28 +279,28 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     [self.view addSubview:recordButton];
     
     // Show Camera Button
+    if (!self.isProfilePciture) {
+        showCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [showCameraButton setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_VIDEO] forState:UIControlStateNormal];
+        [showCameraButton addTarget:self action:@selector(toggleVideoControlsAction:) forControlEvents:UIControlEventTouchDown];
+        [showCameraButton setTintColor:[UIColor grayColor]];
+        [showCameraButton setFrame:CGRectMake(250.0f, [self getTopPaddingNavigationBarHeight:navigationBarHeight
+                                                                               previewHeight:previewHeight
+                                                                               elementHeight:39.0f
+                                                                                 frameHeight:self.view.frame.size.height], 44.0f, 39.0f)];
+        [self.view addSubview:showCameraButton];
+    }
     
-    showCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [showCameraButton setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_VIDEO] forState:UIControlStateNormal];
-    [showCameraButton addTarget:self action:@selector(toggleVideoControlsAction:) forControlEvents:UIControlEventTouchDown];
-    [showCameraButton setTintColor:[UIColor grayColor]];
-    [showCameraButton setFrame:CGRectMake(250.0f, [self getTopPaddingNavigationBarHeight:navigationBarHeight
-                                                                           previewHeight:previewHeight
-                                                                           elementHeight:39.0f
-                                                                             frameHeight:self.view.frame.size.height], 44.0f, 39.0f)];
-    
-    [self.view addSubview:showCameraButton];
     
     // Camera roll button
-    
     UIButton *cameraRoll = [UIButton buttonWithType:UIButtonTypeCustom];
     [cameraRoll setFrame:CGRectMake(40.0f, [self getTopPaddingNavigationBarHeight:navigationBarHeight
                                                                     previewHeight:previewHeight
                                                                     elementHeight:50.0f
                                                                       frameHeight:self.view.frame.size.height], 44.0f, 50.0f)];
-
+    
     [cameraRoll setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_CAMERA_ROLL] forState:UIControlStateNormal];
-    [cameraRoll addTarget:self action:@selector(cameraRoll:) forControlEvents:UIControlEventTouchUpInside];
+    [cameraRoll addTarget:self action:@selector(didTapCameraRollButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [cameraRoll setTintColor:[UIColor grayColor]];
     
     [self.view addSubview:cameraRoll];
@@ -508,7 +508,6 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 }
 
 -(void)didTapCrosshairsButtonAction:(id)sender {
-    
     if ([toggleCrosshairs isSelected]) {
         [toggleCrosshairs setSelected:NO];
         [crosshairs setHidden:NO];
@@ -518,9 +517,14 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     }
 }
 
--(void)cameraRoll:(id)sender {
+-(void)didTapCameraRollButtonAction:(id)sender {
     FTCamRollViewController *camRollViewController = [[FTCamRollViewController alloc] init];
-    camRollViewController.delegate = (id)self;
+
+    if (self.isProfilePciture) {
+        camRollViewController.delegate = self;
+        camRollViewController.isProfilePicture = YES;
+    }
+    
     [self.navigationController pushViewController:camRollViewController animated:YES];    
 }
 
@@ -603,10 +607,8 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
                           cancelButtonTitle:nil
                           otherButtonTitles:@"Dismiss", nil] show];
     } else {
-        
         // Set video data and then Show UIBarButton
         editVideoViewController = [[FTEditVideoViewController alloc] initWithVideo:videodata];
-        editVideoViewController.delegate = self;
         [self.nextBarButton setEnabled:YES];
         isVideoRecorded = YES;
     }
@@ -853,7 +855,6 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 }
 
 - (void)snapStillImage:(id)sender {
-    
     NSLog(@"%@::snapStillImage:",VIEWCONTROLLER_CAM);
 	dispatch_async([self sessionQueue], ^{
 		// Update the orientation on the still image output video connection before capturing.
@@ -870,10 +871,16 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 				UIImage *image = [[UIImage alloc] initWithData:imageData];
                 UIImage *croppedImage = [self squareImageFromImage:image scaledToSize:320.0f];
 				
-                self.editPhotoViewController = [[FTEditPhotoViewController alloc] initWithImage:croppedImage];
-                self.editPhotoViewController.delegate = self;
-                [self.navigationController pushViewController:editPhotoViewController animated:NO];
-			}
+                if (!self.isProfilePciture) {
+                    // Prepare to upload the taken image
+                    self.editPhotoViewController = [[FTEditPhotoViewController alloc] initWithImage:croppedImage];
+                    [self.navigationController pushViewController:editPhotoViewController animated:NO];
+                } else if (self.isProfilePciture){
+                    // Return the profile image
+                    [self didTakeProfilePictureAction:croppedImage];
+                    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+                }
+            }
 		}];
 	});
 }
@@ -926,11 +933,24 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     return preview + ((((navBar + frame) - preview) - element) / 2);
 }
 
-#pragma mark - FTEditPhotoViewController
+#pragma mark - ()
 
-- (void)setCoverPhoto:(UIImage *)image Caption:(NSString *)caption {
-    if ([delegate respondsToSelector:@selector(setCoverPhoto:Caption:)]){
-        [delegate setCoverPhoto:image Caption:caption];
+- (void)didTakeProfilePictureAction:(UIImage *)photo {
+    if ([delegate respondsToSelector:@selector(camViewController:photo:)]){
+        [delegate camViewController:self photo:photo];
     }
 }
+
+- (void)didSelectProfilePictureAction:(UIImage *)photo {
+    if ([delegate respondsToSelector:@selector(camViewController:photo:)]){
+        [delegate camViewController:self photo:photo];
+    }
+}
+
+#pragma mark - FTCamRollViewControllerDelegate
+
+- (void)camRollViewController:(FTCamRollViewController *)camRollViewController photo:(UIImage *)photo {
+    [self didSelectProfilePictureAction:photo];
+}
+
 @end
