@@ -18,6 +18,7 @@
 #define BUTTON_IMAGE_TAKE_PICTURE @"take_picture"
 #define BUTTON_IMAGE_TOGGLE_CAMERA @"toggle_camera"
 #define BUTTON_IMAGE_TOGGLE_CROSSHAIRS @"toggle_crosshairs"
+#define BUTTON_IMAGE_CROSSHAIRS @"no_crosshairs"
 #define BUTTON_IMAGE_CAMERA_CROSSHAIRS @"crosshairs"
 #define BUTTON_IMAGE_CAMERA_OVERLAY @"camera_overlay"
 
@@ -213,7 +214,8 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     toggleCrosshairs = [UIButton buttonWithType:UIButtonTypeCustom];
     [toggleCrosshairs setFrame:CGRectMake(40.0f, 4.0f, 25.0f, 25.0f)];
     [toggleCrosshairs setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_TOGGLE_CROSSHAIRS] forState:UIControlStateNormal];
-    [toggleCrosshairs addTarget:self action:@selector(toggleCrosshairs:) forControlEvents:UIControlEventTouchUpInside];
+    [toggleCrosshairs setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_CROSSHAIRS] forState:UIControlStateSelected];
+    [toggleCrosshairs addTarget:self action:@selector(didTapCrosshairsButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [toggleCrosshairs setTintColor:[UIColor grayColor]];
     [toggleCrosshairs setTranslatesAutoresizingMaskIntoConstraints:NO];
     
@@ -505,10 +507,13 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     }
 }
 
--(void)toggleCrosshairs:(id)sender {
-    if([crosshairs isHidden]) {
+-(void)didTapCrosshairsButtonAction:(id)sender {
+    
+    if ([toggleCrosshairs isSelected]) {
+        [toggleCrosshairs setSelected:NO];
         [crosshairs setHidden:NO];
     } else {
+        [toggleCrosshairs setSelected:YES];
         [crosshairs setHidden:YES];
     }
 }
