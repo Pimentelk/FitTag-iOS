@@ -87,7 +87,7 @@
     ELCImagePickerController *elcPicker = [[ELCImagePickerController alloc] initImagePicker];
 
     //Set the maximum number of images to select to 100
-    if (self.isProfilePicture) {
+    if (self.isProfilePicture || self.isCoverPhoto) {
         elcPicker.maximumImagesCount = 1;
     } else {
         elcPicker.maximumImagesCount = 4;
@@ -167,8 +167,9 @@
     self.chosenImages = images;
     
     if (self.isProfilePicture) {
-        UIImage *profileImage = [images objectAtIndex:0];
-        [self didSelectProfilePictureAction:profileImage];
+        [self didSelectProfilePictureAction:[images objectAtIndex:0]];
+    } else if (self.isCoverPhoto) {
+        [self didSelectCoverPhotoAction:[images objectAtIndex:0]];
     } else {
         FTEditPostViewController *editPostViewController = [[FTEditPostViewController alloc] initWithArray:self.chosenImages];
         editPostViewController.delegate = self;
@@ -182,8 +183,14 @@
 }
 
 - (void)didSelectProfilePictureAction:(UIImage *)photo {
-    if ([delegate respondsToSelector:@selector(camRollViewController:photo:)]){
-        [delegate camRollViewController:self photo:photo];
+    if ([delegate respondsToSelector:@selector(camRollViewController:profilePhoto:)]){
+        [delegate camRollViewController:self profilePhoto:photo];
+    }
+}
+
+- (void)didSelectCoverPhotoAction:(UIImage *)photo {
+    if ([delegate respondsToSelector:@selector(camRollViewController:coverPhoto:)]){
+        [delegate camRollViewController:self coverPhoto:photo];
     }
 }
 

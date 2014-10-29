@@ -19,9 +19,11 @@
 @property (nonatomic,weak) id <FTCamRollViewControllerDelegate> delegate;
 @property (nonatomic, copy) NSArray *chosenImages;
 @property (nonatomic) BOOL isProfilePicture;
+@property (nonatomic) BOOL isCoverPhoto;
 @end
 
 @protocol FTCamRollViewControllerDelegate <NSObject>
 @optional
-- (void)camRollViewController:(FTCamRollViewController *)camRollViewController photo:(UIImage *)photo;
+- (void)camRollViewController:(FTCamRollViewController *)camRollViewController profilePhoto:(UIImage *)photo;
+- (void)camRollViewController:(FTCamRollViewController *)camRollViewController coverPhoto:(UIImage *)photo;
 @end
