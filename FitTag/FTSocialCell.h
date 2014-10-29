@@ -18,7 +18,7 @@ typedef enum {
 /*! type param */
 @property (nonatomic, assign) FTSocialMediaType type;
 
-/*! FTGalleryCell Delegate */
+/*! FTSocialCellDelegate Delegate */
 @property (nonatomic,weak) id <FTSocialCellDelegate> delegate;
 
 @end
