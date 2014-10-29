@@ -37,7 +37,7 @@
 
 - (void)setNumberOfDashes:(int)numberOfDashes {
     
-    NSLog(@"self.count: %d",numberOfDashes);
+    //NSLog(@"self.count: %d",numberOfDashes);
     
     position = numberOfDashes - 1; // Last element position
     
