@@ -625,6 +625,13 @@
     [navigationController.navigationBar addSubview:gradientView];	    
 }
 
++ (UIImageView *)getProfileHexagonWithFrame:(CGRect)rect {
+    return [self getProfileHexagonWithX:rect.origin.x
+                                      Y:rect.origin.y
+                                  width:rect.size.width
+                                 hegiht:rect.size.height];
+}
+
 + (UIImageView *)getProfileHexagonWithX:(CGFloat)hexX
                                       Y:(CGFloat)hexY
                                   width:(CGFloat)hexW

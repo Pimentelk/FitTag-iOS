@@ -30,6 +30,7 @@
 + (void)drawSideAndBottomDropShadowForRect:(CGRect)rect inContext:(CGContextRef)context;
 + (void)drawSideAndTopDropShadowForRect:(CGRect)rect inContext:(CGContextRef)context;
 + (void)addBottomDropShadowToNavigationBarForNavigationController:(UINavigationController *)navigationController;
++ (UIImageView *)getProfileHexagonWithFrame:(CGRect)rect;
 + (UIImageView *)getProfileHexagonWithX:(CGFloat)hexX
                                       Y:(CGFloat)hexY
                                   width:(CGFloat)hexW
