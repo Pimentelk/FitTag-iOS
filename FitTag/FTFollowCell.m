@@ -21,6 +21,7 @@
 @property (nonatomic, strong) UIImageView *profileImageView;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *handleLabel;
+@property (nonatomic, strong) UIButton *followUserButton;
 @end
 
 @implementation FTFollowCell
@@ -29,6 +30,7 @@
 @synthesize profileImageView;
 @synthesize titleLabel;
 @synthesize handleLabel;
+@synthesize followUserButton;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
@@ -84,6 +86,19 @@
         self.handleLabel.alpha = 0.0f;
         
         [self.contentView addSubview:self.handleLabel];
+        
+        // Follow/Unfollow Button
+        self.followUserButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [self.followUserButton setBackgroundImage:[UIImage imageNamed:IMAGE_FOLLOW_UNSELECTED] forState:UIControlStateNormal];
+        [self.followUserButton setBackgroundImage:[UIImage imageNamed:IMAGE_FOLLOW_SELECTED] forState:UIControlStateSelected];
+        [self.followUserButton setBackgroundImage:[UIImage imageNamed:IMAGE_FOLLOW_SELECTED] forState:UIControlStateHighlighted];
+        [self.followUserButton setFrame:CGRectMake(self.frame.size.width - 60, 17, 30, 30)];
+        [self.followUserButton setSelected:NO];
+        [self.followUserButton addTarget:self action:@selector(didTapFollowUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [self.followUserButton setAlpha:0];
+        [self.followUserButton setEnabled:NO];
+        
+        [self.contentView addSubview:self.followUserButton];
     }
     return self;
 }
@@ -139,23 +154,61 @@
         
         self.handleLabel.text = [NSString stringWithFormat:@"%@",[self.user objectForKey:kFTUserDisplayNameKey]];
         self.handleLabel.alpha = 1.0f;
-    }];    
+    }];
+    
+    [self.followUserButton setAlpha:1];
+    [self.followUserButton setEnabled:YES];
+    
+    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapCellAction:)];
+    [tapGestureRecognizer setNumberOfTapsRequired:1];
+    
+    [self.contentView setUserInteractionEnabled:YES];
+    [self.contentView addGestureRecognizer:tapGestureRecognizer];
 }
 
 #pragma mark - FTFollowCellDelegate
 
+- (void)didTapFollowUserButtonAction:(UIButton *)button {
+    //NSLog(@"didTapFollowUserButtonAction:");
+    [button setEnabled:NO];
+    
+    if ([button isSelected]) {
+        [FTUtility unfollowUserEventually:self.user block:^(NSError *error) {
+            if (error) {
+                [button setSelected:YES];
+            } else {
+                [button setSelected:NO];
+            }
+            [button setEnabled:YES];
+        }];
+    } else {
+        [FTUtility followUserEventually:self.user block:^(BOOL succeeded, NSError *error) {
+            if (error) {
+                [button setSelected:NO];
+            } else {
+                [button setSelected:YES];
+            }
+            [button setEnabled:YES];
+        }];
+    }
+}
+
+- (void)didTapCellAction:(id)sender {
+    //NSLog(@"%@::didTapProfileImageAction:",VIEWCONTROLLER_FOLLOW_CELL);
+    if (delegate && [delegate respondsToSelector:@selector(followCell:didTapProfileImage:user:)]) {
+        [delegate followCell:self didTapProfileImage:sender user:user];
+    }
+}
+
 - (void)didTapProfileImageAction:(id)sender {
-    NSLog(@"%@::didTapProfileImageAction:",VIEWCONTROLLER_FOLLOW_CELL);
-    
-    NSLog(@"user = %@",user);
-    
+    //NSLog(@"%@::didTapProfileImageAction:",VIEWCONTROLLER_FOLLOW_CELL);
     if (delegate && [delegate respondsToSelector:@selector(followCell:didTapProfileImage:user:)]) {
         [delegate followCell:self didTapProfileImage:sender user:user];
     }
 }
 
 - (void)didTapFollowButtonAction:(UIButton *)button {
-    NSLog(@"%@::didTapFollowButtonAction:",VIEWCONTROLLER_FOLLOW_CELL);
+    //NSLog(@"%@::didTapFollowButtonAction:",VIEWCONTROLLER_FOLLOW_CELL);
     if (delegate && [delegate respondsToSelector:@selector(followCell:didTapFollowButton:user:)]) {
         [delegate followCell:self didTapFollowButton:button user:user];
     }

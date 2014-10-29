@@ -105,6 +105,7 @@
         [followerCountLabel setFont:[UIFont boldSystemFontOfSize:14.0f]];
         [followingCountLabel.layer setBorderColor:[UIColor colorWithRed:234/255.0f green:234/255.0f blue:234/255.0f alpha:1].CGColor];
         [followingCountLabel.layer setBorderWidth:1.0f];
+        
         [self.containerView addSubview:followerCountLabel];
         
         // Following count UILabel
@@ -117,6 +118,7 @@
         [followingCountLabel setFont:[UIFont boldSystemFontOfSize:14.0f]];
         [followingCountLabel.layer setBorderColor:[UIColor colorWithRed:234/255.0f green:234/255.0f blue:234/255.0f alpha:1].CGColor];
         [followingCountLabel.layer setBorderWidth:1.0f];
+        
         [self.containerView addSubview:followingCountLabel];
         
         // User settings UILabel
@@ -127,6 +129,7 @@
         [userSettingsLabel setFont:[UIFont boldSystemFontOfSize:18.0f]];
         [userSettingsLabel setBackgroundColor:[UIColor whiteColor]];
         [userSettingsLabel setTextColor:[UIColor whiteColor]];
+        
         [self.containerView addSubview:userSettingsLabel];
         [self.containerView bringSubviewToFront:userSettingsLabel];
         
@@ -138,8 +141,9 @@
         [profileBiography setBackgroundColor:[UIColor whiteColor]];
         [profileBiography setTextColor:[UIColor blackColor]];
         [profileBiography setFont:[UIFont boldSystemFontOfSize:14.0f]];
-        [profileBiography setText:@"test"];
+        [profileBiography setText:EMPTY_STRING];
         [profileBiography setUserInteractionEnabled:NO];
+        
         [self.containerView addSubview:profileBiography];
         
         // Image filter
@@ -196,7 +200,7 @@
 #pragma mark - ()
 
 - (void)didTapGridButtonAction:(UIButton *)button {
-    NSLog(@"%@::didTapTaggedButtonAction:",VIEWCONTROLLER_USER_HEADER);
+    NSLog(@"%@::didTapGridButtonAction:",VIEWCONTROLLER_USER_HEADER);
     if (![gridViewButton isSelected]) {
         [self resetSelectedProfileFilterButtons];
         [gridViewButton setSelected:YES];
