@@ -6,6 +6,18 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
+@protocol FTInterestsViewControllerDelegate;
 @interface FTInterestsViewController : UICollectionViewController
-@property (nonatomic, strong) NSArray *interests;
+
+/*! FTGalleryCell Delegate */
+@property (nonatomic, weak) id <FTInterestsViewControllerDelegate> delegate;
+
+@end
+
+@protocol FTInterestsViewControllerDelegate <NSObject>
+@optional
+
+// Sent to the delegate when interests data is updated
+- (void)interestsViewController:(FTInterestsViewController *)interestsViewController didUpdateUserInterests:(NSArray *)interests;
+
 @end
