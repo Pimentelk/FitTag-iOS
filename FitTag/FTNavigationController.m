@@ -8,9 +8,7 @@
 
 #import "FTNavigationController.h"
 #import "FTCamViewController.h"
-#import "FTFindFriendsViewController.h"
-
-#define VIEWCONTROLLER_NAVIGATION @"FTNavigationController"
+#import "FTInviteFriendsViewController.h"
 
 @implementation FTNavigationController
 
@@ -19,19 +17,23 @@
     self = [super initWithRootViewController:rootViewController];
     if (self) {
         // UIBarbutton items
-        UIBarButtonItem *addFriendsButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_ADD_CONTACTS]
-                                                                                 style:UIBarButtonItemStylePlain target:self
-                                                                                action:@selector(didTapAddFriendsButtonAction:)];
-        
+        UIBarButtonItem *addFriendsButtonItem = [[UIBarButtonItem alloc] init];
+        [addFriendsButtonItem setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_ADD_CONTACTS]];
+        [addFriendsButtonItem setStyle:UIBarButtonItemStylePlain];
+        [addFriendsButtonItem setTarget:self];
+        [addFriendsButtonItem setAction:@selector(didTapAddFriendsButtonAction:)];
         [addFriendsButtonItem setTintColor:[UIColor whiteColor]];
+        
         rootViewController.navigationItem.leftBarButtonItem = addFriendsButtonItem;
         
         // Initialization code
-        UIBarButtonItem *loadCameraButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_CAMERA]
-                                                                             style:UIBarButtonItemStylePlain
-                                                                            target:self
-                                                                            action:@selector(didTapLoadCameraButtonAction:)];
+        UIBarButtonItem *loadCameraButton = [[UIBarButtonItem alloc] init];
+        [loadCameraButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_CAMERA]];
+        [loadCameraButton setStyle:UIBarButtonItemStylePlain];
+        [loadCameraButton setTarget:self];
+        [loadCameraButton setAction:@selector(didTapLoadCameraButtonAction:)];
         [loadCameraButton setTintColor:[UIColor whiteColor]];
+        
         rootViewController.navigationItem.rightBarButtonItem = loadCameraButton;
     }
     return self;
@@ -50,17 +52,40 @@
 #pragma mark - ()
 
 - (void)didTapAddFriendsButtonAction:(UIButton *)button {
+    
     // Show the interests
-    FTFindFriendsViewController *fiendFriendsViewController = [[FTFindFriendsViewController alloc] init];
-    [self pushViewController:fiendFriendsViewController animated:YES];
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
+    [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backIndicator setStyle:UIBarButtonItemStylePlain];
+    [backIndicator setTarget:self];
+    [backIndicator setAction:@selector(didTapBackButtonAction:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    
+    [self.navigationItem setLeftBarButtonItem:backIndicator];
+    
+    FTInviteFriendsViewController *inviteFriendsViewController = [[FTInviteFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+    [inviteFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
+    
+    UINavigationController *navController = [[UINavigationController alloc] init];
+    [navController setViewControllers:@[ inviteFriendsViewController ] animated:NO];
+    
+    [self presentViewController:navController animated:YES completion:nil];
 }
 
 - (void)didTapLoadCameraButtonAction:(UIButton *)button {
+    
     FTCamViewController *camViewController = [[FTCamViewController alloc] init];
+    
     UINavigationController *navController = [[UINavigationController alloc] init];
-    [navController setViewControllers:@[camViewController] animated:NO];
+    [navController setViewControllers:@[ camViewController ] animated:NO];
+    
     [self presentViewController:navController animated:YES completion:^(){
-        [self.tabBarController setSelectedIndex:2];
+        [self.tabBarController setSelectedIndex:TAB_FEED];
     }];
 }
+
+- (void)didTapBackButtonAction:(UIButton *)button {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 @end
