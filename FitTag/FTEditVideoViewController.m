@@ -272,6 +272,24 @@
 
 #pragma mark - ()
 
+- (void)incrementUserPostCount {
+    // Increment user post count
+    PFUser *user = [PFUser currentUser];
+    [user incrementKey:kFTUserPostCountKey byAmount:[NSNumber numberWithInt:1]];
+    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (!error) {
+            long int postCount = (long)[[user objectForKey:kFTUserPostCountKey] integerValue];
+            NSLog(@"postCount %ld",postCount);
+            
+            NSNumber *rewardCount = [NSNumber numberWithUnsignedInteger:(postCount / 10)];
+            NSLog(@"rewardCount %@",rewardCount);
+            
+            [user setValue:rewardCount forKey:kFTUserRewardsEarnedKey];
+            [user saveInBackground];
+        }
+    }];
+}
+
 - (NSArray *) checkForHashtag {
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)"
@@ -455,6 +473,8 @@
                                                  commenters:[NSArray array]
                                          likedByCurrentUser:NO
                                                 displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
+                
+                [self incrementUserPostCount];
                 
                 // userInfo might contain any caption which might have been posted by the uploader
                 if (userInfo) {
