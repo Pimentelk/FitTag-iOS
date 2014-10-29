@@ -10,8 +10,22 @@
 #import "FTSignupViewController.h"
 #import "FTCamViewController.h"
 #import "UIView+FormScroll.h"
-#import "FTCamRollViewController.h"
 #import "ImageCustomNavigationBar.h"
+
+#define ADD_PHOTO @"add_photo"
+#define FITTAG_LOGO @"fittag_logo"
+#define SEPARATORS @"separators"
+#define SIGNUP_BACKGROUND_IMAGE @"signup_screen_background_image"
+#define FACEBOOK_BUTTON @"facebook_button"
+#define TWITTER_BUTTON @"twitter_button"
+#define SIGNUP_BUTTON @"signup_button"
+#define PLACEHOLDER_FIRSTNAME @"FIRST NAME"
+#define PLACEHOLDER_LASTNAME @"LAST NAME"
+#define PLACEHOLDER_CONFIRM @"CONFIRM PASSWORD"
+#define PLACEHOLDER_USERNAME @"USERNAME"
+#define PLACEHOLDER_EMAIL @"EMAIL ADDRESS"
+#define PLACEHOLDER_PASSWORD @"PASSWORD"
+#define SIGNUP_SCREEN_TEXT @"signup_screen_terms_text"
 
 @interface FTSignupViewController ()
 @property (nonatomic,strong) UIImageView *separators;
@@ -30,7 +44,6 @@
 @end
 
 @implementation FTSignupViewController
-
 @synthesize separators;
 @synthesize defaultLabel;
 @synthesize firstnameTextField;
@@ -59,22 +72,22 @@
     UIColor *attrColor = [UIColor grayColor];
     
     // Set background image
-    [self.signUpView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"signup_screen_background_image"]]];
+    [self.signUpView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:SIGNUP_BACKGROUND_IMAGE]]];
     
     // Set form background
-    separators = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"separators"]];
+    separators = [[UIImageView alloc] initWithImage:[UIImage imageNamed:SEPARATORS]];
     [self.signUpView addSubview:self.separators];
     [self.signUpView sendSubviewToBack:self.separators];
     
     // Set logo
-    [self.signUpView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fittag_logo"]]];
+    [self.signUpView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:FITTAG_LOGO]]];
     
     // Set profile photo
     profileImageButton = [[UIButton alloc] init];
-    [self.profileImageButton setBackgroundImage:[UIImage imageNamed:@"add_photo"] forState:UIControlStateNormal];
-    [self.profileImageButton setBackgroundImage:[UIImage imageNamed:@"add_photo"] forState:UIControlStateHighlighted];
+    [self.profileImageButton setBackgroundImage:[UIImage imageNamed:ADD_PHOTO] forState:UIControlStateNormal];
+    [self.profileImageButton setBackgroundImage:[UIImage imageNamed:ADD_PHOTO] forState:UIControlStateHighlighted];
     [self.signUpView addSubview:self.profileImageButton];
-    [self.profileImageButton addTarget:self action:@selector(loadCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
+    [self.profileImageButton addTarget:self action:@selector(didTapLoadCameraButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     
     // Or signup with
     aLabel = [[UILabel alloc]init];
@@ -85,49 +98,49 @@
     aLabel.text = @"OR SIGNUP WITH:";
     [self.signUpView addSubview:aLabel];
     
-    // Set profile photo
+    // facebook button
     facebookButton = [[UIButton alloc] init];
-    [self.facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook_button"] forState:UIControlStateNormal];
-    [self.facebookButton addTarget:self action:@selector(facebookLogin:) forControlEvents:UIControlEventTouchUpInside];
+    [self.facebookButton setBackgroundImage:[UIImage imageNamed:FACEBOOK_BUTTON] forState:UIControlStateNormal];
+    [self.facebookButton addTarget:self action:@selector(didTapFacebookLoginButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.signUpView addSubview:self.facebookButton];
     
-    // Set profile photo
+    // twitter button
     twitterButton = [[UIButton alloc] init];
-    [self.twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter_button"] forState:UIControlStateNormal];
-    [self.twitterButton addTarget:self action:@selector(twitterLogin:) forControlEvents:UIControlEventTouchUpInside];
+    [self.twitterButton setBackgroundImage:[UIImage imageNamed:TWITTER_BUTTON] forState:UIControlStateNormal];
+    [self.twitterButton addTarget:self action:@selector(didTapTwitterLoginButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.signUpView addSubview:self.twitterButton];
     
     // Set signup red button
-    [self.signUpView.signUpButton setBackgroundImage:[UIImage imageNamed:@"signup_button"] forState: UIControlStateNormal];
-    [self.signUpView.signUpButton setTitle:@"" forState:UIControlStateNormal];
-
+    [self.signUpView.signUpButton setBackgroundImage:[UIImage imageNamed:SIGNUP_BUTTON] forState: UIControlStateNormal];
+    [self.signUpView.signUpButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
+    
     // Implement firstname textfield
     firstnameTextField = [[UITextField alloc] init];
-    [self.firstnameTextField setPlaceholder:@"FIRST NAME"];
+    [self.firstnameTextField setPlaceholder:PLACEHOLDER_FIRSTNAME];
     [self.firstnameTextField setDelegate:self];
     [self.signUpView addSubview:self.firstnameTextField];
     [self.firstnameTextField setTextAlignment:NSTextAlignmentLeft];
-    [self.firstnameTextField addTarget: self action:@selector(firstnameTextFieldDidChange) forControlEvents:UIControlEventEditingChanged];
+    [self.firstnameTextField addTarget: self action:@selector(didChangeFirstNameTextFieldAction:) forControlEvents:UIControlEventEditingChanged];
     
-    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard:)];
-    [self.signUpView addGestureRecognizer:gestureRecognizer];
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapHideKeyboardAction:)];
+    [self.view addGestureRecognizer:gestureRecognizer];
     
     // Implement lastname textfield
     lastnameTextField = [[UITextField alloc] init];
-    [self.lastnameTextField setPlaceholder:@"LAST NAME"];
+    [self.lastnameTextField setPlaceholder:PLACEHOLDER_LASTNAME];
     [self.lastnameTextField setDelegate:self];
     [self.signUpView addSubview:self.lastnameTextField];
     [self.lastnameTextField setTextAlignment:NSTextAlignmentLeft];
-    [lastnameTextField addTarget:self action:@selector(lastnameTextFieldDidChange) forControlEvents:UIControlEventEditingChanged];
+    [lastnameTextField addTarget:self action:@selector(didChangeLastNameTextFieldAction:) forControlEvents:UIControlEventEditingChanged];
     
     // Implement confirm password textfield
     confirmPasswordTextField = [[UITextField alloc] init];
-    [self.confirmPasswordTextField setPlaceholder:@"CONFIRM PASSWORD"];
+    [self.confirmPasswordTextField setPlaceholder:PLACEHOLDER_CONFIRM];
     [self.confirmPasswordTextField setDelegate:self];
     [self.signUpView addSubview:self.confirmPasswordTextField];
     [self.confirmPasswordTextField setTextAlignment:NSTextAlignmentLeft];
     [self.confirmPasswordTextField setSecureTextEntry:YES];
-    [self.confirmPasswordTextField addTarget:self action:@selector(confirmTextFieldDidFinish) forControlEvents:UIControlEventEditingDidEnd];
+    [self.confirmPasswordTextField addTarget:self action:@selector(didConfirmTextFieldFinish:) forControlEvents:UIControlEventEditingDidEnd];
     
     // Set password confirm
     [self setIsPasswordConfirmed:NO];
@@ -138,29 +151,29 @@
     [self.aboutTextView setBackgroundColor:nil];
     defaultLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200, 25)];
     [self.defaultLabel setTextColor:attrColor];
-    [self.defaultLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:16]];
-    [self.defaultLabel setText: @"WHAT MAKES YOU, YOU? (OPTIONAL)"];
+    [self.defaultLabel setFont:[UIFont fontWithName:FITTAG_FONT size:16]];
+    [self.defaultLabel setText:DEFAULT_BIO_TEXT_B];
     [self.aboutTextView addSubview:self.defaultLabel];
     [self.signUpView addSubview:self.aboutTextView];
     
     // Align username, email, password text fields left
     [self.signUpView.usernameField setTextAlignment:NSTextAlignmentLeft];
     [self.signUpView.usernameField setTextColor:attrColor];
-    [self.signUpView.usernameField setPlaceholder:@"USERNAME"];
-    [self.signUpView.usernameField setFont:[UIFont fontWithName:@"HelveticaNeue" size:16]];
+    [self.signUpView.usernameField setPlaceholder:PLACEHOLDER_USERNAME];
+    [self.signUpView.usernameField setFont:[UIFont fontWithName:FITTAG_FONT size:16]];
     
     [self.signUpView.emailField setTextAlignment:NSTextAlignmentLeft];
     [self.signUpView.emailField setTextColor:attrColor];
-    [self.signUpView.emailField setPlaceholder:@"EMAIL ADDRESS"];
-    [self.signUpView.emailField setFont:[UIFont fontWithName:@"HelveticaNeue" size:16]];
+    [self.signUpView.emailField setPlaceholder:PLACEHOLDER_EMAIL];
+    [self.signUpView.emailField setFont:[UIFont fontWithName:FITTAG_FONT size:16]];
 
     [self.signUpView.passwordField setTextAlignment:NSTextAlignmentLeft];
     [self.signUpView.passwordField setTextColor:attrColor];
-    [self.signUpView.passwordField setPlaceholder:@"PASSWORD"];
-    [self.signUpView.passwordField setFont:[UIFont fontWithName:@"HelveticaNeue" size:16]];
+    [self.signUpView.passwordField setPlaceholder:PLACEHOLDER_PASSWORD];
+    [self.signUpView.passwordField setFont:[UIFont fontWithName:FITTAG_FONT size:16]];
     
     // Setup terms text
-    termsText = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"signup_screen_terms_text"]];
+    termsText = [[UIImageView alloc] initWithImage:[UIImage imageNamed:SIGNUP_SCREEN_TEXT]];
     [self.signUpView addSubview:self.termsText];
 }
 
@@ -169,7 +182,7 @@
     
     float logoPositionY = 30.0f;
     
-    [self.separators setFrame:CGRectMake(0.0f, 0.0f, 320.0f, 568.0f)];
+    [self.separators setFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, self.view.frame.size.height)];
     [self.signUpView.logo setFrame:CGRectMake([self getCenterX:165.0f], logoPositionY, 165.0f, 35.0f)];
     [self.profileImageButton setFrame:CGRectMake(10.0f, 80.0f, 71.0f, 83.0f)];
     NSInteger centerLabelX = self.profileImageButton.frame.origin.x + self.profileImageButton.frame.size.width + 5.0f;
@@ -206,7 +219,6 @@
 
 - (void)textViewDidBeginEditing:(UITextView *)textView{
     self.defaultLabel.hidden = YES;
-    //[self.signUpView scrollToView:textView];
     [self.signUpView scrollElement:textView toPoint:160];
 }
 
@@ -222,7 +234,6 @@
 #pragma mark - UITextFieldDelegate
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField{
-    //[self.signUpView scrollToView:textField];
     [self.signUpView scrollElement:textField toPoint:160];
 }
 
@@ -232,7 +243,7 @@
 
 #pragma mark - ()
 
-- (void)facebookLogin:(id)sender{
+- (void)didTapFacebookLoginButtonAction:(UIButton *)button {
     [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
         //[[UIApplication sharedApplication].delegate performSelector:@selector(facebook)];
         if (!error) {
@@ -245,7 +256,7 @@
     }];
 }
 
-- (void)twitterLogin:(id)sender{
+- (void)didTapTwitterLoginButtonAction:(UIButton *)button {
     
 }
 
@@ -289,15 +300,16 @@
     return imageView;
 }
 
-- (void)loadCameraRoll:(id)sender{
+- (void)didTapLoadCameraButtonAction:(id)sender {
     FTCamViewController *camViewController = [[FTCamViewController alloc] init];
-    camViewController.delegate = (id)self;
-    UINavigationController *navController = [[UINavigationController alloc] initWithNavigationBarClass:[UINavigationBar class] toolbarClass:NULL];
-    [navController setViewControllers:@[camViewController] animated:NO];
-    [self presentViewController:navController animated:YES completion:NULL];
+    camViewController.delegate = self;
+    camViewController.isProfilePciture = YES;
+    UINavigationController *navController = [[UINavigationController alloc] init];
+    [navController setViewControllers:@[ camViewController ] animated:NO];
+    [self presentViewController:navController animated:YES completion:nil];
 }
 
-- (void)hideKeyboard:(id)sender{
+- (void)didTapHideKeyboardAction:(id)sender{
     [self.firstnameTextField resignFirstResponder];
     [self.lastnameTextField resignFirstResponder];
     [self.confirmPasswordTextField resignFirstResponder];
@@ -316,15 +328,15 @@
     return (self.view.frame.size.width)/2.0f - elementWith/2.0f;
 }
 
-- (void)firstnameTextFieldDidChange{
+- (void)didChangeFirstNameTextFieldAction:(id)sender {
     self.firstname = firstnameTextField.text;
 }
 
-- (void)lastnameTextFieldDidChange{
+- (void)didChangeLastNameTextFieldAction:(id)sender {
     self.lastname = lastnameTextField.text;
 }
 
-- (void)confirmTextFieldDidFinish{
+- (void)didConfirmTextFieldFinish:(id)sender {
     if([self.signUpView.passwordField.text isEqual:self.confirmPasswordTextField.text]){
         [self setIsPasswordConfirmed:YES];
     } else {
@@ -334,16 +346,19 @@
 
 #pragma mark - FTEditPhotoViewController
 
-- (void)setCoverPhoto:(UIImage *)image Caption:(NSString *)caption{
-    self.coverPhoto = image;
-    UIImageView *imageView = [self setImage:image];
+- (void)camViewController:(FTCamViewController *)camViewController photo:(UIImage *)photo {
+    self.coverPhoto = photo;
+    
+    UIImageView *imageView = [self setImage:photo];
     [imageView setUserInteractionEnabled:YES];
-    UITapGestureRecognizer *singleTap =  [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(loadCameraRoll:)];
+    
+    UITapGestureRecognizer *singleTap =  [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLoadCameraButtonAction:)];
     [singleTap setNumberOfTapsRequired:1];
+    
     [imageView addGestureRecognizer:singleTap];
     [imageView setFrame:CGRectMake(10.0f, 80.0f, 71.0f, 83.0f)];
+    
     [self.profileImageButton removeFromSuperview];
     [self.signUpView addSubview:imageView];
 }
-
 @end

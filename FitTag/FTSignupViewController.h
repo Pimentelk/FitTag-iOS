@@ -7,8 +7,9 @@
 //
 
 #import "FTEditPhotoViewController.h"
+#import "FTCamViewController.h"
 
-@interface FTSignupViewController : PFSignUpViewController <UITextViewDelegate, UITextFieldDelegate, FTEditPhotoViewControllerDelegate>
+@interface FTSignupViewController : PFSignUpViewController <UITextViewDelegate, UITextFieldDelegate, FTCamViewControllerDelegate>
 @property NSString *firstname;
 @property NSString *lastname;
 @property NSString *about;
