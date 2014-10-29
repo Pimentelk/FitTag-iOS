@@ -103,7 +103,7 @@
                                                self.avatarImageView.frame.origin.y + 10,88.0f, 20.0f);
         
         [self.usernameRibbon addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [self.usernameRibbon setTitle:@"" forState:UIControlStateNormal];
+        [self.usernameRibbon setTitle:EMPTY_STRING forState:UIControlStateNormal];
         [self.usernameRibbon.titleLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:10]];
         self.usernameRibbon.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
         self.usernameRibbon.contentEdgeInsets = UIEdgeInsetsMake(0, 5, 0, 0);
@@ -111,7 +111,7 @@
         [self.contentView bringSubviewToFront:self.avatarImageView];
         
         locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 285, 110, 40)];
-        [locationLabel setText:@""];
+        [locationLabel setText:EMPTY_STRING];
         [locationLabel setFont:[UIFont systemFontOfSize:12.0f]];
         [locationLabel setBackgroundColor:[UIColor clearColor]];
         [locationLabel setTextColor:[UIColor whiteColor]];
@@ -145,14 +145,14 @@
             [galleryCellButtonsContainer addSubview:self.commentButton];
             [self.commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x + 15.0f, likeCounter.frame.origin.y, 21.0f, 18.0f)];
             [self.commentButton setBackgroundColor:[UIColor clearColor]];
-            [self.commentButton setTitle:@"" forState:UIControlStateNormal];
+            [self.commentButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [self.commentButton setBackgroundImage:[UIImage imageNamed:@"comment_bubble"] forState:UIControlStateNormal];
             [self.commentButton setSelected:NO];
             
             commentCounter = [UIButton buttonWithType:UIButtonTypeCustom];
             [commentCounter setFrame: CGRectMake(self.commentButton.frame.origin.x + self.commentButton.frame.size.width + 3.0f, self.commentButton.frame.origin.y, 37.0f, 19.0f)];
             [commentCounter setBackgroundColor:[UIColor clearColor]];
-            [commentCounter setTitle:@"" forState:UIControlStateNormal];
+            [commentCounter setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [commentCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
             [galleryCellButtonsContainer addSubview:commentCounter];
         }
@@ -161,7 +161,7 @@
         [moreButton setBackgroundImage:[UIImage imageNamed:@"more_button"] forState:UIControlStateNormal];
         [moreButton setFrame:CGRectMake(commentCounter.frame.size.width + commentCounter.frame.origin.x + 15.0f, commentCounter.frame.origin.y, 35.0f, 19.0f)];
         [moreButton setBackgroundColor:[UIColor clearColor]];
-        [moreButton setTitle:@"" forState:UIControlStateNormal];
+        [moreButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
         [galleryCellButtonsContainer addSubview:moreButton];
         
         swiperView = [[FTGallerySwiperView alloc] initWithFrame:CGRectMake(usernameRibbon.frame.origin.x + EXTRA_PADDING,
@@ -291,7 +291,7 @@
             }
         }];
     } else {
-        [locationLabel setText:@""];
+        [locationLabel setText:EMPTY_STRING];
     }
     
     [self setNeedsDisplay];
