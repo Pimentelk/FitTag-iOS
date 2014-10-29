@@ -30,8 +30,9 @@
 @property (nonatomic, strong) UILabel *userDisplay;
 
 @property (nonatomic, strong) UIImageView *photoCountIconImageView;
-@property (nonatomic, strong) UIImageView *backgroundImageView;
+@property (nonatomic, strong) UIImageView *coverPhoto;
 @property (nonatomic, strong) PFImageView *profilePictureImageView;
+@property (nonatomic, strong) PFImageView *coverPhotoImageView;
 
 @property (nonatomic, strong) UITextView *profileBiography;
 
@@ -52,9 +53,10 @@
 @synthesize gridViewButton;
 @synthesize businessButton;
 @synthesize taggedInButton;
-@synthesize backgroundImageView;
+@synthesize coverPhoto;
 @synthesize userDisplay;
 @synthesize delegate;
+@synthesize coverPhotoImageView;
 
 - (id)initWithFrame:(CGRect)frame {
     
@@ -68,18 +70,24 @@
         self.containerView = [[UIView alloc] initWithFrame:frame];
         [self.containerView setBackgroundColor:[UIColor whiteColor]];
         
-        // Profile Picture Background
-        profilePictureBackgroundView = [[UIView alloc] initWithFrame:CGRectMake( 0, 0, 320.0f, 160.0f)];
+        // Profile Picture Background (this is the view area)
+        profilePictureBackgroundView = [[UIView alloc] initWithFrame:CGRectMake( 0, 0, self.frame.size.width, self.frame.size.width / 2)];
         [profilePictureBackgroundView setBackgroundColor:[UIColor clearColor]];
         [profilePictureBackgroundView setAlpha: 0.0f];
         [profilePictureBackgroundView setClipsToBounds: YES];
         [self.containerView addSubview:profilePictureBackgroundView];
         
         // Profile Picture Image
-        profilePictureImageView = [[PFImageView alloc] initWithFrame:CGRectMake( 0, 0, 320.0f, 160.0f)];
+        profilePictureImageView = [[PFImageView alloc] initWithFrame:CGRectMake( 0, 0, self.frame.size.width, self.frame.size.width / 2)];
         [profilePictureImageView setClipsToBounds: YES];
         [profilePictureImageView setContentMode:UIViewContentModeScaleAspectFill];
         [self.containerView addSubview:profilePictureImageView];
+        
+        // Cover Photo
+        coverPhotoImageView = [[PFImageView alloc] initWithFrame:CGRectMake( 0, 0, self.frame.size.width, self.frame.size.width / 2)];
+        [coverPhotoImageView setClipsToBounds: YES];
+        [coverPhotoImageView setContentMode:UIViewContentModeScaleAspectFill];
+        [self.containerView addSubview:coverPhotoImageView];
         
         UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:5 Y:40 width:100 hegiht:115];
         //[profileHexagon setCenter:CGPointMake((self.frame.size.width / 2), 10 + (profileHexagon.frame.size.height / 2))];
@@ -242,23 +250,28 @@
     }
     
     [followerCountLabel setText:@"0 FOLLOWERS"];
-    
     [self updateFollowingCount];
     
-   /*
-    if ([self.user isEqual:[PFUser currentUser]]) { // Current user profile
-
-    } else { // Different user profile
-        
+    PFFile *coverPhotoFile = [self.user objectForKey:kFTUserCoverPhotoKey];
+    if (coverPhotoFile) {
+        [coverPhotoImageView setFile:coverPhotoFile];
+        [coverPhotoImageView loadInBackground:^(UIImage *image, NSError *error) {
+            if (!error) {
+                coverPhoto = [[UIImageView alloc] initWithImage:image];
+                coverPhoto.frame = self.bounds;
+                coverPhoto.alpha = 0.0f;
+                coverPhoto.clipsToBounds = YES;
+                
+                [self.containerView addSubview:coverPhoto];
+                [self.containerView sendSubviewToBack:coverPhoto];
+                
+                [UIView animateWithDuration:0.2f animations:^{
+                    coverPhoto.alpha = 1.0f;
+                }];
+            }
+        }];
     }
     
-     // set userdisplay
-     [userDisplay setText:[NSString stringWithFormat:@"%@ %@ %@",
-     [self.user objectForKey:kFTUserFirstnameKey],
-     [self.user objectForKey:kFTUserLastnameKey],
-     [self.user objectForKey:kFTUserDisplayNameKey]]];
-    */
-        
     PFFile *imageFile = [self.user objectForKey:kFTUserProfilePicMediumKey];
     if (imageFile) {
         [profilePictureImageView setFile:imageFile];
@@ -267,37 +280,12 @@
                 [UIView animateWithDuration:0.2f animations:^{
                     profilePictureBackgroundView.alpha = 1.0f;
                     profilePictureImageView.alpha = 1.0f;
-                }];
-                
-                backgroundImageView = [[UIImageView alloc] initWithImage:image];
-                backgroundImageView.frame = self.bounds;
-                backgroundImageView.alpha = 0.0f;
-                backgroundImageView.clipsToBounds = YES;
-                
-                [self.containerView addSubview:backgroundImageView];
-                [self.containerView sendSubviewToBack:backgroundImageView];
-                
-                [UIView animateWithDuration:0.2f animations:^{
-                     backgroundImageView.alpha = 1.0f;
+                    [self.containerView bringSubviewToFront:profilePictureImageView];
                 }];
             }
         }];
     }
     
-    // Set user display text
-    
-    /*
-    PFQuery *queryPhotoCount = [PFQuery queryWithClassName:kFTPostClassKey];
-    [queryPhotoCount whereKey:kFTPostUserKey equalTo:self.user];
-    [queryPhotoCount setCachePolicy:kPFCachePolicyCacheThenNetwork];
-    [queryPhotoCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-        if (!error) {
-            //[photoCountLabel setText:[NSString stringWithFormat:@"%d photo%@", number, number==1?@"":@"s"]];
-            [[FTCache sharedCache] setPostCount:[NSNumber numberWithInt:number] user:self.user];
-        }
-    }];
-    */
-    
     NSDictionary *followingDictionary = [[PFUser currentUser] objectForKey:@"FOLLOWING"];
     [followingCountLabel setText:@"0 FOLLOWING"];
     if (followingDictionary) {
@@ -307,30 +295,12 @@
     PFQuery *queryFollowingCount = [PFQuery queryWithClassName:kFTActivityClassKey];
     [queryFollowingCount whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
     [queryFollowingCount whereKey:kFTActivityFromUserKey equalTo:self.user];
-    [queryFollowingCount setCachePolicy:kPFCachePolicyCacheThenNetwork];
+    //[queryFollowingCount setCachePolicy:kPFCachePolicyCacheThenNetwork];
     [queryFollowingCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
             [followingCountLabel setText:[NSString stringWithFormat:@"%d FOLLOWING", number]];
         }
     }];
-    
-    /*
-    NSDictionary *followingDictionary = [[PFUser currentUser] objectForKey:@"FOLLOWING"];
-    [followingCountLabel setText:@"0 FOLLOWING"];
-    if (followingDictionary) {
-        [followingCountLabel setText:[NSString stringWithFormat:@"%lu FOLLOWING", (unsigned long)[[followingDictionary allValues] count]]];
-    }
-    
-    PFQuery *queryFollowingCount = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryFollowingCount whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
-    [queryFollowingCount whereKey:kFTActivityFromUserKey equalTo:self.user];
-    [queryFollowingCount setCachePolicy:kPFCachePolicyCacheThenNetwork];
-    [queryFollowingCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-        if (!error) {
-            [followingCountLabel setText:[NSString stringWithFormat:@"%d FOLLOWING", number]];
-        }
-    }];
-    */
     
     // check to see if it is not current users profile
     if (![[self.user objectId] isEqualToString:[[PFUser currentUser] objectId]]) {
@@ -365,7 +335,7 @@
         
         [userSettingsLabel setBackgroundColor:[UIColor colorWithRed:234/255.0f green:234/255.0f blue:234/255.0f alpha:1]];
         [userSettingsLabel setTextColor:[UIColor colorWithRed:234/255.0f green:37/255.0f blue:37/255.0f alpha:1]];
-        [userSettingsLabel setText:@"SETTINGS"];
+        [userSettingsLabel setText:NAVIGATION_TITLE_SETTINGS];
         [userSettingsLabel addGestureRecognizer:tap];
         [userSettingsLabel setUserInteractionEnabled:YES];
     }
