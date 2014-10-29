@@ -279,7 +279,7 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     [self.view addSubview:recordButton];
     
     // Show Camera Button
-    if (!self.isProfilePciture) {
+    if (!self.isProfilePciture && !self.isCoverPhoto) {
         showCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [showCameraButton setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_VIDEO] forState:UIControlStateNormal];
         [showCameraButton addTarget:self action:@selector(toggleVideoControlsAction:) forControlEvents:UIControlEventTouchDown];
@@ -519,10 +519,12 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 
 -(void)didTapCameraRollButtonAction:(id)sender {
     FTCamRollViewController *camRollViewController = [[FTCamRollViewController alloc] init];
-
+    
+    camRollViewController.delegate = self;
     if (self.isProfilePciture) {
-        camRollViewController.delegate = self;
         camRollViewController.isProfilePicture = YES;
+    } else if (self.isCoverPhoto) {
+        camRollViewController.isCoverPhoto = YES;
     }
     
     [self.navigationController pushViewController:camRollViewController animated:YES];    
@@ -871,13 +873,16 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 				UIImage *image = [[UIImage alloc] initWithData:imageData];
                 UIImage *croppedImage = [self squareImageFromImage:image scaledToSize:320.0f];
 				
-                if (!self.isProfilePciture) {
+                if (!self.isProfilePciture && !self.isCoverPhoto) {
                     // Prepare to upload the taken image
                     self.editPhotoViewController = [[FTEditPhotoViewController alloc] initWithImage:croppedImage];
                     [self.navigationController pushViewController:editPhotoViewController animated:NO];
                 } else if (self.isProfilePciture){
                     // Return the profile image
                     [self didTakeProfilePictureAction:croppedImage];
+                    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+                } else if (self.isCoverPhoto) {
+                    [self didTakeCoverPhotoAction:croppedImage];
                     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
                 }
             }
@@ -936,21 +941,39 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 #pragma mark - ()
 
 - (void)didTakeProfilePictureAction:(UIImage *)photo {
-    if ([delegate respondsToSelector:@selector(camViewController:photo:)]){
-        [delegate camViewController:self photo:photo];
+    if ([delegate respondsToSelector:@selector(camViewController:profilePicture:)]){
+        [delegate camViewController:self profilePicture:photo];
     }
 }
 
 - (void)didSelectProfilePictureAction:(UIImage *)photo {
-    if ([delegate respondsToSelector:@selector(camViewController:photo:)]){
-        [delegate camViewController:self photo:photo];
+    if ([delegate respondsToSelector:@selector(camViewController:profilePicture:)]){
+        [delegate camViewController:self profilePicture:photo];
+    }
+}
+
+- (void)didTakeCoverPhotoAction:(UIImage *)photo {
+    if ([delegate respondsToSelector:@selector(camViewController:coverPhoto:)]){
+        [delegate camViewController:self coverPhoto:photo];
+    }
+}
+
+- (void)didSelectCoverPhotoAction:(UIImage *)photo {
+    if ([delegate respondsToSelector:@selector(camViewController:coverPhoto:)]){
+        [delegate camViewController:self coverPhoto:photo];
     }
 }
 
 #pragma mark - FTCamRollViewControllerDelegate
 
-- (void)camRollViewController:(FTCamRollViewController *)camRollViewController photo:(UIImage *)photo {
+- (void)camRollViewController:(FTCamRollViewController *)camRollViewController profilePhoto:(UIImage *)photo {
     [self didSelectProfilePictureAction:photo];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)camRollViewController:(FTCamRollViewController *)camRollViewController coverPhoto:(UIImage *)photo {
+    [self didSelectCoverPhotoAction:photo];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

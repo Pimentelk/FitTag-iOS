@@ -25,9 +25,11 @@ typedef enum {
 @property (nonatomic,weak) id <FTCamViewControllerDelegate> delegate;
 @property (nonatomic) AVCaptureVideoPreviewLayer *previewLayer;
 @property (nonatomic) BOOL isProfilePciture;
+@property (nonatomic) BOOL isCoverPhoto;
 @end
 
 @protocol FTCamViewControllerDelegate <NSObject>
 @optional
-- (void)camViewController:(FTCamViewController *)camViewController photo:(UIImage *)photo;
+- (void)camViewController:(FTCamViewController *)camViewController profilePicture:(UIImage *)photo;
+- (void)camViewController:(FTCamViewController *)camViewController coverPhoto:(UIImage *)photo;
 @end
