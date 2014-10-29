@@ -8,7 +8,6 @@
 
 #import "FTSettingsCell.h"
 #import "FTSettingsViewController.h"
-#import "FTInterestViewFlowLayout.h"
 #import "AppDelegate.h"
 #import "MBProgressHUD.h"
 
@@ -173,6 +172,7 @@
     NSString *setting = [sectionSettings objectAtIndex:indexPath.row];
 
     if ([setting isEqualToString:ADD_INTERESTS]) {
+        [self.interestsViewController setDelegate:self];
         [self.navigationController pushViewController:self.interestsViewController animated:YES];
         [self.settingsDetailViewController setDetailItem:setting];
     } else if([setting isEqualToString:INVITE_FRIENDS]) {
@@ -187,6 +187,13 @@
         [self.navigationController pushViewController:self.settingsDetailViewController animated:YES];
         [self.settingsDetailViewController setDetailItem:setting];
     }
+}
+
+#pragma mark - FTInterestsViewControllerDelegate
+
+- (void)interestsViewController:(FTInterestsViewController *)interestsViewController didUpdateUserInterests:(NSArray *)interests {
+    [self.navigationController popViewControllerAnimated:YES];
+    [self showHudMessage:HUD_MESSAGE_INTERESTS_UPDATED WithDuration:3];
 }
 
 #pragma mark - ()
@@ -220,6 +227,18 @@
 
 - (void)didTapBackButtonAction:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)showHudMessage:(NSString *)message WithDuration:(NSTimeInterval)duration {
+    //NSLog(@"%@::showHudMessage:WithDuration:",VIEWCONTROLLER_SETTINGS_DETAIL);
+    self.hud = [MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
+    self.hud.mode = MBProgressHUDModeText;
+    self.hud.margin = 10.f;
+    self.hud.yOffset = 150.f;
+    self.hud.removeFromSuperViewOnHide = YES;
+    self.hud.userInteractionEnabled = NO;
+    self.hud.labelText = message;
+    [self.hud hide:YES afterDelay:duration];
 }
 
 #pragma mark - MFMessageComposeViewControllerDelegate
