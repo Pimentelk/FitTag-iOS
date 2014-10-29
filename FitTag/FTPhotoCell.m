@@ -172,7 +172,7 @@
 
 - (void)setPhoto:(PFObject *)aPhoto {
     photo = aPhoto;
-    NSLog(@"setPhoto FTPhotoViewCell::photo %@",photo);
+    //NSLog(@"setPhoto FTPhotoViewCell::photo %@",photo);
     
     // User profile image
     PFUser *user = [self.photo objectForKey:kFTPostUserKey];
