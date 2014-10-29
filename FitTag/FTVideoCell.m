@@ -93,8 +93,8 @@
                                                self.avatarImageView.frame.origin.y + 10,88.0f, 20.0f);
         
         [self.usernameRibbon addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [self.usernameRibbon setTitle:@"" forState:UIControlStateNormal];
-        [self.usernameRibbon.titleLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:10]];
+        [self.usernameRibbon setTitle:EMPTY_STRING forState:UIControlStateNormal];
+        [self.usernameRibbon.titleLabel setFont:[UIFont fontWithName:FITTAG_FONT size:10]];
         self.usernameRibbon.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
         self.usernameRibbon.contentEdgeInsets = UIEdgeInsetsMake(0, 5, 0, 0);
         [self.contentView addSubview:self.usernameRibbon];
@@ -118,7 +118,7 @@
             [videoCellButtonsContainer addSubview:self.likeButton];
             [self.likeButton setFrame:CGRectMake(5.0f, 1.0f, 21.0f, 18.0f)];
             [self.likeButton setBackgroundColor:[UIColor clearColor]];
-            [self.likeButton setTitle:@"" forState:UIControlStateNormal];
+            [self.likeButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_white"] forState:UIControlStateNormal];
             [self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateSelected];
             [self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateHighlighted];
@@ -138,14 +138,14 @@
             [videoCellButtonsContainer addSubview:self.commentButton];
             [self.commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x + 15.0f, likeCounter.frame.origin.y, 21.0f, 18.0f)];
             [self.commentButton setBackgroundColor:[UIColor clearColor]];
-            [self.commentButton setTitle:@"" forState:UIControlStateNormal];
+            [self.commentButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [self.commentButton setBackgroundImage:[UIImage imageNamed:@"comment_bubble"] forState:UIControlStateNormal];
             [self.commentButton setSelected:NO];
             
             commentCounter = [UIButton buttonWithType:UIButtonTypeCustom];
             [commentCounter setFrame: CGRectMake(self.commentButton.frame.origin.x + self.commentButton.frame.size.width + 3.0f, self.commentButton.frame.origin.y, 37.0f, 19.0f)];
             [commentCounter setBackgroundColor:[UIColor clearColor]];
-            [commentCounter setTitle:@"" forState:UIControlStateNormal];
+            [commentCounter setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [commentCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
             [videoCellButtonsContainer addSubview:commentCounter];
         }
@@ -154,7 +154,7 @@
         [moreButton setBackgroundImage:[UIImage imageNamed:@"more_button"] forState:UIControlStateNormal];
         [moreButton setFrame:CGRectMake(commentCounter.frame.size.width + commentCounter.frame.origin.x + 15.0f, commentCounter.frame.origin.y, 35.0f, 19.0f)];
         [moreButton setBackgroundColor:[UIColor clearColor]];
-        [moreButton setTitle:@"" forState:UIControlStateNormal];
+        [moreButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
         [videoCellButtonsContainer addSubview:moreButton];
         
         // setup the video player
@@ -171,16 +171,27 @@
         [videoButton addSubview:moviePlayer.view];
         
         locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 285, 110, 40)];
-        [locationLabel setText:@""];
+        [locationLabel setText:EMPTY_STRING];
         [locationLabel setFont:[UIFont systemFontOfSize:12.0f]];
         [locationLabel setBackgroundColor:[UIColor clearColor]];
         [locationLabel setTextColor:[UIColor whiteColor]];
         [self addSubview:locationLabel];
         [self bringSubviewToFront:locationLabel];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieFinishedCallBack:) name:MPMoviePlayerPlaybackDidFinishNotification object:moviePlayer];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerStateChange:) name:MPMoviePlayerPlaybackStateDidChangeNotification object:moviePlayer];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadStateDidChange:) name:MPMoviePlayerLoadStateDidChangeNotification object:moviePlayer];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(movieFinishedCallBack:)
+                                                     name:MPMoviePlayerPlaybackDidFinishNotification
+                                                   object:moviePlayer];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(moviePlayerStateChange:)
+                                                     name:MPMoviePlayerPlaybackStateDidChangeNotification
+                                                   object:moviePlayer];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(loadStateDidChange:)
+                                                     name:MPMoviePlayerLoadStateDidChangeNotification
+                                                   object:moviePlayer];
     }
     
     return self;
@@ -207,29 +218,40 @@
     CGFloat constrainWidth = containerView.bounds.size.width;
 
     [self.avatarImageView setFile:profilePictureSmall];
-    [self.userButton setTitle:authorName forState:UIControlStateNormal];
+    [self.userButton setTitle:authorName
+                     forState:UIControlStateNormal];
     
     if (self.buttons & FTVideoCellButtonsPlay) {
-        [self.playButton addTarget:self action:@selector(didTapVideoPlayButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [self.playButton addTarget:self
+                            action:@selector(didTapVideoPlayButtonAction:)
+                  forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTVideoCellButtonsUser){
-        [self.userButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [self.userButton addTarget:self
+                            action:@selector(didTapUserButtonAction:)
+                  forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTVideoCellButtonsUser){
         constrainWidth = self.commentButton.frame.origin.x;
-        [self.commentButton addTarget:self action:@selector(didTapCommentOnVideoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [self.commentButton addTarget:self
+                               action:@selector(didTapCommentOnVideoButtonAction:)
+                     forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTVideoCellButtonsUser){
         constrainWidth = self.likeButton.frame.origin.x;
-        [self.likeButton addTarget:self action:@selector(didTapLikeVideoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [self.likeButton addTarget:self
+                            action:@selector(didTapLikeVideoButtonAction:)
+                  forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTVideoCellButtonsUser){
         constrainWidth = self.likeButton.frame.origin.x;
-        [self.moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [self.moreButton addTarget:self
+                            action:@selector(didTapMoreButtonAction:)
+                  forControlEvents:UIControlEventTouchUpInside];
     }
     
     /* Location */
@@ -255,35 +277,37 @@
             }
         }];
     } else {
-        [locationLabel setText:@""];
+        [locationLabel setText:EMPTY_STRING];
     }
     
     [self setNeedsDisplay];
 }
 
 - (void)movieFinishedCallBack:(NSNotification *)notification{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:self.moviePlayer];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:MPMoviePlayerPlaybackDidFinishNotification
+                                                  object:self.moviePlayer];
 }
 
 - (void)loadStateDidChange:(NSNotification *)notification{
     //NSLog(@"loadStateDidChange: %@",notification);
     
     if (self.moviePlayer.loadState & MPMovieLoadStatePlayable) {
-        NSLog(@"loadState... MPMovieLoadStatePlayable");
+        //NSLog(@"loadState... MPMovieLoadStatePlayable");
     }
     
     if (self.moviePlayer.loadState & MPMovieLoadStatePlaythroughOK) {
-        NSLog(@"loadState... MPMovieLoadStatePlaythroughOK");
+        //NSLog(@"loadState... MPMovieLoadStatePlaythroughOK");
         [moviePlayer.view setHidden:NO];
         [self.imageView setHidden:YES];
     }
     
     if (self.moviePlayer.loadState & MPMovieLoadStateStalled) {
-        NSLog(@"loadState... MPMovieLoadStateStalled");
+        //NSLog(@"loadState... MPMovieLoadStateStalled");
     }
     
     if (self.moviePlayer.loadState & MPMovieLoadStateUnknown) {
-        NSLog(@"loadState... MPMovieLoadStateUnknown");
+        //NSLog(@"loadState... MPMovieLoadStateUnknown");
     }
 }
 
@@ -292,38 +316,38 @@
     //NSLog(@"moviePlayerStateChange: %@",notification);
     
     if (self.moviePlayer.playbackState == MPMoviePlaybackStatePlaying){
-        NSLog(@"moviePlayer... Playing");
+        //NSLog(@"moviePlayer... Playing");
         [self.playButton setHidden:YES];
         if (self.moviePlayer.loadState & MPMovieLoadStatePlayable) {
-            NSLog(@"2 loadState... MPMovieLoadStatePlayable");
+            //NSLog(@"2 loadState... MPMovieLoadStatePlayable");
             [moviePlayer.view setHidden:NO];
             [self.imageView setHidden:YES];
         }
     }
     
     if (self.moviePlayer.playbackState & MPMoviePlaybackStateStopped){
-        NSLog(@"moviePlayer... Stopped");
+        //NSLog(@"moviePlayer... Stopped");
         [self.playButton setHidden:NO];
     }
     
     if (self.moviePlayer.playbackState & MPMoviePlaybackStatePaused){
-        NSLog(@"moviePlayer... Paused");
+        //NSLog(@"moviePlayer... Paused");
         [self.playButton setHidden:NO];
         [moviePlayer.view setHidden:YES];
         [self.imageView setHidden:NO];
     }
     
     if (self.moviePlayer.playbackState & MPMoviePlaybackStateInterrupted){
-        NSLog(@"moviePlayer... Interrupted");
+        //NSLog(@"moviePlayer... Interrupted");
         //[self.moviePlayer stop];
     }
     
     if (self.moviePlayer.playbackState & MPMoviePlaybackStateSeekingForward){
-        NSLog(@"moviePlayer... Forward");
+        //NSLog(@"moviePlayer... Forward");
     }
     
     if (self.moviePlayer.playbackState & MPMoviePlaybackStateSeekingBackward){
-        NSLog(@"moviePlayer... Backward");
+        //NSLog(@"moviePlayer... Backward");
     }
 }
 
@@ -341,9 +365,13 @@
 
 - (void)shouldEnableLikeButton:(BOOL)enable {
     if (enable) {
-        [self.likeButton removeTarget:self action:@selector(didTapLikeVideoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [self.likeButton removeTarget:self
+                               action:@selector(didTapLikeVideoButtonAction:)
+                     forControlEvents:UIControlEventTouchUpInside];
     } else {
-        [self.likeButton addTarget:self action:@selector(didTapLikeVideoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [self.likeButton addTarget:self
+                            action:@selector(didTapLikeVideoButtonAction:)
+                  forControlEvents:UIControlEventTouchUpInside];
     }
 }
 
