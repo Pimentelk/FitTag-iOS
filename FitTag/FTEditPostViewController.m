@@ -302,7 +302,7 @@
 
 #pragma mark - checkForHashTag & Mention
 
-- (NSArray *) checkForHashtag {
+- (NSArray *)checkForHashtag {
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)"
                                                                            options:0 error:&error];
@@ -321,7 +321,7 @@
     return matchedResults;
 }
 
-- (NSMutableArray *) checkForMention {
+- (NSMutableArray *)checkForMention {
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@(\\w+)"
                                                                            options:0 error:&error];
@@ -341,6 +341,24 @@
 }
 
 #pragma mark - Done Action Handlers
+
+- (void)incrementUserPostCount {
+    NSLog(@"Increment user post count");
+    PFUser *user = [PFUser currentUser];
+    [user incrementKey:kFTUserPostCountKey byAmount:[NSNumber numberWithInt:1]];
+    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (!error) {
+            long int postCount = (long)[[user objectForKey:kFTUserPostCountKey] integerValue];
+            NSLog(@"postCount %ld",postCount);
+            
+            NSNumber *rewardCount = [NSNumber numberWithUnsignedInteger:(postCount / 10)];
+            NSLog(@"rewardCount %@",rewardCount);
+            
+            [user setValue:rewardCount forKey:kFTUserRewardsEarnedKey];
+            [user saveInBackground];
+        }
+    }];
+}
 
 - (void)postMultipleWithPhotoFiles:(NSArray *)photos
                         ThumbFiles:(NSArray *)thumbs
@@ -398,6 +416,7 @@
                                              likedByCurrentUser:NO
                                                     displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
                     
+                    [self incrementUserPostCount];
                     //NSLog(@"userInfo might contain any caption which might have been posted by the uploader");
                     
                     // userInfo might contain any caption which might have been posted by the uploader
@@ -553,7 +572,8 @@
                                                      commenters:[NSArray array]
                                              likedByCurrentUser:NO
                                                     displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
-                
+                    [self incrementUserPostCount];
+                    
                     // userInfo might contain any caption which might have been posted by the uploader
                     if (userInfo) {
                         NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
@@ -642,6 +662,7 @@
             if (succeeded) {
                 [PFObject saveAllInBackground:self.thumbFiles block:^(BOOL succeeded, NSError *error) {
                     [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+                    
                     if (error) {
                         NSLog(@"self.thumbnailFile saveInBackgroundWithBlock: %@", error);
                     }
@@ -800,11 +821,11 @@
 
 #pragma mark - NSNotification
 
--(void)movieFinishedCallBack:(NSNotification *)notification {
+- (void)movieFinishedCallBack:(NSNotification *)notification {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:self.moviePlayer];
 }
 
--(void)loadStateDidChange:(NSNotification *)notification {
+- (void)loadStateDidChange:(NSNotification *)notification {
     //NSLog(@"loadStateDidChange: %@",notification);
     
     if (self.moviePlayer.loadState & MPMovieLoadStatePlayable) {
@@ -826,7 +847,7 @@
     }
 }
 
--(void)moviePlayerStateChange:(NSNotification *)notification {
+- (void)moviePlayerStateChange:(NSNotification *)notification {
     
     //NSLog(@"moviePlayerStateChange: %@",notification);
     
