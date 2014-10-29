@@ -13,6 +13,7 @@
 #define APP_VERSION @"2.0"
 #define APP_STORE_ID 928992041
 #define FITTAG_FONT @"HelveticaNeue"
+#define FITTAG_LOGO @"fittag_logo"
 
 // Blog
 #define FITTAG_BLOG_URL @"http://www.fittag.com/blog"
@@ -34,7 +35,15 @@
 #define FORWARD_NAVIGATION_ITEM @"forward_navigation_item"
 #define REFRESH_NAVIGATION_ITEM @"refresh_navigation_item"
 
+// UITabBar Tabs
+#define TAB_NOTIFICATIONS 0
+#define TAB_MAP 1
+#define TAB_FEED 2
+#define TAB_PROFILE 3
+#define TAB_Rewards 4
+
 // VIEW CONTROLLERS NAMES
+#define VIEWCONTROLLER_NAVIGATION @"FTNavigationController"
 #define VIEWCONTROLLER_POST_HEADER @"FTPostDetailsHeaderView"
 #define VIEWCONTROLLER_ACTIVITY @"FTActivityFeedViewController"
 #define VIEWCONTROLLER_MAP @"FTMapViewController"
@@ -61,7 +70,8 @@
 #define VIEWCONTROLLER_BUSINESS_HEADER @"FTUserProfileHeaderView"
 #define VIEWCONTROLLER_COMMENT @"FTPostDetailsViewController"
 #define VIEWCONTROLLER_POST_DETAIL @"FTPostDetailsViewController"
-
+#define VIEWCONTROLLER_INVITE @"FTInviteFriendsViewController"
+#define VIEWCONTROLLER_FOLLOW_CELL @"FTFollowCell"
 // ACTION BUTTONS
 #define ACTION_HEART @"heart_white"
 #define ACTION_HEART_SELECTED @"heart_selected"
@@ -109,6 +119,7 @@
 #define IMAGE_PROFILE_DEFAULT @"posts_active"
 #define IMAGE_TIMELINE_BLANK @"HomeTimelineBlank.png"
 #define USERNAME_RIBBON @"username_ribbon"
+#define IMAGE_PROFILE_EMPTY @"empty_profile"
 
 // TAB NAVIGATION BAR BUTTONS
 #define BUTTON_IMAGE_NOTIFICATIONS @"notifications"
@@ -121,7 +132,7 @@
 #define BUTTON_IMAGE_SEARCH_SELECTED @"search"
 #define BUTTON_IMAGE_USER_PROFILE_SELECTED @"myprofile"
 #define BUTTON_IMAGE_REWARDS_SELECTED @"offers"
-#define BUTTON_IMAGE_FEED_SELECTED @""
+#define BUTTON_IMAGE_FEED_SELECTED @"feed"
 
 // TAB NAVIGATION VIEW CONTROLLER TITLES
 #define NAVIGATION_TITLE_MAP @"MAP"
@@ -159,6 +170,7 @@
 // File defaults
 #define SMALL_JPEG @"medium.jpeg"
 #define MEDIUM_JPEG @"small.jpeg"
+#define COVER_JPEG @"cover.jpeg"
 
 // Mail Strings
 #define MAIL_CANCELLED @"Mail cancelled: you cancelled the operation and no email message was queued."
@@ -172,6 +184,7 @@
 
 #define HUD_MESSAGE_BIOGRAPHY_LIMIT @"150 character limit"
 #define HUD_MESSAGE_BIOGRAPHY_UPDATED @"Biography updated.."
+#define HUD_MESSAGE_INTERESTS_UPDATED @"Interests updated.."
 #define EMPTY_BIOGRAPHY_TITLE @"Empty Biography"
 #define EMPTY_BIOGRAPHY_MESSAGE @"You can not submit an empty biography."
 
