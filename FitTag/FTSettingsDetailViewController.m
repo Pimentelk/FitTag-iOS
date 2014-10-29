@@ -11,10 +11,13 @@
 #import "MBProgressHUD.h"
 #import "FTSocialCell.h"
 
+#define LEFT_PADDING 15
 #define TOP_PADDING 20
+#define TABLE_CELL_HEIGHT 45
 
 // Profile Image Options
 #define PROFILE_BUTTON_HEIGHT 40
+#define ROW_HEIGHT PROFILE_BUTTON_HEIGHT
 #define PROFILE_BUTTON_COUNT 3
 #define FACEBOOK_PHOTO @"Facebook Profile Image"
 #define TWITTER_PHOTO @"Twitter Profile Image"
@@ -24,7 +27,6 @@
 
 #define REUSABLE_IDENTIFIER_SOCIAL @"SocialCell"
 
-#define TABLE_CELL_HEIGHT 45
 
 @interface FTSettingsDetailViewController () {
     CGFloat navigationBarEnd;
@@ -34,6 +36,7 @@
     UIButton *selectPhotoButton;
 }
 @property (nonatomic, strong) UIImageView *userProfileImageView;
+@property (nonatomic, strong) UIImageView *coverPhotoImageView;
 @property (nonatomic, strong) UITextView *userBiography;
 @property (nonatomic, strong) PFUser *user;
 @property (nonatomic, strong) MBProgressHUD *hud;
@@ -51,6 +54,7 @@
 @synthesize userProfileImageView;
 @synthesize doneButtonItem;
 @synthesize backButtonItem;
+@synthesize coverPhotoImageView;
 
 #pragma mark - Managing the detail item
 
@@ -167,6 +171,7 @@
     
     userProfileImageView = [[UIImageView alloc] init];
     [userProfileImageView setFrame:CGRectMake(0, navigationBarEnd, self.view.frame.size.width, self.view.frame.size.width)];
+    [userProfileImageView setClipsToBounds:YES];
     
     PFUser *user = [PFUser currentUser];
     PFFile *file = [user objectForKey:kFTUserProfilePicMediumKey];
@@ -174,6 +179,7 @@
         if (!error) {
             UIImage *profileImage = [UIImage imageWithData:data];
             [userProfileImageView setImage:profileImage];
+            [userProfileImageView setContentMode:UIViewContentModeScaleAspectFit];
             [self.view addSubview:userProfileImageView];
         }
     }];
@@ -192,6 +198,7 @@
     [facebookImageButton addTarget:self action:@selector(didTapFacebookImageButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [facebookImageButton addTarget:self action:@selector(didHighlightButtonAction:) forControlEvents:UIControlEventTouchDown];
     [facebookImageButton addTarget:self action:@selector(clearProfileImageButtons) forControlEvents:UIControlEventTouchDragExit];
+    
     [self.view addSubview:facebookImageButton];
     
     CGFloat twitterButtonPosition = facebookImageButton.frame.size.height + facebookImageButton.frame.origin.y + 1;
@@ -203,6 +210,7 @@
     [twitterImageButton addTarget:self action:@selector(didTapTwitterImageButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [twitterImageButton addTarget:self action:@selector(didHighlightButtonAction:) forControlEvents:UIControlEventTouchDown];
     [twitterImageButton addTarget:self action:@selector(clearProfileImageButtons) forControlEvents:UIControlEventTouchDragExit];
+    
     [self.view addSubview:twitterImageButton];
     
     CGFloat takePhotoPosition = twitterImageButton.frame.size.height + twitterImageButton.frame.origin.y + 1;
@@ -214,24 +222,60 @@
     [takePhotoButton addTarget:self action:@selector(didTapTakePhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [takePhotoButton addTarget:self action:@selector(didHighlightButtonAction:) forControlEvents:UIControlEventTouchDown];
     [takePhotoButton addTarget:self action:@selector(clearProfileImageButtons) forControlEvents:UIControlEventTouchDragExit];
-    [self.view addSubview:takePhotoButton];
     
-    /*
-    CGFloat selectPhotoPosition = takePhotoButton.frame.size.height + takePhotoButton.frame.origin.y + 1;
-    selectPhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [selectPhotoButton setFrame:CGRectMake(0, selectPhotoPosition, frameWidth, PROFILE_BUTTON_HEIGHT)];
-    [selectPhotoButton setBackgroundColor:[UIColor whiteColor]];
-    [selectPhotoButton setTitle:SELECT_PHOTO forState:UIControlStateNormal];
-    [selectPhotoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [selectPhotoButton addTarget:self action:@selector(didTapSelectPhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-    [selectPhotoButton addTarget:self action:@selector(didHighlightButtonAction:) forControlEvents:UIControlEventTouchDown];
-    [selectPhotoButton addTarget:self action:@selector(clearProfileImageButtons) forControlEvents:UIControlEventTouchDragExit];
-    [self.view addSubview:selectPhotoButton];
-    */
+    [self.view addSubview:takePhotoButton];
 }
 
 - (void)configureCoverPhoto {
    // NSLog(@"%@::configureCoverPhoto",VIEWCONTROLLER_SETTINGS_DETAIL);
+    
+    coverPhotoImageView = [[UIImageView alloc] init];
+    [coverPhotoImageView setFrame:CGRectMake(0, navigationBarEnd, self.view.frame.size.width, self.view.frame.size.width / 2)];
+    [coverPhotoImageView setClipsToBounds:YES];
+    
+    PFUser *user = [PFUser currentUser];
+    PFFile *file = [user objectForKey:kFTUserCoverPhotoKey];
+    
+    if (file) {
+        
+        [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+            if (!error) {
+                UIImage *profileImage = [UIImage imageWithData:data];
+                [coverPhotoImageView setImage:profileImage];
+                [coverPhotoImageView setContentMode:UIViewContentModeScaleAspectFill];
+                [self.view addSubview:coverPhotoImageView];
+            }
+        }];
+        
+    } else {
+        
+        UILabel *missingCoverPhotoLabel = [[UILabel alloc] initWithFrame:coverPhotoImageView.frame];
+        [missingCoverPhotoLabel setTextAlignment: NSTextAlignmentCenter];
+        [missingCoverPhotoLabel setUserInteractionEnabled:NO];
+        [missingCoverPhotoLabel setFont:[UIFont fontWithName:FITTAG_FONT size:(24.0)]];
+        [missingCoverPhotoLabel setTextColor: [UIColor blackColor]];
+        [missingCoverPhotoLabel setText:@"No Cover Photo Found"];
+        
+        [coverPhotoImageView addSubview:missingCoverPhotoLabel];
+        [self.view addSubview:coverPhotoImageView];
+    }
+    
+    // Setup and position the take photo button
+    
+    CGFloat frameWidth = self.view.frame.size.width;
+    CGFloat profileImageViewEnd = (frameWidth / 2) + navigationBarEnd;
+    
+    takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [takePhotoButton setFrame:CGRectMake(0, profileImageViewEnd, frameWidth, PROFILE_BUTTON_HEIGHT)];
+    [takePhotoButton setBackgroundColor:[UIColor whiteColor]];
+    [takePhotoButton setTitle:TAKE_PHOTO forState:UIControlStateNormal];
+    [takePhotoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [takePhotoButton addTarget:self action:@selector(didTapTakeCoverPhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [takePhotoButton addTarget:self action:@selector(didHighlightButtonAction:) forControlEvents:UIControlEventTouchDown];
+    [takePhotoButton addTarget:self action:@selector(clearProfileImageButtons) forControlEvents:UIControlEventTouchDragExit];
+    
+    [self.view addSubview:takePhotoButton];
+    [self.view bringSubviewToFront:takePhotoButton];
 }
 
 - (void)configureBiography {
@@ -262,7 +306,7 @@
     
     // Facebook table view cell
     
-    UILabel *facebookLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 120, 40)];
+    UILabel *facebookLabel = [[UILabel alloc] initWithFrame:CGRectMake(LEFT_PADDING, 0, 120, ROW_HEIGHT)];
     [facebookLabel setTextAlignment: NSTextAlignmentLeft];
     [facebookLabel setUserInteractionEnabled: YES];
     [facebookLabel setFont:[UIFont fontWithName:FITTAG_FONT size:(18.0)]];
@@ -271,7 +315,7 @@
     [facebookLabel setTag:0];
     // Twitter table view cell
     
-    UILabel *twitterLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 120, 40)];
+    UILabel *twitterLabel = [[UILabel alloc] initWithFrame:CGRectMake(LEFT_PADDING, 0, 120, ROW_HEIGHT)];
     [twitterLabel setTextAlignment: NSTextAlignmentLeft];
     [twitterLabel setUserInteractionEnabled: YES];
     [twitterLabel setFont:[UIFont fontWithName:FITTAG_FONT size:(18.0)]];
@@ -284,7 +328,7 @@
     [tableView setScrollEnabled:NO];
     [tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLineEtched];
     [tableView setSeparatorInset:UIEdgeInsetsZero];
-    [tableView setRowHeight:40];
+    [tableView setRowHeight:ROW_HEIGHT];
     [tableView setDataSource:self];
     [tableView setDelegate:self];
     
@@ -482,7 +526,30 @@
 
 #pragma mark - FTCamViewControllerDelegate
 
-- (void)camViewController:(FTCamViewController *)camViewController photo:(UIImage *)photo {
+- (void)camViewController:(FTCamViewController *)camViewController coverPhoto:(UIImage *)photo {
+    [coverPhotoImageView setImage:photo];
+    
+    UIImage *resizedImage = [photo resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(320.0f, 160.0f) interpolationQuality:kCGInterpolationHigh];
+    NSData *coverPhotoImageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
+    
+    PFUser *user = [PFUser currentUser];
+    [user setValue:[PFFile fileWithName:COVER_JPEG data:coverPhotoImageData] forKey:kFTUserCoverPhotoKey];
+    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            [self showHudMessage:PROFILE_UPDATED WithDuration:3];
+        }
+        
+        if (error) {
+            [[[UIAlertView alloc] initWithTitle:@"Error"
+                                        message:@"Unable to save your profile picture. Please try again later, if the problem continues contact support."
+                                       delegate:self
+                              cancelButtonTitle:@"ok"
+                              otherButtonTitles:nil] show];
+        }
+    }];
+}
+
+- (void)camViewController:(FTCamViewController *)camViewController profilePicture:(UIImage *)photo {
     [userProfileImageView setImage:photo];
     
     UIImage *resizedImage = [photo resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(560.0f, 560.0f) interpolationQuality:kCGInterpolationHigh];
@@ -649,6 +716,21 @@
                           cancelButtonTitle:@"ok"
                           otherButtonTitles:nil] show];
     }
+}
+
+- (void)didTapTakeCoverPhotoButtonAction:(id)sender {
+    NSLog(@"didTapTakeCoverPhotoButtonAction");
+    [self clearProfileImageButtons];
+    
+    FTCamViewController *camViewController = [[FTCamViewController alloc] init];
+    camViewController.delegate = self;
+    camViewController.isCoverPhoto = YES;
+    
+    UINavigationController *navController = [[UINavigationController alloc] init];
+    [navController setViewControllers:@[ camViewController ] animated:NO];
+    [self presentViewController:navController animated:YES completion:^(){
+        
+    }];
 }
 
 - (void)didTapTakePhotoButtonAction:(id)sender {
