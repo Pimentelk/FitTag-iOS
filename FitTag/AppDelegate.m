@@ -292,7 +292,7 @@
                                                feedNavigationController,
                                                userProfileNavigationController,
                                                rewardsFeedNavigationController ];
-    self.tabBarController.selectedIndex = 1;
+    self.tabBarController.selectedIndex = TAB_FEED;
     
     [self.navController setViewControllers:@[ self.welcomeViewController, self.tabBarController ] animated:NO];
     [self registerForRemoteNotification];
