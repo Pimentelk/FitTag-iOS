@@ -70,6 +70,8 @@ NSString *const kFTActivityTypeReward     = @"reward";
 #pragma mark - User Class
 
 // Field keys
+NSString *const kFTUserObjectIdKey                             = @"objectId";
+NSString *const kFTUserUsernameKey                             = @"username";
 NSString *const kFTUserDisplayNameKey                          = @"displayName";
 NSString *const kFTUserFirstnameKey                            = @"firstname";
 NSString *const kFTUserLastnameKey                             = @"lastname";
@@ -92,11 +94,19 @@ NSString *const kFTUserPostCountKey                            = @"postCount";
 NSString *const kFTUserRewardsEarnedKey                        = @"rewardsEarned";
 NSString *const kFTUserLastLoginKey                            = @"lastLogin";
 NSString *const kFTUserTwitterIdKey                            = @"twitterId";
-
+NSString *const kFTUserCoverPhotoKey                           = @"coverPhoto";
 // Type values
 NSString *const kFTUserTypeUser                                = @"user";
 NSString *const kFTUserTypeAmbassador                          = @"ambassador";
 NSString *const kFTUserTypeBusiness                            = @"business";
+
+#pragma mark - PFObject Interest Class
+
+// Class key
+NSString *const kFTInterestsClassKey                           = @"Interests";
+
+// Field keys
+NSString *const kFTInterestKey                                 = @"interest";
 
 #pragma mark - PFObject Rewards Class
 

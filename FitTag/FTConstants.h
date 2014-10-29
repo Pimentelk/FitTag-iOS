@@ -91,6 +91,13 @@ extern NSString *const kFTPostTypeGalleryVideo;
 extern NSString *const kFTPostTypeImage;
 extern NSString *const kFTPostTypeVideo;
 
+#pragma mark - PFObject Interest Class
+// Class key
+extern NSString *const kFTInterestsClassKey;
+
+// Field keys
+extern NSString *const kFTInterestKey;
+
 #pragma mark - PFObject Rewards Class
 
 // Class key
@@ -117,6 +124,8 @@ extern NSString *const kFTRewardsTypeExpired;
 extern NSString *const kFTUserClassKey;
 
 // Field keys
+extern NSString *const kFTUserObjectIdKey;
+extern NSString *const kFTUserUsernameKey;
 extern NSString *const kFTUserDisplayNameKey;
 extern NSString *const kFTUserFirstnameKey;
 extern NSString *const kFTUserLastnameKey;
@@ -139,6 +148,7 @@ extern NSString *const kFTUserPostCountKey;
 extern NSString *const kFTUserRewardsEarnedKey;
 extern NSString *const kFTUserLastLoginKey;
 extern NSString *const kFTUserTwitterIdKey;
+extern NSString *const kFTUserCoverPhotoKey;
 
 // Type values
 extern NSString *const kFTUserTypeUser;
