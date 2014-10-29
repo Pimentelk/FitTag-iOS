@@ -44,7 +44,7 @@
 		2DABDA03195DA48200379891 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DABDA02195DA48200379891 /* AssetsLibrary.framework */; };
 		2DABDA06195DC0E500379891 /* PhotoCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DABDA05195DC0E500379891 /* PhotoCellCollectionView.m */; };
 		2DABDA0A195DE15900379891 /* ImageCustomNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DABDA09195DE15900379891 /* ImageCustomNavigationBar.m */; };
-		2DACD9751962D62200833C14 /* InterestCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD9741962D62200833C14 /* InterestCellCollectionView.m */; };
+		2DACD9751962D62200833C14 /* FTInterestCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD9741962D62200833C14 /* FTInterestCell.m */; };
 		2DACD97819656F8900833C14 /* FTInterestViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD97719656F8900833C14 /* FTInterestViewFlowLayout.m */; };
 		2DACD97B196578DA00833C14 /* FTInspirationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD97A196578DA00833C14 /* FTInspirationViewController.m */; };
 		2DACE8141966FF7200154504 /* CollectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACE8131966FF7200154504 /* CollectionHeaderView.m */; };
@@ -73,6 +73,9 @@
 		2DBEEE5719AB4F1E00AAD238 /* FTPostDetailsFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBEEE5619AB4F1E00AAD238 /* FTPostDetailsFooterView.m */; };
 		2DC507CC199829940041A03D /* FTCamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC507CB199829940041A03D /* FTCamViewController.m */; };
 		2DC507D5199FBE030041A03D /* FTFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC507D4199FBE030041A03D /* FTFeedViewController.m */; };
+		2DCB7D4819FF1C0D00E349F6 /* FTInviteFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DCB7D4719FF1C0D00E349F6 /* FTInviteFriendsViewController.m */; };
+		2DCB7D631A00647F00E349F6 /* FTFollowCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DCB7D621A00647F00E349F6 /* FTFollowCell.m */; };
+		2DCB7D961A00CC9900E349F6 /* FTInviteTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DCB7D951A00CC9900E349F6 /* FTInviteTableHeaderView.m */; };
 		2DCD9F0419F49C77006DCD8E /* FTSettingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DCD9F0319F49C77006DCD8E /* FTSettingsDetailViewController.m */; };
 		2DCD9F0819F4AB73006DCD8E /* FTSettingsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DCD9F0719F4AB73006DCD8E /* FTSettingsCell.m */; };
 		2DD2B6551983FD0E00600A42 /* FTUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B6541983FD0E00600A42 /* FTUtility.m */; };
@@ -459,8 +462,8 @@
 		2DABDA05195DC0E500379891 /* PhotoCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoCellCollectionView.m; sourceTree = "<group>"; };
 		2DABDA08195DE15900379891 /* ImageCustomNavigationBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageCustomNavigationBar.h; sourceTree = "<group>"; };
 		2DABDA09195DE15900379891 /* ImageCustomNavigationBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCustomNavigationBar.m; sourceTree = "<group>"; };
-		2DACD9731962D62200833C14 /* InterestCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterestCellCollectionView.h; sourceTree = "<group>"; };
-		2DACD9741962D62200833C14 /* InterestCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterestCellCollectionView.m; sourceTree = "<group>"; };
+		2DACD9731962D62200833C14 /* FTInterestCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTInterestCell.h; sourceTree = "<group>"; };
+		2DACD9741962D62200833C14 /* FTInterestCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTInterestCell.m; sourceTree = "<group>"; };
 		2DACD97619656F8900833C14 /* FTInterestViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTInterestViewFlowLayout.h; sourceTree = "<group>"; };
 		2DACD97719656F8900833C14 /* FTInterestViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTInterestViewFlowLayout.m; sourceTree = "<group>"; };
 		2DACD979196578DA00833C14 /* FTInspirationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTInspirationViewController.h; sourceTree = "<group>"; };
@@ -515,6 +518,12 @@
 		2DC507CB199829940041A03D /* FTCamViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCamViewController.m; sourceTree = "<group>"; };
 		2DC507D3199FBE030041A03D /* FTFeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTFeedViewController.h; sourceTree = "<group>"; };
 		2DC507D4199FBE030041A03D /* FTFeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTFeedViewController.m; sourceTree = "<group>"; };
+		2DCB7D4619FF1C0D00E349F6 /* FTInviteFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTInviteFriendsViewController.h; sourceTree = "<group>"; };
+		2DCB7D4719FF1C0D00E349F6 /* FTInviteFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTInviteFriendsViewController.m; sourceTree = "<group>"; };
+		2DCB7D611A00647F00E349F6 /* FTFollowCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTFollowCell.h; sourceTree = "<group>"; };
+		2DCB7D621A00647F00E349F6 /* FTFollowCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTFollowCell.m; sourceTree = "<group>"; };
+		2DCB7D941A00CC9900E349F6 /* FTInviteTableHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTInviteTableHeaderView.h; sourceTree = "<group>"; };
+		2DCB7D951A00CC9900E349F6 /* FTInviteTableHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTInviteTableHeaderView.m; sourceTree = "<group>"; };
 		2DCD9F0219F49C77006DCD8E /* FTSettingsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSettingsDetailViewController.h; sourceTree = "<group>"; };
 		2DCD9F0319F49C77006DCD8E /* FTSettingsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSettingsDetailViewController.m; sourceTree = "<group>"; };
 		2DCD9F0619F4AB73006DCD8E /* FTSettingsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSettingsCell.h; sourceTree = "<group>"; };
@@ -615,7 +624,7 @@
 		2DDBF14D19F14CE6009037E2 /* GAIEcommerceProductAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAIEcommerceProductAction.h; sourceTree = "<group>"; };
 		2DDBF14E19F14CE6009037E2 /* GAIEcommercePromotion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAIEcommercePromotion.h; sourceTree = "<group>"; };
 		2DDBF14F19F23E75009037E2 /* FTNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTNavigationController.h; sourceTree = "<group>"; };
-		2DDBF15019F23E75009037E2 /* FTNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTNavigationController.m; sourceTree = "<group>"; };
+		2DDBF15019F23E75009037E2 /* FTNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTNavigationController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		2DE7C77D19ECD07100F72188 /* FTGallerySwiperView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGallerySwiperView.h; sourceTree = "<group>"; };
 		2DE7C77E19ECD07100F72188 /* FTGallerySwiperView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGallerySwiperView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1234,6 +1243,8 @@
 				2D4DF06219E0F2F500E2E71E /* FTUserProfileHeaderView.m */,
 				2D53D21819E6396F00273D7E /* FTBusinessProfileHeaderView.h */,
 				2D53D21919E6396F00273D7E /* FTBusinessProfileHeaderView.m */,
+				2DCB7D941A00CC9900E349F6 /* FTInviteTableHeaderView.h */,
+				2DCB7D951A00CC9900E349F6 /* FTInviteTableHeaderView.m */,
 			);
 			name = CollectionViews;
 			sourceTree = "<group>";
@@ -1344,8 +1355,8 @@
 				2DACE8131966FF7200154504 /* CollectionHeaderView.m */,
 				2DABDA04195DC0E500379891 /* PhotoCellCollectionView.h */,
 				2DABDA05195DC0E500379891 /* PhotoCellCollectionView.m */,
-				2DACD9731962D62200833C14 /* InterestCellCollectionView.h */,
-				2DACD9741962D62200833C14 /* InterestCellCollectionView.m */,
+				2DACD9731962D62200833C14 /* FTInterestCell.h */,
+				2DACD9741962D62200833C14 /* FTInterestCell.m */,
 				2D0A53A61971997F0091FFCA /* InspirationCellCollectionView.h */,
 				2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */,
 				2DBE020E19D1A1F100CD278C /* FTRewardsCollectionViewCell.h */,
@@ -1437,6 +1448,8 @@
 				2DCD9F0719F4AB73006DCD8E /* FTSettingsCell.m */,
 				2D7968BA19FC0A7C00DA2DD0 /* FTSocialCell.h */,
 				2D7968BB19FC0A7C00DA2DD0 /* FTSocialCell.m */,
+				2DCB7D611A00647F00E349F6 /* FTFollowCell.h */,
+				2DCB7D621A00647F00E349F6 /* FTFollowCell.m */,
 			);
 			name = UITableViewCells;
 			sourceTree = "<group>";
@@ -1457,6 +1470,8 @@
 			children = (
 				2DD2B69619841B0600600A42 /* FTFindFriendsViewController.h */,
 				2DD2B69719841B0600600A42 /* FTFindFriendsViewController.m */,
+				2DCB7D4619FF1C0D00E349F6 /* FTInviteFriendsViewController.h */,
+				2DCB7D4719FF1C0D00E349F6 /* FTInviteFriendsViewController.m */,
 			);
 			name = Friends;
 			sourceTree = "<group>";
@@ -1843,6 +1858,7 @@
 				2DC507D5199FBE030041A03D /* FTFeedViewController.m in Sources */,
 				2DBE023619D6FB7F00CD278C /* ELCAlbumPickerController.m in Sources */,
 				2DD2B69819841B0600600A42 /* FTFindFriendsViewController.m in Sources */,
+				2DCB7D961A00CC9900E349F6 /* FTInviteTableHeaderView.m in Sources */,
 				2DC507CC199829940041A03D /* FTCamViewController.m in Sources */,
 				2DD2B6631984005300600A42 /* UIImage+AlphaAdditions.m in Sources */,
 				2DD2B676198403FC00600A42 /* FTPhotoDetailsFooterView.m in Sources */,
@@ -1852,8 +1868,9 @@
 				2D4DF05419E0443400E2E71E /* FTPostDetailsViewController.m in Sources */,
 				2DD2B6731984039500600A42 /* FTPhotoDetailsHeaderView.m in Sources */,
 				2DD491E419EF769500A50F5B /* FTAmbassadorAnnotationView.m in Sources */,
+				2DCB7D631A00647F00E349F6 /* FTFollowCell.m in Sources */,
 				2DDBF13F19F0D51A009037E2 /* FTMapScrollViewItem.m in Sources */,
-				2DACD9751962D62200833C14 /* InterestCellCollectionView.m in Sources */,
+				2DACD9751962D62200833C14 /* FTInterestCell.m in Sources */,
 				2D429A20197B2F4C00F8A9A0 /* FTTabBarController.m in Sources */,
 				2DD2B666198400C000600A42 /* UIImage+ResizeAdditions.m in Sources */,
 				2D429A30197B34DC00F8A9A0 /* TTTTimeIntervalFormatter.m in Sources */,
@@ -1862,6 +1879,7 @@
 				2DBE023C19D6FB7F00CD278C /* ELCOverlayImageView.m in Sources */,
 				2DD2B6891984167200600A42 /* FTTimelineViewController.m in Sources */,
 				2DD2B66D198402BB00600A42 /* FTEditPhotoViewController.m in Sources */,
+				2DCB7D4819FF1C0D00E349F6 /* FTInviteFriendsViewController.m in Sources */,
 				2DD6919E1949B74400B59E75 /* FTSignupViewController.m in Sources */,
 				2DBE021A19D44F9F00CD278C /* TTTAttributedLabel.m in Sources */,
 				2DABDA06195DC0E500379891 /* PhotoCellCollectionView.m in Sources */,
