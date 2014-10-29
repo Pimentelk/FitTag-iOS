@@ -80,44 +80,12 @@
     }
 }
 
-#pragma mark - DidLoginWithSocialMedia
-
-/*
-- (BOOL)isLoggedInWithTwitter {
-    //NSLog(@"%@::isLoggedInWithTwitter:",VIEWCONTROLLER_CONFIG);
-    return [PFTwitterUtils isLinkedWithUser:[PFUser currentUser]];
-}
-
-- (BOOL)isLoggedInWithFacebook {
-    //NSLog(@"%@::isLoggedInWithFacebook:",VIEWCONTROLLER_CONFIG);
-    return [PFFacebookUtils isLinkedWithUser:[PFUser currentUser]];
-}
-*/
-
 - (void)presentTabBarController:(PFUser *)user {
     
     if (!user) {
         [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
         return;
     }
-    
-    // save the total number of rewards the user has earned
-    PFQuery *queryPosts = [PFQuery queryWithClassName:kFTPostClassKey];
-    [queryPosts whereKey:kFTPostUserKey equalTo:user];
-    [queryPosts findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if (!error) {
-            NSNumber *count = [NSNumber numberWithUnsignedInteger:objects.count];
-            NSNumber *rewardCount = [NSNumber numberWithUnsignedInteger:(objects.count / 10)];
-            [user setObject:count forKey:kFTUserPostCountKey];
-            [user setObject:rewardCount forKey:kFTUserRewardsEarnedKey];
-            [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                if (error) {
-                    NSLog(@"%@ %@",ERROR_MESSAGE,error);
-                    [user saveEventually];
-                }
-            }];
-        }
-    }];
     
     [[UIApplication sharedApplication].delegate performSelector:@selector(presentTabBarController)];
     [self dismissViewControllerAnimated:NO completion:nil];
