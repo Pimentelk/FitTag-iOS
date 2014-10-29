@@ -14,15 +14,28 @@
 
 @interface FTInviteFriendsViewController()
 @property (nonatomic, strong) NSArray *objects;
+@property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
+@property (nonatomic, strong) FTUserProfileViewController *profileViewController;
 @end
 
 @implementation FTInviteFriendsViewController
+@synthesize flowLayout;
+@synthesize profileViewController;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+    UIColor *grayColor = [UIColor colorWithRed:FT_GRAY_COLOR_RED
+                                         green:FT_GRAY_COLOR_GREEN
+                                          blue:FT_GRAY_COLOR_BLUE
+                                         alpha:1.0f];
+    
+    
+    //[self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     [self.tableView setSeparatorColor:[UIColor clearColor]];
+    
+    // Set background image
+    [self.tableView setBackgroundColor:grayColor];
     
     // Fittag navigationbar color
     self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:FT_RED_COLOR_RED
@@ -34,8 +47,19 @@
     headerView.delegate = self;
     
     self.tableView.tableHeaderView = headerView;
+    self.tableView.delegate = self;
     
     [self queryForUserType:FTFollowUserQueryTypeNear];
+    
+    flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [flowLayout setItemSize:CGSizeMake(105.5,105)];
+    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [flowLayout setMinimumInteritemSpacing:0];
+    [flowLayout setMinimumLineSpacing:0];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+    
+    profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
 }
 
 #pragma mark - PFQueryTableViewController
@@ -123,17 +147,16 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    /*
-    if (indexPath.section == self.objects.count && self.paginationEnabled) {
-        [self loadNextPage];
-        return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
-    }
-    */
-    
     FTFollowCell *cell = (FTFollowCell *)[tableView dequeueReusableCellWithIdentifier:DATACELL_IDENTIFIER];
     if (cell == nil) {
         cell = [[FTFollowCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:DATACELL_IDENTIFIER];
         cell.delegate = self;
+    }
+    
+    if(indexPath.row != self.objects.count-1){
+        UIImageView *line = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 1)];
+        line.backgroundColor = [UIColor whiteColor];
+        [cell addSubview:line];
     }
     
     [cell setUser:self.objects[indexPath.row]];
@@ -144,16 +167,7 @@
 #pragma mark - FTFollowCellDelegate
 
 - (void)followCell:(FTFollowCell *)inviteCell didTapProfileImage:(UIButton *)button user:(PFUser *)aUser {
-    NSLog(@"%@::followCell:didTapProfileImage:user",VIEWCONTROLLER_INVITE);
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(105.5,105)];
-    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [flowLayout setMinimumInteritemSpacing:0];
-    [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
-    
-    FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    //NSLog(@"%@::followCell:didTapProfileImage:user",VIEWCONTROLLER_INVITE);
     [profileViewController setUser:aUser];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
