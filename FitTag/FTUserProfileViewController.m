@@ -33,6 +33,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    NSLog(@"self.user :%@",self.user);
+    
     if (!self.user) {
         [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
     }
@@ -66,11 +68,21 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
+    NSLog(@"%@::viewWillAppear:",VIEWCONTROLLER_USER);
     [super viewWillDisappear:animated];
     [self.navigationController setToolbarHidden:YES];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    NSLog(@"%@::viewDidAppear:",VIEWCONTROLLER_USER);
+    [super viewDidAppear:animated];
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_USER];
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
+}
+
 - (void)viewWillDisappear:(BOOL)animated{
+    NSLog(@"%@::viewWillDisappear:",VIEWCONTROLLER_USER);
     [super viewWillDisappear:animated];
     
     // Get the classname of the next view controller
@@ -84,14 +96,9 @@
     }
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    id tracker = [[GAI sharedInstance] defaultTracker];
-    [tracker set:kGAIScreenName value:VIEWCONTROLLER_USER];
-    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
-}
-
 - (void)queryForTable:(PFUser *)aUser {
+    NSLog(@"%@::queryForTable:",VIEWCONTROLLER_USER);
+
     // Show HUD view
     //[MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
     PFQuery *postsFromUserQuery = [PFQuery queryWithClassName:kFTPostClassKey];
@@ -115,6 +122,7 @@
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView
            viewForSupplementaryElementOfKind:(NSString *)kind
                                  atIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"%@::collectionView:viewForSupplementaryElementOfKind:atIndexPath:",VIEWCONTROLLER_USER);
     
     UICollectionReusableView *reusableview = nil;
     if (kind == UICollectionElementKindSectionHeader) {
@@ -161,8 +169,9 @@
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"%@::collectionView:cellForItemAtIndexPath:",VIEWCONTROLLER_USER);
     // Set up cell identifier that matches the Storyboard cell name
-    static NSString *identifier = @"DataCell";
+    static NSString *identifier = DATACELL;
     FTUserProfileCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
     
     if ([cell isKindOfClass:[FTUserProfileCollectionViewCell class]]) {
@@ -190,6 +199,7 @@
 #pragma mark - Navigation Bar
 
 - (void)didTapLoadCameraButtonAction:(id)sender {
+    NSLog(@"%@::didTapLoadCameraButtonAction:",VIEWCONTROLLER_USER);
     FTCamViewController *camViewController = [[FTCamViewController alloc] init];
     [self.navigationController pushViewController:camViewController animated:YES];
 }
@@ -205,12 +215,14 @@
 
 - (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileCollectionHeaderView
                        didTapGridButton:(UIButton *)button {
+    NSLog(@"%@::userProfileCollectionHeaderView:didTapGridButton:",VIEWCONTROLLER_USER);
     cellTab = GRID_SMALL;
     [self queryForTable:self.user];
 }
 
 - (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileCollectionHeaderView
                    didTapBusinessButton:(UIButton *)button {
+    NSLog(@"%@::userProfileCollectionHeaderView:didTapBusinessButton:",VIEWCONTROLLER_USER);
     
     cellTab = kFTUserTypeBusiness; // kFTUserTypeBusiness | SMALLGRID | FULLGRID | TAGGED
     //[MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
@@ -239,6 +251,7 @@
 
 - (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileCollectionHeaderView
                      didTapTaggedButton:(UIButton *)button {
+    NSLog(@"%@::userProfileCollectionHeaderView:didTapTaggedButton:",VIEWCONTROLLER_USER);
     
     cellTab = GRID_TAGGED;
     NSMutableString *displayName = [[self.user objectForKey:kFTUserDisplayNameKey] mutableCopy];
@@ -272,6 +285,7 @@
 
 - (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileCollectionHeaderView
                    didTapSettingsButton:(id)sender {
+    NSLog(@"%@::userProfileCollectionHeaderView:didTapSettingsButton:",VIEWCONTROLLER_USER);
     FTSettingsViewController *settingsViewController = [[FTSettingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
     UINavigationController *navController = [[UINavigationController alloc] init];
     [navController setViewControllers:@[settingsViewController] animated:NO];
