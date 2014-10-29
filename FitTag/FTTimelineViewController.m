@@ -18,7 +18,6 @@
 @property (nonatomic, strong) NSMutableSet *reusableSectionHeaderViews;
 @property (nonatomic, strong) NSMutableDictionary *outstandingSectionHeaderQueries;
 @property (nonatomic, strong) UIBarButtonItem *dismissProfileButton;
-//@property (nonatomic, retain) MPMoviePlayerController *moviePlayer;
 @end
 
 @implementation FTTimelineViewController
@@ -47,7 +46,7 @@
         self.parseClassName = kFTPostClassKey;
         
         // Whether the built-in pagination is enabled
-        self.paginationEnabled = NO;
+        self.paginationEnabled = YES;
         
         // Whether the built-in pull-to-refresh is enabled
         self.pullToRefreshEnabled = YES;
@@ -114,34 +113,17 @@
 
 #pragma mark - UITableViewDelegate
 
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake( 0.0f, 0.0f, 0.0f, 0.0f)];
-    return footerView;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return 0.0f;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    return 0.0f;
-}
-
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section >= self.objects.count) {
         // Load More Section
-        return 44.0f;
+        return 0;
     }
     return 320.0f;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [super tableView:tableView didSelectRowAtIndexPath:indexPath];
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == self.objects.count && self.paginationEnabled) {
-        // Load More Cell
-        [self loadNextPage];
-    }
+    //[tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - PFQueryTableViewController
@@ -206,7 +188,12 @@
     static NSString *galleryCellIdentifier = @"GalleryCell";
     
     //NSLog(@"FTPhotoTimelineViewController::Updating tableView:(UITableView *) %@ cellForRowAtIndexPath:(NSIndexPath *) %@ object:(PFObject *) %@",tableView,indexPath,object);
-    if (indexPath.section == self.objects.count) {
+    //if (indexPath.section == self.objects.count) {
+    //    return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
+    //}
+    
+    if (indexPath.section == self.objects.count && self.paginationEnabled) {
+        [self loadNextPage];
         return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
     }
     
