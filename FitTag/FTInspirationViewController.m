@@ -81,7 +81,7 @@
         CollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView" forIndexPath:indexPath];
         [headerView setFrame:CGRectMake(0.0f, 0.0f, 320.0f, 32.0f)];
         [headerView.messageHeader setText:@"FIND THE PEOPLE THAT INSPIRE YOU"];
-        [headerView.messageText setText:@""];        
+        [headerView.messageText setText:EMPTY_STRING];
         reusableview = headerView;
     }
     

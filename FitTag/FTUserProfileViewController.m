@@ -63,7 +63,10 @@
     
     [self.collectionView setDelegate: self];
     [self.collectionView setDataSource: self];
-    
+}
+
+- (void)setUser:(PFUser *)aUser {
+    user = aUser;
     [self queryForTable:self.user];
 }
 

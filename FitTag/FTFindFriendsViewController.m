@@ -12,8 +12,6 @@
 #import "FTLoadMoreCell.h"
 #import "MBProgressHUD.h"
 
-#define FIEND_FRIENDS_BACKGROUND @"login_background_image_05"
-
 typedef enum {
     FTFindFriendsFollowingNone = 0,    // User isn't following anybody in Friends list
     FTFindFriendsFollowingAll,         // User is following all Friends
@@ -73,7 +71,7 @@ typedef enum {
     [self.tableView setBackgroundColor:[UIColor clearColor]];
     [self.tableView setOpaque: NO];
     [self.view setBackgroundColor:[UIColor lightGrayColor]];
-    [self.tableView setBackgroundView:[[UIImageView alloc] initWithImage:[UIImage imageNamed:FIEND_FRIENDS_BACKGROUND]]];
+    [self.tableView setBackgroundView:[[UIImageView alloc] initWithImage:[UIImage imageNamed:BACKGROUND_FIEND_FRIENDS]]];
     
     self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:FT_RED_COLOR_RED
                                                                            green:FT_RED_COLOR_GREEN
