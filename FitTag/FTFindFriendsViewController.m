@@ -12,6 +12,8 @@
 #import "FTLoadMoreCell.h"
 #import "MBProgressHUD.h"
 
+#define FIEND_FRIENDS_BACKGROUND @"login_background_image_05"
+
 typedef enum {
     FTFindFriendsFollowingNone = 0,    // User isn't following anybody in Friends list
     FTFindFriendsFollowingAll,         // User is following all Friends
@@ -32,6 +34,7 @@ typedef enum {
 @synthesize selectedEmailAddress;
 @synthesize outstandingFollowQueries;
 @synthesize outstandingCountQueries;
+
 #pragma mark - Initialization
 
 - (id)initWithStyle:(UITableViewStyle)style {
@@ -65,28 +68,28 @@ typedef enum {
     [super viewDidLoad];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fittag_logo"]];
+    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:FITTAG_LOGO]];
     
     [self.tableView setBackgroundColor:[UIColor clearColor]];
     [self.tableView setOpaque: NO];
     [self.view setBackgroundColor:[UIColor lightGrayColor]];
-    [self.tableView setBackgroundView:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"login_background_image_05"]]];
+    [self.tableView setBackgroundView:[[UIImageView alloc] initWithImage:[UIImage imageNamed:FIEND_FRIENDS_BACKGROUND]]];
     
-    // Override the back idnicator
-    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"] style:UIBarButtonItemStylePlain target:self action:@selector(returnHome:)];
-    [backIndicator setTintColor:[UIColor whiteColor]];
-    [self.navigationItem setLeftBarButtonItem:backIndicator];
+    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:FT_RED_COLOR_RED
+                                                                           green:FT_RED_COLOR_GREEN
+                                                                            blue:FT_RED_COLOR_BLUE
+                                                                           alpha:1.0f];
     
     if ([MFMailComposeViewController canSendMail] || [MFMessageComposeViewController canSendText]) {
         
         self.headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 40)];
         
-        /*
         UIButton *clearButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [clearButton setBackgroundColor:[UIColor clearColor]];
         [clearButton addTarget:self action:@selector(inviteFriendsButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [clearButton setFrame:self.headerView.frame];
         [self.headerView addSubview:clearButton];
+        
         NSString *inviteString = NSLocalizedString(@"Invite friends", @"Invite friends");
         CGRect boundingRect = [inviteString boundingRectWithSize:CGSizeMake(310.0f, CGFLOAT_MAX)
                                                          options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
@@ -100,7 +103,6 @@ typedef enum {
         [inviteLabel setTextColor:[UIColor colorWithRed:87.0f/255.0f green:72.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
         [inviteLabel setBackgroundColor:[UIColor clearColor]];
         [self.headerView addSubview:inviteLabel];
-        */
         
         [self.tableView setTableHeaderView:self.headerView];
     }
@@ -117,10 +119,11 @@ typedef enum {
     }
 }
 
-- (void)returnHome:(id)sender
-{
+/*
+- (void)didTapBackButtonAction:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
 }
+*/
 
 #pragma mark - PFQueryTableViewController
 
