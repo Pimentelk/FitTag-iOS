@@ -146,7 +146,7 @@
                                             blue:FT_RED_COLOR_BLUE alpha:1.0f];
     
     sectionName.backgroundColor = [UIColor clearColor];
-    sectionName.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(16.0)];
+    sectionName.font = BENDERSOLID(22);
     NSString *sectionNameText = [settingsSectionTitles objectAtIndex:section];
     sectionName.text = NSLocalizedString(sectionNameText,sectionNameText);
     [headerView addSubview:sectionName];
@@ -161,7 +161,7 @@
     NSArray *sectionSettings = [settingsDictionary objectForKey:sectionTitle];
     NSString *setting = [sectionSettings objectAtIndex:indexPath.row];
     cell.textLabel.text = setting;
-
+    cell.textLabel.font = BENDERSOLID(18);
     return cell;
 }
 
