@@ -19,8 +19,12 @@ NSString *const iOS7AppStoreURLFormat;
 NSString *const iOSAppStoreURLFormat;
 
 #pragma mark - NSUserDefaults
+extern NSString *const kFTUserDefaultsSettingsViewControllerPushLikesKey;
+extern NSString *const kFTUserDefaultsSettingsViewControllerPushCommentsKey;
+extern NSString *const kFTUserDefaultsSettingsViewControllerPushMentionsKey;
+extern NSString *const kFTUserDefaultsSettingsViewControllerPushFollowsKey;
 extern NSString *const kFTUserDefaultsActivityFeedViewControllerLastRefreshKey;
-extern NSString *const kFTUserDefaultsCacheFacebookFriendsKey;
+//extern NSString *const kFTUserDefaultsCacheFacebookFriendsKey;
 
 #pragma mark - Launch URLs
 extern NSString *const kFTLaunchURLHostTakePicture;
@@ -184,6 +188,7 @@ extern NSString *const kFTPushPayloadActivityTypeKey;
 extern NSString *const kFTPushPayloadActivityLikeKey;
 extern NSString *const kFTPushPayloadActivityCommentKey;
 extern NSString *const kFTPushPayloadActivityFollowKey;
+extern NSString *const kFTPushPayloadActivityMentionKey;
 
 extern NSString *const kFTPushPayloadFromUserObjectIdKey;
 extern NSString *const kFTPushPayloadToUserObjectIdKey;

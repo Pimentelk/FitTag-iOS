@@ -12,8 +12,13 @@
 NSString *const iOS7AppStoreURLFormat = @"itms-apps://itunes.apple.com/app/id%d";
 NSString *const iOSAppStoreURLFormat = @"itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=%d";
 
+#pragma mark - NSUserDefaults
+NSString *const kFTUserDefaultsSettingsViewControllerPushLikesKey          = @"com.fittag.userDefaults.settingsDetailViewController.pushLikes";
+NSString *const kFTUserDefaultsSettingsViewControllerPushCommentsKey       = @"com.fittag.userDefaults.settingsDetailViewController.pushComments";
+NSString *const kFTUserDefaultsSettingsViewControllerPushMentionsKey       = @"com.fittag.userDefaults.settingsDetailViewController.pushMentions";
+NSString *const kFTUserDefaultsSettingsViewControllerPushFollowsKey        = @"com.fittag.userDefaults.settingsDetailViewController.pushFollows";
 NSString *const kFTUserDefaultsActivityFeedViewControllerLastRefreshKey    = @"com.fittag.userDefaults.activityFeedViewController.lastRefresh";
-NSString *const kFTUserDefaultsCacheFacebookFriendsKey                     = @"com.fittag.userDefaults.cache.facebookFriends";
+//NSString *const kFTUserDefaultsCacheFacebookFriendsKey                     = @"com.fittag.userDefaults.cache.facebookFriends";
 
 #pragma mark - Launch URLs
 
@@ -41,8 +46,7 @@ NSString *const kFTEditVideoViewControllerUserInfoCommentKey = @"comment";
 #pragma mark - Installation Class
 
 // Field keys
-NSString *const kFTUserClassKey         = @"_User";
-NSString *const kPFTInstallationUserKey = @"user";
+NSString *const kFTInstallationUserKey  = @"user";
 
 #pragma mark - Activity Class
 
@@ -68,6 +72,9 @@ NSString *const kFTActivityTypeJoined     = @"joined";
 NSString *const kFTActivityTypeReward     = @"reward";
 
 #pragma mark - User Class
+
+// Class key
+NSString *const kFTUserClassKey = @"_User";
 
 // Field keys
 NSString *const kFTUserObjectIdKey                             = @"objectId";
@@ -177,6 +184,7 @@ NSString *const kFTPushPayloadActivityTypeKey     = @"t";
 NSString *const kFTPushPayloadActivityLikeKey     = @"l";
 NSString *const kFTPushPayloadActivityCommentKey  = @"c";
 NSString *const kFTPushPayloadActivityFollowKey   = @"f";
+NSString *const kFTPushPayloadActivityMentionKey  = @"m";
 
 NSString *const kFTPushPayloadFromUserObjectIdKey = @"fu";
 NSString *const kFTPushPayloadToUserObjectIdKey   = @"tu";
