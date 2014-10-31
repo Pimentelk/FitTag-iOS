@@ -46,6 +46,8 @@
     [button setBackgroundImage:[UIImage imageNamed:IMAGE_TIMELINE_BLANK] forState:UIControlStateNormal];
     [button addTarget:self action:@selector(inviteFriendsButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.blankTimelineView addSubview:button];
+    
+    [self shouldRunTestCode:NO];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -82,6 +84,21 @@
 }
 
 #pragma mark - ()
+
+- (void)shouldRunTestCode:(BOOL)run {
+    if (run) {
+        NSLog(@"***");
+        for (NSString* family in [UIFont familyNames])
+        {
+            NSLog(@"%@", family);
+            
+            for (NSString* name in [UIFont fontNamesForFamilyName: family])
+            {
+                NSLog(@"  %@", name);
+            }
+        }
+    }
+}
 
 - (void)inviteFriendsButtonAction:(id)sender {
     FTFindFriendsViewController *detailViewController = [[FTFindFriendsViewController alloc] init];
@@ -158,10 +175,10 @@
             
             //[user setValue:DEFAULT_BIO_TEXT_B forKey:kFTUserBioKey];
             
-            [user setValue:[PFFile fileWithName:MEDIUM_JPEG data:profileImageData]
+            [user setValue:[PFFile fileWithName:FILE_MEDIUM_JPEG data:profileImageData]
                     forKey:kFTUserProfilePicMediumKey];
             
-            [user setValue:[PFFile fileWithName:SMALL_JPEG data:profileImageData]
+            [user setValue:[PFFile fileWithName:FILE_SMALL_JPEG data:profileImageData]
                     forKey:kFTUserProfilePicSmallKey];
             
             [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -195,8 +212,8 @@
                 [user setValue:[FBuser objectForKey:FBUserEmailKey] forKey:kFTUserEmailKey];
                 [user setValue:[FBuser objectForKey:FBUserIDKey] forKey:kFTUserFacebookIDKey];
                 //[user setValue:DEFAULT_BIO_TEXT_B forKey:kFTUserBioKey];
-                [user setValue:[PFFile fileWithName:MEDIUM_JPEG data:profileImageData] forKey:kFTUserProfilePicMediumKey];
-                [user setValue:[PFFile fileWithName:SMALL_JPEG data:profileImageData] forKey:kFTUserProfilePicSmallKey];
+                [user setValue:[PFFile fileWithName:FILE_MEDIUM_JPEG data:profileImageData] forKey:kFTUserProfilePicMediumKey];
+                [user setValue:[PFFile fileWithName:FILE_SMALL_JPEG data:profileImageData] forKey:kFTUserProfilePicSmallKey];
                 [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (error) {
                         [user saveEventually];
