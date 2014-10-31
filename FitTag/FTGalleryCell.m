@@ -204,6 +204,9 @@
     gallery = aGallery;
     NSLog(@"setGallery: %@",aGallery.objectId);
 
+    
+    [self.swiperView setAlpha:0];
+    
     // Clear the carousel
     for (UIView *carouseSubView in carousel.subviews) {
         [carouseSubView removeFromSuperview];
@@ -212,7 +215,6 @@
     /* Fetch all images and add them to the scrollview */
     [PFObject fetchAllIfNeededInBackground:[gallery objectForKey:kFTPostPostsKey] block:^(NSArray *objects, NSError *error) {
         if (!error) {
-            
             int i = 0;
             for (PFObject *post in objects) {
                 PFFile *file = [post objectForKey:kFTPostImageKey];
@@ -245,8 +247,11 @@
                 i++;
             }
             
-            [self.swiperView setNumberOfDashes:i];
-            [self.contentView addSubview:self.swiperView];
+            if (objects.count > 1) {
+                [self.swiperView setNumberOfDashes:i];
+                [self.contentView addSubview:self.swiperView];
+                [self.swiperView setAlpha:1];
+            }
             
             [carousel setContentSize: CGSizeMake(320.0f * objects.count, 320.0f)];
        } 
