@@ -202,6 +202,7 @@
     [self setAttributes:attributes forUser:user];
 }
 
+/*
 - (void)setFacebookFriends:(NSArray *)friends {
     NSString *key = kFTUserDefaultsCacheFacebookFriendsKey;
     [self.cache setObject:friends forKey:key];
@@ -223,7 +224,7 @@
     
     return friends;
 }
-
+*/
 
 #pragma mark - ()
 
