@@ -72,7 +72,7 @@
         rewardsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0f,50.0f, frame.size.width, 40.0)];
         rewardsLabel.textAlignment =  NSTextAlignmentCenter;
         rewardsLabel.textColor = [UIColor colorWithRed:154/255.0f green:154/255.0f blue:154/255.0f alpha:1];
-        rewardsLabel.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(18.0)];
+        rewardsLabel.font = BENDERSOLID(18.0);
         rewardsLabel.text = [NSString stringWithFormat: @"%ld POSTS TO MORE REWARDS",(long)rewardCap];
         
         [containerView addSubview:rewardsLabel];
@@ -90,7 +90,7 @@
         UILabel *menuLabel = [[UILabel alloc] initWithFrame:CGRectMake(7.0f,8.0f, self.frame.size.width, 22.0)];
         menuLabel.textAlignment =  NSTextAlignmentLeft;
         menuLabel.textColor = [UIColor redColor];
-        menuLabel.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(18.0)];
+        menuLabel.font = BENDERSOLID(18.0);
         menuLabel.text = @"My Rewards";
         [menuContainer addSubview:menuLabel];
         
