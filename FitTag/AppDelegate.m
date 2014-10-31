@@ -114,9 +114,24 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    NSLog(@"%@::application:didReceiveRemoteNotification:",APPDELEGATE_RESPONDER);
-    NSLog(@"userInfo:%@",userInfo);
-    [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
+    //NSLog(@"%@::application:didReceiveRemoteNotification:",APPDELEGATE_RESPONDER);
+    //NSLog(@"userInfo:%@",userInfo);
+    
+    if ([userInfo objectForKey:kFTPushPayloadActivityLikeKey] && [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushLikesKey]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
+    }
+    
+    if ([userInfo objectForKey:kFTPushPayloadActivityCommentKey] && [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushFollowsKey]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
+    }
+    
+    if ([userInfo objectForKey:kFTPushPayloadActivityFollowKey] && [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushFollowsKey]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
+    }
+    
+    if ([userInfo objectForKey:kFTPushPayloadActivityMentionKey] && [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushMentionsKey]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
+    }
     
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
         // Track app opens due to a push notification being acknowledged while the app wasn't active.
@@ -307,12 +322,12 @@
     [[FTCache sharedCache] clear];
     
     // clear NSUserDefaults
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kFTUserDefaultsCacheFacebookFriendsKey];
+    //[[NSUserDefaults standardUserDefaults] removeObjectForKey:kFTUserDefaultsCacheFacebookFriendsKey];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kFTUserDefaultsActivityFeedViewControllerLastRefreshKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     // Unsubscribe from push notifications by removing the user association from the current installation.
-    //[[PFInstallation currentInstallation] removeObjectForKey:kFTInstallationUserKey];
+    [[PFInstallation currentInstallation] removeObjectForKey:kFTInstallationUserKey];
     [[PFInstallation currentInstallation] saveInBackground];
     
     // Clear all caches
@@ -438,6 +453,7 @@
     return NO;
 }
 
+/*
 - (void)facebookRequestDidLoad:(id)result {
     NSLog(@"%@::facebookRequestDidLoad:",APPDELEGATE_RESPONDER);
     // This method is called twice - once for the user's /me profile, and a second time when obtaining their friends. We will try and handle both scenarios in a single method.
@@ -565,5 +581,6 @@
         }
     }
 }
+*/
 
 @end

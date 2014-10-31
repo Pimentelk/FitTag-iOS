@@ -125,6 +125,7 @@ typedef enum {
 
 #pragma mark - PFQueryTableViewController
 
+/*
 - (PFQuery *)queryForTable {
     // Use cached facebook friend ids
     NSArray *facebookFriends = [[FTCache sharedCache] facebookFriends];
@@ -132,15 +133,13 @@ typedef enum {
     // Query for all friends you have on facebook and who are using the app
     PFQuery *friendsQuery = [PFUser query];
     [friendsQuery whereKey:kFTUserFacebookIDKey containedIn:facebookFriends];
-    
-    /*
+ 
     // Query for all Parse employees
     NSMutableArray *parseEmployees = [[NSMutableArray alloc] initWithArray:kFTParseEmployeeAccounts];
     [parseEmployees removeObject:[[PFUser currentUser] objectForKey:kFTUserFacebookIDKey]];
     PFQuery *parseEmployeeQuery = [PFUser query];
     [parseEmployeeQuery whereKey:kFTUserFacebookIDKey containedIn:parseEmployees];
-    */
-    
+
     // Combine the two queries with an OR
     PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects:friendsQuery, nil]];
     query.cachePolicy = kPFCachePolicyNetworkOnly;
@@ -153,6 +152,7 @@ typedef enum {
     
     return friendsQuery;
 }
+*/
 
 - (void)objectsDidLoad:(NSError *)error {
     [super objectsDidLoad:error];
