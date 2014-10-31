@@ -50,21 +50,21 @@
         businessName = [[UILabel alloc] initWithFrame:CGRectMake(63.0f,13.0f,150.0f,18.0)];
         businessName.textAlignment =  NSTextAlignmentLeft;
         businessName.textColor = [UIColor colorWithRed:149/255.0f green:149/255.0f blue:149/255.0f alpha:1];
-        businessName.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(15.0)];
+        businessName.font = BENDERSOLID(15);
         [self.containerView addSubview:businessName];
         
         // Business address
         businessAddress = [[UILabel alloc] initWithFrame:CGRectMake(63.0f,30.0f,150.0f,18.0)];
         businessAddress.textAlignment =  NSTextAlignmentLeft;
         businessAddress.textColor = [UIColor colorWithRed:149/255.0f green:149/255.0f blue:149/255.0f alpha:1];
-        businessAddress.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(15.0)];
+        businessAddress.font = BENDERSOLID(15);
         [self.containerView addSubview:businessAddress];
         
         // Business website
         businessWebsite = [[TTTAttributedLabel alloc] initWithFrame:CGRectMake(63.0f,47.0f,200.0f,18.0)];
         businessWebsite.textAlignment =  NSTextAlignmentLeft;
         businessWebsite.textColor = [UIColor colorWithRed:149/255.0f green:149/255.0f blue:149/255.0f alpha:1];
-        businessWebsite.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(15.0)];
+        businessWebsite.font = BENDERSOLID(15);
         businessWebsite.text = @"Website";
         businessWebsite.delegate = self;
         NSRange range = [businessWebsite.text rangeOfString:@"Website"];
@@ -73,7 +73,7 @@
         
         UILabel *mention = [[UILabel alloc] initWithFrame:CGRectMake(self.containerView.frame.size.width - 110,3.0f,100.0f,25.0f)];
         mention.textAlignment =  NSTextAlignmentRight;
-        mention.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(13.0)];
+        mention.font = BENDERSOLID(13);
         [self.containerView addSubview:mention];
         
         [[reward objectForKey:kFTRewardsUserKey] fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
@@ -115,7 +115,7 @@
                 description.userInteractionEnabled = NO;
                 description.textColor = [UIColor colorWithRed:149/255.0f green:149/255.0f blue:149/255.0f alpha:1];
                 description.backgroundColor = [UIColor whiteColor];
-                description.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(15.0)];
+                description.font = BENDERSOLID(15);
                 description.text = [reward objectForKey:kFTUserDescriptionKey];
                 [self.containerView addSubview:description];
                 

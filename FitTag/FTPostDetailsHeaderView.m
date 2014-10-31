@@ -479,14 +479,14 @@ static TTTTimeIntervalFormatter *timeFormatter;
             // Ribbon
             
             usernameRibbon = [UIButton buttonWithType:UIButtonTypeCustom];
-            UIImage *image = [FTPostDetailsHeaderView imageWithImage:[UIImage imageNamed:USERNAME_RIBBON] scaledToSize:CGSizeMake(88.0f,20.0f)];
+            UIImage *image = [FTPostDetailsHeaderView imageWithImage:[UIImage imageNamed:IMAGE_USERNAME_RIBBON] scaledToSize:CGSizeMake(88.0f,20.0f)];
             [usernameRibbon setBackgroundColor:[UIColor colorWithPatternImage:image]];
             [usernameRibbon setFrame:CGRectMake(avatarImageView.frame.size.width + avatarImageView.frame.origin.x - 4,
                                                 avatarImageView.frame.origin.y + 10, 88.0f, 20.0f)];
             [usernameRibbon setUserInteractionEnabled:YES];
             [usernameRibbon addTarget:self action:@selector(didTapUserNameButtonAction:) forControlEvents:UIControlEventTouchUpInside];
             [usernameRibbon setTitle:[self.photographer objectForKey:kFTUserDisplayNameKey] forState:UIControlStateNormal];
-            [usernameRibbon.titleLabel setFont:[UIFont fontWithName:FITTAG_FONT size:10]];
+            [usernameRibbon.titleLabel setFont:BENDERSOLID(11)];
             [usernameRibbon setContentHorizontalAlignment: UIControlContentHorizontalAlignmentLeft];
             [usernameRibbon setContentEdgeInsets:UIEdgeInsetsMake(0, 5, 0, 0)];
 

@@ -309,7 +309,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
         [self.usernameRibbon addTarget:self action:@selector(didTapUserNameButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         if ([self.photographer objectForKey:kFTUserDisplayNameKey])
             [self.usernameRibbon setTitle:[self.photographer objectForKey:kFTUserDisplayNameKey] forState:UIControlStateNormal];
-        [self.usernameRibbon.titleLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:10]];
+        [self.usernameRibbon.titleLabel setFont:BENDERSOLID(11)];
         self.usernameRibbon.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
         self.usernameRibbon.contentEdgeInsets = UIEdgeInsetsMake(0, 5, 0, 0);
         [nameHeaderView addSubview:self.usernameRibbon];
