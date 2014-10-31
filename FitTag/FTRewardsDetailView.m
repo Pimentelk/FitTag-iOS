@@ -138,7 +138,7 @@
     UILabel *popupMessage = [[UILabel alloc] initWithFrame:CGRectMake(35.0f, nPaddingY + nButtonHeight, 250.0f, 45.0f)];
     popupMessage.textAlignment =  NSTextAlignmentLeft;
     popupMessage.textColor = [UIColor colorWithRed:149/255.0f green:149/255.0f blue:149/255.0f alpha:1];
-    popupMessage.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(15.0)];
+    popupMessage.font = BENDERSOLID(15);
     popupMessage.text = POPUP_MESSAGE;
     popupMessage.numberOfLines = 0;
     popupMessage.lineBreakMode = NSLineBreakByWordWrapping;
