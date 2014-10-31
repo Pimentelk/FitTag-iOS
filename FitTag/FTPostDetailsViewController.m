@@ -26,6 +26,9 @@
 /* Header Views */
 @property (nonatomic, strong) FTPostDetailsHeaderView *headerView;
 @property (nonatomic, strong) FTPhotoDetailsFooterView *footerView;
+
+@property (nonatomic, strong) FTUserProfileViewController *profileViewController;
+@property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
 @end
 
 static const CGFloat kFTCellInsetWidth = 0.0f;
@@ -37,6 +40,8 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 @synthesize footerView;
 @synthesize post;
 @synthesize dismissProfileButton;
+@synthesize profileViewController;
+@synthesize flowLayout;
 
 #pragma mark - Initialization
 
@@ -94,6 +99,17 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [backIndicator setTintColor:[UIColor whiteColor]];
     [backIndicator setTintColor:[UIColor whiteColor]];
     [self.navigationItem setLeftBarButtonItem:backIndicator];
+    
+    // Profile view layout
+    flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [flowLayout setItemSize:CGSizeMake(105.5,105)];
+    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [flowLayout setMinimumInteritemSpacing:0];
+    [flowLayout setMinimumLineSpacing:0];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+    
+    profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     
     // Load Camera
     UIBarButtonItem *loadCamera = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_CAMERA]
@@ -395,16 +411,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 
 - (void)shouldPresentAccountViewForUser:(PFUser *)user {
     // Push account view controller
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(105.5,105)];
-    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [flowLayout setMinimumInteritemSpacing:0];
-    [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
-    
-    FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController setUser:[PFUser currentUser]];
+    [profileViewController setUser:user];
     [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
