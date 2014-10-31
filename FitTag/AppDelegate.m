@@ -95,12 +95,14 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     NSLog(@"%@::application:didRegisterForRemoteNotificationsWithDeviceToken:",APPDELEGATE_RESPONDER);
-    [self registerForRemoteNotification];
+    //[self registerForRemoteNotification];
     if (application.applicationIconBadgeNumber != 0) {
         application.applicationIconBadgeNumber = 0;
     }
+    
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
     [currentInstallation setDeviceTokenFromData:deviceToken];
+    currentInstallation.channels = @[ @"global" ];
     [currentInstallation saveInBackground];
 }
 
@@ -113,6 +115,7 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     NSLog(@"%@::application:didReceiveRemoteNotification:",APPDELEGATE_RESPONDER);
+    NSLog(@"userInfo:%@",userInfo);
     [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
     
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
@@ -139,7 +142,7 @@
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    //NSLog(@"%@::applicationDidBecomeActive:",APPDELEGATE_RESPONDER);
+    NSLog(@"%@::applicationDidBecomeActive:",APPDELEGATE_RESPONDER);
     // Handle an interruption during the authorization flow, such as the user clicking the home button.
     //[FBSession.activeSession handleDidBecomeActive];
     
@@ -333,17 +336,19 @@
 #pragma mark - ()
 
 - (void)registerForRemoteNotification {
+    NSLog(@"%@::registerForRemoteNotification:",APPDELEGATE_RESPONDER);
     if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
         UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
         UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
         [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+        [[UIApplication sharedApplication] registerForRemoteNotifications];
     } else {
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
     }
 }
 
 - (void)monitorReachability {
-    //NSLog(@"%@::monitorReachability:",APPDELEGATE_RESPONDER);
+    NSLog(@"%@::monitorReachability:",APPDELEGATE_RESPONDER);
     Reachability *hostReach = [Reachability reachabilityWithHostname:PARSE_HOST];
     
     hostReach.reachableBlock = ^(Reachability *reach) {
@@ -365,7 +370,7 @@
 }
 
 - (void)handlePush:(NSDictionary *)launchOptions {
-    //NSLog(@"%@::handlePush:",APPDELEGATE_RESPONDER);
+    NSLog(@"%@::handlePush:",APPDELEGATE_RESPONDER);
     
     // If the app was launched in response to a push notification, we'll handle the payload here
     NSDictionary *remoteNotificationPayload = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
