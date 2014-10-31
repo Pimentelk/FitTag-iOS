@@ -109,6 +109,14 @@
     //NSLog(@"%@::isFirstTimeUser:",VIEWCONTROLLER_CONFIG);
     // Check if the user has logged in before
     if (![user objectForKey:kFTUserLastLoginKey]) {
+        
+        // Set default settings
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushFollowsKey];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushLikesKey];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushCommentsKey];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushMentionsKey];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        
         FTInterestViewFlowLayout *layoutFlow = [[FTInterestViewFlowLayout alloc] init];
         [layoutFlow setItemSize:CGSizeMake(159.5,42)];
         [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -134,7 +142,7 @@
         return YES;
     }
     
-    NSLog(RETURNING_USER);
+    //NSLog(RETURNING_USER);
     return NO;
 }
 
@@ -196,14 +204,17 @@
 }
 
 - (BOOL)didLogInWithFacebook:(PFObject *)user {
-    NSLog(@"%@::didLogInWithFacebook:",VIEWCONTROLLER_CONFIG);
+    //NSLog(@"%@::didLogInWithFacebook:",VIEWCONTROLLER_CONFIG);
     
     if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
         NSLog(USER_DID_LOGIN_FACEBOOK);
         
         [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *FBuser, NSError *error) {
             if (!error) {
-                NSData* profileImageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[NSString stringWithFormat:FACEBOOK_GRAPH_PICTURES_URL,[FBuser objectForKey:FBUserIDKey]]]];
+                NSData *profileImageData = [NSData dataWithContentsOfURL:
+                                            [NSURL URLWithString:
+                                             [NSString stringWithFormat:FACEBOOK_GRAPH_PICTURES_URL,
+                                              [FBuser objectForKey:FBUserIDKey]]]];
                 
                 // Get the data from facebook and put it into the user object
                 [user setValue:[FBuser objectForKey:FBUserFirstNameKey] forKey:kFTUserFirstnameKey];
