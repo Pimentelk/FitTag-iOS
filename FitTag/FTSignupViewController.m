@@ -151,7 +151,7 @@
     [self.aboutTextView setBackgroundColor:nil];
     defaultLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200, 25)];
     [self.defaultLabel setTextColor:attrColor];
-    [self.defaultLabel setFont:[UIFont fontWithName:FITTAG_FONT size:16]];
+    [self.defaultLabel setFont:BENDERSOLID(16)];
     [self.defaultLabel setText:DEFAULT_BIO_TEXT_B];
     [self.aboutTextView addSubview:self.defaultLabel];
     [self.signUpView addSubview:self.aboutTextView];
@@ -160,17 +160,17 @@
     [self.signUpView.usernameField setTextAlignment:NSTextAlignmentLeft];
     [self.signUpView.usernameField setTextColor:attrColor];
     [self.signUpView.usernameField setPlaceholder:PLACEHOLDER_USERNAME];
-    [self.signUpView.usernameField setFont:[UIFont fontWithName:FITTAG_FONT size:16]];
+    [self.signUpView.usernameField setFont:BENDERSOLID(16)];
     
     [self.signUpView.emailField setTextAlignment:NSTextAlignmentLeft];
     [self.signUpView.emailField setTextColor:attrColor];
     [self.signUpView.emailField setPlaceholder:PLACEHOLDER_EMAIL];
-    [self.signUpView.emailField setFont:[UIFont fontWithName:FITTAG_FONT size:16]];
+    [self.signUpView.emailField setFont:BENDERSOLID(16)];
 
     [self.signUpView.passwordField setTextAlignment:NSTextAlignmentLeft];
     [self.signUpView.passwordField setTextColor:attrColor];
     [self.signUpView.passwordField setPlaceholder:PLACEHOLDER_PASSWORD];
-    [self.signUpView.passwordField setFont:[UIFont fontWithName:FITTAG_FONT size:16]];
+    [self.signUpView.passwordField setFont:BENDERSOLID(16)];
     
     // Setup terms text
     termsText = [[UIImageView alloc] initWithImage:[UIImage imageNamed:SIGNUP_SCREEN_TEXT]];

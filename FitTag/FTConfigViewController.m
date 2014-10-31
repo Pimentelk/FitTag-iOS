@@ -197,8 +197,8 @@ shouldBeginLogInWithUsername:(NSString *)username
         NSData *thumbnailImageData  = UIImagePNGRepresentation(thumbImage);
         
         if (imageData && thumbnailImageData) {
-            [user setValue:[PFFile fileWithName:MEDIUM_JPEG data:imageData] forKey:kFTUserProfilePicMediumKey];
-            [user setValue:[PFFile fileWithName:SMALL_JPEG data:imageData] forKey:kFTUserProfilePicSmallKey];
+            [user setValue:[PFFile fileWithName:FILE_MEDIUM_JPEG data:imageData] forKey:kFTUserProfilePicMediumKey];
+            [user setValue:[PFFile fileWithName:FILE_SMALL_JPEG data:imageData] forKey:kFTUserProfilePicSmallKey];
         }
         
         [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -209,7 +209,7 @@ shouldBeginLogInWithUsername:(NSString *)username
         }];
         
         if (signUpViewController) {
-            [signUpViewController dismissViewControllerAnimated:signUpViewController completion:nil];
+            [signUpViewController dismissViewControllerAnimated:YES completion:nil];
             [self presentTabBarController:user];
         }
     } else {

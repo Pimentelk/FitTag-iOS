@@ -71,7 +71,7 @@ typedef enum {
     [self.tableView setBackgroundColor:[UIColor clearColor]];
     [self.tableView setOpaque: NO];
     [self.view setBackgroundColor:[UIColor lightGrayColor]];
-    [self.tableView setBackgroundView:[[UIImageView alloc] initWithImage:[UIImage imageNamed:BACKGROUND_FIEND_FRIENDS]]];
+    [self.tableView setBackgroundView:[[UIImageView alloc] initWithImage:[UIImage imageNamed:BACKGROUND_FIND_FRIENDS]]];
     
     self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:FT_RED_COLOR_RED
                                                                            green:FT_RED_COLOR_GREEN
