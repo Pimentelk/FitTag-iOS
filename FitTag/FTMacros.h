@@ -11,12 +11,17 @@
 
 #define APP_NAME @"FitTag"
 #define APP_VERSION @"2.0"
-#define APP_STORE_ID 928992041
-#define FITTAG_FONT @"HelveticaNeue"
+#define APP_STORE_ID @"com.library.FitTag"
 #define FITTAG_LOGO @"fittag_logo"
+
+// Font
+#define BENDERSOLID(s) [UIFont fontWithName:@"BenderSolid" size:s]
 
 // Blog
 #define FITTAG_BLOG_URL @"http://www.fittag.com/blog"
+
+// Backgrounds
+#define BACKGROUND_FIND_FRIENDS @"login_background_image_05"
 
 // Current Device Version
 #define IS_OS_8_OR_LATER ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
@@ -115,24 +120,29 @@
 #define FT_DARKGRAY_COLOR_BLUE 154/255.0f
 #define FT_DARKGRAY_COLOR_GREEN 154/255.0f
 
+// LOCATION
+#define LOCATION_USERS_WITHIN_MILES 10
+
 // IMAGES
+#define IMAGE_FOLLOW_SELECTED @"follow_selected"
+#define IMAGE_FOLLOW_UNSELECTED @"follow_unselected"
 #define IMAGE_PROFILE_DEFAULT @"posts_active"
 #define IMAGE_TIMELINE_BLANK @"HomeTimelineBlank.png"
-#define USERNAME_RIBBON @"username_ribbon"
+#define IMAGE_USERNAME_RIBBON @"username_ribbon"
 #define IMAGE_PROFILE_EMPTY @"empty_profile"
 
 // TAB NAVIGATION BAR BUTTONS
-#define BUTTON_IMAGE_NOTIFICATIONS @"notifications"
-#define BUTTON_IMAGE_SEARCH @"search"
-#define BUTTON_IMAGE_USER_PROFILE @"myprofile"
-#define BUTTON_IMAGE_REWARDS @"offers"
-#define BUTTON_IMAGE_FEED @"newsfeed_button"
+#define BUTTON_IMAGE_NOTIFICATIONS_SELECTED @"notifications_selected"
+#define BUTTON_IMAGE_SEARCH_SELECTED @"search_selected"
+#define BUTTON_IMAGE_USER_PROFILE_SELECTED @"profile_selected"
+#define BUTTON_IMAGE_REWARDS_SELECTED @"rewards_selected"
+#define BUTTON_IMAGE_FEED_SELECTED @"feed_selected"
 
-#define BUTTON_IMAGE_NOTIFICATIONS_SELECTED @"notifications"
-#define BUTTON_IMAGE_SEARCH_SELECTED @"search"
-#define BUTTON_IMAGE_USER_PROFILE_SELECTED @"myprofile"
-#define BUTTON_IMAGE_REWARDS_SELECTED @"offers"
-#define BUTTON_IMAGE_FEED_SELECTED @"feed"
+#define BUTTON_IMAGE_NOTIFICATIONS @"notifications_unselected"
+#define BUTTON_IMAGE_SEARCH @"search_unselected"
+#define BUTTON_IMAGE_USER_PROFILE @"profile_unselected"
+#define BUTTON_IMAGE_REWARDS @"rewards_unselected"
+#define BUTTON_IMAGE_FEED @"feed_unselected"
 
 // TAB NAVIGATION VIEW CONTROLLER TITLES
 #define NAVIGATION_TITLE_MAP @"MAP"
@@ -167,12 +177,12 @@
 #define RETURNING_USER @"This is a returning user."
 #define FIRSTTIME_USER @"This is a firsttime user."
 
-// File defaults
-#define SMALL_JPEG @"medium.jpeg"
-#define MEDIUM_JPEG @"small.jpeg"
-#define COVER_JPEG @"cover.jpeg"
+// File
+#define FILE_SMALL_JPEG @"medium.jpeg"
+#define FILE_MEDIUM_JPEG @"small.jpeg"
+#define FILE_COVER_JPEG @"cover.jpeg"
 
-// Mail Strings
+// Mail
 #define MAIL_CANCELLED @"Mail cancelled: you cancelled the operation and no email message was queued."
 #define MAIL_SAVED @"Mail saved: you saved the email message in the drafts folder."
 #define MAIL_SEND @"Mail send: the email message is queued in the outbox. It is ready to send."
@@ -185,8 +195,8 @@
 #define HUD_MESSAGE_BIOGRAPHY_LIMIT @"150 character limit"
 #define HUD_MESSAGE_BIOGRAPHY_UPDATED @"Biography updated.."
 #define HUD_MESSAGE_INTERESTS_UPDATED @"Interests updated.."
-#define EMPTY_BIOGRAPHY_TITLE @"Empty Biography"
-#define EMPTY_BIOGRAPHY_MESSAGE @"You can not submit an empty biography."
+#define HUD_EMPTY_BIOGRAPHY_TITLE @"Empty Biography"
+#define HUD_EMPTY_BIOGRAPHY_MESSAGE @"You can not submit an empty biography."
 
 // Switch messages
 #define SWITCH_REWARD_ON @"rewards enabled"
