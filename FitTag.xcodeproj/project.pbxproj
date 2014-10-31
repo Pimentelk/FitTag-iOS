@@ -11,6 +11,7 @@
 		2D007B6119B4074F006E1484 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D007B6019B4074F006E1484 /* MediaPlayer.framework */; };
 		2D007B6419B6A5A1006E1484 /* FTSearchHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B6319B6A5A1006E1484 /* FTSearchHeaderView.m */; };
 		2D007B6A19B6C6BB006E1484 /* FTSearchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B6919B6C6BB006E1484 /* FTSearchCell.m */; };
+		2D054DAB1A0293DA00A2886F /* Bender-Solid.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2D054DA11A02935D00A2886F /* Bender-Solid.otf */; };
 		2D0A53A81971997F0091FFCA /* InspirationCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */; };
 		2D197E8E19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D197E8D19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.m */; };
 		2D197E9119C1BC7900E91274 /* FTMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D197E9019C1BC7900E91274 /* FTMapViewController.m */; };
@@ -76,6 +77,7 @@
 		2DCB7D4819FF1C0D00E349F6 /* FTInviteFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DCB7D4719FF1C0D00E349F6 /* FTInviteFriendsViewController.m */; };
 		2DCB7D631A00647F00E349F6 /* FTFollowCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DCB7D621A00647F00E349F6 /* FTFollowCell.m */; };
 		2DCB7D961A00CC9900E349F6 /* FTInviteTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DCB7D951A00CC9900E349F6 /* FTInviteTableHeaderView.m */; };
+		2DCB7DB01A01DF5A00E349F6 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DCB7DAF1A01DF5A00E349F6 /* GameKit.framework */; };
 		2DCD9F0419F49C77006DCD8E /* FTSettingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DCD9F0319F49C77006DCD8E /* FTSettingsDetailViewController.m */; };
 		2DCD9F0819F4AB73006DCD8E /* FTSettingsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DCD9F0719F4AB73006DCD8E /* FTSettingsCell.m */; };
 		2DD2B6551983FD0E00600A42 /* FTUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B6541983FD0E00600A42 /* FTUtility.m */; };
@@ -198,6 +200,7 @@
 		2D007B6319B6A5A1006E1484 /* FTSearchHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchHeaderView.m; sourceTree = "<group>"; };
 		2D007B6819B6C6BB006E1484 /* FTSearchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSearchCell.h; sourceTree = "<group>"; };
 		2D007B6919B6C6BB006E1484 /* FTSearchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchCell.m; sourceTree = "<group>"; };
+		2D054DA11A02935D00A2886F /* Bender-Solid.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Bender-Solid.otf"; path = "../Bender-Solid.otf"; sourceTree = "<group>"; };
 		2D0A53A61971997F0091FFCA /* InspirationCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspirationCellCollectionView.h; sourceTree = "<group>"; };
 		2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InspirationCellCollectionView.m; sourceTree = "<group>"; };
 		2D197E8C19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAmbassadorGeoPointAnnotation.h; sourceTree = "<group>"; };
@@ -524,6 +527,7 @@
 		2DCB7D621A00647F00E349F6 /* FTFollowCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTFollowCell.m; sourceTree = "<group>"; };
 		2DCB7D941A00CC9900E349F6 /* FTInviteTableHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTInviteTableHeaderView.h; sourceTree = "<group>"; };
 		2DCB7D951A00CC9900E349F6 /* FTInviteTableHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTInviteTableHeaderView.m; sourceTree = "<group>"; };
+		2DCB7DAF1A01DF5A00E349F6 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		2DCD9F0219F49C77006DCD8E /* FTSettingsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSettingsDetailViewController.h; sourceTree = "<group>"; };
 		2DCD9F0319F49C77006DCD8E /* FTSettingsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSettingsDetailViewController.m; sourceTree = "<group>"; };
 		2DCD9F0619F4AB73006DCD8E /* FTSettingsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSettingsCell.h; sourceTree = "<group>"; };
@@ -649,6 +653,7 @@
 				2DD691A01949C7BA00B59E75 /* Social.framework in Frameworks */,
 				2DD691901949B07C00B59E75 /* MobileCoreServices.framework in Frameworks */,
 				2DD691911949B07C00B59E75 /* QuartzCore.framework in Frameworks */,
+				2DCB7DB01A01DF5A00E349F6 /* GameKit.framework in Frameworks */,
 				2DD691931949B07C00B59E75 /* StoreKit.framework in Frameworks */,
 				2DD691891949B04F00B59E75 /* CoreLocation.framework in Frameworks */,
 				2DD6918A1949B04F00B59E75 /* libz.dylib in Frameworks */,
@@ -663,6 +668,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2D054DAA1A0293B700A2886F /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				2D054DA11A02935D00A2886F /* Bender-Solid.otf */,
+			);
+			name = Fonts;
+			sourceTree = "<group>";
+		};
 		2D0A53A91971A65F0091FFCA /* Categories */ = {
 			isa = PBXGroup;
 			children = (
@@ -1499,6 +1512,7 @@
 		2DD6914B1949AF5B00B59E75 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2DCB7DAF1A01DF5A00E349F6 /* GameKit.framework */,
 				2DD691A11949C7C700B59E75 /* Accounts.framework */,
 				2DABDA02195DA48200379891 /* AssetsLibrary.framework */,
 				2DD691831949B04F00B59E75 /* AudioToolbox.framework */,
@@ -1534,22 +1548,22 @@
 		2DD691521949AF5B00B59E75 /* FitTag */ = {
 			isa = PBXGroup;
 			children = (
-				2DD2B66E1984033900600A42 /* Views */,
-				2D0A53A91971A65F0091FFCA /* Categories */,
-				2D410F49197357E900CE2940 /* Layouts */,
-				2DABDA07195DE0F500379891 /* Custom Bars */,
-				2D429A1D197B2D2600F8A9A0 /* Controllers */,
 				2DD6915B1949AF5B00B59E75 /* AppDelegate.h */,
 				2DD6915C1949AF5B00B59E75 /* AppDelegate.m */,
-				2D7968B019F8C20C00DA2DD0 /* FTMacros.h */,
-				2D429A15197AD47000F8A9A0 /* FTConstants.h */,
-				2D429A16197AD47000F8A9A0 /* FTConstants.m */,
-				2DD2B6531983FD0E00600A42 /* FTUtility.h */,
-				2DD2B6541983FD0E00600A42 /* FTUtility.m */,
+				2D0A53A91971A65F0091FFCA /* Categories */,
+				2D429A1D197B2D2600F8A9A0 /* Controllers */,
+				2DABDA07195DE0F500379891 /* Custom Bars */,
 				2DD2B6561983FD2C00600A42 /* FTCache.h */,
 				2DD2B6571983FD2C00600A42 /* FTCache.m */,
+				2D429A15197AD47000F8A9A0 /* FTConstants.h */,
+				2D429A16197AD47000F8A9A0 /* FTConstants.m */,
+				2D7968B019F8C20C00DA2DD0 /* FTMacros.h */,
+				2DD2B6531983FD0E00600A42 /* FTUtility.h */,
+				2DD2B6541983FD0E00600A42 /* FTUtility.m */,
 				2DD691641949AF5B00B59E75 /* Images.xcassets */,
+				2D410F49197357E900CE2940 /* Layouts */,
 				2DD691531949AF5B00B59E75 /* Supporting Files */,
+				2DD2B66E1984033900600A42 /* Views */,
 			);
 			path = FitTag;
 			sourceTree = "<group>";
@@ -1557,6 +1571,7 @@
 		2DD691531949AF5B00B59E75 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				2D054DAA1A0293B700A2886F /* Fonts */,
 				2DD691541949AF5B00B59E75 /* FitTag-Info.plist */,
 				2DD691551949AF5B00B59E75 /* InfoPlist.strings */,
 				2DD691581949AF5B00B59E75 /* main.m */,
@@ -1656,6 +1671,11 @@
 				TargetAttributes = {
 					2DD691481949AF5B00B59E75 = {
 						DevelopmentTeam = AJ3ZB3S8QB;
+						SystemCapabilities = {
+							com.apple.GameCenter = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -1783,6 +1803,7 @@
 				2DD691651949AF5B00B59E75 /* Images.xcassets in Resources */,
 				2DBE024119D6FB7F00CD278C /* Overlay@2x.png in Resources */,
 				2DD691571949AF5B00B59E75 /* InfoPlist.strings in Resources */,
+				2D054DAB1A0293DA00A2886F /* Bender-Solid.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2063,7 +2084,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Kevin Pimentel (W76JQQAMRJ)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Kevin Pimentel (W76JQQAMRJ)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -2081,6 +2103,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -2101,7 +2124,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Kevin Pimentel (W76JQQAMRJ)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Kevin Pimentel (W76JQQAMRJ)";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -2112,6 +2136,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2122,8 +2147,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Kevin Pimentel (W76JQQAMRJ)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Kevin Pimentel (W76JQQAMRJ)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -2148,8 +2173,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Kevin Pimentel (W76JQQAMRJ)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Kevin Pimentel (W76JQQAMRJ)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
