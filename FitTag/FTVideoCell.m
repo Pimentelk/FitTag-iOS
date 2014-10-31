@@ -82,21 +82,26 @@
         self.avatarImageView = [[FTProfileImageView alloc] init];
         self.avatarImageView.frame = profileHexagon.frame;
         self.avatarImageView.layer.mask = profileHexagon.layer.mask;
+        
         [self.avatarImageView.profileButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [self.contentView addSubview:self.avatarImageView];
         
         //username_ribbon
         self.usernameRibbon = [UIButton buttonWithType:UIButtonTypeCustom];
+        
         UIImage *image = [FTVideoCell imageWithImage:[UIImage imageNamed:@"username_ribbon"] scaledToSize:CGSizeMake(88.0f, 20.0f)];
         [self.usernameRibbon setBackgroundColor:[UIColor colorWithPatternImage:image]];
+        
         self.usernameRibbon.frame = CGRectMake(self.avatarImageView.frame.size.width + self.avatarImageView.frame.origin.x - 4,
                                                self.avatarImageView.frame.origin.y + 10,88.0f, 20.0f);
         
         [self.usernameRibbon addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [self.usernameRibbon setTitle:EMPTY_STRING forState:UIControlStateNormal];
-        [self.usernameRibbon.titleLabel setFont:[UIFont fontWithName:FITTAG_FONT size:10]];
+        [self.usernameRibbon.titleLabel setFont:BENDERSOLID(11)];
+        
         self.usernameRibbon.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
         self.usernameRibbon.contentEdgeInsets = UIEdgeInsetsMake(0, 5, 0, 0);
+        
         [self.contentView addSubview:self.usernameRibbon];
         [self.contentView bringSubviewToFront:self.avatarImageView];
         
@@ -155,6 +160,7 @@
         [moreButton setFrame:CGRectMake(commentCounter.frame.size.width + commentCounter.frame.origin.x + 15.0f, commentCounter.frame.origin.y, 35.0f, 19.0f)];
         [moreButton setBackgroundColor:[UIColor clearColor]];
         [moreButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
+        
         [videoCellButtonsContainer addSubview:moreButton];
         
         // setup the video player
@@ -175,6 +181,7 @@
         [locationLabel setFont:[UIFont systemFontOfSize:12.0f]];
         [locationLabel setBackgroundColor:[UIColor clearColor]];
         [locationLabel setTextColor:[UIColor whiteColor]];
+        
         [self addSubview:locationLabel];
         [self bringSubviewToFront:locationLabel];
         

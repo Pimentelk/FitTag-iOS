@@ -101,12 +101,13 @@
         [self.usernameRibbon setBackgroundColor:[UIColor colorWithPatternImage:image]];
         self.usernameRibbon.frame = CGRectMake(self.avatarImageView.frame.size.width + self.avatarImageView.frame.origin.x - 4,
                                                self.avatarImageView.frame.origin.y + 10,88.0f, 20.0f);
-        
+                
         [self.usernameRibbon addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [self.usernameRibbon setTitle:EMPTY_STRING forState:UIControlStateNormal];
-        [self.usernameRibbon.titleLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:10]];
-        self.usernameRibbon.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-        self.usernameRibbon.contentEdgeInsets = UIEdgeInsetsMake(0, 5, 0, 0);
+        [self.usernameRibbon.titleLabel setFont:BENDERSOLID(11)];
+        [self.usernameRibbon setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
+        [self.usernameRibbon setContentEdgeInsets:UIEdgeInsetsMake(0, 5, 0, 0)];
+        
         [self.contentView addSubview:self.usernameRibbon];
         [self.contentView bringSubviewToFront:self.avatarImageView];
         
@@ -115,6 +116,7 @@
         [locationLabel setFont:[UIFont systemFontOfSize:12.0f]];
         [locationLabel setBackgroundColor:[UIColor clearColor]];
         [locationLabel setTextColor:[UIColor whiteColor]];
+        
         [self addSubview:locationLabel];
         [self bringSubviewToFront:locationLabel];
         
@@ -175,10 +177,13 @@
         [carousel setDelaysContentTouches:YES];
         [carousel setExclusiveTouch:YES];
         [carousel setCanCancelContentTouches:YES];
-        [carousel setBackgroundColor:[UIColor clearColor]];
+        [carousel setBackgroundColor:[UIColor colorWithRed:FT_GRAY_COLOR_RED
+                                                     green:FT_GRAY_COLOR_GREEN
+                                                      blue:FT_GRAY_COLOR_BLUE
+                                                     alpha:1.0f]];
         [carousel setPagingEnabled: YES];
         [carousel setAlwaysBounceVertical:NO];
-        [carousel setHidden:YES];
+        
         [self.galleryButton addSubview:carousel];
     }
     
@@ -197,15 +202,16 @@
 
 - (void)setGallery:(PFObject *)aGallery {
     gallery = aGallery;
+    NSLog(@"setGallery: %@",aGallery.objectId);
+
+    // Clear the carousel
+    for (UIView *carouseSubView in carousel.subviews) {
+        [carouseSubView removeFromSuperview];
+    }
     
     /* Fetch all images and add them to the scrollview */
     [PFObject fetchAllIfNeededInBackground:[gallery objectForKey:kFTPostPostsKey] block:^(NSArray *objects, NSError *error) {
         if (!error) {
-            
-            // Clear the carousel
-            for (UIView *carouseSubView in carousel.subviews) {
-                [carouseSubView removeFromSuperview];
-            }
             
             int i = 0;
             for (PFObject *post in objects) {
@@ -217,15 +223,23 @@
                         singleTap.numberOfTapsRequired = 1;
                         
                         CGFloat xOrigin = i * 320;
+                        
                         UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, 320.0f, 320.0f)];
                         [imageView setBackgroundColor:[UIColor clearColor]];
+                        [imageView setAlpha:0];
+                        
                         UIImage *image = [UIImage imageWithData:data];
                         [imageView setImage:image];
                         [imageView setClipsToBounds:YES];
                         [imageView setContentMode:UIViewContentModeScaleAspectFill];
                         [imageView setUserInteractionEnabled:YES];
                         [imageView addGestureRecognizer:singleTap];
+                        
                         [carousel addSubview:imageView];
+
+                        [UIView animateWithDuration:0.4 animations:^{
+                            [imageView setAlpha:1];
+                        }];
                     }
                 }];
                 i++;
@@ -235,7 +249,6 @@
             [self.contentView addSubview:self.swiperView];
             
             [carousel setContentSize: CGSizeMake(320.0f * objects.count, 320.0f)];
-            [carousel setHidden:NO];
        } 
     }];
      

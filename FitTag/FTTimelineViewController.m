@@ -18,6 +18,8 @@
 @property (nonatomic, strong) NSMutableSet *reusableSectionHeaderViews;
 @property (nonatomic, strong) NSMutableDictionary *outstandingSectionHeaderQueries;
 @property (nonatomic, strong) UIBarButtonItem *dismissProfileButton;
+@property (nonatomic, strong) FTUserProfileViewController *profileViewController;
+@property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
 @end
 
 @implementation FTTimelineViewController
@@ -25,6 +27,8 @@
 @synthesize shouldReloadOnAppear;
 @synthesize outstandingSectionHeaderQueries;
 @synthesize dismissProfileButton;
+@synthesize flowLayout;
+@synthesize profileViewController;
 
 #pragma mark - Initialization
 
@@ -83,6 +87,18 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLikeOrUnlikePhoto:) name:FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLikeOrUnlikePhoto:) name:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidCommentOnPhoto:) name:FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification object:nil];
+
+    // Go to selected user profile
+    
+    flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [flowLayout setItemSize:CGSizeMake(105.5,105)];
+    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [flowLayout setMinimumInteritemSpacing:0];
+    [flowLayout setMinimumLineSpacing:0];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+    
+    profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -176,6 +192,14 @@
     if (indexPath.section < self.objects.count) {
         return [self.objects objectAtIndex:indexPath.section];
     }
+    /*
+    if (indexPath.section == self.objects.count && self.paginationEnabled) {
+        [self loadNextPage];
+        return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
+    }
+    */
+    
+    [self loadNextPage];
     return nil;
 }
 
@@ -188,12 +212,7 @@
     static NSString *galleryCellIdentifier = @"GalleryCell";
     
     //NSLog(@"FTPhotoTimelineViewController::Updating tableView:(UITableView *) %@ cellForRowAtIndexPath:(NSIndexPath *) %@ object:(PFObject *) %@",tableView,indexPath,object);
-    //if (indexPath.section == self.objects.count) {
-    //    return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
-    //}
-    
-    if (indexPath.section == self.objects.count && self.paginationEnabled) {
-        [self loadNextPage];
+    if (indexPath.section == self.objects.count) {
         return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
     }
     
@@ -281,8 +300,9 @@
             }
         }
         
-        galleryCell.galleryButton.tag = indexPath.section;
         
+        galleryCell.galleryButton.tag = indexPath.section;
+        /*
         if (object) {
             galleryCell.imageView.file = [object objectForKey:kFTPostImageKey];
             
@@ -291,7 +311,8 @@
                 [galleryCell.imageView loadInBackground];
             }
         }
-         
+        */
+        
         return galleryCell;
     }
     
@@ -385,10 +406,16 @@
         videoCell.videoButton.tag = indexPath.section;
         
         if (object) {
+            //videoCell.imageView.alpha = 0;
             videoCell.imageView.file = [object objectForKey:kFTPostImageKey];            
             // PFQTVC will take care of asynchronously downloading files, but will only load them when the tableview is not moving. If the data is there, let's load it right away.
             if ([videoCell.imageView.file isDataAvailable]) {
                 [videoCell.imageView loadInBackground];
+                /*
+                [UIView animateWithDuration:0.4 animations:^{
+                    videoCell.imageView.alpha = 1.0f;
+                }];
+                */
             }
         }
         
@@ -484,10 +511,15 @@
         
         if (object) {
             photoCell.imageView.file = [object objectForKey:kFTPostImageKey];
-            
+            //photoCell.imageView.alpha = 0.0f;
             // PFQTVC will take care of asynchronously downloading files, but will only load them when the tableview is not moving. If the data is there, let's load it right away.
             if ([photoCell.imageView.file isDataAvailable]) {
                 [photoCell.imageView loadInBackground];
+                /*
+                [UIView animateWithDuration:0.4 animations:^{
+                    photoCell.imageView.alpha = 1.0f;
+                }];
+                */
             }
         }
         
@@ -515,16 +547,7 @@
 - (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapUserButton:(UIButton *)button user:(PFUser *)user {
     
     // Push account view controller
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(105.5,105)];
-    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [flowLayout setMinimumInteritemSpacing:0];
-    [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
-    
-    FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController setUser:[PFUser currentUser]];
+    [profileViewController setUser:user];
     [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
@@ -636,16 +659,7 @@
 - (void)videoCellView:(FTVideoCell *)videoCellView didTapUserButton:(UIButton *)button user:(PFUser *)user{
     NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapUserButton:user:");
     // Push account view controller
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(105.5,105)];
-    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [flowLayout setMinimumInteritemSpacing:0];
-    [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
-    
-    FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController setUser:[PFUser currentUser]];
+    [profileViewController setUser:user];
     [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
@@ -754,16 +768,7 @@
 - (void)photoCellView:(FTPhotoCell *)photoCellView didTapUserButton:(UIButton *)button user:(PFUser *)user {
     NSLog(@"FTPhotoTimelineViewController::photoCellView:didTapUserButton:user:");
     // Push account view controller
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(105.5,105)];
-    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [flowLayout setMinimumInteritemSpacing:0];
-    [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
-    
-    FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController setUser:[PFUser currentUser]];
+    [profileViewController setUser:user];
     [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
