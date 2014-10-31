@@ -77,13 +77,21 @@
 #define VIEWCONTROLLER_POST_DETAIL @"FTPostDetailsViewController"
 #define VIEWCONTROLLER_INVITE @"FTInviteFriendsViewController"
 #define VIEWCONTROLLER_FOLLOW_CELL @"FTFollowCell"
+
 // ACTION BUTTONS
 #define ACTION_HEART @"heart_white"
 #define ACTION_HEART_SELECTED @"heart_selected"
 #define ACTION_LIKE_COMMENT_BOX @"like_comment_box"
 #define ACTION_COMMENT_BUBBLE @"comment_bubble"
 #define ACTION_MORE @"more_button"
+
 #define COUNTER_ZERO 0
+
+// NOTIFICATION TEXT
+#define NOTIFICATION_TEXT_LIKED @"likes my post"
+#define NOTIFICATION_TEXT_MENTION @"mentions me"
+#define NOTIFICATION_TEXT_COMMENT @"comments on my post"
+#define NOTIFICATION_TEXT_FOLLOW @"starts to follow me"
 
 // SETTINGS FIELDS
 #define SECTION_SETTINGS @"SETTINGS"
