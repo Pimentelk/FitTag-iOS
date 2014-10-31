@@ -39,7 +39,7 @@
 		2D53D33719E8AC0600273D7E /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D53D22019E8AB9800273D7E /* FacebookSDK.framework */; };
 		2D6E0224196A24A1004DC010 /* InterestFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D6E0223196A24A1004DC010 /* InterestFlowLayout.m */; };
 		2D77353419DF4C0400F05FC0 /* FTGalleryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D77353319DF4C0400F05FC0 /* FTGalleryCell.m */; };
-		2D7968BC19FC0A7C00DA2DD0 /* FTSocialCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D7968BB19FC0A7C00DA2DD0 /* FTSocialCell.m */; };
+		2D7968BC19FC0A7C00DA2DD0 /* FTSwitchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D7968BB19FC0A7C00DA2DD0 /* FTSwitchCell.m */; };
 		2D9949761996A9B0000E321E /* FTCameraToolBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D9949751996A9B0000E321E /* FTCameraToolBar.m */; };
 		2DAA63DE1957A51F003B1DDF /* UIView+FormScroll.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DAA63DD1957A51F003B1DDF /* UIView+FormScroll.m */; };
 		2DABDA03195DA48200379891 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DABDA02195DA48200379891 /* AssetsLibrary.framework */; };
@@ -454,8 +454,8 @@
 		2D77353219DF4C0400F05FC0 /* FTGalleryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGalleryCell.h; sourceTree = "<group>"; };
 		2D77353319DF4C0400F05FC0 /* FTGalleryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGalleryCell.m; sourceTree = "<group>"; };
 		2D7968B019F8C20C00DA2DD0 /* FTMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTMacros.h; sourceTree = "<group>"; };
-		2D7968BA19FC0A7C00DA2DD0 /* FTSocialCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSocialCell.h; sourceTree = "<group>"; };
-		2D7968BB19FC0A7C00DA2DD0 /* FTSocialCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSocialCell.m; sourceTree = "<group>"; };
+		2D7968BA19FC0A7C00DA2DD0 /* FTSwitchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSwitchCell.h; sourceTree = "<group>"; };
+		2D7968BB19FC0A7C00DA2DD0 /* FTSwitchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSwitchCell.m; sourceTree = "<group>"; };
 		2D9949741996A9AF000E321E /* FTCameraToolBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCameraToolBar.h; sourceTree = "<group>"; };
 		2D9949751996A9B0000E321E /* FTCameraToolBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCameraToolBar.m; sourceTree = "<group>"; };
 		2DAA63DC1957A51F003B1DDF /* UIView+FormScroll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+FormScroll.h"; sourceTree = "<group>"; };
@@ -1459,8 +1459,8 @@
 				2D77353319DF4C0400F05FC0 /* FTGalleryCell.m */,
 				2DCD9F0619F4AB73006DCD8E /* FTSettingsCell.h */,
 				2DCD9F0719F4AB73006DCD8E /* FTSettingsCell.m */,
-				2D7968BA19FC0A7C00DA2DD0 /* FTSocialCell.h */,
-				2D7968BB19FC0A7C00DA2DD0 /* FTSocialCell.m */,
+				2D7968BA19FC0A7C00DA2DD0 /* FTSwitchCell.h */,
+				2D7968BB19FC0A7C00DA2DD0 /* FTSwitchCell.m */,
 				2DCB7D611A00647F00E349F6 /* FTFollowCell.h */,
 				2DCB7D621A00647F00E349F6 /* FTFollowCell.m */,
 			);
@@ -1818,7 +1818,7 @@
 				2DD2B6801984100000600A42 /* FTBaseTextCell.m in Sources */,
 				2D197E9119C1BC7900E91274 /* FTMapViewController.m in Sources */,
 				2DBE020619D0C62D00CD278C /* FTRewardsCollectionHeaderView.m in Sources */,
-				2D7968BC19FC0A7C00DA2DD0 /* FTSocialCell.m in Sources */,
+				2D7968BC19FC0A7C00DA2DD0 /* FTSwitchCell.m in Sources */,
 				2DAF5BA119B2A28E00E5E10B /* FTEditVideoViewController.m in Sources */,
 				2D77353419DF4C0400F05FC0 /* FTGalleryCell.m in Sources */,
 				2DBE021419D37AF900CD278C /* FTRewardsDetailView.m in Sources */,
