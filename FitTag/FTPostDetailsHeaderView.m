@@ -549,8 +549,10 @@ static TTTTimeIntervalFormatter *timeFormatter;
                 }
             }
             
-            [self.swiperView setNumberOfDashes:i];
-            [self addSubview:self.swiperView];
+            if (objects.count > 1) {
+                [self.swiperView setNumberOfDashes:i];
+                [self addSubview:self.swiperView];
+            }
         }
     }];
 }
