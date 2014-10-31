@@ -9,7 +9,6 @@
 #import "FTSettingsDetailViewController.h"
 #import "UIImage+ResizeAdditions.h"
 #import "MBProgressHUD.h"
-#import "FTSocialCell.h"
 
 #define LEFT_PADDING 15
 #define TOP_PADDING 20
@@ -340,22 +339,42 @@
 - (void)configureNotificationsSettings {
     //NSLog(@"%@::configureNotificationsSettings",VIEWCONTROLLER_SETTINGS_DETAIL);
     
-    // Notification Settings
-    UILabel *notificationLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 100, 300, 32)];
-    notificationLabel.textAlignment =  NSTextAlignmentLeft;
-    notificationLabel.textColor = [UIColor colorWithRed:FT_RED_COLOR_RED
-                                              green:FT_RED_COLOR_GREEN
-                                               blue:FT_RED_COLOR_BLUE alpha:1.0f];
+    CGFloat navigationViewEnd = self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y;
+    NSArray *notifications = [[NSArray alloc] initWithObjects:  @[ NOTIFICATION_TEXT_COMMENT, @2 ],
+                                                                @[ NOTIFICATION_TEXT_LIKED, @3 ],
+                                                                @[ NOTIFICATION_TEXT_FOLLOW, @4 ],
+                                                                @[ NOTIFICATION_TEXT_MENTION, @5 ], nil];
     
-    notificationLabel.backgroundColor = [UIColor clearColor];
-    notificationLabel.font = BENDERSOLID(16);
-    notificationLabel.text = @"Notifications";
-    [self.view addSubview:notificationLabel];
+    NSMutableArray *notificationLabels = [[NSMutableArray alloc] init];
     
-    UISwitch *notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 80, 100, 0, 0)];
-    [notificationSwitch setOn:NO animated:YES];
-    [notificationSwitch addTarget:self action:@selector(didTapNotificationSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:notificationSwitch];
+    UITableView *tableView = [[UITableView alloc] init];
+    [tableView setFrame:CGRectMake(0, navigationViewEnd + TOP_PADDING, self.view.frame.size.width, ROW_HEIGHT * notifications.count)];
+    [tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
+
+    int i = 0;
+    for (NSArray *notification in notifications) {
+        UILabel *notificationLabel = [[UILabel alloc] initWithFrame:CGRectMake(LEFT_PADDING, 0, 240, ROW_HEIGHT)];
+        [notificationLabel setTextAlignment: NSTextAlignmentLeft];
+        [notificationLabel setUserInteractionEnabled: YES];
+        [notificationLabel setFont:BENDERSOLID(18)];
+        [notificationLabel setTextColor: [UIColor blackColor]];
+        [notificationLabel setText:[notification objectAtIndex:0]];
+        [notificationLabel setTag:[[notification objectAtIndex:1] integerValue]];        
+        [notificationLabels addObject:notificationLabel];
+        i++;
+    }
+    
+    [tableView setBackgroundColor:[UIColor whiteColor]];
+    [tableView setScrollEnabled:NO];
+    [tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLineEtched];
+    [tableView setSeparatorInset:UIEdgeInsetsZero];
+    [tableView setRowHeight:ROW_HEIGHT];
+    [tableView setDataSource:self];
+    [tableView setDelegate:self];
+    
+    self.objects = [[NSArray alloc] initWithArray:notificationLabels];
+    [tableView reloadData];
+    [self.view addSubview:tableView];
 }
 
 - (void)configureRewardSettings {
@@ -425,17 +444,34 @@
 #pragma mark - UITableView
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    FTSocialCell *cell = [[FTSocialCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:REUSABLE_IDENTIFIER_SOCIAL];
+    FTSwitchCell *cell = [[FTSwitchCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:REUSABLE_IDENTIFIER_SOCIAL];
     
     UILabel *label = self.objects[indexPath.row];
     [cell setDelegate:self];
     [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
     [cell setUserInteractionEnabled:YES];
     [cell.contentView addSubview:label];
-    if (label.tag == 0) {
-        cell.type = FTSocialMediaTypeFacebook;
-    } else if(label.tag == 1) {
-        cell.type = FTSocialMediaTypeTwitter;
+    switch (label.tag) {
+        case 0:
+            cell.type = FTSwitchTypeFacebook;
+            break;
+        case 1:
+            cell.type = FTSwitchTypeTwitter;
+            break;
+        case 2:
+            cell.type = FTSwitchTypeComment;
+            break;
+        case 3:
+            cell.type = FTSwitchTypeLike;
+            break;
+        case 4:
+            cell.type = FTSwitchTypeFollow;
+            break;
+        case 5:
+            cell.type = FTSwitchTypeMention;
+            break;
+        default:
+            break;
     }
     return cell;
 }
@@ -446,7 +482,43 @@
 
 #pragma mark - FTSocialCellDelegate
 
-- (void)socialCell:(FTSocialCell *)socialCell didChangeFacebookSwitch:(UISwitch *)lever {
+- (void)switchCell:(FTSwitchCell *)switchCell didChangeFollowSwitch:(UISwitch *)lever {
+    if ([lever isOn]) {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushFollowsKey];
+    } else {
+        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kFTUserDefaultsSettingsViewControllerPushFollowsKey];
+    }
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)switchCell:(FTSwitchCell *)switchCell didChangeLikeSwitch:(UISwitch *)lever {
+    if ([lever isOn]) {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushLikesKey];
+    } else {
+        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kFTUserDefaultsSettingsViewControllerPushLikesKey];
+    }
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)switchCell:(FTSwitchCell *)switchCell didChangeCommentSwitch:(UISwitch *)lever {
+    if ([lever isOn]) {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushCommentsKey];
+    } else {
+        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kFTUserDefaultsSettingsViewControllerPushCommentsKey];
+    }
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)switchCell:(FTSwitchCell *)switchCell didChangeMentionSwitch:(UISwitch *)lever {
+    if ([lever isOn]) {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushMentionsKey];
+    } else {
+        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kFTUserDefaultsSettingsViewControllerPushMentionsKey];
+    }
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)switchCell:(FTSwitchCell *)switchCell didChangeFacebookSwitch:(UISwitch *)lever {
     if ([lever isOn]) {
         NSArray *permissions = [[NSArray alloc] initWithObjects:@"email",@"public_profile",@"user_friends",nil];
         [PFFacebookUtils linkUser:[PFUser currentUser] permissions:permissions block:^(BOOL succeeded, NSError *error) {
@@ -485,7 +557,7 @@
     }
 }
 
-- (void)socialCell:(FTSocialCell *)socialCell didChangeTwitterSwitch:(UISwitch *)lever {
+- (void)switchCell:(FTSwitchCell *)switchCell didChangeTwitterSwitch:(UISwitch *)lever {
     NSLog(@"socialCell:didChangeTwitterSwitch:");
     if ([lever isOn]) {
         [PFTwitterUtils linkUser:[PFUser currentUser] block:^(BOOL succeeded, NSError *error) {
