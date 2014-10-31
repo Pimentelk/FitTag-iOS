@@ -252,7 +252,7 @@
         UILabel *missingCoverPhotoLabel = [[UILabel alloc] initWithFrame:coverPhotoImageView.frame];
         [missingCoverPhotoLabel setTextAlignment: NSTextAlignmentCenter];
         [missingCoverPhotoLabel setUserInteractionEnabled:NO];
-        [missingCoverPhotoLabel setFont:[UIFont fontWithName:FITTAG_FONT size:(24.0)]];
+        [missingCoverPhotoLabel setFont:BENDERSOLID(24)];
         [missingCoverPhotoLabel setTextColor: [UIColor blackColor]];
         [missingCoverPhotoLabel setText:@"No Cover Photo Found"];
         
@@ -309,7 +309,7 @@
     UILabel *facebookLabel = [[UILabel alloc] initWithFrame:CGRectMake(LEFT_PADDING, 0, 120, ROW_HEIGHT)];
     [facebookLabel setTextAlignment: NSTextAlignmentLeft];
     [facebookLabel setUserInteractionEnabled: YES];
-    [facebookLabel setFont:[UIFont fontWithName:FITTAG_FONT size:(18.0)]];
+    [facebookLabel setFont:BENDERSOLID(18)];
     [facebookLabel setTextColor: [UIColor blackColor]];
     [facebookLabel setText:SOCIAL_FACEBOOK];
     [facebookLabel setTag:0];
@@ -318,7 +318,7 @@
     UILabel *twitterLabel = [[UILabel alloc] initWithFrame:CGRectMake(LEFT_PADDING, 0, 120, ROW_HEIGHT)];
     [twitterLabel setTextAlignment: NSTextAlignmentLeft];
     [twitterLabel setUserInteractionEnabled: YES];
-    [twitterLabel setFont:[UIFont fontWithName:FITTAG_FONT size:(18.0)]];
+    [twitterLabel setFont:BENDERSOLID(18)];
     [twitterLabel setTextColor: [UIColor blackColor]];
     [twitterLabel setText:SOCIAL_TWITTER];
     [twitterLabel setTag:1];
@@ -348,7 +348,7 @@
                                                blue:FT_RED_COLOR_BLUE alpha:1.0f];
     
     notificationLabel.backgroundColor = [UIColor clearColor];
-    notificationLabel.font = [UIFont fontWithName:FITTAG_FONT size:(16.0)];
+    notificationLabel.font = BENDERSOLID(16);
     notificationLabel.text = @"Notifications";
     [self.view addSubview:notificationLabel];
     
@@ -369,7 +369,7 @@
                                              blue:FT_RED_COLOR_BLUE alpha:1.0f];
     
     rewardLabel.backgroundColor = [UIColor clearColor];
-    rewardLabel.font = [UIFont fontWithName:FITTAG_FONT size:(16.0)];
+    rewardLabel.font = BENDERSOLID(16);
     rewardLabel.text = @"Rewards";
     [self.view addSubview:rewardLabel];
     
@@ -533,7 +533,7 @@
     NSData *coverPhotoImageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
     
     PFUser *user = [PFUser currentUser];
-    [user setValue:[PFFile fileWithName:COVER_JPEG data:coverPhotoImageData] forKey:kFTUserCoverPhotoKey];
+    [user setValue:[PFFile fileWithName:FILE_COVER_JPEG data:coverPhotoImageData] forKey:kFTUserCoverPhotoKey];
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
             [self showHudMessage:PROFILE_UPDATED WithDuration:3];
@@ -556,8 +556,8 @@
     NSData *profileImageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
     
     PFUser *user = [PFUser currentUser];
-    [user setValue:[PFFile fileWithName:MEDIUM_JPEG data:profileImageData] forKey:kFTUserProfilePicMediumKey];
-    [user setValue:[PFFile fileWithName:SMALL_JPEG data:profileImageData] forKey:kFTUserProfilePicSmallKey];
+    [user setValue:[PFFile fileWithName:FILE_MEDIUM_JPEG data:profileImageData] forKey:kFTUserProfilePicMediumKey];
+    [user setValue:[PFFile fileWithName:FILE_SMALL_JPEG data:profileImageData] forKey:kFTUserProfilePicSmallKey];
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
             [self showHudMessage:PROFILE_UPDATED WithDuration:3];
@@ -607,12 +607,12 @@
                 NSData* profileImageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[NSString stringWithFormat:FACEBOOK_GRAPH_PICTURES_URL,[FBuser objectForKey:FBUserIDKey]]]];
                 
                 PFUser *user = [PFUser currentUser];
-                [user setValue:[PFFile fileWithName:MEDIUM_JPEG data:profileImageData] forKey:kFTUserProfilePicMediumKey];
-                [user setValue:[PFFile fileWithName:SMALL_JPEG data:profileImageData] forKey:kFTUserProfilePicSmallKey];
+                [user setValue:[PFFile fileWithName:FILE_MEDIUM_JPEG data:profileImageData] forKey:kFTUserProfilePicMediumKey];
+                [user setValue:[PFFile fileWithName:FILE_SMALL_JPEG data:profileImageData] forKey:kFTUserProfilePicSmallKey];
                 [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         // Update profile image
-                        PFFile *file = [PFFile fileWithName:MEDIUM_JPEG data:profileImageData];
+                        PFFile *file = [PFFile fileWithName:FILE_MEDIUM_JPEG data:profileImageData];
                         [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
                             if (!error) {
                                 [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
@@ -675,8 +675,8 @@
             NSData *profileImageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:profile_image]];
             
             PFUser *user = [PFUser currentUser];
-            [user setValue:[PFFile fileWithName:MEDIUM_JPEG data:profileImageData] forKey:kFTUserProfilePicMediumKey];
-            [user setValue:[PFFile fileWithName:SMALL_JPEG data:profileImageData] forKey:kFTUserProfilePicSmallKey];
+            [user setValue:[PFFile fileWithName:FILE_MEDIUM_JPEG data:profileImageData] forKey:kFTUserProfilePicMediumKey];
+            [user setValue:[PFFile fileWithName:FILE_SMALL_JPEG data:profileImageData] forKey:kFTUserProfilePicSmallKey];
             [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (error) {
                     NSLog(@"%@%@",ERROR_MESSAGE,error);
@@ -688,7 +688,7 @@
                                       otherButtonTitles:nil] show];
                 } else {
                     // Update profile image
-                    PFFile *file = [PFFile fileWithName:MEDIUM_JPEG data:profileImageData];
+                    PFFile *file = [PFFile fileWithName:FILE_MEDIUM_JPEG data:profileImageData];
                     [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
                         if (!error) {
                             [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
