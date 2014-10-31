@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.library.${PRODUCT_NAME:rfc1034identifier}</string>
+	<string>com.library.FitTag</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -37,13 +37,18 @@
 	<string>FitTag</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Allow maps to determine your location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>FitTag would like to use your location</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>Allow maps to determine your location</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Bender-Solid.otf</string>
+	</array>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
+		<string>gamekit</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
