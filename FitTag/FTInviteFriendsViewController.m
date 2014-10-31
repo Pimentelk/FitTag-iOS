@@ -92,7 +92,7 @@
                     // List of all users within 50 miles that are not already being followed
                     PFQuery *followUsersByLocationQuery = [PFQuery queryWithClassName:kFTUserClassKey];
                     [followUsersByLocationQuery whereKey:kFTUserObjectIdKey notEqualTo:[PFUser currentUser].objectId];
-                    [followUsersByLocationQuery whereKey:kFTUserLocationKey nearGeoPoint:geoPoint withinMiles:50];
+                    [followUsersByLocationQuery whereKey:kFTUserLocationKey nearGeoPoint:geoPoint withinMiles:LOCATION_USERS_WITHIN_MILES];
                     [followUsersByLocationQuery whereKeyExists:kFTUserLocationKey];
                     [followUsersByLocationQuery whereKey:kFTUserObjectIdKey notContainedIn:followedUserIds];
                     [followUsersByLocationQuery setLimit:100];
