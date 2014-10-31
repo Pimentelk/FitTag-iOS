@@ -37,7 +37,7 @@
     label.textAlignment =  NSTextAlignmentCenter;
     label.textColor = [UIColor blackColor];
     label.backgroundColor = [UIColor whiteColor];
-    label.font = [UIFont fontWithName:@"Arial Rounded MT Bold" size:(22.0)];
+    label.font = BENDERSOLID(22);
     label.text = text;
     
     [self addSubview:label];
