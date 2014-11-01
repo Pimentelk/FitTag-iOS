@@ -274,9 +274,6 @@ typedef enum {
     
     if (cell == nil) {
         cell = [[FTLoadMoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NextPageCellIdentifier];
-        [cell.mainView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"BackgroundFindFriendsCell.png"]]];
-        cell.hideSeparatorBottom = YES;
-        cell.hideSeparatorTop = YES;
     }
     
     cell.selectionStyle = UITableViewCellSelectionStyleGray;

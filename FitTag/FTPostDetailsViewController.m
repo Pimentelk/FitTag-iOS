@@ -228,8 +228,6 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     
     if (cell == nil) {
         cell = [[FTLoadMoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-        cell.cellInsetWidth = kFTCellInsetWidth;
-        cell.hideSeparatorTop = YES;
     }
     
     return cell;

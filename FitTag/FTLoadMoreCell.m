@@ -10,69 +10,35 @@
 #import "FTUtility.h"
 
 @implementation FTLoadMoreCell
-@synthesize cellInsetWidth;
-@synthesize mainView;
-@synthesize separatorImageTop;
-@synthesize separatorImageBottom;
-@synthesize loadMoreImageView;
-@synthesize hideSeparatorTop;
-@synthesize hideSeparatorBottom;
 
 #pragma mark - NSObject
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     
-    if (self) {
-        // Initialization code
-        self.cellInsetWidth = 0.0f;
-        hideSeparatorTop = NO;
-        hideSeparatorBottom = NO;
-        
+    if (self) {        
         self.opaque = YES;
         self.selectionStyle = UITableViewCellSelectionStyleGray;
         self.accessoryType = UITableViewCellAccessoryNone;
         self.backgroundColor = [UIColor clearColor];
         
-        self.loadMoreImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"CellLoadMore.png"]];
-        [mainView addSubview:self.loadMoreImageView];
+        [self.contentView setBackgroundColor:[UIColor colorWithRed:FT_RED_COLOR_RED
+                                                             green:FT_RED_COLOR_GREEN
+                                                              blue:FT_RED_COLOR_BLUE
+                                                             alpha:1.0f]];
         
-        [self.contentView addSubview:mainView];
+        UILabel *loadMoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+        [loadMoreLabel setTextAlignment:NSTextAlignmentCenter];
+        [loadMoreLabel setBackgroundColor:[UIColor clearColor]];
+        [loadMoreLabel setTextColor:[UIColor whiteColor]];
+        [loadMoreLabel setFont:BENDERSOLID(16)];
+        [loadMoreLabel setText:@"Load More..."];
+        
+        [self.contentView addSubview:loadMoreLabel];
+        [self.contentView bringSubviewToFront:loadMoreLabel];
     }
     
     return self;
 }
-
-#pragma mark - UIView
-
-- (void)layoutSubviews {
-    [mainView setFrame:CGRectMake( self.cellInsetWidth, self.contentView.frame.origin.y, self.contentView.frame.size.width-2*self.cellInsetWidth, self.contentView.frame.size.height)];
-    
-    // Layout load more text
-    [self.loadMoreImageView setFrame:CGRectMake( -self.cellInsetWidth, -2.0f, 320.0f, 31.0f)];
-    
-    // Layout separator
-    [self.separatorImageBottom setFrame:CGRectMake( 0.0f, self.frame.size.height - 2.0f, self.frame.size.width-self.cellInsetWidth * 2.0f, 2.0f)];
-    [self.separatorImageBottom setHidden:hideSeparatorBottom];
-    
-    [self.separatorImageTop setFrame:CGRectMake(0.0f, 0.0f, self.frame.size.width - self.cellInsetWidth * 2.0f, 2.0f)];
-    [self.separatorImageTop setHidden:hideSeparatorTop];
-}
-
-- (void)drawRect:(CGRect)rect {
-    [super drawRect:rect];
-    if (self.cellInsetWidth != 0.0f) {
-        [FTUtility drawSideDropShadowForRect:mainView.frame inContext:UIGraphicsGetCurrentContext()];
-    }
-}
-
-#pragma mark - FTLoadMoreCell
-
-- (void)setCellInsetWidth:(CGFloat)insetWidth {
-    cellInsetWidth = insetWidth;
-    [mainView setFrame:CGRectMake( insetWidth, mainView.frame.origin.y, mainView.frame.size.width - 2.0f * insetWidth, mainView.frame.size.height)];
-    [self setNeedsDisplay];
-}
-
 @end
 

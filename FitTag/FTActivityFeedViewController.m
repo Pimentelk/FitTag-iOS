@@ -244,8 +244,6 @@
     if (!cell) {
         cell = [[FTLoadMoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:LoadMoreCellIdentifier];
         cell.selectionStyle = UITableViewCellSelectionStyleGray;
-        cell.hideSeparatorBottom = YES;
-        cell.mainView.backgroundColor = [UIColor clearColor];
     }
     return cell;
 }
