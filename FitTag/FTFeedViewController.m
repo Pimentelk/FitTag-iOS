@@ -108,8 +108,7 @@
 - (BOOL) isFirstTimeUser:(PFUser *)user {
     //NSLog(@"%@::isFirstTimeUser:",VIEWCONTROLLER_CONFIG);
     // Check if the user has logged in before
-    if (![user objectForKey:kFTUserLastLoginKey]) {
-        
+    if (![user objectForKey:kFTUserLastLoginKey]) {        
         // Set default settings
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushFollowsKey];
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushLikesKey];
@@ -129,7 +128,7 @@
         FTInterestsViewController *interestsViewController = [[FTInterestsViewController alloc] initWithCollectionViewLayout:layoutFlow];
         UINavigationController *navController = [[UINavigationController alloc] init];
         [navController setViewControllers:@[interestsViewController] animated:NO];
-        [self presentViewController:navController animated:YES completion: ^(){
+        [self presentViewController:navController animated:YES completion:^(){
             [user setValue:[NSDate date] forKey:kFTUserLastLoginKey];
             if (user) {
                 [user saveEventually];
@@ -189,6 +188,7 @@
             [user setValue:[PFFile fileWithName:FILE_SMALL_JPEG data:profileImageData]
                     forKey:kFTUserProfilePicSmallKey];
             
+            [user setValue:kFTUserTypeUser forKey:kFTUserTypeKey];
             [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (error) {
                     NSLog(@"%@%@",ERROR_MESSAGE,error);
@@ -223,6 +223,7 @@
                 [user setValue:[FBuser objectForKey:FBUserEmailKey] forKey:kFTUserEmailKey];
                 [user setValue:[FBuser objectForKey:FBUserIDKey] forKey:kFTUserFacebookIDKey];
                 //[user setValue:DEFAULT_BIO_TEXT_B forKey:kFTUserBioKey];
+                [user setValue:kFTUserTypeUser forKey:kFTUserTypeKey];
                 [user setValue:[PFFile fileWithName:FILE_MEDIUM_JPEG data:profileImageData] forKey:kFTUserProfilePicMediumKey];
                 [user setValue:[PFFile fileWithName:FILE_SMALL_JPEG data:profileImageData] forKey:kFTUserProfilePicSmallKey];
                 [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
