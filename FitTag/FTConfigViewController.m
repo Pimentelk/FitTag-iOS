@@ -170,8 +170,7 @@ shouldBeginLogInWithUsername:(NSString *)username
 
 // Sent to the delegate when a PFUser is signed up.
 - (void)signUpViewController:(PFSignUpViewController *)signUpController didSignUpUser:(PFUser *)user {
-    NSLog(@"%@::signUpViewController:didSignUpUser:",VIEWCONTROLLER_CONFIG);
-    
+    //NSLog(@"%@::signUpViewController:didSignUpUser:",VIEWCONTROLLER_CONFIG);
     if (user){
         NSLog(USER_DID_LOGIN);
         [user setValue:signUpViewController.firstname forKey:kFTUserFirstnameKey];
@@ -184,23 +183,26 @@ shouldBeginLogInWithUsername:(NSString *)username
             [user setValue:DEFAULT_BIO_TEXT_A forKey:kFTUserBioKey];
         }
         
-        UIImage *resizedImage = [signUpViewController.coverPhoto resizedImageWithContentMode:UIViewContentModeScaleAspectFit
-                                                                                      bounds:CGSizeMake(560.0f, 560.0f)
-                                                                        interpolationQuality:kCGInterpolationHigh];
-        
-        UIImage *thumbImage = [signUpViewController.coverPhoto thumbnailImage:86.0f
-                                                            transparentBorder:0.0f
-                                                                 cornerRadius:10.0f
-                                                         interpolationQuality:kCGInterpolationDefault];
-        
-        NSData *imageData           = UIImageJPEGRepresentation(resizedImage, 0.8f);
-        NSData *thumbnailImageData  = UIImagePNGRepresentation(thumbImage);
-        
-        if (imageData && thumbnailImageData) {
-            [user setValue:[PFFile fileWithName:FILE_MEDIUM_JPEG data:imageData] forKey:kFTUserProfilePicMediumKey];
-            [user setValue:[PFFile fileWithName:FILE_SMALL_JPEG data:imageData] forKey:kFTUserProfilePicSmallKey];
+        if (signUpViewController.profilePhoto) {
+            UIImage *resizedImage = [signUpViewController.profilePhoto resizedImageWithContentMode:UIViewContentModeScaleAspectFit
+                                                                                            bounds:CGSizeMake(560.0f, 560.0f)
+                                                                              interpolationQuality:kCGInterpolationHigh];
+            
+            UIImage *thumbImage = [signUpViewController.profilePhoto thumbnailImage:86.0f
+                                                                  transparentBorder:0.0f
+                                                                       cornerRadius:10.0f
+                                                               interpolationQuality:kCGInterpolationDefault];
+            
+            NSData *imageData           = UIImageJPEGRepresentation(resizedImage, 0.8f);
+            NSData *thumbnailImageData  = UIImagePNGRepresentation(thumbImage);
+            
+            if (imageData && thumbnailImageData) {
+                [user setValue:[PFFile fileWithName:FILE_MEDIUM_JPEG data:imageData] forKey:kFTUserProfilePicMediumKey];
+                [user setValue:[PFFile fileWithName:FILE_SMALL_JPEG data:imageData] forKey:kFTUserProfilePicSmallKey];
+            }
         }
         
+        [user setValue:kFTUserTypeUser forKey:kFTUserTypeKey];
         [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (error) {
                 [user saveEventually];
