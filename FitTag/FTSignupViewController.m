@@ -346,8 +346,9 @@
 
 #pragma mark - FTEditPhotoViewController
 
-- (void)camViewController:(FTCamViewController *)camViewController photo:(UIImage *)photo {
-    self.coverPhoto = photo;
+- (void)camViewController:(FTCamViewController *)camViewController profilePicture:(UIImage *)photo {
+    //NSLog(@"%@::camViewController:photo:",VIEWCONTROLLER_SIGNUP);
+    self.profilePhoto = photo;
     
     UIImageView *imageView = [self setImage:photo];
     [imageView setUserInteractionEnabled:YES];
@@ -361,4 +362,5 @@
     [self.profileImageButton removeFromSuperview];
     [self.signUpView addSubview:imageView];
 }
+
 @end

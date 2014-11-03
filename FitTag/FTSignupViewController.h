@@ -13,6 +13,6 @@
 @property NSString *firstname;
 @property NSString *lastname;
 @property NSString *about;
-@property UIImage *coverPhoto;
+@property UIImage *profilePhoto;
 @property BOOL isPasswordConfirmed;
 @end
