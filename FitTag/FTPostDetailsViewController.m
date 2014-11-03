@@ -184,7 +184,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [query whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeComment];
     [query orderByAscending:@"createdAt"];
     
-    [query setCachePolicy:kPFCachePolicyNetworkOnly];
+    [query setCachePolicy:kPFCachePolicyCacheThenNetwork];
     
     // If no objects are loaded in memory, we look to the cache first to fill the table
     // and then subsequently do a query against the network.
@@ -311,7 +311,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
         [commentSendButton setEnabled:NO];
     }
     
-    [textField setText:@""];
+    [textField setText:EMPTY_STRING];
     return [textField resignFirstResponder];
 }
 
@@ -431,7 +431,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     }
     
     self.likersQueryInProgress = YES;
-    PFQuery *query = [FTUtility queryForActivitiesOnPost:post cachePolicy:kPFCachePolicyNetworkOnly];
+    PFQuery *query = [FTUtility queryForActivitiesOnPost:post cachePolicy:kPFCachePolicyCacheThenNetwork];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         self.likersQueryInProgress = NO;
         if (error) {
