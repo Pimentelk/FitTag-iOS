@@ -68,7 +68,7 @@
         PFQuery *followingActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
         [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
         [followingActivitiesQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
-        followingActivitiesQuery.cachePolicy = kPFCachePolicyNetworkOnly;
+        followingActivitiesQuery.cachePolicy = kPFCachePolicyCacheThenNetwork;
         
         PFQuery *query = [PFQuery queryWithClassName:kFTRewardsClassKey];
         [query whereKey:kFTRewardsUserKey matchesKey:kFTActivityToUserKey inQuery:followingActivitiesQuery];
