@@ -16,7 +16,7 @@
 #import "FTFindFriendsViewController.h"
 #import "MBProgressHUD.h"
 #import "FTSearchViewController.h"
-#import "FTUserProfileViewController.h"
+#import "FTBusinessProfileViewController.h"
 #import "FTNavigationController.h"
 #import "FTPostDetailsViewController.h"
 
@@ -412,8 +412,8 @@ enum PinAnnotationTypeTag {
     [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
     [dismissProfileButton setTintColor:[UIColor whiteColor]];
     
-    FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController setUser:[PFUser currentUser]];
+    FTBusinessProfileViewController *profileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    [profileViewController setBusiness:aUser];
     [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
     
