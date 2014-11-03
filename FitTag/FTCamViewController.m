@@ -302,8 +302,57 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
     [cameraRoll setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_CAMERA_ROLL] forState:UIControlStateNormal];
     [cameraRoll addTarget:self action:@selector(didTapCameraRollButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [cameraRoll setTintColor:[UIColor grayColor]];
-    
+    [cameraRoll setClipsToBounds:YES];
     [self.view addSubview:cameraRoll];
+    
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    
+    // Block called for every asset selected
+    void (^selectionBlock)(ALAsset*, NSUInteger, BOOL*) = ^(ALAsset *asset, NSUInteger index, BOOL *innerStop) {
+        // The end of the enumeration is signaled by asset == nil.
+        if (asset == nil) {
+            return;
+        }
+        
+        ALAssetRepresentation *representation = [asset defaultRepresentation];
+        
+        // Retrieve the image orientation from the ALAsset
+        UIImageOrientation orientation = UIImageOrientationUp;
+        NSNumber *orientationValue = [asset valueForProperty:@"ALAssetPropertyOrientation"];
+        if (orientationValue != nil) {
+            orientation = [orientationValue intValue];
+        }
+        
+        CGFloat scale  = 1;
+        
+        // this is the most recent saved photo
+        UIImageView *photo = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:[representation fullResolutionImage]
+                                                                                    scale:scale orientation:orientation]];
+        if (photo) {
+            UIImageView *cameraRollHexagon = [FTUtility getProfileHexagonWithFrame:cameraRoll.frame];
+            photo.frame = cameraRollHexagon.frame;
+            photo.layer.mask = cameraRollHexagon.layer.mask;
+            [self.view addSubview:photo];
+        }
+    };
+    
+    // Block called when enumerating asset groups
+    void (^enumerationBlock)(ALAssetsGroup*, BOOL*) = ^(ALAssetsGroup *group, BOOL *stop) {
+        // Within the group enumeration block, filter to enumerate just photos.
+        [group setAssetsFilter:[ALAssetsFilter allPhotos]];
+        
+        // Get the photo at the last index
+        NSUInteger index              = [group numberOfAssets] - 1;
+        NSIndexSet *lastPhotoIndexSet = [NSIndexSet indexSetWithIndex:index];
+        [group enumerateAssetsAtIndexes:lastPhotoIndexSet options:0 usingBlock:selectionBlock];
+    };
+    
+    // Enumerate just the photos and videos group by using ALAssetsGroupSavedPhotos.
+    [library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
+                           usingBlock:enumerationBlock
+                         failureBlock:^(NSError *error) {
+                             // handle error
+                         }];
     
     dispatch_queue_t sessionQueue = dispatch_queue_create("session queue", DISPATCH_QUEUE_SERIAL);
 	[self setSessionQueue:sessionQueue];
@@ -941,24 +990,28 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 #pragma mark - ()
 
 - (void)didTakeProfilePictureAction:(UIImage *)photo {
+    NSLog(@"%@::didTakeProfilePictureAction:",VIEWCONTROLLER_CAM);
     if ([delegate respondsToSelector:@selector(camViewController:profilePicture:)]){
         [delegate camViewController:self profilePicture:photo];
     }
 }
 
 - (void)didSelectProfilePictureAction:(UIImage *)photo {
+    NSLog(@"%@::didSelectProfilePictureAction:",VIEWCONTROLLER_CAM);
     if ([delegate respondsToSelector:@selector(camViewController:profilePicture:)]){
         [delegate camViewController:self profilePicture:photo];
     }
 }
 
 - (void)didTakeCoverPhotoAction:(UIImage *)photo {
+    NSLog(@"%@::didTakeCoverPhotoAction:",VIEWCONTROLLER_CAM);
     if ([delegate respondsToSelector:@selector(camViewController:coverPhoto:)]){
         [delegate camViewController:self coverPhoto:photo];
     }
 }
 
 - (void)didSelectCoverPhotoAction:(UIImage *)photo {
+    NSLog(@"%@::didSelectCoverPhotoAction:",VIEWCONTROLLER_CAM);
     if ([delegate respondsToSelector:@selector(camViewController:coverPhoto:)]){
         [delegate camViewController:self coverPhoto:photo];
     }
@@ -967,11 +1020,13 @@ static void * SessionRunningAndDeviceAuthorizedContext = &SessionRunningAndDevic
 #pragma mark - FTCamRollViewControllerDelegate
 
 - (void)camRollViewController:(FTCamRollViewController *)camRollViewController profilePhoto:(UIImage *)photo {
+    NSLog(@"photo: %@",photo);
     [self didSelectProfilePictureAction:photo];
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)camRollViewController:(FTCamRollViewController *)camRollViewController coverPhoto:(UIImage *)photo {
+    NSLog(@"photo: %@",photo);
     [self didSelectCoverPhotoAction:photo];
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }

@@ -38,15 +38,13 @@
     [self.navigationController.navigationBar setBarTintColor:[UIColor redColor]];
     
     // Override the back idnicator
-    UIBarButtonItem *hideCameraRoll = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"]
-                                                                       style:UIBarButtonItemStylePlain
-                                                                      target:self
-                                                                      action:@selector(closeCameraRollAction:)];
-    [hideCameraRoll setTintColor:[UIColor whiteColor]];
-    [self.navigationItem setLeftBarButtonItem:hideCameraRoll];
-    
-    //UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self.parent action:@selector(cancelImagePicker)];
-	//[self.navigationItem setRightBarButtonItem:cancelButton];
+    UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] init];
+    [backButtonItem setStyle:UIBarButtonItemStylePlain];
+    [backButtonItem setTarget:self.parent];
+    [backButtonItem setAction:@selector(didTapBackButtonAction)];
+    [backButtonItem setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backButtonItem setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setLeftBarButtonItem:backButtonItem];
 
     NSMutableArray *tempArray = [[NSMutableArray alloc] init];
 	self.assetGroups = tempArray;
@@ -97,10 +95,6 @@
         
         }
     });    
-}
-
-- (void)closeCameraRollAction:(id)sender {
-    [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 - (void)reloadTableView

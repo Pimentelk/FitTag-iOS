@@ -15,7 +15,9 @@
 #import "FTToolBar.h"
 #import "FTEditPostViewController.h"
 
-@interface FTCamRollViewController ()
+@interface FTCamRollViewController () {
+    ELCImagePickerController *elcPicker;
+}
 
 @property (nonatomic, strong) ALAssetsLibrary *specialLibrary;
 
@@ -38,13 +40,15 @@
     [self.navigationItem setTitle: @"Camera Roll"];
     [self.navigationItem setHidesBackButton:TRUE];
 
-    // Override the back idnicator
-    UIBarButtonItem *hideCameraRoll = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"]
-                                                                       style:UIBarButtonItemStylePlain
-                                                                      target:self
-                                                                      action:@selector(closeCameraRollAction:)];
-    [hideCameraRoll setTintColor:[UIColor whiteColor]];
-    [self.navigationItem setLeftBarButtonItem:hideCameraRoll];
+    // Close the camera roll
+    UIBarButtonItem *hideCameraRollButtonItem = [[UIBarButtonItem alloc] init];
+    [hideCameraRollButtonItem setStyle:UIBarButtonItemStylePlain];
+    [hideCameraRollButtonItem setTarget:self];
+    [hideCameraRollButtonItem setAction:@selector(didTapCloseCameraRollButtonAction:)];
+    [hideCameraRollButtonItem setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    
+    [hideCameraRollButtonItem setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setLeftBarButtonItem:hideCameraRollButtonItem];
     
     ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
     self.specialLibrary = library;
@@ -78,14 +82,33 @@
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
 }
 
-- (void)closeCameraRollAction:(id)sender {
+- (void)didTapCloseCameraRollButtonAction:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)didTapBackButtonAction:(id)sender {
+    [elcPicker dismissViewControllerAnimated:NO completion:^(){
+        [self.navigationController popViewControllerAnimated:YES];
+    }];
+}
+
+- (void)elcImagePickerControllerDidCancel:(ELCImagePickerController *)picker {
+    [self dismissViewControllerAnimated:NO completion:^(){
+        [self.navigationController popViewControllerAnimated:NO];
+    }];
 }
 
 - (void)displayPickerForGroup:(ALAssetsGroup *)group {
     
-    ELCImagePickerController *elcPicker = [[ELCImagePickerController alloc] initImagePicker];
-
+    UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] init];
+    [backButtonItem setStyle:UIBarButtonItemStylePlain];
+    [backButtonItem setTarget:self];
+    [backButtonItem setAction:@selector(didTapBackButtonAction:)];
+    [backButtonItem setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    
+    elcPicker = [[ELCImagePickerController alloc] initImagePicker];
+    [elcPicker.navigationItem setLeftBarButtonItem:backButtonItem];
+    
     //Set the maximum number of images to select to 100
     if (self.isProfilePicture || self.isCoverPhoto) {
         elcPicker.maximumImagesCount = 1;
@@ -175,11 +198,6 @@
         editPostViewController.delegate = self;
         [self.navigationController pushViewController:editPostViewController animated:NO];
     }
-}
-
-- (void)elcImagePickerControllerDidCancel:(ELCImagePickerController *)picker {
-    [self dismissViewControllerAnimated:NO completion:nil];
-    [self.navigationController popViewControllerAnimated:NO];
 }
 
 - (void)didSelectProfilePictureAction:(UIImage *)photo {

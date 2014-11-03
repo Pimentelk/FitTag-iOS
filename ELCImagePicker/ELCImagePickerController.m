@@ -60,6 +60,11 @@
     return self.albumPicker.mediaTypes;
 }
 
+// Wrote this method to prevent from breaking anything if I rename cancelImagePicker
+- (void)didTapBackButtonAction {
+    [self cancelImagePicker];
+}
+
 - (void)cancelImagePicker
 {
 	if ([_imagePickerDelegate respondsToSelector:@selector(elcImagePickerControllerDidCancel:)]) {

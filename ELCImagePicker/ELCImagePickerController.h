@@ -56,6 +56,7 @@
 
 - (id)initImagePicker;
 - (void)cancelImagePicker;
+- (void)didTapBackButtonAction;
 
 @end
 
