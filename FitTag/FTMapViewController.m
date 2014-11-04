@@ -73,6 +73,7 @@ enum PinAnnotationTypeTag {
 @interface FTMapViewController () {
     CLLocationManager *locationManager;
     UIScrollView *scrollView;
+    NSMutableArray *mapItems;
 }
 
 @property (nonatomic, strong) CLLocation *location;
@@ -88,6 +89,9 @@ enum PinAnnotationTypeTag {
 
 - (void)viewDidLoad{
     [super viewDidLoad];
+    
+    
+    mapItems = [[NSMutableArray alloc] init];
     
     // Init the MKMapView
     self.mapView = [[MKMapView alloc] initWithFrame: self.view.frame];
@@ -149,7 +153,7 @@ enum PinAnnotationTypeTag {
                                                                       self.navigationController.toolbar.frame.size.height,
                                                                       self.mapView.frame.size.width, SCROLLVIEW_HEIGHT)];
     [scrollView setScrollEnabled:YES];
-    //[mapScrollView setDelegate:self];
+    [scrollView setDelegate:self];
     [scrollView setBackgroundColor:[UIColor whiteColor]];
     [scrollView setUserInteractionEnabled:YES];
     [scrollView setDelaysContentTouches:YES];
@@ -157,6 +161,7 @@ enum PinAnnotationTypeTag {
     [scrollView setCanCancelContentTouches:YES];
     [scrollView setPagingEnabled: YES];
     [scrollView setAlwaysBounceVertical:NO];
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -272,6 +277,10 @@ enum PinAnnotationTypeTag {
 
 #pragma mark - ()
 
+- (void)setMapCenterWithPoint:(PFGeoPoint *)centerPoint {
+    self.mapView.region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(centerPoint.latitude, centerPoint.longitude), MKCoordinateSpanMake(0.0225f, 0.0225f));
+}
+
 - (void)didTapPopProfileButtonAction:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -328,10 +337,11 @@ enum PinAnnotationTypeTag {
         [mapScrollViewSubView removeFromSuperview];
     }
     
+    // Clear the mapItems
+    [mapItems removeAllObjects];
+    
     PFGeoPoint *nearGeoPoint = [PFGeoPoint geoPointWithLatitude:self.location.coordinate.latitude
                                                       longitude:self.location.coordinate.longitude];
-    
-    NSMutableArray *mapItems = [[NSMutableArray alloc] init];
     
     PFQuery *queryBusinessUsers = [PFQuery queryWithClassName:kFTUserClassKey];
     [queryBusinessUsers whereKey:kFTUserTypeKey equalTo:kFTUserTypeBusiness];
@@ -386,6 +396,39 @@ enum PinAnnotationTypeTag {
             }];
         }
     }];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)aScrollView {
+    if (aScrollView.contentOffset.x < 0 || aScrollView.contentOffset.x > (aScrollView.contentSize.width - 320))
+        [self killScroll];
+    
+    static NSInteger previousPage = 0;
+    CGFloat pageWidth = aScrollView.frame.size.width;
+    float fractionalPage = aScrollView.contentOffset.x / pageWidth;
+    NSInteger page = lround(fractionalPage);
+    
+    if (previousPage != page) {
+        if (previousPage < page) {
+            if (mapItems[page]) {
+                //NSLog(@"mapItems: %@",mapItems[page]);
+                // Using key kFTUserLocationKey, both Post and User classes have a "location" key
+                [self setMapCenterWithPoint:[mapItems[page] objectForKey:kFTUserLocationKey]];
+            }
+        } else if (previousPage > page) {
+            if (mapItems[page]) {
+                //NSLog(@"mapItems: %@",mapItems[page]);
+                [self setMapCenterWithPoint:[mapItems[page] objectForKey:kFTUserLocationKey]];
+            }
+        }
+        previousPage = page;
+    }
+}
+
+- (void)killScroll {
+    scrollView.scrollEnabled = NO;
+    scrollView.scrollEnabled = YES;
 }
 
 #pragma mark - FT
