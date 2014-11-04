@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
+#import "STTweetLabel.h"
+
 @class FTProfileImageView;
 @protocol FTBaseTextCellDelegate;
 
@@ -29,7 +31,7 @@
 @property (nonatomic, strong) UIButton *nameButton;
 @property (nonatomic, strong) UIButton *avatarImageButton;
 @property (nonatomic, strong) FTProfileImageView *avatarImageView;
-@property (nonatomic, strong) UILabel *contentLabel;
+@property (nonatomic, strong) STTweetLabel *contentLabel;
 @property (nonatomic, strong) UILabel *timeLabel;
 @property (nonatomic, strong) UIImageView *separatorImage;
 

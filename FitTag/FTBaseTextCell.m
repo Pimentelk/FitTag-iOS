@@ -81,7 +81,8 @@ static TTTTimeIntervalFormatter *timeFormatter;
         [self.nameButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [mainView addSubview:self.nameButton];
         
-        self.contentLabel = [[UILabel alloc] init];
+        //self.contentLabel = [[UILabel alloc] init];
+        self.contentLabel = [[STTweetLabel alloc] init];
         [self.contentLabel setFont:[UIFont systemFontOfSize:13.0f]];
         [self.contentLabel setTextColor:[UIColor colorWithRed:73./255. green:55./255. blue:35./255. alpha:1.000]];
         [self.contentLabel setNumberOfLines:0];
@@ -91,6 +92,13 @@ static TTTTimeIntervalFormatter *timeFormatter;
         [self.contentLabel setShadowOffset:CGSizeMake( 0.0f, 1.0f)];
         [mainView addSubview:self.contentLabel];
         
+        [self.contentLabel setDetectionBlock:^(STTweetHotWord hotWord, NSString *string, NSString *protocol, NSRange range) {
+            NSArray *hotWords = @[@"Handle", @"Hashtag", @"Link"];
+            
+            NSString *detectionString = [NSString stringWithFormat:@"%@ [%d,%d]: %@%@", hotWords[hotWord], (int)range.location, (int)range.length, string, (protocol != nil) ? [NSString stringWithFormat:@" *%@*", protocol] : @""];
+            NSLog(@"detectionString: %@",detectionString);
+        }];
+        
         self.timeLabel = [[UILabel alloc] init];
         [self.timeLabel setFont:[UIFont systemFontOfSize:11]];
         [self.timeLabel setTextColor:[UIColor grayColor]];
@@ -98,7 +106,6 @@ static TTTTimeIntervalFormatter *timeFormatter;
         [self.timeLabel setShadowColor:[UIColor colorWithWhite:1.0f alpha:0.70f]];
         [self.timeLabel setShadowOffset:CGSizeMake(0, 1)];
         [mainView addSubview:self.timeLabel];
-        
         
         self.avatarImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [self.avatarImageButton setBackgroundColor:[UIColor clearColor]];
@@ -140,7 +147,16 @@ static TTTTimeIntervalFormatter *timeFormatter;
                                                               options:NSStringDrawingUsesLineFragmentOrigin
                                                            attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:13.0f]}
                                                               context:nil].size;
-    [self.contentLabel setFrame:CGRectMake(nameX, vertTextBorderSpacing, contentSize.width, contentSize.height)];
+    
+    CGFloat avatarRange = avatarX;
+    CGFloat nameRange = nameX;
+    
+    [self.contentLabel setFrame:CGRectMake(nameX, vertTextBorderSpacing-2, self.frame.size.width - avatarRange - nameRange, contentSize.height)];
+    
+    CGSize size = [self.contentLabel suggestedFrameSizeToFitEntireStringConstraintedToWidth:contentLabel.frame.size.width];
+    CGRect frame = contentLabel.frame;
+    frame.size.height = size.height;
+    contentLabel.frame = frame;
     
     // Layout the timestamp label
     CGSize timeSize = [self.timeLabel.text boundingRectWithSize:CGSizeMake(horizontalTextSpace, CGFLOAT_MAX)
@@ -152,6 +168,8 @@ static TTTTimeIntervalFormatter *timeFormatter;
     // Layour separator
     [self.separatorImage setFrame:CGRectMake(0, self.frame.size.height-2, self.frame.size.width-cellInsetWidth*2, 2)];
     [self.separatorImage setHidden:hideSeparator];
+    
+    [mainView bringSubviewToFront:self.nameButton];
 }
 
 - (void)drawRect:(CGRect)rect {
@@ -297,6 +315,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     } else { // Otherwise we ignore the padding and we'll add it after we set the user
         [self.contentLabel setText:contentString];
     }
+    NSLog(@"contentLabel: %@",contentLabel);
     [self setNeedsDisplay];
 }
 
