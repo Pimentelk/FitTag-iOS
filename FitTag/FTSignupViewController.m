@@ -304,6 +304,7 @@
     FTCamViewController *camViewController = [[FTCamViewController alloc] init];
     camViewController.delegate = self;
     camViewController.isProfilePciture = YES;
+    
     UINavigationController *navController = [[UINavigationController alloc] init];
     [navController setViewControllers:@[ camViewController ] animated:NO];
     [self presentViewController:navController animated:YES completion:nil];
