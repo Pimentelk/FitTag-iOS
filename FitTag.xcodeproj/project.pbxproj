@@ -12,6 +12,8 @@
 		2D007B6419B6A5A1006E1484 /* FTSearchHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B6319B6A5A1006E1484 /* FTSearchHeaderView.m */; };
 		2D007B6A19B6C6BB006E1484 /* FTSearchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B6919B6C6BB006E1484 /* FTSearchCell.m */; };
 		2D054DAB1A0293DA00A2886F /* Bender-Solid.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2D054DA11A02935D00A2886F /* Bender-Solid.otf */; };
+		2D054DD11A0867B300A2886F /* STTweetLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D054DCE1A0867B300A2886F /* STTweetLabel.m */; };
+		2D054DD21A0867B300A2886F /* STTweetTextStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D054DD01A0867B300A2886F /* STTweetTextStorage.m */; };
 		2D0A53A81971997F0091FFCA /* InspirationCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */; };
 		2D197E8E19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D197E8D19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.m */; };
 		2D197E9119C1BC7900E91274 /* FTMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D197E9019C1BC7900E91274 /* FTMapViewController.m */; };
@@ -201,6 +203,10 @@
 		2D007B6819B6C6BB006E1484 /* FTSearchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSearchCell.h; sourceTree = "<group>"; };
 		2D007B6919B6C6BB006E1484 /* FTSearchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchCell.m; sourceTree = "<group>"; };
 		2D054DA11A02935D00A2886F /* Bender-Solid.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Bender-Solid.otf"; path = "../Bender-Solid.otf"; sourceTree = "<group>"; };
+		2D054DCD1A0867B300A2886F /* STTweetLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STTweetLabel.h; sourceTree = "<group>"; };
+		2D054DCE1A0867B300A2886F /* STTweetLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STTweetLabel.m; sourceTree = "<group>"; };
+		2D054DCF1A0867B300A2886F /* STTweetTextStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STTweetTextStorage.h; sourceTree = "<group>"; };
+		2D054DD01A0867B300A2886F /* STTweetTextStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STTweetTextStorage.m; sourceTree = "<group>"; };
 		2D0A53A61971997F0091FFCA /* InspirationCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspirationCellCollectionView.h; sourceTree = "<group>"; };
 		2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InspirationCellCollectionView.m; sourceTree = "<group>"; };
 		2D197E8C19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAmbassadorGeoPointAnnotation.h; sourceTree = "<group>"; };
@@ -674,6 +680,17 @@
 				2D054DA11A02935D00A2886F /* Bender-Solid.otf */,
 			);
 			name = Fonts;
+			sourceTree = "<group>";
+		};
+		2D054DCC1A0867B300A2886F /* STTweetLabel */ = {
+			isa = PBXGroup;
+			children = (
+				2D054DCD1A0867B300A2886F /* STTweetLabel.h */,
+				2D054DCE1A0867B300A2886F /* STTweetLabel.m */,
+				2D054DCF1A0867B300A2886F /* STTweetTextStorage.h */,
+				2D054DD01A0867B300A2886F /* STTweetTextStorage.m */,
+			);
+			path = STTweetLabel;
 			sourceTree = "<group>";
 		};
 		2D0A53A91971A65F0091FFCA /* Categories */ = {
@@ -1492,6 +1509,7 @@
 		2DD691401949AF5B00B59E75 = {
 			isa = PBXGroup;
 			children = (
+				2D054DCC1A0867B300A2886F /* STTweetLabel */,
 				2DDBF14019F1451D009037E2 /* GooglyAnalytics */,
 				2DBE021E19D6FB7F00CD278C /* ELCImagePicker */,
 				2DD691521949AF5B00B59E75 /* FitTag */,
@@ -1845,6 +1863,7 @@
 				2DD2B6791984046B00600A42 /* FTProfileImageView.m in Sources */,
 				2D429A111977EE8F00F8A9A0 /* FTActivityFeedViewController.m in Sources */,
 				2DACE8141966FF7200154504 /* CollectionHeaderView.m in Sources */,
+				2D054DD21A0867B300A2886F /* STTweetTextStorage.m in Sources */,
 				2D0A53A81971997F0091FFCA /* InspirationCellCollectionView.m in Sources */,
 				2D429A1B197AF37000F8A9A0 /* Reachability.m in Sources */,
 				2DE7C77F19ECD07100F72188 /* FTGallerySwiperView.m in Sources */,
@@ -1896,6 +1915,7 @@
 				2DD2B666198400C000600A42 /* UIImage+ResizeAdditions.m in Sources */,
 				2D429A30197B34DC00F8A9A0 /* TTTTimeIntervalFormatter.m in Sources */,
 				2D429A33197B354600F8A9A0 /* UIImage+ImageEffects.m in Sources */,
+				2D054DD11A0867B300A2886F /* STTweetLabel.m in Sources */,
 				2DD4E5EE19C650F80096FC2F /* FTCircleOverlay.m in Sources */,
 				2DBE023C19D6FB7F00CD278C /* ELCOverlayImageView.m in Sources */,
 				2DD2B6891984167200600A42 /* FTTimelineViewController.m in Sources */,
