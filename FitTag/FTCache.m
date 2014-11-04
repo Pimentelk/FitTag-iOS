@@ -42,7 +42,11 @@
     [self.cache removeAllObjects];
 }
 
-- (void)setAttributesForPost:(PFObject *)post likers:(NSArray *)likers commenters:(NSArray *)commenters likedByCurrentUser:(BOOL)likedByCurrentUser displayName:(NSString *)displayName {
+- (void)setAttributesForPost:(PFObject *)post
+                      likers:(NSArray *)likers
+                  commenters:(NSArray *)commenters
+          likedByCurrentUser:(BOOL)likedByCurrentUser
+                 displayName:(NSString *)displayName {
     
     NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                 [NSNumber numberWithBool:likedByCurrentUser],kFTPostAttributesIsLikedByCurrentUserKey,
