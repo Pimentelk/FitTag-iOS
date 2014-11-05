@@ -233,7 +233,8 @@ shouldBeginLogInWithUsername:(NSString *)username
             
             if (signUpViewController.firstname && signUpViewController.lastname) {
                 NSLog(@"signUpViewController.firstname && signUpViewController.lastname");
-                [user setValue:[NSString stringWithFormat:@"@%@%@",signUpViewController.firstname,signUpViewController.lastname] forKey:kFTUserDisplayNameKey];
+                [user setValue:[NSString stringWithFormat:@"@%@%@",signUpViewController.firstname,signUpViewController.lastname]
+                        forKey:kFTUserDisplayNameKey];
             }
             
             [user setValue:DEFAULT_BIO_TEXT_A forKey:kFTUserBioKey];
