@@ -96,7 +96,13 @@ static TTTTimeIntervalFormatter *timeFormatter;
             NSArray *hotWords = @[@"Handle", @"Hashtag", @"Link"];
             
             NSString *detectionString = [NSString stringWithFormat:@"%@ [%d,%d]: %@%@", hotWords[hotWord], (int)range.location, (int)range.length, string, (protocol != nil) ? [NSString stringWithFormat:@" *%@*", protocol] : @""];
+            
             NSLog(@"detectionString: %@",detectionString);
+            [[[UIAlertView alloc] initWithTitle:@"Screen Not Finished"
+                                        message:detectionString
+                                       delegate:nil
+                              cancelButtonTitle:@"ok"
+                              otherButtonTitles:nil] show];
         }];
         
         self.timeLabel = [[UILabel alloc] init];

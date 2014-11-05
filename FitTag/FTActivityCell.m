@@ -90,8 +90,8 @@ static TTTTimeIntervalFormatter *timeFormatter;
                                                               options:NSStringDrawingUsesLineFragmentOrigin // wordwrap?
                                                            attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:13.0f]}
                                                               context:nil].size;
-    [self.contentLabel setFrame:CGRectMake( 46.0f, 10.0f, contentSize.width, contentSize.height)];
-    
+    //[self.contentLabel setFrame:CGRectMake( 46.0f, 10.0f, contentSize.width, contentSize.height)];
+    [self.contentLabel setFrame:CGRectMake(46.0f, 8, self.frame.size.width - 54.0f - 33.0f, contentSize.height)];
     // Layout the timestamp label given new vertical
     CGSize timeSize = [self.timeLabel.text boundingRectWithSize:CGSizeMake([UIScreen mainScreen].bounds.size.width - 72.0f - 46.0f, CGFLOAT_MAX)
                                                         options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
