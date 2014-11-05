@@ -879,7 +879,12 @@
 #pragma mark - UIActionSheetDelegate
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
-    NSLog(@"You have pressed the %@ button", [actionSheet buttonTitleAtIndex:buttonIndex]);
+    //NSLog(@"You have pressed the %@ button", [actionSheet buttonTitleAtIndex:buttonIndex]);
+    [[[UIAlertView alloc] initWithTitle:@"Disabled"
+                                message:@"Hey! These controls have been disabled :("
+                               delegate:nil
+                      cancelButtonTitle:@"ok"
+                      otherButtonTitles:nil] show];
 }
 
 #pragma mark - ()
