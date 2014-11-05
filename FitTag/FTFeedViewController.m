@@ -160,7 +160,7 @@
         NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
         
         if (error == nil){
-            NSDictionary* TWuser = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+            NSDictionary *TWuser = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
             NSString *profile_image_normal = [TWuser objectForKey:TWITTER_PROFILE_HTTPS];
             NSString *profile_image = [profile_image_normal stringByReplacingOccurrencesOfString:@"_normal" withString:@""];
             NSData *profileImageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:profile_image]];
@@ -174,19 +174,24 @@
                 [user setObject:[array componentsJoinedByString:@" "] forKey:kFTUserFirstnameKey];
             }
             
-            [user setValue:[TWuser objectForKey:@"name"]
-                    forKey:kFTUserDisplayNameKey];
+            if ([TWuser objectForKey:@"name"]) {
+                [user setValue:[TWuser objectForKey:@"name"]
+                        forKey:kFTUserDisplayNameKey];
+            }
             
-            [user setValue:[NSString stringWithFormat:@"%@",[TWuser objectForKey:@"id"]]
-                    forKey:kFTUserTwitterIdKey];
+            if ([TWuser objectForKey:@"id"]) {
+                [user setValue:[NSString stringWithFormat:@"%@",[TWuser objectForKey:@"id"]]
+                        forKey:kFTUserTwitterIdKey];
+            }
             
             //[user setValue:DEFAULT_BIO_TEXT_B forKey:kFTUserBioKey];
             
-            [user setValue:[PFFile fileWithName:FILE_MEDIUM_JPEG data:profileImageData]
-                    forKey:kFTUserProfilePicMediumKey];
-            
-            [user setValue:[PFFile fileWithName:FILE_SMALL_JPEG data:profileImageData]
-                    forKey:kFTUserProfilePicSmallKey];
+            if (profileImageData) {
+                [user setValue:[PFFile fileWithName:FILE_MEDIUM_JPEG data:profileImageData]
+                        forKey:kFTUserProfilePicMediumKey];
+                [user setValue:[PFFile fileWithName:FILE_SMALL_JPEG data:profileImageData]
+                        forKey:kFTUserProfilePicSmallKey];
+            }
             
             [user setValue:kFTUserTypeUser forKey:kFTUserTypeKey];
             [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -198,7 +203,6 @@
         }
         return YES;
     }
-    
     NSLog(USER_NOT_LOGIN_TWITTER);
     return NO;
 }
