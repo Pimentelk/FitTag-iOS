@@ -176,13 +176,28 @@
         [self.navigationController pushViewController:self.interestsViewController animated:YES];
         [self.settingsDetailViewController setDetailItem:setting];
     } else if([setting isEqualToString:INVITE_FRIENDS]) {
-        [self.navigationController pushViewController:self.findFriendsViewController animated:YES];
-        [self.settingsDetailViewController setDetailItem:setting];
+        //[self.navigationController pushViewController:self.findFriendsViewController animated:YES];
+        //[self.settingsDetailViewController setDetailItem:setting];
+        
+        [[[UIAlertView alloc] initWithTitle:@"Screen Not Finished"
+                                    message:@"This find friends screen is not enabled."
+                                   delegate:nil
+                          cancelButtonTitle:@"ok"
+                          otherButtonTitles:nil] show];
+        
     } else if([setting isEqualToString:GIVE_FEEDBACK]) {
         [self presentFeedbackMessage];
     } else if([setting isEqualToString:REVIEW_US]) {
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:iOS7AppStoreURLFormat,APP_STORE_ID]];
         [[UIApplication sharedApplication] openURL:url];
+    } else if([setting isEqualToString:REWARD_SETTIGNS]) {
+        
+        [[[UIAlertView alloc] initWithTitle:@"Screen Not Finished"
+                                    message:@"This rewards settings screen is not enabled."
+                                   delegate:nil
+                          cancelButtonTitle:@"ok"
+                          otherButtonTitles:nil] show];
+        
     } else {
         [self.navigationController pushViewController:self.settingsDetailViewController animated:YES];
         [self.settingsDetailViewController setDetailItem:setting];
@@ -204,7 +219,8 @@
         mailer = [[MFMailComposeViewController alloc] init];
         self.mailer.mailComposeDelegate = self;
         [mailer setSubject:MAIL_FEEDBACK_SUBJECT];
-        [mailer setToRecipients:[NSArray arrayWithObjects:MAIL_FEEDBACK_EMAIL, nil]];
+        //[mailer setToRecipients:[NSArray arrayWithObjects:MAIL_FEEDBACK_EMAIL, nil]];
+        [mailer setToRecipients:[NSArray arrayWithObjects:MAIL_TECH_EMAIL, nil]];
         [mailer setMessageBody:EMPTY_STRING isHTML:NO];
         
         [self presentViewController:mailer animated:YES completion:^(){
