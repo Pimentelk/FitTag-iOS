@@ -171,11 +171,14 @@
 #define NAVIGATION_BAR_BUTTON_TRASH @"trash"
 
 // Messages
+#define MESSAGE_TITTLE_MISSING_INFO @"Missing Information"
+#define MESSAGE_MISSING_INFORMATION @"Make sure you fill out all required information!"
+#define MESSAGE_CONFIRMED_MATCH @"Passwords entered to not match, please try again."
+#define MESSAGE_NAME_EMPTY @"First and last name are required fields."
 #define EMPTY_STRING @""
 #define IF_USER_NOT_SET_MESSAGE @"user cannot be nil"
 #define DEFAULT_BIO_TEXT_A @"Tell us about yourself"
 #define DEFAULT_BIO_TEXT_B @"WHAT MAKES YOU, YOU?"
-#define STRING_MISSING_INFORMATION @"Make sure you fill out all required information!"
 #define USER_DID_LOGIN @"User is logged in."
 #define USER_NOT_LOGGEDIN @"User is NOT logged in."
 #define USER_DID_LOGIN_FACEBOOK @"User is logged in with facebook"
@@ -197,6 +200,7 @@
 #define MAIL_SENT @"Mail sent"
 #define MAIL_FAIL @"Mail not sent"
 #define MAIL_FEEDBACK_EMAIL @"feedback@fittag.com"
+#define MAIL_TECH_EMAIL @"kevin@fittag.com"
 #define MAIL_FEEDBACK_SUBJECT @"FitTag IOS Feedback"
 #define MAIL_NOT_SUPPORTED @"Your device doesn't support the composer sheet"
 
