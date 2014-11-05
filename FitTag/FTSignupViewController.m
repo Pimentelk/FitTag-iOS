@@ -140,7 +140,7 @@
     [self.signUpView addSubview:self.confirmPasswordTextField];
     [self.confirmPasswordTextField setTextAlignment:NSTextAlignmentLeft];
     [self.confirmPasswordTextField setSecureTextEntry:YES];
-    [self.confirmPasswordTextField addTarget:self action:@selector(didConfirmTextFieldFinish:) forControlEvents:UIControlEventEditingDidEnd];
+    [self.confirmPasswordTextField addTarget:self action:@selector(didConfirmTextFieldFinish:) forControlEvents:UIControlEventEditingChanged];
     
     // Set password confirm
     [self setIsPasswordConfirmed:NO];
@@ -237,13 +237,19 @@
     [self.signUpView scrollElement:textField toPoint:160];
 }
 
--(void) textFieldDidEndEditing:(UITextField *)textField{
+- (void) textFieldDidEndEditing:(UITextField *)textField {
     
 }
 
 #pragma mark - ()
 
 - (void)didTapFacebookLoginButtonAction:(UIButton *)button {
+    [[[UIAlertView alloc] initWithTitle:@"Disabled"
+                                message:@"Hey! Facebook Login controls have been disabled on this screen :("
+                               delegate:nil
+                      cancelButtonTitle:@"ok"
+                      otherButtonTitles:nil] show];
+    /*
     [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
         //[[UIApplication sharedApplication].delegate performSelector:@selector(facebook)];
         if (!error) {
@@ -254,10 +260,15 @@
             //[[UIApplication sharedApplication].delegate performSelector:@selector(facebookRequestDidFailWithError:)];
         }
     }];
+    */
 }
 
 - (void)didTapTwitterLoginButtonAction:(UIButton *)button {
-    
+    [[[UIAlertView alloc] initWithTitle:@"Disabled"
+                                message:@"Hey! Twitter Login controls have been disabled on this screen :("
+                               delegate:nil
+                      cancelButtonTitle:@"ok"
+                      otherButtonTitles:nil] show];
 }
 
 - (UIImageView *)setImage:(UIImage *)image{
@@ -298,6 +309,16 @@
     [imageView setImage:image];
     
     return imageView;
+}
+
+- (void)didTapSignupButtonAction:(id)sender {
+    [self.firstnameTextField resignFirstResponder];
+    [self.lastnameTextField resignFirstResponder];
+    [self.confirmPasswordTextField resignFirstResponder];
+    [self.aboutTextView resignFirstResponder];
+    [self.signUpView.passwordField resignFirstResponder];
+    [self.signUpView.emailField resignFirstResponder];
+    [self.signUpView.usernameField resignFirstResponder];
 }
 
 - (void)didTapLoadCameraButtonAction:(id)sender {
