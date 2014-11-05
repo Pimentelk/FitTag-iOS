@@ -960,10 +960,20 @@
 
 -(void)facebookShareButton:(id)sender{
     // Share to facebook
+    [[[UIAlertView alloc] initWithTitle:@"Not Allowed"
+                                message:@"Hey! Facebook share controls have been disabled on this screen :("
+                               delegate:nil
+                      cancelButtonTitle:@"ok"
+                      otherButtonTitles:nil] show];
 }
 
 -(void)twitterShareButton:(id)sender{
     // Share to twitter
+    [[[UIAlertView alloc] initWithTitle:@"Not Allowed"
+                                message:@"Hey! Twitter share controls have been disabled on this screen :("
+                               delegate:nil
+                      cancelButtonTitle:@"ok"
+                      otherButtonTitles:nil] show];
 }
 
 -(void)sendPost:(id)sender{
