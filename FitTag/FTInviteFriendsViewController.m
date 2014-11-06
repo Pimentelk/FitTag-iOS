@@ -49,6 +49,8 @@
     self.tableView.tableHeaderView = headerView;
     self.tableView.delegate = self;
     
+    [self queryForUserType:FTFollowUserQueryTypeInterest];
+    
     flowLayout = [[UICollectionViewFlowLayout alloc] init];
     [flowLayout setItemSize:CGSizeMake(105.5,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -65,15 +67,12 @@
 
 - (void)queryForUserType:(FTFollowUserQueryType)type {
     
-    NSLog(@"%@::queryForUserType",VIEWCONTROLLER_INVITE);
-    
     // List of all users being followed by the current user
     PFQuery *followingActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
     [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
     [followingActivitiesQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
     [followingActivitiesQuery setCachePolicy:kPFCachePolicyCacheElseNetwork];
     [followingActivitiesQuery includeKey:kFTActivityToUserKey];
-    
     [followingActivitiesQuery findObjectsInBackgroundWithBlock:^(NSArray *followedUsers, NSError *error) {
         if (!error) {
             NSMutableArray *followedUserIds = [[NSMutableArray alloc] init];
