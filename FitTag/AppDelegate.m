@@ -156,6 +156,16 @@
     }
 }
 
+// Facebook oauth callback
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+    return [FBSession.activeSession handleOpenURL:url];
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    return [FBAppCall handleOpenURL:url sourceApplication:sourceApplication withSession:[PFFacebookUtils session]];
+}
+
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     NSLog(@"%@::applicationDidBecomeActive:",APPDELEGATE_RESPONDER);
     // Handle an interruption during the authorization flow, such as the user clicking the home button.
@@ -171,7 +181,8 @@
     application.applicationIconBadgeNumber = 1;
     application.applicationIconBadgeNumber = 0;
     
-    //[FBAppCall handleDidBecomeActiveWithSession:[PFFacebookUtils session]];
+    [FBAppCall handleDidBecomeActiveWithSession:[PFFacebookUtils session]];
+    //[FBSession.activeSession handleDidBecomeActive];
 }
 
 #pragma mark - UITabBarControllerDelegate
@@ -441,7 +452,7 @@
 }
 
 - (BOOL)shouldProceedToMainInterface:(PFUser *)user {
-    //NSLog(@"%@::shouldProceedToMainInterface:",APPDELEGATE_RESPONDER);
+    NSLog(@"%@::shouldProceedToMainInterface:",APPDELEGATE_RESPONDER);
     if ([FTUtility userHasValidFacebookData:[PFUser currentUser]]) {
         [MBProgressHUD hideHUDForView:self.navController.presentedViewController.view animated:YES];
         [self presentTabBarController];
