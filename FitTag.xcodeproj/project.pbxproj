@@ -509,7 +509,7 @@
 				2DD2B65C1983FDE800600A42 /* Profiles */,
 				2DD2B65F1983FE1500600A42 /* Rewards */,
 				2DD2B69519841ACE00600A42 /* Settings */,
-				2DBC6E57195C77FF008B5AD3 /* Take Photo */,
+				2DBC6E57195C77FF008B5AD3 /* Photos */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -554,7 +554,7 @@
 			name = "Custom Bars";
 			sourceTree = "<group>";
 		};
-		2DBC6E57195C77FF008B5AD3 /* Take Photo */ = {
+		2DBC6E57195C77FF008B5AD3 /* Photos */ = {
 			isa = PBXGroup;
 			children = (
 				2DD2B66B198402BB00600A42 /* FTEditPhotoViewController.h */,
@@ -568,7 +568,7 @@
 				2DC507CA199829940041A03D /* FTCamViewController.h */,
 				2DC507CB199829940041A03D /* FTCamViewController.m */,
 			);
-			name = "Take Photo";
+			name = Photos;
 			sourceTree = "<group>";
 		};
 		2DBE021119D35BAC00CD278C /* CollectionViews */ = {
