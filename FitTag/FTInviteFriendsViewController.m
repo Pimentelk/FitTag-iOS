@@ -49,7 +49,7 @@
     self.tableView.tableHeaderView = headerView;
     self.tableView.delegate = self;
     
-    [self queryForUserType:FTFollowUserQueryTypeNear];
+    [self queryForUserType:FTFollowUserQueryTypeInterest];
     
     flowLayout = [[UICollectionViewFlowLayout alloc] init];
     [flowLayout setItemSize:CGSizeMake(105.5,105)];
@@ -86,6 +86,15 @@
             
             switch (type) {
                 case FTFollowUserQueryTypeNear: {
+                    
+                    if (![[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
+                        [[[UIAlertView alloc] initWithTitle:@"User Location Error"
+                                                    message:@"User location needs to be enabled to find users near you."
+                                                   delegate:self
+                                          cancelButtonTitle:@"ok"
+                                          otherButtonTitles:nil] show];
+                        return;
+                    }
                     
                     PFGeoPoint *geoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
                     
@@ -178,11 +187,13 @@
 
 #pragma mark - FTInviteTableHeaderViewDelegate
 
-- (void)inviteTableHeaderView:(FTInviteTableHeaderView *)inviteTableHeaderView didTapInterestButton:(UIButton *)button {
+- (void)inviteTableHeaderView:(FTInviteTableHeaderView *)inviteTableHeaderView
+         didTapInterestButton:(UIButton *)button {
     [self queryForUserType:FTFollowUserQueryTypeInterest];
 }
 
-- (void)inviteTableHeaderView:(FTInviteTableHeaderView *)inviteTableHeaderView didTapLocationButton:(UIButton *)button {
+- (void)inviteTableHeaderView:(FTInviteTableHeaderView *)inviteTableHeaderView
+         didTapLocationButton:(UIButton *)button {
     [self queryForUserType:FTFollowUserQueryTypeNear];
 }
 
