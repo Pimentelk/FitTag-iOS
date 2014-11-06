@@ -184,7 +184,11 @@
         }
     }];
     
-    
+    if (self != [self.navigationController.viewControllers objectAtIndex:0]) {
+        [self.navigationController popViewControllerAnimated:YES];
+    } else {
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    }
     
     /*
     // Layout param
@@ -275,7 +279,6 @@
 
 - (NSInteger) collectionView:(UICollectionView *)collectionView
       numberOfItemsInSection:(NSInteger)section {
-    
     return self.interests.count;
 }
 
