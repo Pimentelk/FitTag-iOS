@@ -73,7 +73,7 @@
     PFQuery *followingActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
     [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
     [followingActivitiesQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
-    [followingActivitiesQuery setCachePolicy:kPFCachePolicyCacheElseNetwork];
+    [followingActivitiesQuery setCachePolicy:kPFCachePolicyNetworkOnly];
     [followingActivitiesQuery includeKey:kFTActivityToUserKey];
     [followingActivitiesQuery findObjectsInBackgroundWithBlock:^(NSArray *followedUsers, NSError *error) {
         if (!error) {
