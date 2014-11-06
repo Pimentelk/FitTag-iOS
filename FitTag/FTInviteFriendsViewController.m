@@ -49,8 +49,6 @@
     self.tableView.tableHeaderView = headerView;
     self.tableView.delegate = self;
     
-    [self queryForUserType:FTFollowUserQueryTypeInterest];
-    
     flowLayout = [[UICollectionViewFlowLayout alloc] init];
     [flowLayout setItemSize:CGSizeMake(105.5,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -67,21 +65,26 @@
 
 - (void)queryForUserType:(FTFollowUserQueryType)type {
     
+    NSLog(@"%@::queryForUserType",VIEWCONTROLLER_INVITE);
+    
     // List of all users being followed by the current user
     PFQuery *followingActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
     [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
     [followingActivitiesQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
     [followingActivitiesQuery setCachePolicy:kPFCachePolicyCacheElseNetwork];
     [followingActivitiesQuery includeKey:kFTActivityToUserKey];
-    [followingActivitiesQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+    
+    [followingActivitiesQuery findObjectsInBackgroundWithBlock:^(NSArray *followedUsers, NSError *error) {
         if (!error) {
-            
             NSMutableArray *followedUserIds = [[NSMutableArray alloc] init];
             
             // Obtain an array of object ids for all users being followed
-            for (PFObject *object in objects) {
-                PFUser *followedUser = [object objectForKey:kFTActivityToUserKey];
-                [followedUserIds addObject:followedUser.objectId];
+            for (PFObject *aFollowedUser in followedUsers) {
+                
+                PFUser *followedUser = [aFollowedUser objectForKey:kFTActivityToUserKey];                
+                if (followedUser.objectId) {
+                    [followedUserIds addObject:followedUser.objectId];
+                }
             }
             
             switch (type) {
@@ -116,7 +119,17 @@
                     
                 case FTFollowUserQueryTypeInterest: {
                     
+                    if (![[PFUser currentUser] objectForKey:kFTUserInterestsKey]) {
+                        [[[UIAlertView alloc] initWithTitle:@"User Interest Error"
+                                                    message:@"User interest needs to be selected to find friends."
+                                                   delegate:self
+                                          cancelButtonTitle:@"ok"
+                                          otherButtonTitles:nil] show];
+                        return;
+                    }
+                    
                     NSArray *interests = [[PFUser currentUser] objectForKey:kFTUserInterestsKey];
+                    
                     
                     PFQuery *followUsersByInterestQuery = [PFQuery queryWithClassName:kFTUserClassKey];
                     [followUsersByInterestQuery whereKey:kFTUserObjectIdKey notEqualTo:[PFUser currentUser].objectId];
@@ -144,6 +157,7 @@
 #pragma mark - UITableViewDelegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    NSLog(@"%@::self.objects.count: %lu",VIEWCONTROLLER_INVITE,(unsigned long)self.objects.count);
     return self.objects.count;
 }
 
