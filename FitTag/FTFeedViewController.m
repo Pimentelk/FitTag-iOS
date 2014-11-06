@@ -133,7 +133,7 @@
             if (user) {
                 [user saveEventually];
             }
-            [self.tabBarController setSelectedIndex:1];
+            [self.tabBarController setSelectedIndex:2];
         }];
         NSLog(FIRSTTIME_USER);
         [self didLogInWithFacebook:user];
