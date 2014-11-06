@@ -67,6 +67,8 @@
 
 - (void)queryForUserType:(FTFollowUserQueryType)type {
     
+    NSLog(@"%@::queryForUserType",VIEWCONTROLLER_INVITE);
+    
     // List of all users being followed by the current user
     PFQuery *followingActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
     [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
