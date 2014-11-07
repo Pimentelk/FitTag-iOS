@@ -62,8 +62,7 @@
     profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
 }
 
-#pragma mark - PFQueryTableViewController
-#pragma GCC diagnostic ignored "-Wundeclared-selector"
+#pragma mark - ()
 
 - (void)queryForUserType:(FTFollowUserQueryType)type {
     
@@ -158,7 +157,6 @@
 #pragma mark - UITableViewDelegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSLog(@"%@::self.objects.count: %lu",VIEWCONTROLLER_INVITE,(unsigned long)self.objects.count);
     return self.objects.count;
 }
 
