@@ -93,16 +93,22 @@ static TTTTimeIntervalFormatter *timeFormatter;
         [mainView addSubview:self.contentLabel];
         
         [self.contentLabel setDetectionBlock:^(STTweetHotWord hotWord, NSString *string, NSString *protocol, NSRange range) {
-            NSArray *hotWords = @[@"Handle", @"Hashtag", @"Link"];
-            
+            NSArray *hotWords = @[ HOTWORD_HANDLE, HOTWORD_HASHTAG, HOTWORD_LINK ];
+            /*
             NSString *detectionString = [NSString stringWithFormat:@"%@ [%d,%d]: %@%@", hotWords[hotWord], (int)range.location, (int)range.length, string, (protocol != nil) ? [NSString stringWithFormat:@" *%@*", protocol] : @""];
-            
-            NSLog(@"detectionString: %@",detectionString);
-            [[[UIAlertView alloc] initWithTitle:@"Screen Not Finished"
-                                        message:detectionString
-                                       delegate:nil
-                              cancelButtonTitle:@"ok"
-                              otherButtonTitles:nil] show];
+            */
+            if ([hotWords[hotWord] isEqualToString:HOTWORD_HANDLE]) {
+                
+                
+                
+            } else if ([hotWords[hotWord] isEqualToString:HOTWORD_HASHTAG]) {
+                
+                
+                
+            } else if ([hotWords[hotWord] isEqualToString:HOTWORD_LINK]) {
+                
+                                
+            }
         }];
         
         self.timeLabel = [[UILabel alloc] init];
