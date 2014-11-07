@@ -77,6 +77,7 @@
 #define VIEWCONTROLLER_POST_DETAIL @"FTPostDetailsViewController"
 #define VIEWCONTROLLER_INVITE @"FTInviteFriendsViewController"
 #define VIEWCONTROLLER_FOLLOW_CELL @"FTFollowCell"
+#define VIEWCONTROLLER_SEARCH @"FTSearchViewController"
 
 // ACTION BUTTONS
 #define ACTION_HEART @"heart_white"
@@ -188,10 +189,20 @@
 #define RETURNING_USER @"This is a returning user."
 #define FIRSTTIME_USER @"This is a firsttime user."
 
+// Placeholders
+#define PLACEHOLDER_RED @"placeholder_red"
+#define PLACEHOLDER_DARKGRAY @"palceholder_darkgray"
+#define PLACEHOLDER_LIGHTGRAY @"palceholder_lightgray"
+
 // File
 #define FILE_SMALL_JPEG @"medium.jpeg"
 #define FILE_MEDIUM_JPEG @"small.jpeg"
 #define FILE_COVER_JPEG @"cover.jpeg"
+
+// Hotword
+#define HOTWORD_HANDLE @"Handle"
+#define HOTWORD_HASHTAG @"Hashtag"
+#define HOTWORD_LINK @"Link"
 
 // Mail
 #define MAIL_CANCELLED @"Mail cancelled: you cancelled the operation and no email message was queued."
