@@ -87,7 +87,7 @@
         self.superview.clipsToBounds = YES;
         [self setBackgroundColor:[UIColor clearColor]];
         
-        UIImageView *profileHexagon = [self getProfileHexagon];
+        UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:4 Y:4 width:42 hegiht:42];
         
         self.avatarImageView = [[FTProfileImageView alloc] init];
         self.avatarImageView.frame = profileHexagon.frame;
@@ -228,7 +228,6 @@
                         
                         UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, 320.0f, 320.0f)];
                         [imageView setBackgroundColor:[UIColor clearColor]];
-                        [imageView setAlpha:0];
                         
                         UIImage *image = [UIImage imageWithData:data];
                         [imageView setImage:image];
@@ -238,10 +237,6 @@
                         [imageView addGestureRecognizer:singleTap];
                         
                         [carousel addSubview:imageView];
-
-                        [UIView animateWithDuration:0.4 animations:^{
-                            [imageView setAlpha:1];
-                        }];
                     }
                 }];
                 i++;
@@ -361,45 +356,6 @@
 }
 
 #pragma mark - ()
-
-- (UIImageView *)getProfileHexagon {
-    
-    UIImageView *imageView = [[UIImageView alloc] init];
-    imageView.frame = CGRectMake( 4.0f, 4.0f, 42.0f, 42.0f);
-    imageView.backgroundColor = [UIColor clearColor];
-    
-    CGRect rect = CGRectMake( 4.0f, 4.0f, 40.0f, 40.0f);
-    
-    CAShapeLayer *hexagonMask = [CAShapeLayer layer];
-    CAShapeLayer *hexagonBorder = [CAShapeLayer layer];
-    hexagonBorder.frame = imageView.layer.bounds;
-    UIBezierPath *hexagonPath = [UIBezierPath bezierPath];
-    
-    CGFloat sideWidth = 2 * ( 0.5 * rect.size.width / 2 );
-    CGFloat lcolumn = rect.size.width - sideWidth;
-    CGFloat height = rect.size.height;
-    CGFloat ty = (rect.size.height - height) / 2;
-    CGFloat tmy = rect.size.height / 4;
-    CGFloat bmy = rect.size.height - tmy;
-    CGFloat by = rect.size.height;
-    CGFloat rightmost = rect.size.width;
-    
-    [hexagonPath moveToPoint:CGPointMake(lcolumn, ty)];
-    [hexagonPath addLineToPoint:CGPointMake(rightmost, tmy)];
-    [hexagonPath addLineToPoint:CGPointMake(rightmost, bmy)];
-    [hexagonPath addLineToPoint:CGPointMake(lcolumn, by)];
-    
-    [hexagonPath addLineToPoint:CGPointMake(0, bmy)];
-    [hexagonPath addLineToPoint:CGPointMake(0, tmy)];
-    [hexagonPath addLineToPoint:CGPointMake(lcolumn, ty)];
-    
-    hexagonMask.path = hexagonPath.CGPath;
-    
-    imageView.layer.mask = hexagonMask;
-    [imageView.layer addSublayer:hexagonBorder];
-    
-    return imageView;
-}
 
 + (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize {
     //UIGraphicsBeginImageContext(newSize);
