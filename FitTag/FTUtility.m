@@ -625,6 +625,8 @@
     [navigationController.navigationBar addSubview:gradientView];	    
 }
 
+#pragma mark Profile Hexagons
+
 + (UIImageView *)getProfileHexagonWithFrame:(CGRect)rect {
     return [self getProfileHexagonWithX:rect.origin.x
                                       Y:rect.origin.y
@@ -673,6 +675,25 @@
     [imageView.layer addSublayer:hexagonBorder];
     
     return imageView;
+}
+
+#pragma mark Hashtags & Mentions
+
++ (NSArray *)extractHashtagsFromText:(NSString *)text {
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)" options:0 error:&error];
+    
+    NSArray *matches = [regex matchesInString:text options:0 range:NSMakeRange(0,text.length)];
+    
+    NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
+    
+    for (NSTextCheckingResult *match in matches) {
+        NSRange wordRange = [match rangeAtIndex:1];
+        NSString *word = [text substringWithRange:wordRange];
+        
+        [matchedResults addObject:word];
+    }
+    return matchedResults;
 }
 
 @end

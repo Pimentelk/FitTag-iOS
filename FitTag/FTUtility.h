@@ -36,6 +36,8 @@
                                   width:(CGFloat)hexW
                                  hegiht:(CGFloat)hexH;
 
++ (NSArray *)extractHashtagsFromText:(NSString *)text;
+
 //+ (PFQuery *)queryForActivitiesOnPhoto:(PFObject *)photo cachePolicy:(PFCachePolicy)cachePolicy;
 //+ (PFQuery *)queryForActivitiesOnVideo:(PFObject *)video cachePolicy:(PFCachePolicy)cachePolicy;
 //+ (PFQuery *)queryForActivitiesOnGallery:(PFObject *)gallery cachePolicy:(PFCachePolicy)cachePolicy;
