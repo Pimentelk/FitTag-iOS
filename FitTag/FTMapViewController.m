@@ -19,6 +19,7 @@
 #import "FTBusinessProfileViewController.h"
 #import "FTNavigationController.h"
 #import "FTPostDetailsViewController.h"
+#import "FTSearchViewController.h"
 
 // CONSTANTS
 
@@ -42,6 +43,9 @@
 
 // ScrollView SETTINGS
 #define SCROLLVIEW_HEIGHT 80
+
+// Animation Duration
+#define ANIMATION_DURATION 0.5
 
 // ScrollViewItem SETTINGS
 #define SCROLLVIEWITEM_HEIGHT SCROLLVIEW_HEIGHT
@@ -74,11 +78,17 @@ enum PinAnnotationTypeTag {
     CLLocationManager *locationManager;
     UIScrollView *scrollView;
     NSMutableArray *mapItems;
+    UISearchBar *searchBar;
+    UIView *filterButtonsContainer;
+    UILabel *fitTagsLabel;
+    UILabel *taggersLabel;
+    FTSearchQueryType searchQueryType;
 }
 
 @property (nonatomic, strong) CLLocation *location;
 @property (nonatomic, assign) CLLocationDistance radius;
 @property (nonatomic, strong) PFGeoPoint *geoPoint;
+@property (nonatomic, strong) FTSearchViewController *searchViewController;
 @property (nonatomic, strong) FTSearchHeaderView *searchHeaderView;
 @property (nonatomic, strong) FTCircleOverlay *targetOverlay;
 @end
@@ -86,6 +96,7 @@ enum PinAnnotationTypeTag {
 @implementation FTMapViewController
 @synthesize searchHeaderView;
 @synthesize geoPoint;
+@synthesize searchViewController;
 
 - (void)viewDidLoad{
     [super viewDidLoad];
@@ -107,51 +118,63 @@ enum PinAnnotationTypeTag {
     }    
     [[self locationManager] startUpdatingLocation];
     
-    // Set title
-    [self.navigationItem setTitle:NAVIGATION_TITLE_SEARCH];
-    
     // Set Background
     [self.view setBackgroundColor:[UIColor whiteColor]];
     
-    // Set header view
-    //searchHeaderView = [[FTSearchHeaderView alloc] initWithFrame:CGRectMake(0.0f,0.0f,self.view.frame.size.width,35.0f)];
-    //searchHeaderView.delegate = self;
-    //searchHeaderView.searchbar.delegate = self;
-    //self.tableView.tableHeaderView = searchHeaderView;
+    // Set radius
+    self.radius = KILOMETER_FIVE;
     
-    // Set initial values
-    //self.user       = [PFUser currentUser];
-    //self.geoPoint   = self.user[kFTUserLocationKey];
-    self.radius     = KILOMETER_FIVE;
+    // Searchbar
+    searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0f,0.0f,self.navigationItem.titleView.frame.size.width,self.navigationItem.titleView.frame.size.height)];
+    searchBar.delegate = self;
     
-    /*
-    if (self.user[kFTUserLocationKey]) {
-        
-        // initial radius
-        self.radius = MILES_25;
-        
-        // obtain the geopoint
-        geoPoint = self.user[kFTUserLocationKey];
-        
-        // center our map view around this geopoint
-        self.mapView.region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(geoPoint.latitude, geoPoint.longitude), MKCoordinateSpanMake(0.01f, 0.01f));
-        
-        // add the annotation
-        FTGeoPointAnnotation *annotation = [[FTGeoPointAnnotation alloc] initWithObject:self.user];
-        [self.mapView addAnnotation:annotation];
-    }
+    [self.navigationItem setTitleView:searchBar];
     
-    // Dismiss keyboard gesture recognizer
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                          action:@selector(dismissKeyboard:)];
-    [self.view addGestureRecognizer:tap];
+    // Create searchbar buttons & container
+    CGFloat containerY = self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y;
+    filterButtonsContainer = [[UIView alloc] initWithFrame:CGRectMake(0, containerY, self.view.frame.size.width, 55)];
+    [filterButtonsContainer setBackgroundColor:[UIColor whiteColor]];
+    [filterButtonsContainer setUserInteractionEnabled:YES];
+    [filterButtonsContainer setAlpha:0];
     
-    [self configureOverlay];
-    */
+    CGFloat filterButtonWidth = filterButtonsContainer.frame.size.width / 2;
+    CGFloat filterButtonHeight = filterButtonsContainer.frame.size.height;
     
-    scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, self.mapView.frame.size.height - SCROLLVIEW_HEIGHT -
-                                                                      self.navigationController.toolbar.frame.size.height,
-                                                                      self.mapView.frame.size.width, SCROLLVIEW_HEIGHT)];
+    taggersLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, filterButtonWidth, filterButtonHeight)];
+    [taggersLabel setText:@"Taggers"];
+    [taggersLabel setFont:BENDERSOLID(16)];
+    [taggersLabel setBackgroundColor:[UIColor whiteColor]];
+    [taggersLabel setTextColor:[UIColor blackColor]];
+    [taggersLabel setTextAlignment:NSTextAlignmentCenter];
+    [taggersLabel setUserInteractionEnabled:YES];
+    
+    UITapGestureRecognizer *taggersTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapTaggersLabelAction:)];
+    [taggersTapGesture setNumberOfTapsRequired:1];
+    [taggersLabel addGestureRecognizer:taggersTapGesture];
+    [filterButtonsContainer addSubview:taggersLabel];
+    
+    fitTagsLabel = [[UILabel alloc] initWithFrame:CGRectMake(filterButtonWidth, 0, filterButtonWidth, filterButtonHeight)];
+    [fitTagsLabel setText:@"FitTags"];
+    [fitTagsLabel setFont:BENDERSOLID(16)];
+    [fitTagsLabel setBackgroundColor:[UIColor whiteColor]];
+    [fitTagsLabel setTextColor:[UIColor blackColor]];
+    [fitTagsLabel setTextAlignment:NSTextAlignmentCenter];
+    [fitTagsLabel setUserInteractionEnabled:YES];
+    
+    UITapGestureRecognizer *fittagsTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapFitTagsLabelAction:)];
+    [fittagsTapGesture setNumberOfTapsRequired:1];
+    [fitTagsLabel addGestureRecognizer:fittagsTapGesture];
+    [filterButtonsContainer addSubview:fitTagsLabel];
+    
+    [self.mapView addSubview:filterButtonsContainer];
+    [self.mapView bringSubviewToFront:filterButtonsContainer];
+    
+    
+    // Scrollview
+    CGFloat scrollViewY = self.mapView.frame.size.height - SCROLLVIEW_HEIGHT - self.navigationController.toolbar.frame.size.height;
+    CGFloat scrollViewWidth = self.mapView.frame.size.width;
+    
+    scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, scrollViewY, scrollViewWidth, SCROLLVIEW_HEIGHT)];
     [scrollView setScrollEnabled:YES];
     [scrollView setDelegate:self];
     [scrollView setBackgroundColor:[UIColor whiteColor]];
@@ -162,6 +185,14 @@ enum PinAnnotationTypeTag {
     [scrollView setPagingEnabled: YES];
     [scrollView setAlwaysBounceVertical:NO];
     
+    // Init search view controller
+    searchViewController = [[FTSearchViewController alloc] init];
+    
+    // Default filter type
+    [fitTagsLabel setBackgroundColor:[UIColor lightGrayColor]];
+    [fitTagsLabel setTextColor:[UIColor whiteColor]];
+    [taggersLabel setBackgroundColor:[UIColor whiteColor]];
+    [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -174,16 +205,50 @@ enum PinAnnotationTypeTag {
 
 #pragma mark - Navigation Bar
 
-- (void)dismissKeyboard:(id)sender {
-    if (searchHeaderView.searchbar != nil)
-        [searchHeaderView.searchbar resignFirstResponder];
-}
-
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
     
 }
 
+#pragma mark - SearchBarDelegate
+
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
+    [UIView animateWithDuration:ANIMATION_DURATION animations:^{
+       [filterButtonsContainer setAlpha:1];
+    }];
+    return YES;
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchbar {
+    [searchBar resignFirstResponder];
+    [UIView animateWithDuration:ANIMATION_DURATION animations:^{
+        [filterButtonsContainer setAlpha:0];
+    }];
+    
+    // Override the back idnicator
+    UIBarButtonItem *dismissSearchButton = [[UIBarButtonItem alloc] init];
+    [dismissSearchButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [dismissSearchButton setStyle:UIBarButtonItemStylePlain];
+    [dismissSearchButton setTarget:self];
+    [dismissSearchButton setAction:@selector(didTapPopSearchButtonAction:)];
+    [dismissSearchButton setTintColor:[UIColor whiteColor]];
+    
+    [searchViewController setSearchString:searchBar.text];
+    [searchViewController.navigationItem setLeftBarButtonItem:dismissSearchButton];
+    [self.navigationController pushViewController:searchViewController animated:YES];
+}
+
+- (void)didTapPopSearchButtonAction:(UIButton *)button {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 #pragma mark - MKMapViewDelegate
+
+- (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated {
+    [searchBar resignFirstResponder];
+    [UIView animateWithDuration:ANIMATION_DURATION animations:^{
+        [filterButtonsContainer setAlpha:0];
+    }];
+}
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView
             viewForAnnotation:(id<MKAnnotation>)annotation {
@@ -249,33 +314,40 @@ enum PinAnnotationTypeTag {
     return nil;
 }
 
-- (void)mapView:(MKMapView *)mapView
- annotationView:(MKAnnotationView *)view didChangeDragState:(MKAnnotationViewDragState)newState
-   fromOldState:(MKAnnotationViewDragState)oldState {
-
-    if (![view isKindOfClass:[MKPinAnnotationView class]] || view.tag != PinAnnotationTypeTagGeoQuery)
-        return;
-    
-    if (MKAnnotationViewDragStateStarting == newState) {
-        [self.mapView removeOverlays:self.mapView.overlays];
-    } else if (MKAnnotationViewDragStateNone == newState && MKAnnotationViewDragStateEnding == oldState) {
-        MKPinAnnotationView *pinAnnotationView = (MKPinAnnotationView *)view;
-        FTBusinessAnnotationView *businessQueryAnnotation = (FTBusinessAnnotationView *)pinAnnotationView.annotation;
-        self.location = [[CLLocation alloc] initWithLatitude:businessQueryAnnotation.coordinate.latitude
-                                                   longitude:businessQueryAnnotation.coordinate.longitude];
-        [self configureOverlay];
-    }
-}
-
 #pragma mark - SearchViewController
 
 - (void)setInitialLocation:(CLLocation *)aLocation {
-    //NSLog(@"%@::setInitialLocation: %@",VIEWCONTROLLER_MAP,aLocation);
+    NSLog(@"%@::setInitialLocation: %@",VIEWCONTROLLER_MAP,aLocation);
     self.location = aLocation;
     [self configureOverlay];
 }
 
 #pragma mark - ()
+
+- (void)didTapTaggersLabelAction:(id)sender {
+    NSLog(@"%@::didTapTaggersLabelAction:",VIEWCONTROLLER_MAP);
+    
+    [taggersLabel setBackgroundColor:[UIColor lightGrayColor]];
+    [taggersLabel setTextColor:[UIColor whiteColor]];
+    
+    [fitTagsLabel setBackgroundColor:[UIColor whiteColor]];
+    [fitTagsLabel setTextColor:[UIColor blackColor]];
+    
+    [searchViewController setSearchQueryType:FTSearchQueryTypeTagger];
+    
+}
+
+- (void)didTapFitTagsLabelAction:(id)sender {
+    NSLog(@"%@::didTapFitTagsLabelAction:",VIEWCONTROLLER_MAP);
+    
+    [fitTagsLabel setBackgroundColor:[UIColor lightGrayColor]];
+    [fitTagsLabel setTextColor:[UIColor whiteColor]];
+    
+    [taggersLabel setBackgroundColor:[UIColor whiteColor]];
+    [taggersLabel setTextColor:[UIColor blackColor]];
+    
+    [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
+}
 
 - (void)setMapCenterWithPoint:(PFGeoPoint *)centerPoint {
     self.mapView.region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(centerPoint.latitude, centerPoint.longitude), MKCoordinateSpanMake(0.0225f, 0.0225f));
@@ -363,6 +435,7 @@ enum PinAnnotationTypeTag {
             
             PFQuery *innerQuery = [PFQuery queryWithClassName:kFTUserClassKey];
             [innerQuery whereKey:kFTUserTypeKey equalTo:kFTUserTypeAmbassador];
+            
             PFQuery *query = [PFQuery queryWithClassName:kFTPostClassKey];
             [query whereKeyExists:kFTPostLocationKey];
             [query whereKey:kFTPostUserKey matchesQuery:innerQuery];

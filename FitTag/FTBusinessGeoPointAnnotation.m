@@ -50,7 +50,7 @@
 - (void)setGeoPoint:(PFGeoPoint *)geoPoint {
     NSLog(@"FTBusinessGeoPointAnnotation::setGeoPoint:");
     coordinate = CLLocationCoordinate2DMake(geoPoint.latitude, geoPoint.longitude);
-    title = self.user[kFTUserCompanyNameKey];
+    title = [self.user objectForKey:kFTUserCompanyNameKey];
 }
 
 @end

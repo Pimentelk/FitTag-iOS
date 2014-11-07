@@ -22,12 +22,12 @@
 
 #pragma mark - Initialization
 
-- (id)initWithObject:(PFUser *)aObject {
+- (id)initWithObject:(PFUser *)aUser {
     self = [super init];
     if (self) {
-        user = aObject;
+        user = aUser;
         
-        PFGeoPoint *geoPoint = self.user[kFTUserLocationKey];
+        PFGeoPoint *geoPoint = [self.user objectForKey:kFTUserLocationKey];
         [self setGeoPoint:geoPoint];
     }
     return self;
@@ -46,7 +46,7 @@
 
 - (void)setGeoPoint:(PFGeoPoint *)geoPoint {
     coordinate = CLLocationCoordinate2DMake(geoPoint.latitude, geoPoint.longitude);
-    title = self.user[kFTUserDisplayNameKey];
+    title = [self.user objectForKey:kFTUserDisplayNameKey];
 }
 
 @end
