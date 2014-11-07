@@ -302,6 +302,7 @@
         
         
         galleryCell.galleryButton.tag = indexPath.section;
+        galleryCell.imageView.image = [UIImage imageNamed:PLACEHOLDER_LIGHTGRAY];
         /*
         if (object) {
             galleryCell.imageView.file = [object objectForKey:kFTPostImageKey];
@@ -404,21 +405,15 @@
         }
 
         videoCell.videoButton.tag = indexPath.section;
+        videoCell.imageView.image = [UIImage imageNamed:PLACEHOLDER_LIGHTGRAY];
         
         if (object) {
-            //videoCell.imageView.alpha = 0;
             videoCell.imageView.file = [object objectForKey:kFTPostImageKey];            
             // PFQTVC will take care of asynchronously downloading files, but will only load them when the tableview is not moving. If the data is there, let's load it right away.
             if ([videoCell.imageView.file isDataAvailable]) {
                 [videoCell.imageView loadInBackground];
-                /*
-                [UIView animateWithDuration:0.4 animations:^{
-                    videoCell.imageView.alpha = 1.0f;
-                }];
-                */
             }
         }
-        
         return videoCell;
     }
     
@@ -508,18 +503,13 @@
         }
         
         photoCell.photoButton.tag = indexPath.section;
+        photoCell.imageView.image = [UIImage imageNamed:PLACEHOLDER_LIGHTGRAY];
         
         if (object) {
             photoCell.imageView.file = [object objectForKey:kFTPostImageKey];
-            //photoCell.imageView.alpha = 0.0f;
             // PFQTVC will take care of asynchronously downloading files, but will only load them when the tableview is not moving. If the data is there, let's load it right away.
             if ([photoCell.imageView.file isDataAvailable]) {
                 [photoCell.imageView loadInBackground];
-                /*
-                [UIView animateWithDuration:0.4 animations:^{
-                    photoCell.imageView.alpha = 1.0f;
-                }];
-                */
             }
         }
         
