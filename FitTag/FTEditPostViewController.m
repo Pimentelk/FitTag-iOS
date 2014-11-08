@@ -400,6 +400,7 @@
             [gallery setObject:[PFUser currentUser] forKey:kFTPostUserKey];
             [gallery setObject:kFTPostTypeGallery forKey:kFTPostTypeKey];
             [gallery setObject:photos[0] forKey:kFTPostImageKey];
+            [gallery setObject:hashtags forKey:kFTPostHashTagKey];
             [gallery setObject:posts forKey:@"posts"];
             
             if (self.geoPoint) {
@@ -536,7 +537,8 @@
             // create a post object
             PFObject *post = [PFObject objectWithClassName:kFTPostClassKey];
             [post setObject:[PFUser currentUser] forKey:kFTPostUserKey];
-        
+            [post setObject:hashtags forKey:kFTPostHashTagKey];
+            
             if ([self.postType isEqualToString:@"VIDEO"]) {
                 [post setObject:self.imageFile forKey:kFTPostImageKey];
                 [post setObject:self.videoFile forKey:kFTPostVideoKey];

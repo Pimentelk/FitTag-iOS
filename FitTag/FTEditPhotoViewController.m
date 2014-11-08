@@ -324,6 +324,7 @@
         [photo setObject:self.photoFile forKey:kFTPostImageKey];
         [photo setObject:self.thumbnailFile forKey:kFTPostThumbnailKey];
         [photo setObject:kFTPostImageKey forKey:kFTPostTypeKey];
+        [photo setObject:hashtags forKey:kFTPostHashTagKey];
         
         if (self.geoPoint) {
             [photo setObject:self.geoPoint forKey:kFTPostLocationKey];

@@ -459,6 +459,7 @@
         [video setObject:self.imageFile forKey:kFTPostTypeImage];
         [video setObject:self.videoFile forKey:kFTPostTypeVideo];
         [video setObject:kFTPostTypeVideo forKey:kFTPostTypeKey];
+        [video setObject:hashtags forKey:kFTPostHashTagKey];
         
         if (self.geoPoint) {
             [video setObject:self.geoPoint forKey:kFTPostLocationKey];
