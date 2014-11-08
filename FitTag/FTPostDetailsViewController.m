@@ -16,6 +16,7 @@
 #import "MBProgressHUD.h"
 #import "FTCamViewController.h"
 #import "FTMapViewController.h"
+#import "FTSearchViewController.h"
 
 @interface FTPostDetailsViewController()
 @property (nonatomic, strong) UITextField *commentTextField;
@@ -29,6 +30,8 @@
 
 @property (nonatomic, strong) FTUserProfileViewController *profileViewController;
 @property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
+
+@property (nonatomic, strong) FTSearchViewController *searchViewController;
 @end
 
 static const CGFloat kFTCellInsetWidth = 0.0f;
@@ -42,6 +45,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 @synthesize dismissProfileButton;
 @synthesize profileViewController;
 @synthesize flowLayout;
+@synthesize searchViewController;
 
 #pragma mark - Initialization
 
@@ -87,7 +91,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
     [dismissProfileButton setStyle:UIBarButtonItemStylePlain];
     [dismissProfileButton setTarget:self];
-    [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
+    [dismissProfileButton setAction:@selector(didTapBackButtonAction:)];
     [dismissProfileButton setTintColor:[UIColor whiteColor]];
     
     // Override the back idnicator
@@ -110,6 +114,10 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
     
     profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    
+    // Init search view controller
+    searchViewController = [[FTSearchViewController alloc] init];
+    [searchViewController.navigationItem setLeftBarButtonItem:backIndicator];
     
     // Load Camera
     UIBarButtonItem *loadCamera = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_CAMERA]
@@ -135,6 +143,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     // Register to be notified when the keyboard will be shown to scroll the view
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLikedOrUnlikedPhoto:) name:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification object:self.post];
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -323,6 +332,12 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 
 #pragma mark - FTBaseTextCellDelegate
 
+- (void)cell:(FTBaseTextCell *)cellView didTapHashTag:(NSString *)hashTag {
+    [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
+    [searchViewController setSearchString:hashTag];
+    [self.navigationController pushViewController:searchViewController animated:YES];
+}
+
 - (void)cell:(FTBaseTextCell *)cellView didTapUserButton:(PFUser *)aUser {
     [self shouldPresentAccountViewForUser:aUser];
 }
@@ -366,10 +381,6 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 }
 
 - (void)didTapBackButtonAction:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
-- (void)didTapPopProfileButtonAction:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
