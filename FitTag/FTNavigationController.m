@@ -64,8 +64,8 @@
     [self.navigationItem setLeftBarButtonItem:backIndicator];
     
     FTInviteFriendsViewController *inviteFriendsViewController = [[FTInviteFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+    inviteFriendsViewController.followUserQueryType = FTFollowUserQueryTypeDefault;
     [inviteFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
-    
     UINavigationController *navController = [[UINavigationController alloc] init];
     [navController setViewControllers:@[ inviteFriendsViewController ] animated:NO];
     
