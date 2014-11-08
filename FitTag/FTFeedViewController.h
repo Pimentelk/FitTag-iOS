@@ -7,8 +7,7 @@
 //
 
 #import "FTTimelineViewController.h"
-//#import "FTToolbar.h"
 
-@interface FTFeedViewController : FTTimelineViewController //<FTToolBarDelegate>
+@interface FTFeedViewController : FTTimelineViewController
 @property (nonatomic, assign, getter = isFirstLaunch) BOOL firstLaunch;
 @end

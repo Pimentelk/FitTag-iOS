@@ -105,7 +105,7 @@
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
-- (BOOL) isFirstTimeUser:(PFUser *)user {
+- (BOOL)isFirstTimeUser:(PFUser *)user {
     //NSLog(@"%@::isFirstTimeUser:",VIEWCONTROLLER_CONFIG);
     // Check if the user has logged in before
     if (![user objectForKey:kFTUserLastLoginKey]) {        
