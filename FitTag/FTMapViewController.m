@@ -83,6 +83,7 @@ enum PinAnnotationTypeTag {
     UILabel *taggersLabel;
     FTSearchQueryType searchQueryType;
     BOOL isTaggersSelected;
+    UIColor *redColor;
 }
 
 @property (nonatomic, strong) CLLocation *location;
@@ -105,6 +106,10 @@ enum PinAnnotationTypeTag {
 - (void)viewDidLoad{
     [super viewDidLoad];
     
+    redColor = [UIColor colorWithRed:FT_RED_COLOR_RED
+                               green:FT_RED_COLOR_GREEN
+                                blue:FT_RED_COLOR_BLUE
+                               alpha:1.0f];
     
     mapItems = [[NSMutableArray alloc] init];
     
@@ -136,7 +141,7 @@ enum PinAnnotationTypeTag {
     
     // Create searchbar buttons & container
     CGFloat containerY = self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y;
-    filterButtonsContainer = [[UIView alloc] initWithFrame:CGRectMake(0, containerY, self.view.frame.size.width, 55)];
+    filterButtonsContainer = [[UIView alloc] initWithFrame:CGRectMake(0, containerY, self.view.frame.size.width, 40)];
     [filterButtonsContainer setBackgroundColor:[UIColor whiteColor]];
     [filterButtonsContainer setUserInteractionEnabled:YES];
     [filterButtonsContainer setAlpha:0];
@@ -214,7 +219,7 @@ enum PinAnnotationTypeTag {
     [inviteFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
     
     // Default filter type
-    [fitTagsLabel setBackgroundColor:[UIColor lightGrayColor]];
+    [fitTagsLabel setBackgroundColor:redColor];
     [fitTagsLabel setTextColor:[UIColor whiteColor]];
     [taggersLabel setBackgroundColor:[UIColor whiteColor]];
     [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
@@ -355,7 +360,7 @@ enum PinAnnotationTypeTag {
 - (void)didTapTaggersLabelAction:(id)sender {
     NSLog(@"%@::didTapTaggersLabelAction:",VIEWCONTROLLER_MAP);
     isTaggersSelected = YES;
-    [taggersLabel setBackgroundColor:[UIColor lightGrayColor]];
+    [taggersLabel setBackgroundColor:redColor];
     [taggersLabel setTextColor:[UIColor whiteColor]];
     
     [fitTagsLabel setBackgroundColor:[UIColor whiteColor]];
@@ -365,7 +370,7 @@ enum PinAnnotationTypeTag {
 - (void)didTapFitTagsLabelAction:(id)sender {
     NSLog(@"%@::didTapFitTagsLabelAction:",VIEWCONTROLLER_MAP);
     isTaggersSelected = NO;
-    [fitTagsLabel setBackgroundColor:[UIColor lightGrayColor]];
+    [fitTagsLabel setBackgroundColor:redColor];
     [fitTagsLabel setTextColor:[UIColor whiteColor]];
     
     [taggersLabel setBackgroundColor:[UIColor whiteColor]];
