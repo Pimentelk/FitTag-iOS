@@ -10,19 +10,21 @@
 		2D007B5F19B3CA46006E1484 /* FTVideoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B5E19B3CA46006E1484 /* FTVideoCell.m */; };
 		2D007B6119B4074F006E1484 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D007B6019B4074F006E1484 /* MediaPlayer.framework */; };
 		2D007B6419B6A5A1006E1484 /* FTSearchHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B6319B6A5A1006E1484 /* FTSearchHeaderView.m */; };
-		2D007B6A19B6C6BB006E1484 /* FTSearchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B6919B6C6BB006E1484 /* FTSearchCell.m */; };
+		2D007B6A19B6C6BB006E1484 /* _FTSearchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D007B6919B6C6BB006E1484 /* _FTSearchCell.m */; };
 		2D054DAB1A0293DA00A2886F /* Bender-Solid.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2D054DA11A02935D00A2886F /* Bender-Solid.otf */; };
 		2D054DD11A0867B300A2886F /* STTweetLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D054DCE1A0867B300A2886F /* STTweetLabel.m */; };
 		2D054DD21A0867B300A2886F /* STTweetTextStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D054DD01A0867B300A2886F /* STTweetTextStorage.m */; };
 		2D054DFC1A0B1BE800A2886F /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D054DFA1A0B1BE800A2886F /* Parse.framework */; };
 		2D054DFD1A0B1BE800A2886F /* ParseFacebookUtils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D054DFB1A0B1BE800A2886F /* ParseFacebookUtils.framework */; };
 		2D054DFF1A0B1BFA00A2886F /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D054DFE1A0B1BFA00A2886F /* FacebookSDK.framework */; };
+		2D054E041A0C62E400A2886F /* FTSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D054E031A0C62E400A2886F /* FTSearchViewController.m */; };
+		2D054E071A0CA22300A2886F /* FTSearchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D054E061A0CA22300A2886F /* FTSearchCell.m */; };
 		2D0A53A81971997F0091FFCA /* InspirationCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */; };
 		2D197E8E19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D197E8D19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.m */; };
 		2D197E9119C1BC7900E91274 /* FTMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D197E9019C1BC7900E91274 /* FTMapViewController.m */; };
 		2D410F4C1973581A00CE2940 /* FeedCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F4B1973581A00CE2940 /* FeedCollectionViewFlowLayout.m */; };
 		2D429A0B1977ED6000F8A9A0 /* FTBusinessProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A0A1977ED6000F8A9A0 /* FTBusinessProfileViewController.m */; };
-		2D429A0E1977EE7700F8A9A0 /* FTSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A0D1977EE7700F8A9A0 /* FTSearchViewController.m */; };
+		2D429A0E1977EE7700F8A9A0 /* _FTSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A0D1977EE7700F8A9A0 /* _FTSearchViewController.m */; };
 		2D429A111977EE8F00F8A9A0 /* FTActivityFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A101977EE8F00F8A9A0 /* FTActivityFeedViewController.m */; };
 		2D429A141977EE9E00F8A9A0 /* FTRewardsCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A131977EE9E00F8A9A0 /* FTRewardsCollectionViewController.m */; };
 		2D429A17197AD47000F8A9A0 /* FTConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A16197AD47000F8A9A0 /* FTConstants.m */; };
@@ -142,8 +144,8 @@
 		2D007B6019B4074F006E1484 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		2D007B6219B6A5A1006E1484 /* FTSearchHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSearchHeaderView.h; sourceTree = "<group>"; };
 		2D007B6319B6A5A1006E1484 /* FTSearchHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchHeaderView.m; sourceTree = "<group>"; };
-		2D007B6819B6C6BB006E1484 /* FTSearchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSearchCell.h; sourceTree = "<group>"; };
-		2D007B6919B6C6BB006E1484 /* FTSearchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchCell.m; sourceTree = "<group>"; };
+		2D007B6819B6C6BB006E1484 /* _FTSearchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _FTSearchCell.h; sourceTree = "<group>"; };
+		2D007B6919B6C6BB006E1484 /* _FTSearchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _FTSearchCell.m; sourceTree = "<group>"; };
 		2D054DA11A02935D00A2886F /* Bender-Solid.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Bender-Solid.otf"; path = "../Bender-Solid.otf"; sourceTree = "<group>"; };
 		2D054DCD1A0867B300A2886F /* STTweetLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STTweetLabel.h; sourceTree = "<group>"; };
 		2D054DCE1A0867B300A2886F /* STTweetLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STTweetLabel.m; sourceTree = "<group>"; };
@@ -152,6 +154,10 @@
 		2D054DFA1A0B1BE800A2886F /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Parse.framework; path = "../../parse-library-1/Parse.framework"; sourceTree = "<group>"; };
 		2D054DFB1A0B1BE800A2886F /* ParseFacebookUtils.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ParseFacebookUtils.framework; path = "../../parse-library-1/ParseFacebookUtils.framework"; sourceTree = "<group>"; };
 		2D054DFE1A0B1BFA00A2886F /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FacebookSDK.framework; path = ../../FacebookSDK/FacebookSDK.framework; sourceTree = "<group>"; };
+		2D054E021A0C62E400A2886F /* FTSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSearchViewController.h; sourceTree = "<group>"; };
+		2D054E031A0C62E400A2886F /* FTSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchViewController.m; sourceTree = "<group>"; };
+		2D054E051A0CA22300A2886F /* FTSearchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSearchCell.h; sourceTree = "<group>"; };
+		2D054E061A0CA22300A2886F /* FTSearchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchCell.m; sourceTree = "<group>"; };
 		2D0A53A61971997F0091FFCA /* InspirationCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspirationCellCollectionView.h; sourceTree = "<group>"; };
 		2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InspirationCellCollectionView.m; sourceTree = "<group>"; };
 		2D197E8C19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAmbassadorGeoPointAnnotation.h; sourceTree = "<group>"; };
@@ -162,8 +168,8 @@
 		2D410F4B1973581A00CE2940 /* FeedCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		2D429A091977ED6000F8A9A0 /* FTBusinessProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTBusinessProfileViewController.h; sourceTree = "<group>"; };
 		2D429A0A1977ED6000F8A9A0 /* FTBusinessProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTBusinessProfileViewController.m; sourceTree = "<group>"; };
-		2D429A0C1977EE7700F8A9A0 /* FTSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSearchViewController.h; sourceTree = "<group>"; };
-		2D429A0D1977EE7700F8A9A0 /* FTSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchViewController.m; sourceTree = "<group>"; };
+		2D429A0C1977EE7700F8A9A0 /* _FTSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _FTSearchViewController.h; sourceTree = "<group>"; };
+		2D429A0D1977EE7700F8A9A0 /* _FTSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _FTSearchViewController.m; sourceTree = "<group>"; };
 		2D429A0F1977EE8F00F8A9A0 /* FTActivityFeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTActivityFeedViewController.h; sourceTree = "<group>"; };
 		2D429A101977EE8F00F8A9A0 /* FTActivityFeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTActivityFeedViewController.m; sourceTree = "<group>"; };
 		2D429A121977EE9E00F8A9A0 /* FTRewardsCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTRewardsCollectionViewController.h; sourceTree = "<group>"; };
@@ -434,6 +440,15 @@
 			path = STTweetLabel;
 			sourceTree = "<group>";
 		};
+		2D054E001A0C623600A2886F /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				2D054E021A0C62E400A2886F /* FTSearchViewController.h */,
+				2D054E031A0C62E400A2886F /* FTSearchViewController.m */,
+			);
+			name = Search;
+			sourceTree = "<group>";
+		};
 		2D0A53A91971A65F0091FFCA /* Categories */ = {
 			isa = PBXGroup;
 			children = (
@@ -505,6 +520,7 @@
 				2DD31E0219AF4F41000A6D2D /* Friends */,
 				2D0A53AD1971AC240091FFCA /* Home */,
 				2DD691951949B1EB00B59E75 /* Login */,
+				2D054E001A0C623600A2886F /* Search */,
 				2DD2B65D1983FDF400600A42 /* MKMap */,
 				2DD2B65C1983FDE800600A42 /* Profiles */,
 				2DD2B65F1983FE1500600A42 /* Rewards */,
@@ -655,8 +671,8 @@
 		2DD2B65D1983FDF400600A42 /* MKMap */ = {
 			isa = PBXGroup;
 			children = (
-				2D429A0C1977EE7700F8A9A0 /* FTSearchViewController.h */,
-				2D429A0D1977EE7700F8A9A0 /* FTSearchViewController.m */,
+				2D429A0C1977EE7700F8A9A0 /* _FTSearchViewController.h */,
+				2D429A0D1977EE7700F8A9A0 /* _FTSearchViewController.m */,
 				2DD491E019EF769400A50F5B /* FTAmbassadorAnnotationView.h */,
 				2DD491E119EF769500A50F5B /* FTAmbassadorAnnotationView.m */,
 				2DD491E219EF769500A50F5B /* FTBusinessAnnotationView.h */,
@@ -777,8 +793,8 @@
 				2DD2B693198418C300600A42 /* FTPhotoCell.m */,
 				2D007B5D19B3CA46006E1484 /* FTVideoCell.h */,
 				2D007B5E19B3CA46006E1484 /* FTVideoCell.m */,
-				2D007B6819B6C6BB006E1484 /* FTSearchCell.h */,
-				2D007B6919B6C6BB006E1484 /* FTSearchCell.m */,
+				2D007B6819B6C6BB006E1484 /* _FTSearchCell.h */,
+				2D007B6919B6C6BB006E1484 /* _FTSearchCell.m */,
 				2D77353219DF4C0400F05FC0 /* FTGalleryCell.h */,
 				2D77353319DF4C0400F05FC0 /* FTGalleryCell.m */,
 				2DCD9F0619F4AB73006DCD8E /* FTSettingsCell.h */,
@@ -787,6 +803,8 @@
 				2D7968BB19FC0A7C00DA2DD0 /* FTSwitchCell.m */,
 				2DCB7D611A00647F00E349F6 /* FTFollowCell.h */,
 				2DCB7D621A00647F00E349F6 /* FTFollowCell.m */,
+				2D054E051A0CA22300A2886F /* FTSearchCell.h */,
+				2D054E061A0CA22300A2886F /* FTSearchCell.m */,
 			);
 			name = UITableViewCells;
 			sourceTree = "<group>";
@@ -1056,7 +1074,7 @@
 				2DBE021419D37AF900CD278C /* FTRewardsDetailView.m in Sources */,
 				2DD2B67D19840FB500600A42 /* FTActivityCell.m in Sources */,
 				2DD691981949B24300B59E75 /* FTConfigViewController.m in Sources */,
-				2D007B6A19B6C6BB006E1484 /* FTSearchCell.m in Sources */,
+				2D007B6A19B6C6BB006E1484 /* _FTSearchCell.m in Sources */,
 				2DD6919B1949B71B00B59E75 /* FTLoginViewController.m in Sources */,
 				2DD2B691198417D500600A42 /* FTLoadMoreCell.m in Sources */,
 				2DBE021D19D4682500CD278C /* FTRewardsDetailFooterView.m in Sources */,
@@ -1067,6 +1085,7 @@
 				2DD2B6551983FD0E00600A42 /* FTUtility.m in Sources */,
 				2D6E0224196A24A1004DC010 /* InterestFlowLayout.m in Sources */,
 				2DBE023A19D6FB7F00CD278C /* ELCConsole.m in Sources */,
+				2D054E071A0CA22300A2886F /* FTSearchCell.m in Sources */,
 				2D4DF05A19E0DA3100E2E71E /* FTAccountHeaderView.m in Sources */,
 				2D53D21A19E6396F00273D7E /* FTBusinessProfileHeaderView.m in Sources */,
 				2DCD9F0419F49C77006DCD8E /* FTSettingsDetailViewController.m in Sources */,
@@ -1094,7 +1113,7 @@
 				2D429A141977EE9E00F8A9A0 /* FTRewardsCollectionViewController.m in Sources */,
 				2DBEEE5719AB4F1E00AAD238 /* FTPostDetailsFooterView.m in Sources */,
 				2DBE023919D6FB7F00CD278C /* ELCAssetTablePicker.m in Sources */,
-				2D429A0E1977EE7700F8A9A0 /* FTSearchViewController.m in Sources */,
+				2D429A0E1977EE7700F8A9A0 /* _FTSearchViewController.m in Sources */,
 				2DBE024719DCF84000CD278C /* FTEditPostViewController.m in Sources */,
 				2DDBF13C19F0BF27009037E2 /* FTMapScrollView.m in Sources */,
 				2DACD97B196578DA00833C14 /* FTInspirationViewController.m in Sources */,
@@ -1139,6 +1158,7 @@
 				2DBE021A19D44F9F00CD278C /* TTTAttributedLabel.m in Sources */,
 				2DABDA06195DC0E500379891 /* PhotoCellCollectionView.m in Sources */,
 				2DBC6E5A195C783C008B5AD3 /* FTCamRollViewController.m in Sources */,
+				2D054E041A0C62E400A2886F /* FTSearchViewController.m in Sources */,
 				2D197E8E19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
