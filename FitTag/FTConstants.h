@@ -88,6 +88,7 @@ extern NSString *const kFTPostTypeKey;
 extern NSString *const kFTPostOpenGraphIDKey;
 extern NSString *const kFTPostLocationKey;
 extern NSString *const kFTPostPostsKey;
+extern NSString *const kFTPostHashTagKey;
 
 extern NSString *const kFTPostTypeGallery;
 extern NSString *const kFTPostTypeGalleryImage;

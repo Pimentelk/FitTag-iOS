@@ -154,6 +154,7 @@ NSString *const kFTPostTypeGalleryImage     = @"galleryImage";
 NSString *const kFTPostTypeGalleryVideo     = @"galleryVideo";
 NSString *const kFTPostTypeImage            = @"image";
 NSString *const kFTPostTypeVideo            = @"video";
+NSString *const kFTPostHashTagKey           = @"hashTags";
 
 #pragma mark - Cached Post Attributes
 
