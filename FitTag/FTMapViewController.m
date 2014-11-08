@@ -19,7 +19,6 @@
 #import "FTBusinessProfileViewController.h"
 #import "FTNavigationController.h"
 #import "FTPostDetailsViewController.h"
-#import "FTSearchViewController.h"
 
 // CONSTANTS
 
@@ -83,6 +82,7 @@ enum PinAnnotationTypeTag {
     UILabel *fitTagsLabel;
     UILabel *taggersLabel;
     FTSearchQueryType searchQueryType;
+    BOOL isTaggersSelected;
 }
 
 @property (nonatomic, strong) CLLocation *location;
@@ -91,12 +91,16 @@ enum PinAnnotationTypeTag {
 @property (nonatomic, strong) FTSearchViewController *searchViewController;
 @property (nonatomic, strong) FTSearchHeaderView *searchHeaderView;
 @property (nonatomic, strong) FTCircleOverlay *targetOverlay;
+@property (nonatomic, strong) FTInviteFriendsViewController *inviteFriendsViewController;
+@property (nonatomic, strong) UINavigationController *inviteFriendsNavController;
 @end
 
 @implementation FTMapViewController
 @synthesize searchHeaderView;
 @synthesize geoPoint;
 @synthesize searchViewController;
+@synthesize inviteFriendsViewController;
+@synthesize inviteFriendsNavController;
 
 - (void)viewDidLoad{
     [super viewDidLoad];
@@ -125,7 +129,7 @@ enum PinAnnotationTypeTag {
     self.radius = KILOMETER_FIVE;
     
     // Searchbar
-    searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0f,0.0f,self.navigationItem.titleView.frame.size.width,self.navigationItem.titleView.frame.size.height)];
+    searchBar = [[UISearchBar alloc] init];
     searchBar.delegate = self;
     
     [self.navigationItem setTitleView:searchBar];
@@ -186,13 +190,35 @@ enum PinAnnotationTypeTag {
     [scrollView setAlwaysBounceVertical:NO];
     
     // Init search view controller
+    UIBarButtonItem *dismissSearchButton = [[UIBarButtonItem alloc] init];
+    [dismissSearchButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [dismissSearchButton setStyle:UIBarButtonItemStylePlain];
+    [dismissSearchButton setTarget:self];
+    [dismissSearchButton setAction:@selector(didTapPopSearchButtonAction:)];
+    [dismissSearchButton setTintColor:[UIColor whiteColor]];
+    
     searchViewController = [[FTSearchViewController alloc] init];
+    [searchViewController.navigationItem setLeftBarButtonItem:dismissSearchButton];
+    
+    // Init search user controller
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
+    [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backIndicator setStyle:UIBarButtonItemStylePlain];
+    [backIndicator setTarget:self];
+    [backIndicator setAction:@selector(didTapBackButtonAction:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    
+    inviteFriendsViewController = [[FTInviteFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+    inviteFriendsNavController = [[UINavigationController alloc] init];
+    [inviteFriendsNavController setViewControllers:@[ inviteFriendsViewController ] animated:NO];
+    [inviteFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
     
     // Default filter type
     [fitTagsLabel setBackgroundColor:[UIColor lightGrayColor]];
     [fitTagsLabel setTextColor:[UIColor whiteColor]];
     [taggersLabel setBackgroundColor:[UIColor whiteColor]];
     [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
+    isTaggersSelected = NO;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -224,17 +250,15 @@ enum PinAnnotationTypeTag {
         [filterButtonsContainer setAlpha:0];
     }];
     
-    // Override the back idnicator
-    UIBarButtonItem *dismissSearchButton = [[UIBarButtonItem alloc] init];
-    [dismissSearchButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
-    [dismissSearchButton setStyle:UIBarButtonItemStylePlain];
-    [dismissSearchButton setTarget:self];
-    [dismissSearchButton setAction:@selector(didTapPopSearchButtonAction:)];
-    [dismissSearchButton setTintColor:[UIColor whiteColor]];
-    
-    [searchViewController setSearchString:searchBar.text];
-    [searchViewController.navigationItem setLeftBarButtonItem:dismissSearchButton];
-    [self.navigationController pushViewController:searchViewController animated:YES];
+    if (isTaggersSelected) {
+        [inviteFriendsViewController setFollowUserQueryType:FTFollowUserQueryTypeTagger];
+        [inviteFriendsViewController setSearchString:searchBar.text];
+        [self presentViewController:inviteFriendsNavController animated:YES completion:nil];
+    } else {
+        [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
+        [searchViewController setSearchString:searchBar.text];
+        [self.navigationController pushViewController:searchViewController animated:YES];
+    }
 }
 
 - (void)didTapPopSearchButtonAction:(UIButton *)button {
@@ -324,29 +348,28 @@ enum PinAnnotationTypeTag {
 
 #pragma mark - ()
 
+- (void)didTapBackButtonAction:(UIButton *)button {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (void)didTapTaggersLabelAction:(id)sender {
     NSLog(@"%@::didTapTaggersLabelAction:",VIEWCONTROLLER_MAP);
-    
+    isTaggersSelected = YES;
     [taggersLabel setBackgroundColor:[UIColor lightGrayColor]];
     [taggersLabel setTextColor:[UIColor whiteColor]];
     
     [fitTagsLabel setBackgroundColor:[UIColor whiteColor]];
     [fitTagsLabel setTextColor:[UIColor blackColor]];
-    
-    [searchViewController setSearchQueryType:FTSearchQueryTypeTagger];
-    
 }
 
 - (void)didTapFitTagsLabelAction:(id)sender {
     NSLog(@"%@::didTapFitTagsLabelAction:",VIEWCONTROLLER_MAP);
-    
+    isTaggersSelected = NO;
     [fitTagsLabel setBackgroundColor:[UIColor lightGrayColor]];
     [fitTagsLabel setTextColor:[UIColor whiteColor]];
     
     [taggersLabel setBackgroundColor:[UIColor whiteColor]];
     [taggersLabel setTextColor:[UIColor blackColor]];
-    
-    [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
 }
 
 - (void)setMapCenterWithPoint:(PFGeoPoint *)centerPoint {

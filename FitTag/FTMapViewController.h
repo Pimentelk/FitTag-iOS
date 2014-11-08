@@ -11,6 +11,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import "FTToolbar.h"
 #import "FTMapScrollViewItem.h"
+#import "FTInviteFriendsViewController.h"
 
 @interface FTMapViewController : UIViewController <FTSearchHeaderViewDelegate,
                                                    FTMapScrollViewItemDelegate,
