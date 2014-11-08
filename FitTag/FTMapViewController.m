@@ -258,6 +258,7 @@ enum PinAnnotationTypeTag {
     if (isTaggersSelected) {
         [inviteFriendsViewController setFollowUserQueryType:FTFollowUserQueryTypeTagger];
         [inviteFriendsViewController setSearchString:searchBar.text];
+        [inviteFriendsViewController querySearchForUser];
         [self presentViewController:inviteFriendsNavController animated:YES completion:nil];
     } else {
         [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];

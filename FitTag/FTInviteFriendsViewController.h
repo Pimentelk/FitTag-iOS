@@ -23,4 +23,7 @@ typedef enum {
 @interface FTInviteFriendsViewController : UITableViewController <FTFollowCellDelegate,FTInviteTableHeaderViewDelegate>
 @property (nonatomic, assign) FTFollowUserQueryType followUserQueryType;
 @property (nonatomic, strong) NSString *searchString;
+
+- (void)querySearchForUser;
+
 @end

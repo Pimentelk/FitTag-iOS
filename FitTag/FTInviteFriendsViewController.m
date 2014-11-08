@@ -39,6 +39,7 @@
     
     // Set background image
     [self.tableView setBackgroundColor:grayColor];
+    [self.tableView setDelegate:self];
     
     // Fittag navigationbar color
     self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:FT_RED_COLOR_RED
@@ -56,6 +57,12 @@
     
     profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     
+    // Table headerview
+    headerView = [[FTInviteTableHeaderView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 40)];
+    headerView.delegate = self;
+    
+    [headerView setLocationSelected];
+    
     if (followUserQueryType & FTFollowUserQueryTypeTagger) {
         
         [self.tableView.tableHeaderView setHidden:YES];
@@ -63,13 +70,7 @@
         
     } else {
         
-        headerView = [[FTInviteTableHeaderView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 40)];
-        headerView.delegate = self;
-                
-        [headerView setLocationSelected];
-        
         [self.tableView setTableHeaderView:headerView];
-        [self.tableView setDelegate:self];
         [self.tableView.tableHeaderView setHidden:NO];
         
         [self queryForUserType:FTFollowUserQueryTypeDefault];
@@ -81,13 +82,14 @@
     
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_INVITE];
-    [tracker send:[[GAIDictionaryBuilder createAppView] build]];    
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
 }
 
 #pragma mark - ()
 
 - (void)querySearchForUser {
     // List of all users where handle matches string OR handle contains substring
+    NSLog(@"self.searchString: %@",self.searchString);
     if (self.searchString && ![self.searchString isEqualToString:EMPTY_STRING]) {
         
         //****** Display Name ********//
