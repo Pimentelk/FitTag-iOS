@@ -19,6 +19,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
 
 /* Private static helper to obtain the horizontal space left for name and content after taking the inset and image in consideration */
 + (CGFloat)horizontalTextSpaceForInsetWidth:(CGFloat)insetWidth;
+
 @end
 
 @implementation FTBaseTextCell
@@ -33,7 +34,6 @@ static TTTTimeIntervalFormatter *timeFormatter;
 @synthesize separatorImage;
 @synthesize delegate;
 @synthesize user;
-
 
 #pragma mark - NSObject
 
@@ -92,6 +92,8 @@ static TTTTimeIntervalFormatter *timeFormatter;
         [self.contentLabel setShadowOffset:CGSizeMake( 0.0f, 1.0f)];
         [mainView addSubview:self.contentLabel];
         
+        __unsafe_unretained typeof(self) weakSelf = self;
+        
         [self.contentLabel setDetectionBlock:^(STTweetHotWord hotWord, NSString *string, NSString *protocol, NSRange range) {
             NSArray *hotWords = @[ HOTWORD_HANDLE, HOTWORD_HASHTAG, HOTWORD_LINK ];
             /*
@@ -103,7 +105,9 @@ static TTTTimeIntervalFormatter *timeFormatter;
                 
             } else if ([hotWords[hotWord] isEqualToString:HOTWORD_HASHTAG]) {
                 
-                
+                if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(cell:didTapHashTag:)]) {
+                    [weakSelf.delegate cell:weakSelf didTapHashTag:string];
+                }
                 
             } else if ([hotWords[hotWord] isEqualToString:HOTWORD_LINK]) {
                 

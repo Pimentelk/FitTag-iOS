@@ -78,6 +78,13 @@
 @protocol FTBaseTextCellDelegate <NSObject>
 @optional
 
+
+/*!
+ Sent to the delegate when a hashtag is tapped
+ @param hashTag the HashTag that was tapped
+ */
+- (void)cell:(FTBaseTextCell *)cellView didTapHashTag:(NSString *)hashTag;
+
 /*!
  Sent to the delegate when a user button is tapped
  @param aUser the PFUser of the user that was tapped
