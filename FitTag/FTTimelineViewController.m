@@ -137,11 +137,6 @@
     return 320.0f;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [super tableView:tableView didSelectRowAtIndexPath:indexPath];
-    //[tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
 #pragma mark - PFQueryTableViewController
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 
@@ -192,14 +187,6 @@
     if (indexPath.section < self.objects.count) {
         return [self.objects objectAtIndex:indexPath.section];
     }
-    /*
-    if (indexPath.section == self.objects.count && self.paginationEnabled) {
-        [self loadNextPage];
-        return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
-    }
-    */
-    
-    [self loadNextPage];
     return nil;
 }
 
@@ -211,7 +198,8 @@
     static NSString *photoCellIdentifier = @"PhotoCell";
     static NSString *galleryCellIdentifier = @"GalleryCell";
     
-    //NSLog(@"FTPhotoTimelineViewController::Updating tableView:(UITableView *) %@ cellForRowAtIndexPath:(NSIndexPath *) %@ object:(PFObject *) %@",tableView,indexPath,object);
+    //NSLog(@"FTTimelineViewController::Updating tableView:(UITableView *) %@ cellForRowAtIndexPath:(NSIndexPath *) %@ object:(PFObject *) %@",tableView,indexPath,object);
+    
     if (indexPath.section == self.objects.count) {
         return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
     }
@@ -875,6 +863,16 @@
                                delegate:nil
                       cancelButtonTitle:@"ok"
                       otherButtonTitles:nil] show];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if (scrollView.contentSize.height - scrollView.contentOffset.y < (self.view.bounds.size.height)) {
+        if (![self isLoading]) {
+            [self loadNextPage];
+        }
+    }
 }
 
 #pragma mark - ()

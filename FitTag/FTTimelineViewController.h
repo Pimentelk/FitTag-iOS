@@ -10,6 +10,12 @@
 #import "FTVideoCell.h"
 #import "FTGalleryCell.h"
 
-@interface FTTimelineViewController : PFQueryTableViewController <FTPhotoCellDelegate,FTVideoCellDelegate,FTGalleryCellDelegate,UIActionSheetDelegate,UIGestureRecognizerDelegate>
+@interface FTTimelineViewController : PFQueryTableViewController <FTPhotoCellDelegate,
+                                                                  FTVideoCellDelegate,
+                                                                  FTGalleryCellDelegate,
+                                                                  UIActionSheetDelegate,
+                                                                  UIGestureRecognizerDelegate>
+
 - (FTPhotoCell *)dequeueReusableSectionHeaderView;
+
 @end
