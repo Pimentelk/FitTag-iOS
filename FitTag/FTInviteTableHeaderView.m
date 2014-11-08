@@ -11,8 +11,15 @@
 #define LOCATION_BUTTON_HEIGHT 40
 #define BUTTON_PADDING 20
 
+@interface FTInviteTableHeaderView() {
+    UIColor *baseRedColor;
+}
+@end
+
 @implementation FTInviteTableHeaderView
 @synthesize delegate;
+@synthesize locationButton;
+@synthesize interestButton;
 
 - (id)initWithFrame:(CGRect)frame{
     
@@ -21,34 +28,43 @@
         
         self.clipsToBounds = YES;
         
+        baseRedColor = [UIColor colorWithRed:FT_RED_COLOR_RED
+                                       green:FT_RED_COLOR_GREEN
+                                        blue:FT_RED_COLOR_BLUE
+                                       alpha:1.0f];
+        
         [self setBackgroundColor:[UIColor colorWithRed:FT_GRAY_COLOR_RED
                                                  green:FT_GRAY_COLOR_GREEN
                                                   blue:FT_GRAY_COLOR_BLUE
                                                  alpha:1.0f]];
         
-        CGFloat locationButtonY = (self.frame.size.height - LOCATION_BUTTON_HEIGHT) / 2;
-        CGFloat locationButtonWidth = ((self.frame.size.width/2) - BUTTON_PADDING);
-        CGFloat locationButtonX = ((self.frame.size.width/2) - locationButtonWidth) / 2;
-        
-        UIButton *locationButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [locationButton addTarget:self action:@selector(didTapLocationButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [locationButton setFrame:CGRectMake(locationButtonX, locationButtonY, locationButtonWidth, LOCATION_BUTTON_HEIGHT)];
-        [locationButton setTitle:@"Location" forState:UIControlStateNormal];
-        [locationButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        [locationButton setBackgroundColor:[UIColor whiteColor]];
+        CGFloat locationButtonWidth = self.frame.size.width / 2;
+
+        UITapGestureRecognizer *locationTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                             action:@selector(didTapLocationButtonAction:)];
+        [locationTapGesture setNumberOfTapsRequired:1];
+
+        locationButton = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, locationButtonWidth, LOCATION_BUTTON_HEIGHT)];
+        [locationButton setText:@"Nearby"];
+        [locationButton setTextAlignment:NSTextAlignmentCenter];
+        [locationButton setTextColor:[UIColor blackColor]];
+        [locationButton setBackgroundColor:[UIColor lightGrayColor]];
+        [locationButton setUserInteractionEnabled:YES];
+        [locationButton addGestureRecognizer:locationTapGesture];
         
         [self addSubview:locationButton];
         
-        CGFloat interestButtonY = locationButtonY;
-        CGFloat interestButtonWidth = locationButtonWidth;
-        CGFloat interestButtonX = (self.frame.size.width / 2) + locationButtonX;
+        UITapGestureRecognizer *interestTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                             action:@selector(didTapInterestButtonAction:)];
+        [interestTapGesture setNumberOfTapsRequired:1];
         
-        UIButton *interestButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [interestButton addTarget:self action:@selector(didTapInterestButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [interestButton setFrame:CGRectMake(interestButtonX, interestButtonY, interestButtonWidth, LOCATION_BUTTON_HEIGHT)];
-        [interestButton setTitle:@"Interest" forState:UIControlStateNormal];
-        [interestButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        [interestButton setBackgroundColor:[UIColor whiteColor]];
+        interestButton = [[UILabel alloc] initWithFrame:CGRectMake(locationButton.frame.size.width, 0, locationButtonWidth, LOCATION_BUTTON_HEIGHT)];
+        [interestButton setText:@"Interest"];
+        [interestButton setTextAlignment:NSTextAlignmentCenter];
+        [interestButton setTextColor:[UIColor blackColor]];
+        [interestButton setBackgroundColor:[UIColor lightGrayColor]];
+        [interestButton setUserInteractionEnabled:YES];
+        [interestButton addGestureRecognizer:interestTapGesture];
         
         [self addSubview:interestButton];
     }
@@ -57,13 +73,29 @@
 
 #pragma mark - ()
 
+- (void)setLocationSelected {
+    [locationButton setTextColor:[UIColor whiteColor]];
+    [locationButton setBackgroundColor:baseRedColor];
+    [interestButton setTextColor:[UIColor blackColor]];
+    [interestButton setBackgroundColor:[UIColor lightGrayColor]];
+}
+
+- (void)setInterestSelected {
+    [locationButton setTextColor:[UIColor blackColor]];
+    [locationButton setBackgroundColor:[UIColor lightGrayColor]];
+    [interestButton setTextColor:[UIColor whiteColor]];
+    [interestButton setBackgroundColor:baseRedColor];
+}
+
 - (void)didTapLocationButtonAction:(UIButton *)button {
+    [self setLocationSelected];
     if (delegate && [delegate respondsToSelector:@selector(inviteTableHeaderView:didTapLocationButton:)]) {
         [delegate inviteTableHeaderView:self didTapLocationButton:button];
     }
 }
 
 - (void)didTapInterestButtonAction:(UIButton *)button {
+    [self setInterestSelected];
     if (delegate && [delegate respondsToSelector:@selector(inviteTableHeaderView:didTapInterestButton:)]) {
         [delegate inviteTableHeaderView:self didTapInterestButton:button];
     }

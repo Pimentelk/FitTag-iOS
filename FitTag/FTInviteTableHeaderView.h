@@ -10,7 +10,11 @@
 @interface FTInviteTableHeaderView : UICollectionReusableView
 
 @property (nonatomic, weak) id<FTInviteTableHeaderViewDelegate> delegate;
+@property (nonatomic, strong) UILabel *locationButton;
+@property (nonatomic, strong) UILabel *interestButton;
 
+- (void)setLocationSelected;
+- (void)setInterestSelected;
 @end
 
 @protocol FTInviteTableHeaderViewDelegate <NSObject>
