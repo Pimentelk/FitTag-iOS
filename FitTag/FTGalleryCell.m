@@ -202,8 +202,6 @@
 
 - (void)setGallery:(PFObject *)aGallery {
     gallery = aGallery;
-    NSLog(@"setGallery: %@",aGallery.objectId);
-
     
     [self.swiperView setAlpha:0];
     
