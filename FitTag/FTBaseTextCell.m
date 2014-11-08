@@ -331,7 +331,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     } else { // Otherwise we ignore the padding and we'll add it after we set the user
         [self.contentLabel setText:contentString];
     }
-    NSLog(@"contentLabel: %@",contentLabel);
+    
     [self setNeedsDisplay];
 }
 
