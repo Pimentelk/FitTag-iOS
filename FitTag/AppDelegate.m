@@ -50,7 +50,7 @@
     // Google Analytics
     [GAI sharedInstance].trackUncaughtExceptions = YES;
     [GAI sharedInstance].dispatchInterval = 20;
-    [[GAI sharedInstance].logger setLogLevel:kGAILogLevelNone];
+    [[GAI sharedInstance].logger setLogLevel:kGAILogLevelError];
     [[GAI sharedInstance] trackerWithTrackingId:GOOGLE_ANALYTICS_TRACKING_ID];
     
     // Parse initialization
@@ -424,9 +424,6 @@
                     UINavigationController *feedNavigationController = self.tabBarController.viewControllers[FTFeedTabBarItemIndex];
                     self.tabBarController.selectedViewController = feedNavigationController;
                     
-                    //FTAccountViewController *accountViewController = [[FTAccountViewController alloc] initWithStyle:UITableViewStylePlain];
-                    //accountViewController.user = (PFUser *)user;
-                    //[homeNavigationController pushViewController:accountViewController animated:YES];
                     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
                     [flowLayout setItemSize:CGSizeMake(105.5,105)];
                     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
