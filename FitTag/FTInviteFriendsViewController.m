@@ -16,11 +16,14 @@
 @property (nonatomic, strong) NSArray *objects;
 @property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
 @property (nonatomic, strong) FTUserProfileViewController *profileViewController;
+@property (nonatomic, strong) FTInviteTableHeaderView *headerView;
 @end
 
 @implementation FTInviteFriendsViewController
 @synthesize flowLayout;
 @synthesize profileViewController;
+@synthesize followUserQueryType;
+@synthesize headerView;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -43,14 +46,6 @@
                                                                             blue:FT_RED_COLOR_BLUE
                                                                            alpha:1.0f];
     
-    FTInviteTableHeaderView *headerView = [[FTInviteTableHeaderView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, TABLE_VIEW_HEIGHT)];
-    headerView.delegate = self;
-    
-    self.tableView.tableHeaderView = headerView;
-    self.tableView.delegate = self;
-    
-    [self queryForUserType:FTFollowUserQueryTypeInterest];
-    
     flowLayout = [[UICollectionViewFlowLayout alloc] init];
     [flowLayout setItemSize:CGSizeMake(105.5,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -60,9 +55,80 @@
     [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
     
     profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    
+    if (followUserQueryType & FTFollowUserQueryTypeTagger) {
+        
+        [self.tableView.tableHeaderView setHidden:YES];
+        [self querySearchForUser];
+        
+    } else {
+        
+        headerView = [[FTInviteTableHeaderView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 40)];
+        headerView.delegate = self;
+                
+        [headerView setLocationSelected];
+        
+        [self.tableView setTableHeaderView:headerView];
+        [self.tableView setDelegate:self];
+        [self.tableView.tableHeaderView setHidden:NO];
+        
+        [self queryForUserType:FTFollowUserQueryTypeDefault];
+    }
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_INVITE];
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];    
 }
 
 #pragma mark - ()
+
+- (void)querySearchForUser {
+    // List of all users where handle matches string OR handle contains substring
+    if (self.searchString && ![self.searchString isEqualToString:EMPTY_STRING]) {
+        
+        //****** Display Name ********//
+        PFQuery *queryStringMatchHandle = [PFQuery queryWithClassName:kFTUserClassKey];
+        [queryStringMatchHandle whereKeyExists:kFTUserDisplayNameKey];
+        [queryStringMatchHandle whereKey:kFTUserDisplayNameKey equalTo:self.searchString];
+        
+        PFQuery *querySubStringHandle = [PFQuery queryWithClassName:kFTUserClassKey];
+        [querySubStringHandle whereKeyExists:kFTUserDisplayNameKey];
+        [querySubStringHandle whereKey:kFTUserDisplayNameKey containsString:self.searchString];
+        
+        //****** First Name ********//
+        PFQuery *queryStringMatchFirstName = [PFQuery queryWithClassName:kFTUserClassKey];
+        [queryStringMatchFirstName whereKeyExists:kFTUserFirstnameKey];
+        [queryStringMatchFirstName whereKey:kFTUserFirstnameKey equalTo:self.searchString];
+        
+        PFQuery *querySubStringFirstName = [PFQuery queryWithClassName:kFTUserClassKey];
+        [querySubStringFirstName whereKeyExists:kFTUserFirstnameKey];
+        [querySubStringFirstName whereKey:kFTUserFirstnameKey containsString:self.searchString];
+        
+        //****** Last Name ********//
+        PFQuery *queryStringMatchLastName = [PFQuery queryWithClassName:kFTUserClassKey];
+        [queryStringMatchLastName whereKeyExists:kFTUserLastnameKey];
+        [queryStringMatchLastName whereKey:kFTUserLastnameKey equalTo:self.searchString];
+        
+        PFQuery *querySubStringLastName = [PFQuery queryWithClassName:kFTUserClassKey];
+        [querySubStringLastName whereKeyExists:kFTUserLastnameKey];
+        [querySubStringLastName whereKey:kFTUserLastnameKey containsString:self.searchString];
+        
+        NSArray *queries = @[ queryStringMatchHandle, querySubStringHandle, queryStringMatchFirstName,
+                              querySubStringFirstName, queryStringMatchLastName, querySubStringLastName ];
+        
+        PFQuery *query = [PFQuery orQueryWithSubqueries:queries];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *taggers, NSError *error) {
+            if (!error) {
+                self.objects = taggers;
+                [self.tableView reloadData];
+            }
+        }];
+    }
+}
 
 - (void)queryForUserType:(FTFollowUserQueryType)type {
     

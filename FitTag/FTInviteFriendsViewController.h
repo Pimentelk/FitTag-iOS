@@ -10,6 +10,10 @@ typedef enum {
     FTFollowUserQueryTypeNone = 0,
     FTFollowUserQueryTypeNear = 1 << 0,
     FTFollowUserQueryTypeInterest = 1 << 1,
+    FTFollowUserQueryTypeAmbassador = 1 << 2,
+    FTFollowUserQueryTypeBusiness = 1 << 3,
+    FTFollowUserQueryTypeUser = 1 << 4,
+    FTFollowUserQueryTypeTagger = FTFollowUserQueryTypeAmbassador | FTFollowUserQueryTypeBusiness | FTFollowUserQueryTypeUser,
     FTFollowUserQueryTypeDefault = FTFollowUserQueryTypeNear
 } FTFollowUserQueryType;
 
@@ -17,5 +21,6 @@ typedef enum {
 #import "FTInviteTableHeaderView.h"
 
 @interface FTInviteFriendsViewController : UITableViewController <FTFollowCellDelegate,FTInviteTableHeaderViewDelegate>
-
+@property (nonatomic, assign) FTFollowUserQueryType followUserQueryType;
+@property (nonatomic, strong) NSString *searchString;
 @end
