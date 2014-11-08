@@ -12,7 +12,6 @@
 #define LABEL_PADDING 5.0f
 #define PROFILE_IMAGE_WIDTH 56.0f
 #define PROFILE_IMAGE_HEIGHT 56.0f
-#define ANIMATION_DURATION 0.3f
 #define LABEL_HEIGHT 15.0f
 #define FOLLOW_BUTTON_WIDTH 64.0f
 #define PROFILE_IMAGE_X 10.0f
@@ -40,18 +39,15 @@
         [self.contentView setBackgroundColor:[UIColor colorWithRed:FT_GRAY_COLOR_RED
                                                              green:FT_GRAY_COLOR_GREEN
                                                               blue:FT_GRAY_COLOR_BLUE alpha:1.0f]];
-        
-        self.imageView.alpha = 0.0f;
         self.imageView.image = nil;
         
         UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
                                                                                                action:@selector(didTapProfileImageAction:)];
-        tapGestureRecognizer.numberOfTapsRequired = 1;
+        [tapGestureRecognizer setNumberOfTapsRequired:1];
         
         // ImageView Placeholder
         self.profileImageView = [[UIImageView alloc] initWithFrame:CGRectMake(PROFILE_IMAGE_X, 4, PROFILE_IMAGE_WIDTH, PROFILE_IMAGE_HEIGHT)];
         self.profileImageView.backgroundColor = [UIColor redColor];
-        self.profileImageView.alpha = 0.0f;
         self.profileImageView.userInteractionEnabled = YES;
         [self.profileImageView addGestureRecognizer:tapGestureRecognizer];
         
@@ -71,7 +67,6 @@
         self.titleLabel.textAlignment = NSTextAlignmentLeft;
         self.titleLabel.textColor = [UIColor blackColor];
         self.titleLabel.font = [UIFont systemFontOfSize:15];
-        self.titleLabel.alpha = 0.0f;
         
         [self.contentView addSubview:self.titleLabel];
         
@@ -83,7 +78,6 @@
         self.handleLabel.textAlignment = NSTextAlignmentLeft;
         self.handleLabel.textColor = [UIColor colorWithRed:91/255.0f green:91/255.0f blue:91/255.0f alpha:1.0f];
         self.handleLabel.font = [UIFont systemFontOfSize:12];
-        self.handleLabel.alpha = 0.0f;
         
         [self.contentView addSubview:self.handleLabel];
         
@@ -95,7 +89,6 @@
         [self.followUserButton setFrame:CGRectMake(self.frame.size.width - 60, 17, 30, 30)];
         [self.followUserButton setSelected:NO];
         [self.followUserButton addTarget:self action:@selector(didTapFollowUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [self.followUserButton setAlpha:0];
         [self.followUserButton setEnabled:NO];
         
         [self.contentView addSubview:self.followUserButton];
@@ -113,26 +106,13 @@
     if ([self.user objectForKey:kFTUserProfilePicSmallKey]) {
         PFFile *file = [self.user objectForKey:kFTUserProfilePicSmallKey];
         [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-            if (!error) {                
-                self.profileImageView.alpha = 0.0f;
+            if (!error) {
                 self.profileImageView.image = [UIImage imageWithData:data];
-                
-                [UIView animateWithDuration:ANIMATION_DURATION animations:^{
-                    self.profileImageView.alpha = 1.0f;
-                }];
             }
         }];
     } else {
-        self.profileImageView.alpha = 0.0f;
         self.profileImageView.image = [UIImage imageNamed:IMAGE_PROFILE_EMPTY];
-        
-        [UIView animateWithDuration:ANIMATION_DURATION animations:^{
-            self.profileImageView.alpha = 1.0f;
-        }];
     }
-    
-    self.titleLabel.alpha = 0.0f;
-    self.handleLabel.alpha = 0.0f;
     
     NSString *firstname = EMPTY_STRING;
     if ([self.user objectForKey:kFTUserFirstnameKey]) {
@@ -148,16 +128,31 @@
         }
     }
     
-    [UIView animateWithDuration:ANIMATION_DURATION animations:^{
-        self.titleLabel.text = [NSString stringWithFormat:@"%@ %@",firstname,lastname];
-        self.titleLabel.alpha = 1.0f;
-        
-        self.handleLabel.text = [NSString stringWithFormat:@"%@",[self.user objectForKey:kFTUserDisplayNameKey]];
-        self.handleLabel.alpha = 1.0f;
+    self.titleLabel.text = [NSString stringWithFormat:@"%@ %@",firstname,lastname];
+    self.handleLabel.text = [NSString stringWithFormat:@"%@",[self.user objectForKey:kFTUserDisplayNameKey]];
+    
+    // check if the currentUser is following this user
+    PFQuery *queryIsFollowing = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [queryIsFollowing whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
+    [queryIsFollowing whereKey:kFTActivityToUserKey equalTo:self.user];
+    [queryIsFollowing whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
+    [queryIsFollowing setCachePolicy:kPFCachePolicyCacheThenNetwork];
+    [queryIsFollowing countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+        if (error && [error code] != kPFErrorCacheMiss) {
+            NSLog(@"Couldn't determine follow relationship: %@", error);
+        } else {
+            if (number == 0) {
+                // Not following
+                [self.followUserButton setSelected:NO];
+            } else {
+                // Following user
+                [self.followUserButton setSelected:YES];
+            }
+            
+            [self.followUserButton setEnabled:YES];
+        }
     }];
     
-    [self.followUserButton setAlpha:1];
-    [self.followUserButton setEnabled:YES];
     
     UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapCellAction:)];
     [tapGestureRecognizer setNumberOfTapsRequired:1];
