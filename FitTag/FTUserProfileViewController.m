@@ -12,6 +12,7 @@
 #import "FTPostDetailsViewController.h"
 #import "FTCamViewController.h"
 #import "FTSettingsViewController.h"
+#import "FTViewFriendsViewController.h"
 
 #define GRID_SMALL @"SMALLGRID"
 #define GRID_FULL @"FULGRID"
@@ -25,10 +26,12 @@
     NSString *cellTab;
 }
 @property (nonatomic, strong) NSArray *cells;
+@property (nonatomic, strong) FTViewFriendsViewController *viewFriendsViewController;
 @end
 
 @implementation FTUserProfileViewController
 @synthesize user;
+@synthesize viewFriendsViewController;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -63,6 +66,18 @@
     
     [self.collectionView setDelegate: self];
     [self.collectionView setDataSource: self];
+    
+    // initialize FTViewFriendsViewController
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
+    [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backIndicator setStyle:UIBarButtonItemStylePlain];
+    [backIndicator setTarget:self];
+    [backIndicator setAction:@selector(didTapBackButtonAction:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    
+    viewFriendsViewController = [[FTViewFriendsViewController alloc] init];
+    [viewFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
+    [viewFriendsViewController setUser:self.user];
 }
 
 - (void)setUser:(PFUser *)aUser {
@@ -71,13 +86,13 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    NSLog(@"%@::viewWillAppear:",VIEWCONTROLLER_USER);
+    //NSLog(@"%@::viewWillAppear:",VIEWCONTROLLER_USER);
     [super viewWillDisappear:animated];
     [self.navigationController setToolbarHidden:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    NSLog(@"%@::viewDidAppear:",VIEWCONTROLLER_USER);
+    //NSLog(@"%@::viewDidAppear:",VIEWCONTROLLER_USER);
     [super viewDidAppear:animated];
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_USER];
@@ -85,7 +100,7 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
-    NSLog(@"%@::viewWillDisappear:",VIEWCONTROLLER_USER);
+    //NSLog(@"%@::viewWillDisappear:",VIEWCONTROLLER_USER);
     [super viewWillDisappear:animated];
     
     // Get the classname of the next view controller
@@ -100,7 +115,7 @@
 }
 
 - (void)queryForTable:(PFUser *)aUser {
-    NSLog(@"%@::queryForTable:",VIEWCONTROLLER_USER);
+    //NSLog(@"%@::queryForTable:",VIEWCONTROLLER_USER);
 
     // Show HUD view
     //[MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
@@ -125,7 +140,7 @@
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView
            viewForSupplementaryElementOfKind:(NSString *)kind
                                  atIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"%@::collectionView:viewForSupplementaryElementOfKind:atIndexPath:",VIEWCONTROLLER_USER);
+    //NSLog(@"%@::collectionView:viewForSupplementaryElementOfKind:atIndexPath:",VIEWCONTROLLER_USER);
     
     UICollectionReusableView *reusableview = nil;
     if (kind == UICollectionElementKindSectionHeader) {
@@ -207,25 +222,22 @@
     [self.navigationController pushViewController:camViewController animated:YES];
 }
 
-/*
 - (void)didTapBackButtonAction:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
-    //[self.navigationController popToRootViewControllerAnimated:YES];
 }
-*/
 
 #pragma mark - FTUserProfileCollectionHeaderViewDelegate
 
 - (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileCollectionHeaderView
                        didTapGridButton:(UIButton *)button {
-    NSLog(@"%@::userProfileCollectionHeaderView:didTapGridButton:",VIEWCONTROLLER_USER);
+    //NSLog(@"%@::userProfileCollectionHeaderView:didTapGridButton:",VIEWCONTROLLER_USER);
     cellTab = GRID_SMALL;
     [self queryForTable:self.user];
 }
 
 - (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileCollectionHeaderView
                    didTapBusinessButton:(UIButton *)button {
-    NSLog(@"%@::userProfileCollectionHeaderView:didTapBusinessButton:",VIEWCONTROLLER_USER);
+    //NSLog(@"%@::userProfileCollectionHeaderView:didTapBusinessButton:",VIEWCONTROLLER_USER);
     
     cellTab = kFTUserTypeBusiness; // kFTUserTypeBusiness | SMALLGRID | FULLGRID | TAGGED
     //[MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
@@ -254,7 +266,7 @@
 
 - (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileCollectionHeaderView
                      didTapTaggedButton:(UIButton *)button {
-    NSLog(@"%@::userProfileCollectionHeaderView:didTapTaggedButton:",VIEWCONTROLLER_USER);
+    //NSLog(@"%@::userProfileCollectionHeaderView:didTapTaggedButton:",VIEWCONTROLLER_USER);
     
     cellTab = GRID_TAGGED;
     NSMutableString *displayName = [[self.user objectForKey:kFTUserDisplayNameKey] mutableCopy];
@@ -288,13 +300,24 @@
 
 - (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileCollectionHeaderView
                    didTapSettingsButton:(id)sender {
-    NSLog(@"%@::userProfileCollectionHeaderView:didTapSettingsButton:",VIEWCONTROLLER_USER);
+    //NSLog(@"%@::userProfileCollectionHeaderView:didTapSettingsButton:",VIEWCONTROLLER_USER);
     FTSettingsViewController *settingsViewController = [[FTSettingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
     UINavigationController *navController = [[UINavigationController alloc] init];
     [navController setViewControllers:@[settingsViewController] animated:NO];
     [self presentViewController:navController animated:YES completion:^(){
         
     }];
+}
+
+-(void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapFollowersButton:(id)sender {
+    [viewFriendsViewController queryForFollowers];
+    [self.navigationController pushViewController:viewFriendsViewController animated:YES];
+}
+
+-(void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapFollowingButton:(id)sender {
+    [viewFriendsViewController queryForFollowing];
+    [self.navigationController pushViewController:viewFriendsViewController animated:YES];
+    
 }
 
 @end
