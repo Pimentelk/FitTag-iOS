@@ -136,7 +136,7 @@
     [queryIsFollowing whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
     [queryIsFollowing whereKey:kFTActivityToUserKey equalTo:self.user];
     [queryIsFollowing whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
-    [queryIsFollowing setCachePolicy:kPFCachePolicyCacheElseNetwork];
+    [queryIsFollowing setCachePolicy:kPFCachePolicyCacheThenNetwork];
     [queryIsFollowing countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (error && [error code] != kPFErrorCacheMiss) {
             NSLog(@"Couldn't determine follow relationship: %@", error);
