@@ -34,7 +34,7 @@
     [self.logInView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"login_background_image_01"]]];
     
     // Set logo image
-    [self.logInView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fittag_logo"]]];
+    [self.logInView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:FITTAG_LOGO]]];
 
     // Set motto
     fitTagMotto = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"login_screen_motto"]];
@@ -50,20 +50,20 @@
     [self.logInView.facebookButton setImage:nil forState:UIControlStateHighlighted];
     [self.logInView.facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook_button"] forState:UIControlStateHighlighted];
     [self.logInView.facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook_button"] forState:UIControlStateNormal];
-    [self.logInView.facebookButton setTitle:@"" forState:UIControlStateNormal];
-    [self.logInView.facebookButton setTitle:@"" forState:UIControlStateHighlighted];
+    [self.logInView.facebookButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
+    [self.logInView.facebookButton setTitle:EMPTY_STRING forState:UIControlStateHighlighted];
     
     [self.logInView.twitterButton setImage:nil forState:UIControlStateNormal];
     [self.logInView.twitterButton setImage:nil forState:UIControlStateHighlighted];
     [self.logInView.twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter_button"] forState:UIControlStateNormal];
     [self.logInView.twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter_button"] forState:UIControlStateHighlighted];
-    [self.logInView.twitterButton setTitle:@"" forState:UIControlStateNormal];
-    [self.logInView.twitterButton setTitle:@"" forState:UIControlStateHighlighted];
+    [self.logInView.twitterButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
+    [self.logInView.twitterButton setTitle:EMPTY_STRING forState:UIControlStateHighlighted];
     
     [self.logInView.signUpButton setBackgroundImage:[UIImage imageNamed:@"signup_button"] forState:UIControlStateNormal];
     [self.logInView.signUpButton setBackgroundImage:[UIImage imageNamed:@"signup_button"] forState:UIControlStateHighlighted];
-    [self.logInView.signUpButton setTitle:@"" forState:UIControlStateNormal];
-    [self.logInView.signUpButton setTitle:@"" forState:UIControlStateHighlighted];
+    [self.logInView.signUpButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
+    [self.logInView.signUpButton setTitle:EMPTY_STRING forState:UIControlStateHighlighted];
     
     loginHex = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"login_hex"]];
     [self.logInView addSubview:self.loginHex];
