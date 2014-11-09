@@ -19,6 +19,7 @@
 		2D054DFF1A0B1BFA00A2886F /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D054DFE1A0B1BFA00A2886F /* FacebookSDK.framework */; };
 		2D054E041A0C62E400A2886F /* FTSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D054E031A0C62E400A2886F /* FTSearchViewController.m */; };
 		2D054E071A0CA22300A2886F /* FTSearchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D054E061A0CA22300A2886F /* FTSearchCell.m */; };
+		2D054E0A1A0E914F00A2886F /* FTViewFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D054E091A0E914F00A2886F /* FTViewFriendsViewController.m */; };
 		2D0A53A81971997F0091FFCA /* InspirationCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */; };
 		2D197E8E19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D197E8D19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.m */; };
 		2D197E9119C1BC7900E91274 /* FTMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D197E9019C1BC7900E91274 /* FTMapViewController.m */; };
@@ -158,6 +159,8 @@
 		2D054E031A0C62E400A2886F /* FTSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchViewController.m; sourceTree = "<group>"; };
 		2D054E051A0CA22300A2886F /* FTSearchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSearchCell.h; sourceTree = "<group>"; };
 		2D054E061A0CA22300A2886F /* FTSearchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSearchCell.m; sourceTree = "<group>"; };
+		2D054E081A0E914F00A2886F /* FTViewFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTViewFriendsViewController.h; sourceTree = "<group>"; };
+		2D054E091A0E914F00A2886F /* FTViewFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTViewFriendsViewController.m; sourceTree = "<group>"; };
 		2D0A53A61971997F0091FFCA /* InspirationCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspirationCellCollectionView.h; sourceTree = "<group>"; };
 		2D0A53A71971997F0091FFCA /* InspirationCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InspirationCellCollectionView.m; sourceTree = "<group>"; };
 		2D197E8C19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAmbassadorGeoPointAnnotation.h; sourceTree = "<group>"; };
@@ -827,6 +830,8 @@
 				2DD2B69719841B0600600A42 /* FTFindFriendsViewController.m */,
 				2DCB7D4619FF1C0D00E349F6 /* FTInviteFriendsViewController.h */,
 				2DCB7D4719FF1C0D00E349F6 /* FTInviteFriendsViewController.m */,
+				2D054E081A0E914F00A2886F /* FTViewFriendsViewController.h */,
+				2D054E091A0E914F00A2886F /* FTViewFriendsViewController.m */,
 			);
 			name = Friends;
 			sourceTree = "<group>";
@@ -1076,6 +1081,7 @@
 				2DD691981949B24300B59E75 /* FTConfigViewController.m in Sources */,
 				2D007B6A19B6C6BB006E1484 /* _FTSearchCell.m in Sources */,
 				2DD6919B1949B71B00B59E75 /* FTLoginViewController.m in Sources */,
+				2D054E0A1A0E914F00A2886F /* FTViewFriendsViewController.m in Sources */,
 				2DD2B691198417D500600A42 /* FTLoadMoreCell.m in Sources */,
 				2DBE021D19D4682500CD278C /* FTRewardsDetailFooterView.m in Sources */,
 				2D007B6419B6A5A1006E1484 /* FTSearchHeaderView.m in Sources */,
