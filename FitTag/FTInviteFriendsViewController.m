@@ -89,7 +89,8 @@
 
 - (void)querySearchForUser {
     // List of all users where handle matches string OR handle contains substring
-    NSLog(@"self.searchString: %@",self.searchString);
+    //NSLog(@"self.searchString: %@",self.searchString);
+    
     if (self.searchString && ![self.searchString isEqualToString:EMPTY_STRING]) {
         
         //****** Display Name ********//
