@@ -641,7 +641,7 @@
     
     UIImageView *imageView = [[UIImageView alloc] init];
     //imageView.frame = CGRectMake( 5.0f, 8.0f, 57.0f, 57.0f);
-    imageView.frame = CGRectMake(hexX, hexY, hexW + 2, hexH + 2);
+    imageView.frame = CGRectMake(hexX, hexY, hexW, hexH);
     imageView.backgroundColor = [UIColor redColor];
     
     CGRect rect = CGRectMake(hexX, hexY, hexW, hexH);
