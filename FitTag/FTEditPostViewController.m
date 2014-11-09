@@ -146,7 +146,7 @@
     }
     
     if ([self.postType isEqualToString:@"VIDEO"]) {
-        videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
+        videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, self.view.frame.size.width)];
         [videoImageView setBackgroundColor:[UIColor blackColor]];
         [videoImageView setContentMode:UIViewContentModeScaleAspectFit];
         
@@ -156,7 +156,7 @@
     
     if ([self.postType isEqualToString:@"MULTI"]) {
         //NSLog(@"loadView - postType multi");
-        UIScrollView *carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, scrollView.frame.size.width, 320.0f)];
+        UIScrollView *carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, scrollView.frame.size.width, self.view.frame.size.width)];
         [carousel setBackgroundColor:[UIColor blackColor]];
         
         //add the scrollview to the view
@@ -170,8 +170,9 @@
         
         int i = 0;
         for (UIImage *image in self.multi) {
-            CGFloat xOrigin = i * 320;
-            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, 320.0f, 320.0f)];
+            CGFloat xOrigin = i * self.view.frame.size.width;
+            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, self.view.frame.size.width,
+                                                                                   self.view.frame.size.width)];
             [imageView setBackgroundColor:[UIColor blackColor]];
             [imageView setImage:image];
             [imageView setClipsToBounds:YES];
@@ -180,7 +181,7 @@
             i++;
         }
         //set the scroll view content size
-        carousel.contentSize = CGSizeMake(320.0f * numberOfViews, 320.0f);
+        carousel.contentSize = CGSizeMake(self.view.frame.size.width * numberOfViews, self.view.frame.size.width);
         [self.scrollView addSubview:carousel];
         
         footerRect.origin.y = carousel.frame.size.height;
@@ -216,7 +217,7 @@
     [self.navigationItem setHidesBackButton:NO];
     
     // Override the back idnicator
-    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"]
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]
                                                                       style:UIBarButtonItemStylePlain
                                                                      target:self
                                                                      action:@selector(leftBarButtonItemHandler:)];
@@ -961,6 +962,31 @@
 #pragma mark - FTPhotoPostDetailsFooterViewDelegate
 
 -(void)facebookShareButton:(id)sender{
+    
+    /*
+    // Check if the Facebook app is installed and we can present the share dialog
+    FBLinkShareParams *params = [[FBLinkShareParams alloc] init];
+    params.link = [NSURL URLWithString:@"https://developers.facebook.com/docs/ios/share/"];
+    
+    // If the Facebook app is installed and we can present the share dialog
+    if ([FBDialogs canPresentShareDialogWithParams:params]) {
+        // Present the share dialog
+        [FBDialogs presentShareDialogWithLink:params.link
+                                      handler:^(FBAppCall *call, NSDictionary *results, NSError *error) {
+                                          if(error) {
+                                              // An error occurred, we need to handle the error
+                                              // See: https://developers.facebook.com/docs/ios/errors
+                                              NSLog(@"Error publishing story: %@", error.description);
+                                          } else {
+                                              // Success
+                                              NSLog(@"result %@", results);
+                                          }
+                                      }];
+    } else {
+        // Present the feed dialog
+    }
+    */
+    
     // Share to facebook
     [[[UIAlertView alloc] initWithTitle:@"Not Allowed"
                                 message:@"Hey! Facebook share controls have been disabled on this screen :("
