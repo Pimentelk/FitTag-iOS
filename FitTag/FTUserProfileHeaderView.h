@@ -25,5 +25,6 @@
 - (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapBusinessButton:(UIButton *)button;
 - (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapTaggedButton:(UIButton *)button;
 - (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapSettingsButton:(id)sender;
-
+- (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapFollowersButton:(id)sender;
+- (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapFollowingButton:(id)sender;
 @end
