@@ -136,23 +136,19 @@
     [queryIsFollowing whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
     [queryIsFollowing whereKey:kFTActivityToUserKey equalTo:self.user];
     [queryIsFollowing whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
-    [queryIsFollowing setCachePolicy:kPFCachePolicyCacheThenNetwork];
+    [queryIsFollowing setCachePolicy:kPFCachePolicyCacheElseNetwork];
     [queryIsFollowing countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (error && [error code] != kPFErrorCacheMiss) {
             NSLog(@"Couldn't determine follow relationship: %@", error);
         } else {
-            if (number == 0) {
-                // Not following
+            if (number == 0) { // Not following
                 [self.followUserButton setSelected:NO];
-            } else {
-                // Following user
+            } else { // Following user
                 [self.followUserButton setSelected:YES];
             }
-            
             [self.followUserButton setEnabled:YES];
         }
     }];
-    
     
     UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapCellAction:)];
     [tapGestureRecognizer setNumberOfTapsRequired:1];
