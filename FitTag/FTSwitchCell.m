@@ -30,12 +30,12 @@
 - (void)setType:(FTSwitchType)type {
     
     // Remove target
-    [settingSwitch removeTarget:self action:@selector(didChangeFacebookSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
-    [settingSwitch removeTarget:self action:@selector(didChangeTwitterSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
-    [settingSwitch removeTarget:self action:@selector(didChangeCommentSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
-    [settingSwitch removeTarget:self action:@selector(didChangeLikeSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
-    [settingSwitch removeTarget:self action:@selector(didChangeFollowSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
-    [settingSwitch removeTarget:self action:@selector(didChangeMentionSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
+    [settingSwitch removeTarget:self action:@selector(didChangeFacebookSwitchAction:) forControlEvents:UIControlEventValueChanged];
+    [settingSwitch removeTarget:self action:@selector(didChangeTwitterSwitchAction:) forControlEvents:UIControlEventValueChanged];
+    [settingSwitch removeTarget:self action:@selector(didChangeCommentSwitchAction:) forControlEvents:UIControlEventValueChanged];
+    [settingSwitch removeTarget:self action:@selector(didChangeLikeSwitchAction:) forControlEvents:UIControlEventValueChanged];
+    [settingSwitch removeTarget:self action:@selector(didChangeFollowSwitchAction:) forControlEvents:UIControlEventValueChanged];
+    [settingSwitch removeTarget:self action:@selector(didChangeMentionSwitchAction:) forControlEvents:UIControlEventValueChanged];
     
     // Set target
     switch (type) {
@@ -45,7 +45,7 @@
             } else {
                 [settingSwitch setOn:NO animated:YES];
             }
-            [settingSwitch addTarget:self action:@selector(didChangeFacebookSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
+            [settingSwitch addTarget:self action:@selector(didChangeFacebookSwitchAction:) forControlEvents:UIControlEventValueChanged];
         }
             break;
         case FTSwitchTypeTwitter: {
@@ -54,7 +54,7 @@
             } else {
                 [settingSwitch setOn:NO animated:YES];
             }
-            [settingSwitch addTarget:self action:@selector(didChangeTwitterSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
+            [settingSwitch addTarget:self action:@selector(didChangeTwitterSwitchAction:) forControlEvents:UIControlEventValueChanged];
         }
             break;
         case FTSwitchTypeComment: {
@@ -63,7 +63,7 @@
             } else {
                 [settingSwitch setOn:YES animated:YES];
             }
-            [settingSwitch addTarget:self action:@selector(didChangeCommentSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
+            [settingSwitch addTarget:self action:@selector(didChangeCommentSwitchAction:) forControlEvents:UIControlEventValueChanged];
         }
             break;
         case FTSwitchTypeLike: {
@@ -72,7 +72,7 @@
             } else {
                 [settingSwitch setOn:YES animated:YES];
             }
-            [settingSwitch addTarget:self action:@selector(didChangeLikeSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
+            [settingSwitch addTarget:self action:@selector(didChangeLikeSwitchAction:) forControlEvents:UIControlEventValueChanged];
         }
             break;
         case FTSwitchTypeFollow: {
@@ -81,7 +81,7 @@
             } else {
                 [settingSwitch setOn:YES animated:YES];
             }
-            [settingSwitch addTarget:self action:@selector(didChangeFollowSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
+            [settingSwitch addTarget:self action:@selector(didChangeFollowSwitchAction:) forControlEvents:UIControlEventValueChanged];
         }
             break;
         case FTSwitchTypeMention: {
@@ -90,7 +90,7 @@
             } else {
                 [settingSwitch setOn:YES animated:YES];
             }
-            [settingSwitch addTarget:self action:@selector(didChangeMentionSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
+            [settingSwitch addTarget:self action:@selector(didChangeMentionSwitchAction:) forControlEvents:UIControlEventValueChanged];
         }
             break;
         case FTSwitchTypeNone: {
