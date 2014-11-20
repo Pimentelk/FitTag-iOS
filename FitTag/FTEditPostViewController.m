@@ -142,7 +142,9 @@
         [photoImageView setContentMode:UIViewContentModeScaleAspectFit];
         
         [self.scrollView addSubview:postImageView];
-        footerRect.origin.y = photoImageView.frame.origin.y + photoImageView.frame.size.height;
+        scrollViewHeight = postImageView.frame.origin.y + postImageView.frame.size.height;
+        
+        footerRect.origin.y = scrollViewHeight;
     }
     
     if ([self.postType isEqualToString:@"VIDEO"]) {
@@ -151,7 +153,9 @@
         [videoImageView setContentMode:UIViewContentModeScaleAspectFit];
         
         [self.scrollView addSubview:videoImageView];
-        footerRect.origin.y = videoImageView.frame.origin.y + videoImageView.frame.size.height;
+        scrollViewHeight = videoImageView.frame.origin.y + videoImageView.frame.size.height;
+        
+        footerRect.origin.y = scrollViewHeight;
     }
     
     if ([self.postType isEqualToString:@"MULTI"]) {
@@ -182,10 +186,15 @@
         }
         //set the scroll view content size
         carousel.contentSize = CGSizeMake(self.view.frame.size.width * numberOfViews, self.view.frame.size.width);
-        [self.scrollView addSubview:carousel];
         
-        footerRect.origin.y = carousel.frame.size.height;
+        [self.scrollView addSubview:carousel];
+        scrollViewHeight = carousel.frame.origin.y + carousel.frame.size.height;
+        
+        footerRect.origin.y = scrollViewHeight;
     }
+    
+    NSLog(@"footerRect.origin.y:%f",footerRect.origin.y);
+    
     
     self.postDetailsFooterView = [[FTPostDetailsFooterView alloc] initWithFrame:footerRect];
     self.commentTextField = postDetailsFooterView.commentField;
@@ -193,10 +202,11 @@
     self.commentTextField.delegate = self;
     self.hashtagTextField.delegate = self;
     self.postDetailsFooterView.delegate = self;
+    
+    scrollViewHeight += postDetailsFooterView.frame.size.height;
+    NSLog(@"scrollViewHeight:%ld",(long)scrollViewHeight);
+    
     [self.scrollView addSubview:postDetailsFooterView];
-    
-    scrollViewHeight = postImageView.frame.origin.y + postImageView.frame.size.height + postDetailsFooterView.frame.size.height;
-    
     [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, scrollViewHeight)];
 }
 
@@ -455,13 +465,11 @@
             }];
             
         } else {
-            
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
-                                                            message:nil
-                                                           delegate:nil
-                                                  cancelButtonTitle:nil
-                                                  otherButtonTitles:@"Dismiss", nil];
-            [alert show];
+            [[[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
+                                       message:nil
+                                      delegate:nil
+                             cancelButtonTitle:nil
+                             otherButtonTitles:@"Dismiss", nil] show];
         }
         
         [[UIApplication sharedApplication] endBackgroundTask:self.postBackgroundTaskId];
@@ -487,21 +495,16 @@
         NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[self checkForHashtag]];
         NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[self checkForMention]];
         
-        
-        
         if ([self.postType isEqualToString:@"MULTI"]) {
             
             //NSLog(@"if ([self.postType isEqualToString:@MULTI])");
-            
             if (!self.photoFiles || !self.thumbFiles) {
                 //NSLog(@"(!self.photoFiles || !self.thumbFiles)");
-                
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
-                                                                message:nil
-                                                               delegate:nil
-                                                      cancelButtonTitle:nil
-                                                      otherButtonTitles:@"Dismiss", nil];
-                [alert show];
+                [[[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
+                                            message:nil
+                                           delegate:nil
+                                  cancelButtonTitle:nil
+                                  otherButtonTitles:@"Dismiss", nil] show];
                 return;
             }
             
@@ -515,23 +518,21 @@
         
             // Make sure there were no errors creating the image files
             if (!self.photoFile || !self.thumbFile) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
-                                                                message:nil
-                                                               delegate:nil
-                                                      cancelButtonTitle:nil
-                                                      otherButtonTitles:@"Dismiss", nil];
-                [alert show];
+                [[[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
+                                            message:nil
+                                           delegate:nil
+                                  cancelButtonTitle:nil
+                                  otherButtonTitles:@"Dismiss", nil] show];
                 return;
             }
         
             // Make sure there were no errors creating the image files
             if (!self.videoFile || !self.imageFile){
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your video"
-                                                                message:nil
-                                                               delegate:nil
-                                                      cancelButtonTitle:nil
-                                                      otherButtonTitles:@"Dismiss", nil];
-                [alert show];
+                [[[UIAlertView alloc] initWithTitle:@"Couldn't post your video"
+                                            message:nil
+                                           delegate:nil
+                                  cancelButtonTitle:nil
+                                  otherButtonTitles:@"Dismiss", nil] show];
                 return;
             }
         

@@ -93,6 +93,7 @@
     [postDetailsFooterView.submitButton setEnabled:NO];
     [self.scrollView addSubview:postDetailsFooterView];
     scrollViewHeight = videoImageView.frame.origin.y + videoImageView.frame.size.height + postDetailsFooterView.frame.size.height;
+    NSLog(@"scrollViewHeight:%ld",(long)scrollViewHeight);
     [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, scrollViewHeight)];
 }
 
