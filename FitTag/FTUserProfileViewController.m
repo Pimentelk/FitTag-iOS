@@ -87,7 +87,7 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     //NSLog(@"%@::viewWillAppear:",VIEWCONTROLLER_USER);
-    [super viewWillDisappear:animated];
+    [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:YES];
 }
 
