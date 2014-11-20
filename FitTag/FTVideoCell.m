@@ -225,7 +225,7 @@
     PFFile *profilePictureSmall = [user objectForKey:kFTUserProfilePicSmallKey];
     NSString *authorName = [user objectForKey:kFTUserDisplayNameKey];
     
-    CGFloat constrainWidth = containerView.bounds.size.width;
+    //CGFloat constrainWidth = containerView.bounds.size.width;
 
     [self.avatarImageView setFile:profilePictureSmall];
     [self.userButton setTitle:authorName
@@ -244,21 +244,21 @@
     }
     
     if (self.buttons & FTVideoCellButtonsUser){
-        constrainWidth = self.commentButton.frame.origin.x;
+        //constrainWidth = self.commentButton.frame.origin.x;
         [self.commentButton addTarget:self
                                action:@selector(didTapCommentOnVideoButtonAction:)
                      forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTVideoCellButtonsUser){
-        constrainWidth = self.likeButton.frame.origin.x;
+        //constrainWidth = self.likeButton.frame.origin.x;
         [self.likeButton addTarget:self
                             action:@selector(didTapLikeVideoButtonAction:)
                   forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTVideoCellButtonsUser){
-        constrainWidth = self.likeButton.frame.origin.x;
+        //constrainWidth = self.likeButton.frame.origin.x;
         [self.moreButton addTarget:self
                             action:@selector(didTapMoreButtonAction:)
                   forControlEvents:UIControlEventTouchUpInside];

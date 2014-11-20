@@ -258,24 +258,24 @@
     NSString *authorName = [user objectForKey:kFTUserDisplayNameKey];
     [self.userButton setTitle:authorName forState:UIControlStateNormal];
     
-    CGFloat constrainWidth = containerView.bounds.size.width;
+    //CGFloat constrainWidth = containerView.bounds.size.width;
     
     if (self.buttons & FTGalleryCellButtonsUser){
         [self.userButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTGalleryCellButtonsComment){
-        constrainWidth = self.commentButton.frame.origin.x;
+        //constrainWidth = self.commentButton.frame.origin.x;
         [self.commentButton addTarget:self action:@selector(didTapCommentOnGalleryButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTGalleryCellButtonsLike){
-        constrainWidth = self.likeButton.frame.origin.x;
+        //constrainWidth = self.likeButton.frame.origin.x;
         [self.likeButton addTarget:self action:@selector(didTapLikeGalleryButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTGalleryCellButtonsMore){
-        constrainWidth = self.likeButton.frame.origin.x;
+        //constrainWidth = self.likeButton.frame.origin.x;
         [self.moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
