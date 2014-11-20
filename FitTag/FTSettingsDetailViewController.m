@@ -519,7 +519,9 @@
 }
 
 - (void)switchCell:(FTSwitchCell *)switchCell didChangeFacebookSwitch:(UISwitch *)lever {
+    NSLog(@"didChangeFacebookSwitch:");
     if ([lever isOn]) {
+        NSLog(@"[lever isOn]");
         NSArray *permissions = [[NSArray alloc] initWithObjects:@"email",@"public_profile",@"user_friends",nil];
         [PFFacebookUtils linkUser:[PFUser currentUser] permissions:permissions block:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
@@ -538,6 +540,7 @@
             }
         }];
     } else {
+        NSLog(@"![lever isOn]");
         [PFFacebookUtils unlinkUserInBackground:[PFUser currentUser] block:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
                 NSLog(@"Facebook unlinked");
