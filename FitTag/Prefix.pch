@@ -24,4 +24,5 @@
     #import "GAIFields.h"
     #import "GAIDictionaryBuilder.h"
     #import "FTMacros.h"
+    #import <Social/Social.h>
 #endif
