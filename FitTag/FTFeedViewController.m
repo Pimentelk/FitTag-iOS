@@ -12,6 +12,7 @@
 #import "FTFindFriendsViewController.h"
 #import "FTInterestsViewController.h"
 #import "FTInterestViewFlowLayout.h"
+#import "AppDelegate.h"
 
 #define IMAGE_WIDTH 253.0f
 #define IMAGE_HEIGHT 173.0f
@@ -53,11 +54,13 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    [self isFirstTimeUser:[PFUser currentUser]];
-    
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_MAP];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
+    
+    if ([PFUser currentUser]) {
+        [self isFirstTimeUser:[PFUser currentUser]];
+    }
 }
 
 #pragma mark - PFQueryTableViewController
@@ -106,9 +109,15 @@
 }
 
 - (BOOL)isFirstTimeUser:(PFUser *)user {
-    //NSLog(@"%@::isFirstTimeUser:",VIEWCONTROLLER_CONFIG);
+    NSLog(@"%@::isFirstTimeUser:",VIEWCONTROLLER_FEED);
     // Check if the user has logged in before
-    if (![user objectForKey:kFTUserLastLoginKey]) {        
+    if (![user objectForKey:kFTUserLastLoginKey]) {
+        
+        NSLog(@"user: %@",user);
+    
+        [self didLogInWithFacebook:user];
+        [self didLogInWithTwitter:user];
+        
         // Set default settings
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushFollowsKey];
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushLikesKey];
@@ -127,17 +136,15 @@
         // Show the interests
         FTInterestsViewController *interestsViewController = [[FTInterestsViewController alloc] initWithCollectionViewLayout:layoutFlow];
         UINavigationController *navController = [[UINavigationController alloc] init];
-        [navController setViewControllers:@[interestsViewController] animated:NO];
+        [navController setViewControllers:@[ interestsViewController ] animated:NO];
         [self presentViewController:navController animated:YES completion:^(){
             [user setValue:[NSDate date] forKey:kFTUserLastLoginKey];
             if (user) {
-                [user saveEventually];
+                //[user saveEventually];
             }
             [self.tabBarController setSelectedIndex:2];
         }];
         NSLog(FIRSTTIME_USER);
-        [self didLogInWithFacebook:user];
-        [self didLogInWithTwitter:user];
         return YES;
     }
     
@@ -146,7 +153,7 @@
 }
 
 - (BOOL)didLogInWithTwitter:(PFObject *)user {
-    //NSLog(@"%@::didLogInWithTwitter:",VIEWCONTROLLER_CONFIG);
+    NSLog(@"%@::didLogInWithTwitter:",VIEWCONTROLLER_FEED);
     if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
         NSLog(USER_DID_LOGIN_TWITTER);
         NSString *requestString = [NSString stringWithFormat:TWITTER_API_USERS,[PFTwitterUtils twitter].screenName];
@@ -187,17 +194,17 @@
             //[user setValue:DEFAULT_BIO_TEXT_B forKey:kFTUserBioKey];
             
             if (profileImageData) {
-                [user setValue:[PFFile fileWithName:FILE_MEDIUM_JPEG data:profileImageData]
-                        forKey:kFTUserProfilePicMediumKey];
-                [user setValue:[PFFile fileWithName:FILE_SMALL_JPEG data:profileImageData]
-                        forKey:kFTUserProfilePicSmallKey];
+                PFFile *mediumPicFile = [PFFile fileWithData:profileImageData];
+                [user setObject:mediumPicFile forKey:kFTUserProfilePicMediumKey];
+                PFFile *smallPicFile = [PFFile fileWithData:profileImageData];
+                [user setObject:smallPicFile forKey:kFTUserProfilePicSmallKey];
             }
             
             [user setValue:kFTUserTypeUser forKey:kFTUserTypeKey];
             [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (error) {
                     NSLog(@"%@%@",ERROR_MESSAGE,error);
-                    [user saveEventually];
+                    //[user saveEventually];
                 }
             }];
         }
@@ -208,7 +215,7 @@
 }
 
 - (BOOL)didLogInWithFacebook:(PFObject *)user {
-    //NSLog(@"%@::didLogInWithFacebook:",VIEWCONTROLLER_CONFIG);
+    NSLog(@"%@::didLogInWithFacebook:",VIEWCONTROLLER_FEED);
     
     if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
         NSLog(USER_DID_LOGIN_FACEBOOK);
@@ -228,12 +235,37 @@
                 [user setValue:[FBuser objectForKey:FBUserIDKey] forKey:kFTUserFacebookIDKey];
                 //[user setValue:DEFAULT_BIO_TEXT_B forKey:kFTUserBioKey];
                 [user setValue:kFTUserTypeUser forKey:kFTUserTypeKey];
-                [user setValue:[PFFile fileWithName:FILE_MEDIUM_JPEG data:profileImageData] forKey:kFTUserProfilePicMediumKey];
-                [user setValue:[PFFile fileWithName:FILE_SMALL_JPEG data:profileImageData] forKey:kFTUserProfilePicSmallKey];
+                
+                if (profileImageData) {                    
+                    PFFile *mediumPicFile = [PFFile fileWithData:profileImageData];
+                    [user setObject:mediumPicFile forKey:kFTUserProfilePicMediumKey];
+                    PFFile *smallPicFile = [PFFile fileWithData:profileImageData];
+                    [user setObject:smallPicFile forKey:kFTUserProfilePicSmallKey];
+                }
+                
+                [user setValue:[NSDate date] forKey:kFTUserLastLoginKey];
                 [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (error) {
-                        [user saveEventually];
-                        NSLog(@"%@ %@", ERROR_MESSAGE, error);
+                        NSLog(@"error.code: %ld",error.code);
+                        switch (error.code) {
+                            case 203:
+                                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Duplicate Email Error", nil)
+                                                            message:NSLocalizedString(@"It looks like the email for this account has already been associated with another account", nil)
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                                  otherButtonTitles:nil] show];
+                                [self dismissViewControllerAnimated:NO completion:nil];
+                                [[PFUser currentUser] deleteInBackground];
+                                [(AppDelegate *)[[UIApplication sharedApplication] delegate] logOut];
+                                break;
+                                
+                            default:
+                                break;
+                        }
+                    }
+                    
+                    if (!error) {
+                        NSLog(@"facebook updated successful");
                     }
                 }];
                 
