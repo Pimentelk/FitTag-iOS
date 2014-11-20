@@ -737,7 +737,7 @@
         
         [MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
         
-        self.videoFile = [PFFile fileWithName:@"video.mov" data:aVideo];
+        self.videoFile = [PFFile fileWithName:@"video.mp4" data:aVideo];
         
         // Request a background execution task to allow us to finish uploading the video even if the app is backgrounded
         self.fileUploadBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
@@ -961,50 +961,81 @@
 
 #pragma mark - FTPhotoPostDetailsFooterViewDelegate
 
--(void)facebookShareButton:(id)sender{
+- (void)facebookShareButton:(id)sender {
     
-    /*
-    // Check if the Facebook app is installed and we can present the share dialog
-    FBLinkShareParams *params = [[FBLinkShareParams alloc] init];
-    params.link = [NSURL URLWithString:@"https://developers.facebook.com/docs/ios/share/"];
-    
-    // If the Facebook app is installed and we can present the share dialog
-    if ([FBDialogs canPresentShareDialogWithParams:params]) {
-        // Present the share dialog
-        [FBDialogs presentShareDialogWithLink:params.link
-                                      handler:^(FBAppCall *call, NSDictionary *results, NSError *error) {
-                                          if(error) {
-                                              // An error occurred, we need to handle the error
-                                              // See: https://developers.facebook.com/docs/ios/errors
-                                              NSLog(@"Error publishing story: %@", error.description);
-                                          } else {
-                                              // Success
-                                              NSLog(@"result %@", results);
-                                          }
-                                      }];
-    } else {
-        // Present the feed dialog
+    if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
+        // Check if the Facebook app is installed and we can present the share dialog
+        FBLinkShareParams *params = [[FBLinkShareParams alloc] init];
+        //params.link = [NSURL URLWithString:@"https://developers.facebook.com/docs/ios/share/"];
+        params.link = [NSURL URLWithString:@"http://fittag.com"];
+        // If the Facebook app is installed and we can present the share dialog
+        if ([FBDialogs canPresentShareDialogWithParams:params]) {
+            // Present share dialog
+            [FBDialogs presentShareDialogWithLink:params.link
+                                          handler:^(FBAppCall *call, NSDictionary *results, NSError *error) {
+                                              if(error) {
+                                                  // An error occurred, we need to handle the error
+                                                  // See: https://developers.facebook.com/docs/ios/errors
+                                                  NSLog(@"Error publishing story: %@", error.description);
+                                              } else {
+                                                  // Success
+                                                  NSLog(@"result %@", results);
+                                              }
+                                          }];
+        } else {
+            // Put together the dialog parameters
+            NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                           @"Sharing Tutorial", @"name",
+                                           @"Build great social apps and get more installs.", @"caption",
+                                           @"Allow your users to share stories on Facebook from your app using the iOS SDK.", @"description",
+                                           @"https://developers.facebook.com/docs/ios/share/", @"link",
+                                           @"http://i.imgur.com/g3Qc1HN.png", @"picture",
+                                           nil];
+            
+            // Show the feed dialog
+            [FBWebDialogs presentFeedDialogModallyWithSession:nil
+                                                   parameters:params
+                                                      handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
+                                                          if (error) {
+                                                              // An error occurred, we need to handle the error
+                                                              // See: https://developers.facebook.com/docs/ios/errors
+                                                              NSLog(@"Error publishing story: %@", error.description);
+                                                          } else {
+                                                              if (result == FBWebDialogResultDialogNotCompleted) {
+                                                                  // User cancelled.
+                                                                  NSLog(@"User cancelled.");
+                                                              } else {
+                                                                  // Handle the publish feed callback
+                                                                  NSDictionary *urlParams = [FTUtility parseURLParams:[resultURL query]];
+                                                                  
+                                                                  if (![urlParams valueForKey:@"post_id"]) {
+                                                                      // User cancelled.
+                                                                      NSLog(@"User cancelled.");
+                                                                      
+                                                                  } else {
+                                                                      // User clicked the Share button
+                                                                      NSString *result = [NSString stringWithFormat: @"Posted story, id: %@", [urlParams valueForKey:@"post_id"]];
+                                                                      NSLog(@"result %@", result);
+                                                                  }
+                                                              }
+                                                          }
+                                                      }];
+        }
     }
-    */
-    
-    // Share to facebook
-    [[[UIAlertView alloc] initWithTitle:@"Not Allowed"
-                                message:@"Hey! Facebook share controls have been disabled on this screen :("
-                               delegate:nil
-                      cancelButtonTitle:@"ok"
-                      otherButtonTitles:nil] show];
 }
 
--(void)twitterShareButton:(id)sender{
-    // Share to twitter
-    [[[UIAlertView alloc] initWithTitle:@"Not Allowed"
-                                message:@"Hey! Twitter share controls have been disabled on this screen :("
-                               delegate:nil
-                      cancelButtonTitle:@"ok"
-                      otherButtonTitles:nil] show];
+- (void)twitterShareButton:(id)sender {
+    if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
+        if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
+            SLComposeViewController *tweetSheet = [SLComposeViewController
+                                                   composeViewControllerForServiceType:SLServiceTypeTwitter];
+            [tweetSheet setInitialText:@"Test post: Check us out on #Fittag http://fittag.com"];
+            [self presentViewController:tweetSheet animated:YES completion:nil];
+        }
+    }
 }
 
--(void)sendPost:(id)sender{
+- (void)sendPost:(id)sender{
     [self doneButtonAction:sender];
 }
 
