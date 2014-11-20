@@ -14,6 +14,8 @@ typedef enum {
     FTCamFlashButtonStateDefault = FTCamFlashButtonStateAuto
 } FTCamFlashButtonState;
 
+#import "FTCameraEngine.h"
+#import "FTVideoEncoder.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "FTEditPhotoViewController.h"
 #import "FTEditVideoViewController.h"
@@ -21,11 +23,13 @@ typedef enum {
 
 @protocol FTCamViewControllerDelegate;
 
-@interface FTCamViewController : UIViewController <FTCamRollViewControllerDelegate>
-@property (nonatomic,weak) id <FTCamViewControllerDelegate> delegate;
-@property (nonatomic) AVCaptureVideoPreviewLayer *previewLayer;
+@interface FTCamViewController : UIViewController <FTCamRollViewControllerDelegate,FTCameraEngineDelegate>
+@property (nonatomic, weak) id <FTCamViewControllerDelegate> delegate;
 @property (nonatomic) BOOL isProfilePciture;
 @property (nonatomic) BOOL isCoverPhoto;
+
+@property (atomic, readwrite) BOOL isCapturing;
+@property (atomic, readwrite) BOOL isPaused;
 @end
 
 @protocol FTCamViewControllerDelegate <NSObject>
