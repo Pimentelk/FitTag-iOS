@@ -19,7 +19,6 @@
 
 @implementation FTUtility
 
-
 #pragma mark - FTUtility
 #pragma mark Like Photos
 
@@ -541,6 +540,21 @@
     return query;
 }
 */
+
+#pragma mark Parse URL parameters
+
+// A function for parsing URL parameters returned by the Feed Dialog.
++ (NSDictionary*)parseURLParams:(NSString *)query {
+    NSArray *pairs = [query componentsSeparatedByString:@"&"];
+    NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+    for (NSString *pair in pairs) {
+        NSArray *kv = [pair componentsSeparatedByString:@"="];
+        NSString *val =
+        [kv[1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        params[kv[0]] = val;
+    }
+    return params;
+}
 
 #pragma mark Shadow Rendering
 
