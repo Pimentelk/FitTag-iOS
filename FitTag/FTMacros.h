@@ -78,7 +78,7 @@
 #define VIEWCONTROLLER_INVITE @"FTInviteFriendsViewController"
 #define VIEWCONTROLLER_FOLLOW_CELL @"FTFollowCell"
 #define VIEWCONTROLLER_SEARCH @"FTSearchViewController"
-
+#define VIEWCONTROLLER_FEED @"FTFeedViewController"
 // ACTION BUTTONS
 #define ACTION_HEART @"heart_white"
 #define ACTION_HEART_SELECTED @"heart_selected"
