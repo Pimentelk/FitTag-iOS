@@ -14,7 +14,7 @@
     CLLocationManager *locationManager;
 }
 @property (nonatomic, strong) UIScrollView *scrollView;
-@property (nonatomic, strong) NSData *video;
+@property (nonatomic, strong) NSData *videoData;
 @property (nonatomic, strong) UITextField *commentTextField;
 @property (nonatomic, strong) UITextField *hashtagTextField;
 @property (nonatomic, assign) UIBackgroundTaskIdentifier fileUploadBackgroundTaskId;
@@ -50,14 +50,16 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
-- (id)initWithVideo:(NSData *)aVideo {
+- (id)initWithVideo:(NSData *)videoData {
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
-        if (!aVideo) {
+        //NSLog(@"aVideo: %@",aVideo);
+        if (!videoData) {
             return nil;
         }
         
-        self.video = aVideo;        
+        self.videoData = videoData;
+        self.videoFile = [PFFile fileWithName:@"video.mp4" data:self.videoData];
         self.fileUploadBackgroundTaskId = UIBackgroundTaskInvalid;
         self.videoPostBackgroundTaskId = UIBackgroundTaskInvalid;
     }
@@ -73,7 +75,7 @@
     self.view = self.scrollView;
     
     videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
-    [videoImageView setBackgroundColor:[UIColor blackColor]];
+    [videoImageView setBackgroundColor:[UIColor clearColor]];
     [videoImageView setContentMode:UIViewContentModeScaleAspectFit];
     
     [self.scrollView addSubview:videoImageView];
@@ -94,8 +96,9 @@
     [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, scrollViewHeight)];
 }
 
-- (void)didTapVideoPlayButtonAction:(UIButton *)sender{
-    [moviePlayer play];
+- (void)didTapVideoPlayButtonAction:(UIButton *)sender {
+    [self.moviePlayer prepareToPlay];
+    [self.moviePlayer play];
 }
 
 - (void)viewDidLoad {
@@ -111,51 +114,92 @@
     // NavigationBar & ToolBar
     [self.navigationController.navigationBar setHidden:NO];
     [self.navigationController.toolbar setHidden:YES];
-    [self.navigationItem setTitle: @"TAG YOUR FIT"];
+    [self.navigationItem setTitle:@"TAG YOUR FIT"];
     [self.navigationItem setHidesBackButton:NO];
     
     // Override the back idnicator
-    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigate_back"]
-                                                                      style:UIBarButtonItemStylePlain
-                                                                     target:self
-                                                                     action:@selector(hideCameraView:)];
-    [backIndicator setTintColor:[UIColor whiteColor]];
-    [self.navigationItem setLeftBarButtonItem:backIndicator];
+    UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] init];
+    [backButtonItem setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backButtonItem setStyle:UIBarButtonItemStylePlain];
+    [backButtonItem setTarget:self];
+    [backButtonItem setAction:@selector(didTapBackButtonAction:)];
+    [backButtonItem setTintColor:[UIColor whiteColor]];
     
-    
+    [self.navigationItem setLeftBarButtonItem:backButtonItem];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    
+    // setup the video player
+    //NSLog(@"FTEditVideoViewController::Setup video...");
+    self.moviePlayer = [[MPMoviePlayerController alloc] init];
+    [self.moviePlayer setControlStyle:MPMovieControlStyleNone];
+    [self.moviePlayer setScalingMode:MPMovieScalingModeAspectFill];
+    [self.moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
+    [self.moviePlayer setShouldAutoplay:NO];
+    [self.moviePlayer.view setFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
+    [self.moviePlayer.view setBackgroundColor:[UIColor clearColor]];
+    [self.moviePlayer.view setUserInteractionEnabled:NO];
+    [self.moviePlayer.view setAlpha:0];
+    
+    [videoImageView addSubview:self.moviePlayer.view];
+    [videoImageView bringSubviewToFront:self.moviePlayer.view];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieFinishedCallBack:)
+                                                 name:MPMoviePlayerPlaybackDidFinishNotification object:moviePlayer];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerStateChange:)
+                                                 name:MPMoviePlayerPlaybackStateDidChangeNotification object:moviePlayer];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadStateDidChange:)
+                                                 name:MPMoviePlayerLoadStateDidChangeNotification object:moviePlayer];
+    
+    // Write video locally
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    //NSLog(@"paths %@",paths);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    //NSLog(@"documentsDirectory %@",documentsDirectory);
+    NSString *path = [documentsDirectory stringByAppendingPathComponent:@"myvideo.mp4"];
+    //NSLog(@"path %@",path);
+    [self.videoData writeToFile:path atomically:YES];
+    NSURL *url = [NSURL fileURLWithPath:path];
+    //NSLog(@"url %@",url);
+    
+    // Set video url and prepare to play
+    [moviePlayer setContentURL:url];
+    [moviePlayer prepareToPlay];
+    
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:nil];
+    AVAssetImageGenerator *generateImg = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+    generateImg.appliesPreferredTrackTransform = YES;
+    
+    NSError *error = NULL;
+    CMTime time = CMTimeMake(1, 65);
+    CGImageRef refImg = [generateImg copyCGImageAtTime:time actualTime:NULL error:&error];
+    UIImage *anImage = [[UIImage alloc] initWithCGImage:refImg];
+    UIImage *resizedImage = [anImage resizedImageWithContentMode:UIViewContentModeScaleAspectFill bounds:CGSizeMake(320.0f, 320.0f) interpolationQuality:kCGInterpolationHigh];
+    NSData *imageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
+    self.imageFile = [PFFile fileWithName:@"photo.jpeg" data:imageData];
     
     // Videoplayer background image
     videoPlaceHolderView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
     [videoPlaceHolderView setBackgroundColor:[UIColor clearColor]];
     [videoPlaceHolderView setContentMode:UIViewContentModeScaleAspectFill];
+    [videoPlaceHolderView setImage:[UIImage imageWithData:imageData]];
     
-    [videoImageView addSubview:videoPlaceHolderView];
-    
-    // setup the video player
-    //NSLog(@"FTEditVideoViewController::Setup video...");
-    moviePlayer = [[MPMoviePlayerController alloc] init];
-    [moviePlayer setControlStyle:MPMovieControlStyleNone];
-    [moviePlayer setScalingMode:MPMovieScalingModeAspectFill];
-    [moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
-    [moviePlayer setShouldAutoplay:NO];
-    [moviePlayer.view setFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
-    [moviePlayer.view setBackgroundColor:[UIColor clearColor]];
-    [moviePlayer.view setUserInteractionEnabled:NO];
-    [moviePlayer.view setHidden:YES];
-    
-    [videoImageView addSubview:moviePlayer.view];
-    [videoImageView bringSubviewToFront:moviePlayer.view];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieFinishedCallBack:) name:MPMoviePlayerPlaybackDidFinishNotification object:moviePlayer];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerStateChange:) name:MPMoviePlayerPlaybackStateDidChangeNotification object:moviePlayer];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadStateDidChange:) name:MPMoviePlayerLoadStateDidChangeNotification object:moviePlayer];
+    [self.scrollView addSubview:videoPlaceHolderView];
+    [self.scrollView sendSubviewToBack:videoPlaceHolderView];
+     
+    [moviePlayer.backgroundView setBackgroundColor:[UIColor clearColor]];
+    for(UIView *aSubView in moviePlayer.view.subviews) {
+        aSubView.backgroundColor = [UIColor clearColor];
+    }
     
     // setup the playbutton
     float centerX = (videoImageView.frame.size.width - 60) / 2;
     float centerY = (videoImageView.frame.size.height - 60) / 2;
+    
     playButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.playButton setFrame:CGRectMake(centerX,centerY,60.0f,60.0f)];
     [self.playButton setBackgroundImage:[UIImage imageNamed:@"play_button"] forState:UIControlStateNormal];
@@ -165,7 +209,7 @@
     [self.scrollView addSubview:self.playButton];
     [self.scrollView bringSubviewToFront:self.playButton];
     
-    [self shouldUploadVideo:self.video];
+    [postDetailsFooterView.submitButton setEnabled:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -181,15 +225,17 @@
 }
 
 -(void)loadStateDidChange:(NSNotification *)notification{
-    //NSLog(@"loadStateDidChange: %@",notification);
+    
+    NSLog(@"loadStateDidChange: %@",notification);
     
     if (self.moviePlayer.loadState & MPMovieLoadStatePlayable) {
         NSLog(@"loadState... MPMovieLoadStatePlayable");
     }
     
     if (self.moviePlayer.loadState & MPMovieLoadStatePlaythroughOK) {
+        //[moviePlayer.view setHidden:NO];
+        
         NSLog(@"loadState... MPMovieLoadStatePlaythroughOK");
-        [moviePlayer.view setHidden:NO];
         //[self.imageView setHidden:YES];
     }
     
@@ -204,41 +250,48 @@
 
 -(void)moviePlayerStateChange:(NSNotification *)notification{
     
-    //NSLog(@"moviePlayerStateChange: %@",notification);
+    NSLog(@"moviePlayerStateChange: %@",notification);
     
-    if (self.moviePlayer.playbackState == MPMoviePlaybackStatePlaying){
-        NSLog(@"moviePlayer... Playing");
+    if (self.moviePlayer.loadState & (MPMovieLoadStatePlayable | MPMovieLoadStatePlaythroughOK)) {
+        //NSLog(@"loadState... MPMovieLoadStatePlayable | MPMovieLoadStatePlaythroughOK..");
         [self.playButton setHidden:YES];
-        if (self.moviePlayer.loadState & MPMovieLoadStatePlayable) {
-            NSLog(@"2 loadState... MPMovieLoadStatePlayable");
-            [moviePlayer.view setHidden:NO];
-            //[self.imageView setHidden:YES];
+        
+        if (self.moviePlayer.playbackState & MPMoviePlaybackStatePlaying){
+            //NSLog(@"moviePlayer... MPMoviePlaybackStatePlaying");
+            [UIView animateWithDuration:1 animations:^{
+                [self.moviePlayer.view setAlpha:1];
+            }];
         }
     }
     
     if (self.moviePlayer.playbackState & MPMoviePlaybackStateStopped){
-        NSLog(@"moviePlayer... Stopped");
         [self.playButton setHidden:NO];
+        
+        NSLog(@"moviePlayer... MPMoviePlaybackStateStopped");
     }
     
     if (self.moviePlayer.playbackState & MPMoviePlaybackStatePaused){
-        NSLog(@"moviePlayer... Paused");
         [self.playButton setHidden:NO];
-        [moviePlayer.view setHidden:YES];
-        //[self.imageView setHidden:NO];
+        
+        [UIView animateWithDuration:0.3 animations:^{
+            [self.moviePlayer.view setAlpha:0];
+            [self.moviePlayer prepareToPlay];
+        }];
+        
+        //NSLog(@"moviePlayer... MPMoviePlaybackStatePaused");
     }
     
     if (self.moviePlayer.playbackState & MPMoviePlaybackStateInterrupted){
-        NSLog(@"moviePlayer... Interrupted");
+        //NSLog(@"moviePlayer... Interrupted");
         //[self.moviePlayer stop];
     }
     
     if (self.moviePlayer.playbackState & MPMoviePlaybackStateSeekingForward){
-        NSLog(@"moviePlayer... Forward");
+        //NSLog(@"moviePlayer... Forward");
     }
     
     if (self.moviePlayer.playbackState & MPMoviePlaybackStateSeekingBackward){
-        NSLog(@"moviePlayer... Backward");
+        //NSLog(@"moviePlayer... Backward");
     }
 }
 
@@ -338,10 +391,11 @@
     return matchedResults;
 }
 
-- (void)hideCameraView:(id)sender{
+- (void)didTapBackButtonAction:(id)sender{
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+/*
 - (BOOL)shouldUploadVideo:(NSData *)aVideo {
     NSLog(@"FTEditVideoViewController::shouldUploadVideo:");
     if(!aVideo){
@@ -351,15 +405,15 @@
     if ([PFUser currentUser]) {
         // Set the video
         
-        [MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
+        //[MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
         
-        self.videoFile = [PFFile fileWithName:@"video.mov" data:aVideo];
+        self.videoFile = [PFFile fileWithName:@"video.mp4" data:aVideo];
         
         // Request a background execution task to allow us to finish uploading the video even if the app is backgrounded
         self.fileUploadBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
         }];
-        
+ 
         [self.videoFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
                 
@@ -367,8 +421,8 @@
                 NSURL *url = [NSURL URLWithString:self.videoFile.url];
                 
                 // Set video url
-                [moviePlayer setContentURL:url];
-                [moviePlayer prepareToPlay];
+                [self.moviePlayer setContentURL:url];
+                [self.moviePlayer prepareToPlay];
                 
                 AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:nil];
                 AVAssetImageGenerator *generateImg = [[AVAssetImageGenerator alloc] initWithAsset:asset];
@@ -384,7 +438,7 @@
                 // Set placeholder image
                 [videoPlaceHolderView setImage:[UIImage imageWithData:imageData]];
                 
-                [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
+                //[MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
                 self.imageFile = [PFFile fileWithName:@"photo.jpeg" data:imageData];
                 
                 [self.imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -409,6 +463,7 @@
     
     return YES;
 }
+*/
 
 - (void)keyboardWillShow:(NSNotification *)note {
     CGRect keyboardFrameEnd = [[note.userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
