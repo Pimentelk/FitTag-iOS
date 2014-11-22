@@ -90,7 +90,7 @@
     [user fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         if (!error) {
             
-            NSLog(@"object: %@",object);
+            NSLog(@"%@:object: %@",VIEWCONTROLLER_INTERESTS,object);
             
             if ([object objectForKey:kFTUserInterestsKey]) {
                 userInterests = [[NSMutableArray alloc] initWithArray:[object objectForKey:kFTUserInterestsKey]];
@@ -101,7 +101,7 @@
             [query findObjectsInBackgroundWithBlock:^(NSArray *interests, NSError *error) {
                 if (!error) {
                     // The find succeeded.
-                    //NSLog(@"Successfully retrieved %lu scores.", (unsigned long)interests.count);
+                    NSLog(@"Successfully retrieved %lu scores.", (unsigned long)interests.count);
                     // Do something with the found objects
                     
                     NSMutableArray *tmpInterests = [NSMutableArray array];
@@ -180,7 +180,7 @@
         }
         if (error) {
             NSLog(@"Error: saveEventually... %@", error);
-            [user saveEventually];
+            //[user saveEventually];
         }
     }];
     
