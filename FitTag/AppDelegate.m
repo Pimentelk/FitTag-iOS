@@ -166,13 +166,14 @@
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation {
     
-    BOOL urlWasHandled = [FBAppCall handleOpenURL:url
-                                sourceApplication:sourceApplication
-                                  fallbackHandler:^(FBAppCall *call) {
-                                      NSLog(@"Unhandled deep link: %@", url);
-                                      
-                                  }];    
-    return urlWasHandled;
+    return [FBAppCall handleOpenURL:url
+                  sourceApplication:sourceApplication
+                    fallbackHandler:^(FBAppCall *call) {
+                        
+                        NSLog(@"Unhandled deep link: %@", url);
+                        
+                        [FBAppCall handleOpenURL:url sourceApplication:sourceApplication withSession:[PFFacebookUtils session]];
+                    }];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -254,14 +255,16 @@
     // Map ViewController - Home
     self.mapViewController = [[FTMapViewController alloc] init];
     
+    CGRect bounds = [[[[UIApplication sharedApplication] delegate] window] bounds];
+    
     // Profile View Controller
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     [flowLayout setItemSize:CGSizeMake(105.5,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(bounds.size.width,350)];
     
     self.userProfileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     [self.userProfileViewController setUser:[PFUser currentUser]];
@@ -272,8 +275,8 @@
     [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
     [layoutFlow setMinimumInteritemSpacing:0];
     [layoutFlow setMinimumLineSpacing:0];
-    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,160)];
+    [layoutFlow setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+    [layoutFlow setHeaderReferenceSize:CGSizeMake(bounds.size.width,REWARDS_MENU_HEIGHT)];
     
     self.rewardsViewController = [[FTRewardsCollectionViewController alloc] initWithCollectionViewLayout:layoutFlow];
     
@@ -296,6 +299,7 @@
     UITabBarItem *feedTabBarItem = [[UITabBarItem alloc] initWithTitle:nil
                                                                  image:[[UIImage imageNamed:BUTTON_IMAGE_FEED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                                                          selectedImage:[[UIImage imageNamed:BUTTON_IMAGE_FEED_SELECTED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+
     
     // Notifications ViewController
     UITabBarItem *activityFeedTabBarItem = [[UITabBarItem alloc] initWithTitle:nil
@@ -331,6 +335,10 @@
                                                userProfileNavigationController,
                                                rewardsFeedNavigationController ];
     self.tabBarController.selectedIndex = TAB_FEED;
+    
+    for (int i = 0; i < [self.tabBarController.tabBar items].count; i++) {
+        [[[self.tabBarController.tabBar items] objectAtIndex:i] setImageInsets:UIEdgeInsetsMake(TAB_BAR_INSET_TOP, 0, TAB_BAR_INSET_BOTTOM, 0)];
+    }
     
     [self.navController setViewControllers:@[ self.welcomeViewController, self.tabBarController ] animated:NO];
     [self registerForRemoteNotification];
@@ -433,13 +441,15 @@
                     UINavigationController *feedNavigationController = self.tabBarController.viewControllers[FTFeedTabBarItemIndex];
                     self.tabBarController.selectedViewController = feedNavigationController;
                     
+                    CGRect boudns = [[[[UIApplication sharedApplication] delegate] window] bounds];
+                    
                     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
                     [flowLayout setItemSize:CGSizeMake(105.5,105)];
                     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
                     [flowLayout setMinimumInteritemSpacing:0];
                     [flowLayout setMinimumLineSpacing:0];
-                    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-                    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+                    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+                    [flowLayout setHeaderReferenceSize:CGSizeMake(boudns.size.width,335)];
                     
                     FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
                     [profileViewController setUser:[PFUser currentUser]];
