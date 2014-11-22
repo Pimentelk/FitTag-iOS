@@ -9,6 +9,7 @@
 #import "FTSettingsDetailViewController.h"
 #import "UIImage+ResizeAdditions.h"
 #import "MBProgressHUD.h"
+#import "AppDelegate.h"
 
 #define LEFT_PADDING 15
 #define TOP_PADDING 20
@@ -281,7 +282,6 @@
     //NSLog(@"%@::configureBiography",VIEWCONTROLLER_SETTINGS_DETAIL);
     
     // User bio text view
-    
     userBiography = [[UITextView alloc] initWithFrame:CGRectMake(10, navigationBarEnd + TOP_PADDING, self.view.frame.size.width - 20, 150)];
     [userBiography setBackgroundColor:[UIColor whiteColor]];
     [userBiography setTextColor:[UIColor blackColor]];
@@ -289,6 +289,7 @@
     [userBiography setUserInteractionEnabled:YES];
     [userBiography setDelegate:self];
     [userBiography setText:[self.user objectForKey:kFTUserBioKey]];
+    
     [self.view addSubview:userBiography];
 }
 
@@ -831,10 +832,12 @@
 - (void)showHudMessage:(NSString *)message WithDuration:(NSTimeInterval)duration {
     //NSLog(@"%@::showHudMessage:WithDuration:",VIEWCONTROLLER_SETTINGS_DETAIL);
     
-    self.hud = [MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
+    UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
+    
+    self.hud = [MBProgressHUD showHUDAddedTo:keyWindow animated:YES];
     self.hud.mode = MBProgressHUDModeText;
     self.hud.margin = 10.f;
-    self.hud.yOffset = 150.f;
+    self.hud.yOffset = 0.f;
     self.hud.removeFromSuperViewOnHide = YES;
     self.hud.userInteractionEnabled = NO;
     self.hud.labelText = message;
@@ -914,12 +917,15 @@
 
 - (void)didTapDoneButtonAction:(id)sender {
     //NSLog(@"%@::didTapSaveButtonAction:",VIEWCONTROLLER_SETTINGS_DETAIL);
+    
+    BOOL doneEditing = YES;
+    
     if ([self.detailItem isEqualToString:PROFILE_PICTURE]) {
 
     } else if ([self.detailItem isEqualToString:COVER_PHOTO]) {
 
     } else if ([self.detailItem isEqualToString:EDIT_BIO]) {
-        [self saveBiography];
+        doneEditing = [self saveBiography];
     } else if ([self.detailItem isEqualToString:SHARE_SETTINGS]) {
 
     } else if ([self.detailItem isEqualToString:NOTIFICATION_SETTINGS]) {
@@ -930,15 +936,22 @@
 
     }
     
-    [self.navigationController popViewControllerAnimated:NO];
+    if (doneEditing) {
+        [self.navigationController popViewControllerAnimated:NO];
+    }    
 }
 
-- (void)saveBiography {
+- (BOOL)saveBiography {
     //NSLog(@"%@::saveBiography:",VIEWCONTROLLER_SETTINGS_DETAIL);
     
-    if (!userBiography) {
-        NSLog(@"%@::biography not saved, biography is nil..",VIEWCONTROLLER_SETTINGS_DETAIL);
-        return;
+    if (!userBiography || userBiography.text.length == 0) {
+        [self showHudMessage:HUD_MESSAGE_BIOGRAPHY_EMPTY WithDuration:3];
+        return NO;
+    }
+    
+    if (userBiography.text.length > 150) {
+        [self showHudMessage:HUD_MESSAGE_BIOGRAPHY_LIMIT WithDuration:3];
+        return NO;
     }
     
     [userBiography resignFirstResponder];
@@ -951,9 +964,9 @@
                 NSLog(HUD_MESSAGE_BIOGRAPHY_UPDATED);
             }
         }];
-    } else if (userBiography.text.length > 150 ) {
-        [self showHudMessage:HUD_MESSAGE_BIOGRAPHY_LIMIT WithDuration:3];
+        return YES;
     }
+    return NO;
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
