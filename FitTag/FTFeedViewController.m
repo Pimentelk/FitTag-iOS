@@ -187,6 +187,7 @@
             }
             
             if ([TWuser objectForKey:@"id"]) {
+                
                 [user setValue:[NSString stringWithFormat:@"%@",[TWuser objectForKey:@"id"]]
                         forKey:kFTUserTwitterIdKey];
             }
@@ -246,7 +247,7 @@
                 [user setValue:[NSDate date] forKey:kFTUserLastLoginKey];
                 [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (error) {
-                        NSLog(@"error.code: %ld",error.code);
+                        NSLog(@"error.code: %ld",(long)error.code);
                         switch (error.code) {
                             case 203:
                                 [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Duplicate Email Error", nil)
