@@ -482,7 +482,7 @@ enum PinAnnotationTypeTag {
                     for (PFObject *mapItem in mapItems) {
                         
                         CGFloat xOrigin = i * self.view.frame.size.width;
-                        CGRect itemFrame = CGRectMake(xOrigin, 0, self.view.frame.size.width, SCROLLVIEWITEM_HEIGHT);
+                        CGRect itemFrame = CGRectMake(xOrigin-10, 0, self.view.frame.size.width, SCROLLVIEWITEM_HEIGHT);
                         FTMapScrollViewItem *mapScrollViewItem = [[FTMapScrollViewItem alloc] initWithFrame:itemFrame AndMapItem:mapItem];
                         mapScrollViewItem.delegate = self;
                         [scrollView addSubview:mapScrollViewItem];
@@ -546,8 +546,8 @@ enum PinAnnotationTypeTag {
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(self.mapView.frame.size.width,335)];
     
     // Override the back idnicator
     UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
