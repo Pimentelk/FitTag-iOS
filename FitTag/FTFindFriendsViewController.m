@@ -309,7 +309,7 @@ typedef enum {
 }
 
 /* Called when the user selects a property of a person in their address book (ex. phone, email, location,...)
- This method will allow them to send a text or email inviting them to Anypic.  */
+ This method will allow them to send a text or email inviting them to Anypic.
 - (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier {
     
     if (property == kABPersonEmailProperty) {
@@ -341,6 +341,7 @@ typedef enum {
     
     return NO;
 }
+*/
 
 #pragma mark - MFMailComposeDelegate
 
