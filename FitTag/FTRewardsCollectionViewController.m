@@ -40,8 +40,11 @@
                                                             alpha:1]];
     
     // Data view
-    [self.collectionView registerClass:[FTRewardsCollectionViewCell class] forCellWithReuseIdentifier:REUSE_IDENTIFIER_DATACELL];
-    [self.collectionView registerClass:[FTRewardsCollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+    [self.collectionView registerClass:[FTRewardsCollectionViewCell class]
+            forCellWithReuseIdentifier:REUSE_IDENTIFIER_DATACELL];
+    
+    [self.collectionView registerClass:[FTRewardsCollectionHeaderView class]
+            forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
                    withReuseIdentifier:REUSE_IDENTIFIER_HEADERVIEW];
     
     [self.collectionView setDelegate:self];
@@ -53,6 +56,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     NSLog(@"%@::viewDidAppear",VIEWCONTROLLER_REWARDS);
     [super viewDidAppear:animated];
+    
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_REWARDS];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
@@ -108,7 +112,10 @@
 
 #pragma mark - UICollectionView
 
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView
+           viewForSupplementaryElementOfKind:(NSString *)kind
+                                 atIndexPath:(NSIndexPath *)indexPath {
+    
     NSLog(@"%@::collectionView:viewForSupplementaryElementOfKind:atIndexPath:",VIEWCONTROLLER_REWARDS);
     UICollectionReusableView *reusableview = nil;
     if (kind == UICollectionElementKindSectionHeader) {
@@ -126,24 +133,28 @@
     return self.rewards.count;
 }
 
-- (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+- (CGFloat) collectionView:(UICollectionView *)collectionView
+                    layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
     return 0;
 }
 
-- (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+- (CGFloat) collectionView:(UICollectionView *)collectionView
+                    layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
     return 0;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"%@::collectionView:didSelectItemAtIndexPath:",VIEWCONTROLLER_REWARDS);
+    //NSLog(@"%@::collectionView:didSelectItemAtIndexPath:",VIEWCONTROLLER_REWARDS);
     
-    NSLog(@"indexpath: %ld",(long)indexPath.row);
+    //NSLog(@"indexpath: %ld",(long)indexPath.row);
     FTRewardsDetailView *rewardsDetailView = [[FTRewardsDetailView alloc] initWithReward:self.rewards[indexPath.row]];
     [self.navigationController pushViewController:rewardsDetailView animated:YES];
 }
 
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"%@::collectionView:cellForItemAtIndexPath:",VIEWCONTROLLER_REWARDS);
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
+                  cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    //NSLog(@"%@::collectionView:cellForItemAtIndexPath:",VIEWCONTROLLER_REWARDS);
     
     // Set up cell identifier that matches the Storyboard cell name
     static NSString *identifier = REUSE_IDENTIFIER_DATACELL;
@@ -170,24 +181,18 @@
 
 #pragma mark - FTRewardsHeaderViewDelegate
 
-- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapActiveButton:(UIButton *)button {
-    NSLog(@"%@::rewardsHeaderView:didTapActiveButton:",VIEWCONTROLLER_REWARDS);
-    [rewardsHeaderView clearSelectedButtons];
-    [rewardsHeaderView.activeButton setSelected:YES];
+- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapActiveTab:(id)tab {
+    //NSLog(@"%@::rewardsHeaderView:didTapActiveButton:",VIEWCONTROLLER_REWARDS);
     [self queryForTable:REWARDS_FILTER_ACTIVE];
 }
 
-- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapExpiredButton:(UIButton *)button {
-    NSLog(@"%@::rewardsHeaderView:didTapExpiredButton:",VIEWCONTROLLER_REWARDS);
-    [rewardsHeaderView clearSelectedButtons];
-    [rewardsHeaderView.expiredButton setSelected:YES];
+- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapExpiredTab:(id)tab {
+    //NSLog(@"%@::rewardsHeaderView:didTapExpiredButton:",VIEWCONTROLLER_REWARDS);
     [self queryForTable:REWARDS_FILTER_EXPIRED];
 }
 
-- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapUsedButton:(UIButton *)button {
-    NSLog(@"%@::rewardsHeaderView:didTapUsedButton:",VIEWCONTROLLER_REWARDS);
-    [rewardsHeaderView clearSelectedButtons];
-    [rewardsHeaderView.usedButton setSelected:YES];
+- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapUsedTab:(id)tab {
+    //NSLog(@"%@::rewardsHeaderView:didTapUsedButton:",VIEWCONTROLLER_REWARDS);
     [self queryForTable:REWARDS_FILTER_USED];
 }
 
