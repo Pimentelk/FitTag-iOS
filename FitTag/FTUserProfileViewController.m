@@ -36,20 +36,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    NSLog(@"self.user :%@",self.user);
-    
     if (!self.user) {
         [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
+        return;
     }
     
     cellTab = GRID_SMALL;
-    
-    // Toolbar & Navigationbar Setup
-    if ([user objectForKey:kFTUserDisplayNameKey]) {
-        [self.navigationItem setTitle:[user objectForKey:kFTUserDisplayNameKey]];
-    } else {
-        [self.navigationItem setTitle:NAVIGATION_TITLE_PROFILE];
-    }
     
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     
@@ -89,6 +81,13 @@
     //NSLog(@"%@::viewWillAppear:",VIEWCONTROLLER_USER);
     [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:YES];
+    
+    // Toolbar & Navigationbar Setup
+    if ([user objectForKey:kFTUserDisplayNameKey]) {
+        [self.navigationItem setTitle:[user objectForKey:kFTUserDisplayNameKey]];
+    } else {
+        [self.navigationItem setTitle:NAVIGATION_TITLE_PROFILE];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -168,7 +167,7 @@
         [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
         [flowLayout setMinimumInteritemSpacing:0];
         [flowLayout setMinimumLineSpacing:0];
-        [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+        [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
         [flowLayout setHeaderReferenceSize:CGSizeMake(320,356)];
         
         PFUser *business = self.cells[indexPath.row];
