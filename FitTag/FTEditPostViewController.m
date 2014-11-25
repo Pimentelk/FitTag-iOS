@@ -379,6 +379,7 @@
             NSLog(@"postMultipleWithPhotoFiles;");
 
     NSMutableArray *posts = [[NSMutableArray alloc] init];
+    
     for (int i = 0; i < photos.count; i++) {
         // create a post object
         //NSLog(@"create a post object");
@@ -429,7 +430,7 @@
                     [self incrementUserPostCount];
                     //NSLog(@"userInfo might contain any caption which might have been posted by the uploader");
                     
-                    NSString *description = @"Allow your users to share stories on Facebook from your app using the IOS SDK.";
+                    NSString *description = EMPTY_STRING;
                     
                     // userInfo might contain any caption which might have been posted by the uploader
                     if (userInfo) {
