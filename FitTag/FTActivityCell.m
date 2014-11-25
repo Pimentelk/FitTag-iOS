@@ -111,7 +111,6 @@ static TTTTimeIntervalFormatter *timeFormatter;
     }
 }
 
-
 - (void)setActivity:(PFObject *)activity {
     // Set the activity property
     _activity = activity;
@@ -122,7 +121,14 @@ static TTTTimeIntervalFormatter *timeFormatter;
         [self setActivityImageFile:(PFFile *)[[activity objectForKey:kFTActivityPostKey] objectForKey:kFTPostImageKey]];
     }
     
+    NSString *currentUserDisplayName = [[PFUser currentUser] objectForKey:kFTUserDisplayNameKey];
     NSString *activityString = [FTActivityFeedViewController stringForActivityType:(NSString*)[activity objectForKey:kFTActivityTypeKey]];
+    if (currentUserDisplayName) {
+        if ([activity objectForKey:kFTActivityMentionKey] && [[activity objectForKey:kFTActivityMentionKey] containsObject:currentUserDisplayName]) {
+            activityString = [FTActivityFeedViewController stringForActivityType:kFTActivityTypeMention];
+        }
+    }
+    
     self.user = [activity objectForKey:kFTActivityFromUserKey];
     
     // Set name button properties and avatar image
