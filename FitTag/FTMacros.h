@@ -14,6 +14,11 @@
 #define APP_STORE_ID @"com.library.FitTag"
 #define FITTAG_LOGO @"fittag_logo"
 
+// UIAlertView
+#define ACTION_SHARE_ON_FACEBOOK @"Share on Facebook"
+#define ACTION_SHARE_ON_TWITTER @"Tweet"
+#define ACTION_REPORT_INAPPROPRIATE @"Report as Inappropriate"
+
 // Font
 #define BENDERSOLID(s) [UIFont fontWithName:@"BenderSolid" size:s]
 
@@ -22,6 +27,7 @@
 
 // Backgrounds
 #define BACKGROUND_FIND_FRIENDS @"login_background_image_05"
+#define BACKGROUND_INSPIRATIONAL @"login_background_image_07"
 
 // Current Device Version
 #define IS_OS_8_OR_LATER ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
@@ -75,7 +81,7 @@
 #define VIEWCONTROLLER_BUSINESS_HEADER @"FTUserProfileHeaderView"
 #define VIEWCONTROLLER_COMMENT @"FTPostDetailsViewController"
 #define VIEWCONTROLLER_POST_DETAIL @"FTPostDetailsViewController"
-#define VIEWCONTROLLER_INVITE @"FTInviteFriendsViewController"
+#define VIEWCONTROLLER_INVITE @"FTFollowFriendsViewController"
 #define VIEWCONTROLLER_FOLLOW_CELL @"FTFollowCell"
 #define VIEWCONTROLLER_SEARCH @"FTSearchViewController"
 #define VIEWCONTROLLER_FEED @"FTFeedViewController"
@@ -151,6 +157,7 @@
 #define IMAGE_TIMELINE_BLANK @"HomeTimelineBlank.png"
 #define IMAGE_USERNAME_RIBBON @"username_ribbon"
 #define IMAGE_PROFILE_EMPTY @"empty_profile"
+#define IMAGE_SIGNUP_BUTTON @"signup_button"
 
 // TAB NAVIGATION BAR BUTTONS
 #define BUTTON_IMAGE_NOTIFICATIONS_SELECTED @"notifications_selected"
