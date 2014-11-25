@@ -13,7 +13,7 @@
 #import "FTBusinessAnnotationView.h"
 #import "FTBusinessGeoPointAnnotation.h"
 #import "FTMapScrollView.h"
-#import "FTFindFriendsViewController.h"
+#import "FTFollowFriendsViewController.h"
 #import "MBProgressHUD.h"
 #import "FTSearchViewController.h"
 #import "FTBusinessProfileViewController.h"
@@ -92,16 +92,16 @@ enum PinAnnotationTypeTag {
 @property (nonatomic, strong) FTSearchViewController *searchViewController;
 @property (nonatomic, strong) FTSearchHeaderView *searchHeaderView;
 @property (nonatomic, strong) FTCircleOverlay *targetOverlay;
-@property (nonatomic, strong) FTInviteFriendsViewController *inviteFriendsViewController;
-@property (nonatomic, strong) UINavigationController *inviteFriendsNavController;
+@property (nonatomic, strong) FTFollowFriendsViewController *followFriendsViewController;
+@property (nonatomic, strong) UINavigationController *followFriendsNavController;
 @end
 
 @implementation FTMapViewController
 @synthesize searchHeaderView;
 @synthesize geoPoint;
 @synthesize searchViewController;
-@synthesize inviteFriendsViewController;
-@synthesize inviteFriendsNavController;
+@synthesize followFriendsViewController;
+@synthesize followFriendsNavController;
 
 - (void)viewDidLoad{
     [super viewDidLoad];
@@ -213,10 +213,10 @@ enum PinAnnotationTypeTag {
     [backIndicator setAction:@selector(didTapBackButtonAction:)];
     [backIndicator setTintColor:[UIColor whiteColor]];
     
-    inviteFriendsViewController = [[FTInviteFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
-    inviteFriendsNavController = [[UINavigationController alloc] init];
-    [inviteFriendsNavController setViewControllers:@[ inviteFriendsViewController ] animated:NO];
-    [inviteFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
+    followFriendsViewController = [[FTFollowFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+    followFriendsNavController = [[UINavigationController alloc] init];
+    [followFriendsNavController setViewControllers:@[ followFriendsViewController ] animated:NO];
+    [followFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
     
     // Default filter type
     [fitTagsLabel setBackgroundColor:redColor];
@@ -256,10 +256,10 @@ enum PinAnnotationTypeTag {
     }];
     
     if (isTaggersSelected) {
-        [inviteFriendsViewController setFollowUserQueryType:FTFollowUserQueryTypeTagger];
-        [inviteFriendsViewController setSearchString:searchBar.text];
-        [inviteFriendsViewController querySearchForUser];
-        [self presentViewController:inviteFriendsNavController animated:YES completion:nil];
+        [followFriendsViewController setFollowUserQueryType:FTFollowUserQueryTypeTagger];
+        [followFriendsViewController setSearchString:searchBar.text];
+        [followFriendsViewController querySearchForUser];
+        [self presentViewController:followFriendsNavController animated:YES completion:nil];
     } else {
         [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
         [searchViewController setSearchString:searchBar.text];
