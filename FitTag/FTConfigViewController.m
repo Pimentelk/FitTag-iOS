@@ -49,7 +49,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    //NSLog(@"%@::viewDidAppear:",VIEWCONTROLLER_CONFIG);
+    NSLog(@"%@::viewDidAppear:",VIEWCONTROLLER_CONFIG);
     [super viewDidAppear:animated];
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_CONFIG];
@@ -94,8 +94,10 @@
 #pragma mark - PFLogInViewControllerDelegate
 
 - (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
-    //NSLog(@"%@::logInViewController:didLogInUser:",VIEWCONTROLLER_CONFIG);
-    [self presentTabBarController:user];
+    NSLog(@"%@::logInViewController:didLogInUser:",VIEWCONTROLLER_CONFIG);
+    if ([PFUser currentUser] && user) {
+        [self presentTabBarController:user];
+    }
 }
 
 // Sent to the delegate to determine whether the log in request should be submitted to the server.
@@ -103,7 +105,7 @@
 shouldBeginLogInWithUsername:(NSString *)username
                    password:(NSString *)password {
     
-    //NSLog(@"logInViewController shouldBeginLogInWithUsername");
+    NSLog(@"logInViewController shouldBeginLogInWithUsername");
     if (username && password && username.length && password.length) {
         return YES;
     }
@@ -239,16 +241,17 @@ shouldBeginLogInWithUsername:(NSString *)username
             
             [user setValue:DEFAULT_BIO_TEXT_A forKey:kFTUserBioKey];
             
+            /*
             if (signUpViewController.about.length > 0){
                 NSLog(@"signUpViewController.about.length");
                 [user setValue:signUpViewController.about forKey:kFTUserBioKey];
             }
+            */
             
             if (signUpViewController.profilePhoto) {
                 NSLog(@"signUpViewController.profilePhoto");
                 
                 UIImage *signupProfilePhoto = signUpViewController.profilePhoto;
-                
                 UIImage *resizedImage = [signupProfilePhoto resizedImageWithContentMode:UIViewContentModeScaleAspectFit
                                                                                  bounds:CGSizeMake(560.0f, 560.0f)
                                                                    interpolationQuality:kCGInterpolationHigh];
@@ -262,8 +265,11 @@ shouldBeginLogInWithUsername:(NSString *)username
                 NSData *thumbnailImageData  = UIImagePNGRepresentation(thumbImage);
                 
                 if (imageData && thumbnailImageData) {
-                    [user setValue:[PFFile fileWithName:FILE_MEDIUM_JPEG data:imageData] forKey:kFTUserProfilePicMediumKey];
-                    [user setValue:[PFFile fileWithName:FILE_SMALL_JPEG data:thumbnailImageData] forKey:kFTUserProfilePicSmallKey];
+                    PFFile *mediumPicFile = [PFFile fileWithData:imageData];
+                    [user setObject:mediumPicFile forKey:kFTUserProfilePicMediumKey];
+                    
+                    PFFile *smallPicFile = [PFFile fileWithData:thumbnailImageData];
+                    [user setObject:smallPicFile forKey:kFTUserProfilePicSmallKey];
                 }
             }
             
@@ -272,7 +278,7 @@ shouldBeginLogInWithUsername:(NSString *)username
             NSLog(@"user:%@",user);
             [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (error) {
-                    [user saveEventually];
+                    //[user saveEventually];
                     NSLog(@"%@%@",ERROR_MESSAGE,error);
                 }
             }];
