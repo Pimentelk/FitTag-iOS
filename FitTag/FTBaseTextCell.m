@@ -214,10 +214,11 @@ static TTTTimeIntervalFormatter *timeFormatter;
 
 /* Static helper to get the height for a cell if it had the given name, content and horizontal inset */
 + (CGFloat)heightForCellWithName:(NSString *)name contentString:(NSString *)content cellInsetWidth:(CGFloat)cellInset {
-    CGSize nameSize = [name boundingRectWithSize:nameSize
-                                         options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
-                                      attributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:13.0f]}
-                                         context:nil].size;
+    CGSize nameSize = CGSizeMake(0, 0);
+    nameSize = [name boundingRectWithSize:nameSize
+                                  options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
+                               attributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:13.0f]}
+                                  context:nil].size;
     
     NSString *paddedString = [FTBaseTextCell padString:content withFont:[UIFont systemFontOfSize:13] toWidth:nameSize.width];
     CGFloat horizontalTextSpace = [FTBaseTextCell horizontalTextSpaceForInsetWidth:cellInset];
