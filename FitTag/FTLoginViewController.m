@@ -72,8 +72,8 @@
     // Add password forgot button
     [self.logInView.passwordForgottenButton setBackgroundImage:[UIImage imageNamed:@"forgot_password"] forState:UIControlStateNormal];
     [self.logInView.passwordForgottenButton setBackgroundImage:[UIImage imageNamed:@"forgot_password"] forState:UIControlStateHighlighted];
-    [self.logInView.passwordForgottenButton setTitle:@"" forState:UIControlStateNormal];
-    [self.logInView.passwordForgottenButton setTitle:@"" forState:UIControlStateHighlighted];
+    [self.logInView.passwordForgottenButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
+    [self.logInView.passwordForgottenButton setTitle:EMPTY_STRING forState:UIControlStateHighlighted];
     
     // disable signup label since we are using an image for our signup message
     [self.logInView.signUpLabel setText:nil];
