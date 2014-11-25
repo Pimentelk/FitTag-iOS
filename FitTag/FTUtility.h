@@ -14,6 +14,9 @@
 
 + (void)processFacebookProfilePictureData:(NSData *)data;
 
++ (void)shareCapturedMomentOnFacebook:(NSMutableDictionary *)moment;
++ (void)shareCapturedMomentOnTwitter:(NSString *)status;
+
 + (BOOL)userHasValidFacebookData:(PFUser *)user;
 + (BOOL)userHasProfilePictures:(PFUser *)user;
 
@@ -38,6 +41,7 @@
                                  hegiht:(CGFloat)hexH;
 
 + (NSArray *)extractHashtagsFromText:(NSString *)text;
++ (NSArray *)extractMentionsFromText:(NSString *)text;
 
 //+ (PFQuery *)queryForActivitiesOnPhoto:(PFObject *)photo cachePolicy:(PFCachePolicy)cachePolicy;
 //+ (PFQuery *)queryForActivitiesOnVideo:(PFObject *)video cachePolicy:(PFCachePolicy)cachePolicy;

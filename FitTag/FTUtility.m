@@ -344,6 +344,198 @@
     return (profilePictureMedium && profilePictureSmall);
 }
 
++ (void)makeRequestToPost:(NSMutableDictionary *)params {
+    
+    NSLog(@"makeRequestToPost:params");
+    
+    [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+        if (!error) {
+            NSLog(@"makeRequestToPost:!error");
+            // Success! Include your code to handle the results here
+            // Make the request
+            [FBRequestConnection startWithGraphPath:@"/me/feed"
+                                         parameters:params
+                                         HTTPMethod:@"POST"
+                                  completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                                      if (!error) {
+                                          NSLog(@"startWithGraphPath:!error");
+                                          
+                                          // Link posted successfully to Facebook
+                                          //NSLog(@"result: %@", result);
+                                      } else {
+                                          NSLog(@"startWithGraphPath:error");
+                                          
+                                          // An error occurred, we need to handle the error
+                                          // See: https://developers.facebook.com/docs/ios/errors
+                                          NSLog(@"%@", error.description);
+                                          
+                                          [[[UIAlertView alloc] initWithTitle:@"Error Posting"
+                                                                      message:@"Oh oh! Something went very wrong, contact support and give them this code: BOOMPOW"
+                                                                     delegate:nil
+                                                            cancelButtonTitle:@"OK"
+                                                            otherButtonTitles:nil] show];
+                                      }
+                                  }];
+            
+        } else {
+            NSLog(@"makeRequestToPost:error");
+            
+            // An error occurred, we need to handle the error
+            // Check out our error handling guide: https://developers.facebook.com/docs/ios/errors/
+            NSLog(@"error %@", error.description);
+        }
+    }];
+}
+
++ (void)shareCapturedMomentOnFacebook:(NSMutableDictionary *)moment {
+    NSLog(@"shareCaptureMomentOnFacebook:");
+    // We will post a story on behalf of the user
+    // These are the permissions we need:
+    NSArray *permissionsNeeded = @[@"publish_actions"];
+    
+    //NSLog(@"FBSession.activeSession:%@",FBSession.activeSession);
+    
+    if ([FBSession.activeSession.permissions indexOfObject:@"publish_actions"] == NSNotFound) {
+        // Request the permissions the user currently has
+        [FBRequestConnection startWithGraphPath:@"/me/permissions"
+                              completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                                  if (!error){
+                                      NSLog(@"shareCaptureMomentOnFacebook:!error");
+                                      
+                                      NSDictionary *currentPermissions = [(NSArray *)[result data] objectAtIndex:0];
+                                      //NSLog(@"current permissions %@", currentPermissions);
+                                      NSMutableArray *requestPermissions = [[NSMutableArray alloc] initWithArray:@[]];
+                                      // Check if all the permissions we need are present in the user's current permissions
+                                      // If they are not present add them to the permissions to be requested
+                                      for (NSString *permission in permissionsNeeded){
+                                          if (![currentPermissions objectForKey:permission]){
+                                              [requestPermissions addObject:permission];
+                                          }
+                                      }
+                                      
+                                      NSLog(@"requestPermissions %@", requestPermissions);
+                                      // If we have permissions to request
+                                      if ([requestPermissions count] > 0){
+                                          NSLog(@"shareCaptureMomentOnFacebook:[requestPermissions count] > 0");
+                                          [[PFFacebookUtils session] requestNewPublishPermissions:requestPermissions
+                                                                                  defaultAudience:FBSessionDefaultAudienceFriends
+                                                                                completionHandler:^(FBSession *session, NSError *error) {
+                                                                                    
+                                                                                    NSLog(@"error:%@",error);
+                                                                                    NSLog(@"session:%@",session);
+                                                                                    
+                                                                                    if (!error) {
+                                                                                        NSLog(@"requestNewPublishPermissions:!error");
+                                                                                        // Permission granted
+                                                                                        NSLog(@"new permissions %@", [[PFFacebookUtils session] permissions]);
+                                                                                        // We can request the user information
+                                                                                        [self makeRequestToPost:moment];
+                                                                                    } else {
+                                                                                        NSLog(@"requestNewPublishPermissions:error");
+                                                                                        
+                                                                                        // An error occurred, we need to handle the error
+                                                                                        // Check out our error handling guide: https://developers.facebook.com/docs/ios/errors/
+                                                                                        NSLog(@"error %@", error.description);
+                                                                                        [[[UIAlertView alloc] initWithTitle:@"Facebook Not Linked"
+                                                                                                                    message:@"Please visit the shared settings to link your FaceBook account."
+                                                                                                                   delegate:nil
+                                                                                                          cancelButtonTitle:@"OK"
+                                                                                                          otherButtonTitles:nil] show];
+                                                                                    }
+                                                                                }];
+                                      } else {
+                                          NSLog(@"shareCaptureMomentOnFacebook:![requestPermissions count] > 0");
+                                          
+                                          // Permissions are present
+                                          // We can request the user information
+                                          [self makeRequestToPost:moment];
+                                      }
+                                      
+                                  } else {
+                                      NSLog(@"shareCaptureMomentOnFacebook:error");
+                                      // An error occurred, we need to handle the error
+                                      // Check out our error handling guide: https://developers.facebook.com/docs/ios/errors/
+                                      NSLog(@"error %@", error.description);
+                                      [[[UIAlertView alloc] initWithTitle:@"Facebook Not Linked"
+                                                                  message:@"Please visit the shared settings to link your FaceBook account."
+                                                                 delegate:nil
+                                                        cancelButtonTitle:@"OK"
+                                                        otherButtonTitles:nil] show];
+                                  }
+                              }];
+    } else {
+        // permission exists
+        // We can request the user information
+        [self makeRequestToPost:moment];
+    }
+}
+
+#pragma mark Twitter Update
+
++ (void)shareCapturedMomentOnTwitter:(NSString *)status {
+    
+    if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
+        
+        ACAccountStore *twitterAccountStore = [[ACAccountStore alloc] init];
+        ACAccountType *TWaccountType= [twitterAccountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+        
+        [twitterAccountStore requestAccessToAccountsWithType:TWaccountType
+                                                     options:nil
+                                                  completion:^(BOOL succeeded, NSError *error) {
+                                                      if (!error) {
+                                                          
+                                                          NSArray *accounts = [twitterAccountStore accountsWithAccountType:TWaccountType];
+                                                          //NSLog(@"accounts:%@",accounts);
+                                                          
+                                                          NSDictionary *dataDict = @{ @"status" : status };
+                                                          NSURL *requestURL = [NSURL URLWithString:@"https://api.twitter.com/1.1/statuses/update.json"];
+                                                          SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter
+                                                                                                  requestMethod:SLRequestMethodPOST
+                                                                                                            URL:requestURL
+                                                                                                     parameters:dataDict];
+                                                          
+                                                          request.account = [accounts lastObject];
+                                                          [request performRequestWithHandler:^(NSData *data, NSHTTPURLResponse *response, NSError *error) {
+                                                              
+                                                              if(!error){
+                                                                  NSLog(@"Not an error...");
+                                                                  
+                                                                  NSError *listError = nil;
+                                                                  NSDictionary *list =[NSJSONSerialization JSONObjectWithData:data
+                                                                                                                      options:kNilOptions
+                                                                                                                        error:&listError];
+                                                                  
+                                                                  NSLog(@"list:%@",list);
+                                                                  
+                                                                  if(![list objectForKey:@"errors"]){
+                                                                      if([list objectForKey:@"error"] != nil){
+                                                                          //Delegate For Fail
+                                                                          NSLog(@"error:%@",[list objectForKey:@"error"]);
+                                                                          return;
+                                                                      }
+                                                                  }
+                                                                  
+                                                              } else {
+                                                                  NSLog(@"error:%@",error);
+                                                                  return;
+                                                              }
+                                                          }];
+                                                          
+                                                      } else {
+                                                          NSLog(@"error:%@",error);
+                                                          return;
+                                                      }
+                                                  }];
+
+    } else {
+        // Twitter account is not linked
+        [[[UIAlertView alloc] initWithTitle:@"Twitter Not Linked"
+                                    message:@"Please visit the shared settings to link your Twitter account."
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil] show];
+    }
+}
 
 #pragma mark Display Name
 
@@ -696,6 +888,23 @@
 + (NSArray *)extractHashtagsFromText:(NSString *)text {
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)" options:0 error:&error];
+    
+    NSArray *matches = [regex matchesInString:text options:0 range:NSMakeRange(0,text.length)];
+    
+    NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
+    
+    for (NSTextCheckingResult *match in matches) {
+        NSRange wordRange = [match rangeAtIndex:1];
+        NSString *word = [text substringWithRange:wordRange];
+        
+        [matchedResults addObject:word];
+    }
+    return matchedResults;
+}
+
++ (NSArray *)extractMentionsFromText:(NSString *)text {
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@(\\w+)" options:0 error:&error];
     
     NSArray *matches = [regex matchesInString:text options:0 range:NSMakeRange(0,text.length)];
     
