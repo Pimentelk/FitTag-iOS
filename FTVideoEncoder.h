@@ -22,9 +22,9 @@
 
 @property NSString *path;
 
-+ (FTVideoEncoder *)encoderForPath:(NSString *)path Height:(int)cy width:(int)cx channels:(int)ch samples:(Float64)rate;
++ (FTVideoEncoder *)encoderForPath:(NSString *)path Height:(long)cy width:(long)cx channels:(int)ch samples:(Float64)rate;
 
-- (void)initPath:(NSString*)path Height:(int)cy width:(int)cx channels:(int)ch samples:(Float64)rate;
+- (void)initPath:(NSString*)path Height:(long int)cy width:(long int)cx channels:(int)ch samples:(Float64)rate;
 - (void)finishWithCompletionHandler:(void (^)(void))handler;
 - (BOOL)encodeFrame:(CMSampleBufferRef)sampleBuffer isVideo:(BOOL)bVideo;
 

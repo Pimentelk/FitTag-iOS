@@ -12,7 +12,7 @@
 
 @synthesize path = _path;
 
-+ (FTVideoEncoder *) encoderForPath:(NSString*) path Height:(int) cy width:(int) cx channels: (int) ch samples:(Float64) rate {
++ (FTVideoEncoder *)encoderForPath:(NSString*)path Height:(long)cy width:(long)cx channels:(int)ch samples:(Float64)rate {
     FTVideoEncoder *enc = [FTVideoEncoder alloc];
     [enc initPath:path Height:cy width:cx channels:ch samples:rate];
     return enc;
@@ -20,13 +20,13 @@
 
 
 - (void) initPath:(NSString*)path
-           Height:(int)cy
-            width:(int)cx
+           Height:(long)cy
+            width:(long)cx
          channels:(int)ch
           samples:(Float64)rate {
     
-    NSLog(@"cy: %d",cy);
-    NSLog(@"cx: %d",cx);
+    //NSLog(@"cy: %ld",cy);
+    //NSLog(@"cx: %ld",cx);
     
     self.path = path;
     
@@ -37,8 +37,8 @@
     
     NSDictionary *settings = [NSDictionary dictionaryWithObjectsAndKeys:
                               AVVideoCodecH264, AVVideoCodecKey,
-                              [NSNumber numberWithInt: cx], AVVideoWidthKey,
-                              [NSNumber numberWithInt: cy], AVVideoHeightKey,
+                              [NSNumber numberWithLong: cx], AVVideoWidthKey,
+                              [NSNumber numberWithLong: cy], AVVideoHeightKey,
                               nil];
     /*
     NSDictionary *videoCleanApertureSettings = [NSDictionary dictionaryWithObjectsAndKeys:
