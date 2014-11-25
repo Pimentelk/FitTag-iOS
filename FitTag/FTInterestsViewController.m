@@ -9,14 +9,13 @@
 #import "FTInterestsViewController.h"
 #import "FTInterestCell.h"
 #import "FTInspirationViewController.h"
-#import "CollectionHeaderView.h"
-#import "InterestFlowLayout.h"
+#import "FTCollectionHeaderView.h"
+#import "FTFlowLayout.h"
 
 #define BACKGROUND_IMAGE_INTERESTS @"login_background_image_03"
 #define DATACELL @"DataCell"
 #define HEADERVIEW @"HeaderView"
 #define FOOTERVIEW @"FooterView"
-#define SIGNUP_BUTTON @"signup_button"
 
 @interface FTInterestsViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout> {
     NSMutableArray *selectedInterests;
@@ -25,14 +24,23 @@
 
 @property (nonatomic, strong) NSArray *interests;
 @property (nonatomic, strong) PFUser *user;
+@property (nonatomic, strong) UILabel *continueMessage;
+@property (nonatomic, strong) UIButton *continueButton;
 @end
 
 @implementation FTInterestsViewController
 @synthesize user;
 @synthesize delegate;
+@synthesize continueMessage;
+@synthesize continueButton;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    if (![PFUser currentUser]) {
+        [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
+        return;
+    }
     
     // set the current user
     user = [PFUser currentUser];
@@ -65,27 +73,13 @@
     
     // Data view
     [self.collectionView registerClass:[FTInterestCell class] forCellWithReuseIdentifier:DATACELL];
-    [self.collectionView registerClass:[CollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:HEADERVIEW];
-    [self.collectionView setDelegate: self];
-    [self.collectionView setDataSource: self];
+    [self.collectionView registerClass:[FTCollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:HEADERVIEW];
+    [self.collectionView setDelegate:self];
+    [self.collectionView setDataSource:self];
     
     // Collection view
-    [self.collectionView setFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, self.view.frame.size.height)];
+    [self.collectionView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     [self.collectionView setBackgroundColor:[[UIColor whiteColor] colorWithAlphaComponent:0.8]];
-    
-    // Label
-    UILabel *nextMessage = [[UILabel alloc] initWithFrame:CGRectMake(10.0f, 8.0f, 280.0f, 30.0f)];
-    nextMessage.numberOfLines = 0;
-    nextMessage.text = @"SELECT AT LEAST 3 INTERESTS";
-    nextMessage.backgroundColor = [UIColor clearColor];
-    
-    // Next button
-    UIButton *submitInterests = [[UIButton alloc] initWithFrame:CGRectMake((self.navigationController.toolbar.frame.size.width - 38.0f), 4.0f, 34.0f, 37.0f)];
-    [submitInterests setBackgroundImage:[UIImage imageNamed:SIGNUP_BUTTON] forState:UIControlStateNormal];
-    [submitInterests addTarget:self action:@selector(didTapSubmitInterestsButtonAction:) forControlEvents:UIControlEventTouchDown];
-    
-    [self.navigationController.toolbar addSubview:nextMessage];
-    [self.navigationController.toolbar addSubview:submitInterests];
     
     [user fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         if (!error) {
@@ -129,6 +123,21 @@
     // Toolbar
     [self.navigationController setToolbarHidden:NO animated:NO];
     [self.navigationController.toolbar setTintColor:[UIColor grayColor]];
+    
+    // Label
+    continueMessage = [[UILabel alloc] initWithFrame:CGRectMake(10, 8, 280, 30)];
+    continueMessage.numberOfLines = 0;
+    continueMessage.text = @"SELECT AT LEAST 3 INTERESTS";
+    continueMessage.font = BENDERSOLID(22);
+    continueMessage.backgroundColor = [UIColor clearColor];
+    
+    // Continue Button
+    continueButton = [[UIButton alloc] initWithFrame:CGRectMake((self.navigationController.toolbar.frame.size.width - 38.0f), 4, 34, 37)];
+    [continueButton setBackgroundImage:[UIImage imageNamed:IMAGE_SIGNUP_BUTTON] forState:UIControlStateNormal];
+    [continueButton addTarget:self action:@selector(didTapContinueButtonAction:) forControlEvents:UIControlEventTouchDown];
+    
+    [self.navigationController.toolbar addSubview:continueMessage];
+    [self.navigationController.toolbar addSubview:continueButton];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -140,13 +149,22 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];    
-    [self.navigationController setToolbarHidden:YES animated:NO];
+    [super viewWillDisappear:animated];
+    
+    [continueMessage removeFromSuperview];
+    [continueButton removeFromSuperview];
+    
+    continueButton = nil;
+    continueMessage = nil;
+    
+    if (!self.isFirstLaunch) {
+        [self.navigationController setToolbarHidden:YES animated:NO];        
+    }
 }
 
 #pragma mark - InterestViewController
 
-- (void)didTapSubmitInterestsButtonAction:(UIButton *)button {
+- (void)didTapContinueButtonAction:(UIButton *)button {
     
     if (selectedInterests.count < 3) {
         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Missing Information", nil)
@@ -184,74 +202,29 @@
         }
     }];
     
+    if (self.isFirstLaunch) {
+        // If this is part of the first time launch flow show the inspiration screen next.
+        
+        // Layout param
+        FTFlowLayout *inspirationLayoutFlow = [[FTFlowLayout alloc] init];
+        [inspirationLayoutFlow setItemSize:CGSizeMake(self.view.frame.size.width,100)];
+        [inspirationLayoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
+        [inspirationLayoutFlow setMinimumInteritemSpacing:0];
+        [inspirationLayoutFlow setMinimumLineSpacing:0];
+        [inspirationLayoutFlow setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+        [inspirationLayoutFlow setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,42)];
+        
+        FTInspirationViewController *inspirationViewController = [[FTInspirationViewController alloc] initWithCollectionViewLayout:inspirationLayoutFlow];
+        [self.navigationController pushViewController:inspirationViewController animated:YES];
+        
+        return;
+    }
+    
     if (self != [self.navigationController.viewControllers objectAtIndex:0]) {
         [self.navigationController popViewControllerAnimated:YES];
     } else {
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     }
-    
-    /*
-    // Layout param
-    InterestFlowLayout *layoutFlow = [[InterestFlowLayout alloc] init];
-    [layoutFlow setItemSize:CGSizeMake(320,42)];
-    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [layoutFlow setMinimumInteritemSpacing:0];
-    [layoutFlow setMinimumLineSpacing:0];
-    [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [layoutFlow setHeaderReferenceSize:CGSizeMake(320,32)];
-    
-    // Show the interests
-    FTInspirationViewController *rootViewController = [[FTInspirationViewController alloc] initWithCollectionViewLayout:layoutFlow];
-    rootViewController.interests = selectedInterests;
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
-    
-    // Fetch user matches
-    //NSDate *date = [NSDate dateWithTimeIntervalSinceNow:-172800];
-    NSMutableArray *userPhoto = [NSMutableArray array];
-    NSMutableArray *userId = [NSMutableArray array];
-    NSMutableArray *userInterests = [NSMutableArray array];
-    
-    PFQuery *innerQuery = [PFQuery queryWithClassName:kFTUserClassKey];
-    [innerQuery whereKey:kFTInterestKey containedIn:self.interests];
-    
-    PFQuery *query = [PFQuery queryWithClassName:@"Challenge"];
-    [query whereKey:@"userId" matchesKey:@"objectId" inQuery:innerQuery];
-    //[query whereKey:@"createdAt" greaterThan:date];
-    
-    [query includeKey:kFTInterestKey];
-    [query includeKey:@"userId"];
-    [query setLimit:10];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *users, NSError *error) {
-        if (!error) {
-            for (PFObject *user in users) {
-                PFObject *obj = user[@"userId"];
-                PFFile *imageFile = obj[@"userPhoto"];
-                
-                if(![userId containsObject:obj.objectId]){
-                    [userPhoto addObject: imageFile];
-                    [userId addObject: obj.objectId];
-                    [userInterests addObject: obj[@"interests"]];
-                }
-            }
-            // NOTE: I am almost certain there is a better way of doing this but because I am new and learning as I go this was
-            // the solution I came up with.
-            // Ideally you would want both the UserPhoto and userInterests in the same dictionary to be searchable by the common Id
-            // You would then want to specify if you want the photo or the interest of the given userId. REVISIT IN THE FUTURE.
-            
-            rootViewController.usersToRecommendInterests = [NSDictionary dictionaryWithObjects:userInterests forKeys:userId];
-            rootViewController.usersToRecommend = [NSDictionary dictionaryWithObjects:userPhoto forKeys:userId];
-            rootViewController.userKeys = [rootViewController.usersToRecommend allKeys];
-            
-            // Present the Interests View Controller
-            [self presentViewController:navController animated:YES completion:NULL];
-            
-        } else {
-            // Log details of the failure
-            NSLog(@"Error: %@ %@", error, [error userInfo]);
-        }
-    }];
-     
-     */
 }
 
 #pragma mark - collection view data source
@@ -262,9 +235,27 @@
     
     UICollectionReusableView *reusableview = nil;
     if (kind == UICollectionElementKindSectionHeader) {
-        CollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+        FTCollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
                                                                               withReuseIdentifier:HEADERVIEW
                                                                                      forIndexPath:indexPath];
+        
+        UILabel *messageHeader = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, self.view.frame.size.width, 15)];
+        messageHeader.numberOfLines = 0;
+        messageHeader.text = @"WHAT INSPIRES YOU?";
+        messageHeader.font = BENDERSOLID(24);
+        messageHeader.backgroundColor = [UIColor clearColor];
+        messageHeader.textAlignment = NSTextAlignmentCenter;
+        
+        UILabel *messageText = [[UILabel alloc] initWithFrame:CGRectMake(0, 23, self.view.frame.size.width, 55)];
+        messageText.numberOfLines = 0;
+        messageText.text = @"What inspires you to reach your fitness goals? A new healthy recipe, a muscle building exercise? Tell us and we will find content you'll love!";
+        messageText.backgroundColor = [UIColor clearColor];
+        messageText.textAlignment = NSTextAlignmentCenter;
+        messageText.font = [UIFont systemFontOfSize:12];
+        
+        headerView.messageHeader = messageHeader;
+        headerView.messageText = messageText;
+        
         reusableview = headerView;
     }
     
@@ -289,6 +280,7 @@
     if ([cell isKindOfClass:[FTInterestCell class]]) {
         cell.backgroundColor = [UIColor clearColor];
         cell.interestLabel.text = self.interests[indexPath.row];
+        cell.interestLabel.font = BENDERSOLID(16);
         
         BOOL isFirstCell = NO;
         if(indexPath.row % 2 == 0){
@@ -296,7 +288,7 @@
         }
         
         if (isFirstCell){
-            UIView *divider = [[UIView alloc] initWithFrame:CGRectMake(cell.frame.size.width, 0.0f, 1, cell.frame.size.height)];
+            UIView *divider = [[UIView alloc] initWithFrame:CGRectMake(cell.frame.size.width, 0, 1, cell.frame.size.height)];
             divider.backgroundColor = [UIColor lightGrayColor];
             [cell addSubview:divider];
         }

@@ -11,7 +11,7 @@
 
 /*! FTGalleryCell Delegate */
 @property (nonatomic, weak) id <FTInterestsViewControllerDelegate> delegate;
-
+@property (nonatomic) BOOL isFirstLaunch;
 @end
 
 @protocol FTInterestsViewControllerDelegate <NSObject>
