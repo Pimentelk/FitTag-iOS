@@ -89,7 +89,16 @@
     //NSLog(@"%@::tableView:heightForRowAtIndexPath:",VIEWCONTROLLER_ACTIVITY);
     if (indexPath.row < self.objects.count) {
         PFObject *object = [self.objects objectAtIndex:indexPath.row];
-        NSString *activityString = [FTActivityFeedViewController stringForActivityType:(NSString*)[object objectForKey:kFTActivityTypeKey]];
+        
+        NSString *activityString = nil;
+        NSString *currentUserDisplayName = [[PFUser currentUser] objectForKey:kFTUserDisplayNameKey];
+        if (currentUserDisplayName) {
+            if ([object objectForKey:kFTActivityMentionKey] && [[object objectForKey:kFTActivityMentionKey] containsObject:currentUserDisplayName]) {
+                activityString = [FTActivityFeedViewController stringForActivityType:kFTActivityTypeMention];
+            }
+        } else {
+            activityString = [FTActivityFeedViewController stringForActivityType:(NSString *)[object objectForKey:kFTActivityTypeKey]];
+        }
         
         PFUser *user = (PFUser*)[object objectForKey:kFTActivityFromUserKey];
         NSString *nameString = NSLocalizedString(@"Someone", nil);
@@ -119,7 +128,7 @@
             [flowLayout setMinimumInteritemSpacing:0];
             [flowLayout setMinimumLineSpacing:0];
             [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-            [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+            [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
             
             // Override the back idnicator
             UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
@@ -151,14 +160,41 @@
         return query;
     }
     
-    PFQuery *query = [PFQuery queryWithClassName:self.parseClassName];
-    [query whereKey:kFTActivityToUserKey equalTo:[PFUser currentUser]];
+    NSString *displayName = [[PFUser currentUser] objectForKey:kFTUserDisplayNameKey];
+    
+    if (!displayName) {
+        PFQuery *query = [PFQuery queryWithClassName:self.parseClassName];
+        [query whereKey:kFTActivityToUserKey equalTo:[PFUser currentUser]];
+        //[query whereKey:kFTActivityFromUserKey notEqualTo:[PFUser currentUser]];
+        [query whereKeyExists:kFTActivityFromUserKey];
+        [query includeKey:kFTActivityFromUserKey];
+        [query includeKey:kFTActivityPostKey];
+        [query orderByDescending:@"createdAt"];
+        [query setCachePolicy:kPFCachePolicyNetworkOnly];
+        
+        // If no objects are loaded in memory, we look to the cache first to fill the table
+        // and then subsequently do a query against the network.
+        //
+        // If there is no network connection, we will hit the cache first.
+        if (self.objects.count == 0 || ![[UIApplication sharedApplication].delegate performSelector:@selector(isParseReachable)]) {
+            [query setCachePolicy:kPFCachePolicyCacheThenNetwork];
+        }
+        return query;
+    }
+    
+    PFQuery *queryMentions = [PFQuery queryWithClassName:self.parseClassName];
+    [queryMentions whereKeyExists:kFTActivityMentionKey];
+    [queryMentions whereKey:kFTActivityMentionKey equalTo:displayName];
+    
+    PFQuery *queryActivity = [PFQuery queryWithClassName:self.parseClassName];
+    [queryActivity whereKey:kFTActivityToUserKey equalTo:[PFUser currentUser]];
     //[query whereKey:kFTActivityFromUserKey notEqualTo:[PFUser currentUser]];
-    [query whereKeyExists:kFTActivityFromUserKey];
+    [queryActivity whereKeyExists:kFTActivityFromUserKey];
+    
+    PFQuery *query = [PFQuery orQueryWithSubqueries:@[ queryMentions, queryActivity ]];
     [query includeKey:kFTActivityFromUserKey];
     [query includeKey:kFTActivityPostKey];
     [query orderByDescending:@"createdAt"];
-    
     [query setCachePolicy:kPFCachePolicyNetworkOnly];
     
     // If no objects are loaded in memory, we look to the cache first to fill the table
@@ -266,8 +302,8 @@
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
     
     // Override the back idnicator
     UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
@@ -295,6 +331,8 @@
         return NSLocalizedString(@"commented on your post", nil);
     } else if ([activityType isEqualToString:kFTActivityTypeJoined]) {
         return NSLocalizedString(@"joined #FitTag", nil);
+    } else if ([activityType isEqualToString:kFTActivityTypeMention]) {
+        return NSLocalizedString(@"mentioned you", nil);
     } else {
         return nil;
     }
@@ -304,8 +342,8 @@
 
 - (void)inviteFriendsButtonAction:(id)sender {
     NSLog(@"FTActivityFeedViewController::inviteFriendsButtonAction:");
-    FTFindFriendsViewController *detailViewController = [[FTFindFriendsViewController alloc] init];
-    [self.navigationController pushViewController:detailViewController animated:YES];
+    FTFindFriendsViewController *inviteFriendsViewController = [[FTFindFriendsViewController alloc] init];
+    [self.navigationController pushViewController:inviteFriendsViewController animated:YES];
 }
 
 - (void)applicationDidReceiveRemoteNotification:(NSNotification *)note {
