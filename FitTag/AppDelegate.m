@@ -18,6 +18,7 @@
 #import "FTMapViewController.h"
 #import "FTRewardsCollectionViewController.h"
 #import "FTNavigationController.h"
+#import "FTPostDetailsViewController.h"
 
 @interface AppDelegate() {
     NSMutableData *_data;
@@ -264,7 +265,7 @@
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
     [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(bounds.size.width,350)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(bounds.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
     
     self.userProfileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     [self.userProfileViewController setUser:[PFUser currentUser]];
@@ -427,7 +428,7 @@
         // If the push notification payload references a photo, we will attempt to push this view controller into view
         NSString *photoObjectId = [remoteNotificationPayload objectForKey:kFTPushPayloadPhotoObjectIdKey];
         if (photoObjectId && photoObjectId.length > 0) {
-            //[self shouldNavigateToPhoto:[PFObject objectWithoutDataWithClassName:kFTPostClassKey objectId:photoObjectId]];
+            [self shouldNavigateToPost:[PFObject objectWithoutDataWithClassName:kFTPostClassKey objectId:photoObjectId]];
             return;
         }
         
@@ -449,7 +450,7 @@
                     [flowLayout setMinimumInteritemSpacing:0];
                     [flowLayout setMinimumLineSpacing:0];
                     [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-                    [flowLayout setHeaderReferenceSize:CGSizeMake(boudns.size.width,335)];
+                    [flowLayout setHeaderReferenceSize:CGSizeMake(boudns.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
                     
                     FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
                     [profileViewController setUser:[PFUser currentUser]];
@@ -458,6 +459,20 @@
             }];
         }
     }
+}
+
+- (void)shouldNavigateToPost:(PFObject *)targetPost {
+    
+    // if we have a local copy of this post, this won't result in a network fetch
+    [targetPost fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+        if (!error) {
+            FTNavigationController *feedNavigationController = [[self.tabBarController viewControllers] objectAtIndex:TAB_FEED];
+            [self.tabBarController setSelectedViewController:feedNavigationController];
+            
+            FTPostDetailsViewController *postDetailViewController = [[FTPostDetailsViewController alloc] initWithPost:targetPost AndType:nil];
+            [feedNavigationController pushViewController:postDetailViewController animated:YES];
+        }
+    }];
 }
 
 - (void)autoFollowTimerFired:(NSTimer *)aTimer {
