@@ -8,8 +8,8 @@
 
 #import "FTInviteTableHeaderView.h"
 
-#define LOCATION_BUTTON_HEIGHT 40
-#define BUTTON_PADDING 20
+#define TAB_HEIGHT 40
+#define TAB_PADDING 20
 
 @interface FTInviteTableHeaderView() {
     UIColor *baseRedColor;
@@ -44,12 +44,13 @@
                                                                                              action:@selector(didTapLocationButtonAction:)];
         [locationTapGesture setNumberOfTapsRequired:1];
 
-        locationButton = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, locationButtonWidth, LOCATION_BUTTON_HEIGHT)];
+        locationButton = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, locationButtonWidth, TAB_HEIGHT)];
         [locationButton setText:@"Nearby"];
         [locationButton setTextAlignment:NSTextAlignmentCenter];
         [locationButton setTextColor:[UIColor blackColor]];
         [locationButton setBackgroundColor:[UIColor lightGrayColor]];
         [locationButton setUserInteractionEnabled:YES];
+        [locationButton setFont:BENDERSOLID(16)];
         [locationButton addGestureRecognizer:locationTapGesture];
         
         [self addSubview:locationButton];
@@ -58,12 +59,13 @@
                                                                                              action:@selector(didTapInterestButtonAction:)];
         [interestTapGesture setNumberOfTapsRequired:1];
         
-        interestButton = [[UILabel alloc] initWithFrame:CGRectMake(locationButton.frame.size.width, 0, locationButtonWidth, LOCATION_BUTTON_HEIGHT)];
+        interestButton = [[UILabel alloc] initWithFrame:CGRectMake(locationButton.frame.size.width, 0, locationButtonWidth, TAB_HEIGHT)];
         [interestButton setText:@"Interest"];
         [interestButton setTextAlignment:NSTextAlignmentCenter];
         [interestButton setTextColor:[UIColor blackColor]];
         [interestButton setBackgroundColor:[UIColor lightGrayColor]];
         [interestButton setUserInteractionEnabled:YES];
+        [interestButton setFont:BENDERSOLID(16)];
         [interestButton addGestureRecognizer:interestTapGesture];
         
         [self addSubview:interestButton];
