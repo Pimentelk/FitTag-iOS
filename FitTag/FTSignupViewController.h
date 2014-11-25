@@ -12,7 +12,7 @@
 @interface FTSignupViewController : PFSignUpViewController <UITextViewDelegate, UITextFieldDelegate, FTCamViewControllerDelegate>
 @property NSString *firstname;
 @property NSString *lastname;
-@property NSString *about;
+//@property NSString *about;
 @property UIImage *profilePhoto;
 @property BOOL isPasswordConfirmed;
 @end

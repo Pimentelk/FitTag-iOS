@@ -32,7 +32,7 @@
 @property (nonatomic,strong) UILabel *defaultLabel;
 @property (nonatomic,strong) UITextField *firstnameTextField;
 @property (nonatomic,strong) UITextField *lastnameTextField;
-@property (nonatomic,strong) UITextView *aboutTextView;
+//@property (nonatomic,strong) UITextView *aboutTextView;
 @property (nonatomic,strong) UIImageView *signupWithText;
 @property (nonatomic,strong) UIButton *profileImageButton;
 @property (nonatomic,strong) UIButton *facebookButton;
@@ -48,7 +48,7 @@
 @synthesize defaultLabel;
 @synthesize firstnameTextField;
 @synthesize lastnameTextField;
-@synthesize aboutTextView;
+//@synthesize aboutTextView;
 @synthesize signupWithText;
 @synthesize profileImageButton;
 @synthesize confirmPasswordTextField;
@@ -118,6 +118,7 @@
     firstnameTextField = [[UITextField alloc] init];
     [self.firstnameTextField setPlaceholder:PLACEHOLDER_FIRSTNAME];
     [self.firstnameTextField setDelegate:self];
+    [self.firstnameTextField setFont:BENDERSOLID(16)];
     [self.signUpView addSubview:self.firstnameTextField];
     [self.firstnameTextField setTextAlignment:NSTextAlignmentLeft];
     [self.firstnameTextField addTarget: self action:@selector(didChangeFirstNameTextFieldAction:) forControlEvents:UIControlEventEditingChanged];
@@ -129,6 +130,7 @@
     lastnameTextField = [[UITextField alloc] init];
     [self.lastnameTextField setPlaceholder:PLACEHOLDER_LASTNAME];
     [self.lastnameTextField setDelegate:self];
+    [self.lastnameTextField setFont:BENDERSOLID(16)];
     [self.signUpView addSubview:self.lastnameTextField];
     [self.lastnameTextField setTextAlignment:NSTextAlignmentLeft];
     [lastnameTextField addTarget:self action:@selector(didChangeLastNameTextFieldAction:) forControlEvents:UIControlEventEditingChanged];
@@ -138,6 +140,7 @@
     [self.confirmPasswordTextField setPlaceholder:PLACEHOLDER_CONFIRM];
     [self.confirmPasswordTextField setDelegate:self];
     [self.signUpView addSubview:self.confirmPasswordTextField];
+    [self.confirmPasswordTextField setFont:BENDERSOLID(16)];
     [self.confirmPasswordTextField setTextAlignment:NSTextAlignmentLeft];
     [self.confirmPasswordTextField setSecureTextEntry:YES];
     [self.confirmPasswordTextField addTarget:self action:@selector(didConfirmTextFieldFinish:) forControlEvents:UIControlEventEditingChanged];
@@ -146,6 +149,7 @@
     [self setIsPasswordConfirmed:NO];
     
     // Implement about textview
+    /*
     aboutTextView = [[UITextView alloc] init];
     [self.aboutTextView setDelegate:self];
     [self.aboutTextView setBackgroundColor:nil];
@@ -155,7 +159,7 @@
     [self.defaultLabel setText:DEFAULT_BIO_TEXT_B];
     [self.aboutTextView addSubview:self.defaultLabel];
     [self.signUpView addSubview:self.aboutTextView];
-    
+    */
     // Align username, email, password text fields left
     [self.signUpView.usernameField setTextAlignment:NSTextAlignmentLeft];
     [self.signUpView.usernameField setTextColor:attrColor];
@@ -197,7 +201,7 @@
     [self.signUpView.usernameField setFrame:CGRectMake(10.0f, 253.0f, 280.0f, 35.0f)];
     [self.signUpView.passwordField setFrame:CGRectMake(10.0f, 293.0f, 280.0f, 35.0f)];
     [self.confirmPasswordTextField setFrame:CGRectMake(10.0f, 333.0f, 280.0f, 35.0f)];
-    [self.aboutTextView setFrame:CGRectMake(10.0f, 373.0f, 300.0f, 100.0f)];
+    //[self.aboutTextView setFrame:CGRectMake(10.0f, 373.0f, 300.0f, 100.0f)];
     [self.termsText setFrame:CGRectMake([self getCenterX:240.0f], (self.view.frame.size.height - (87.0f)), 240.0f, 7.0f)];
     [self.signUpView.signUpButton setFrame:CGRectMake([self getCenterX:57.0f], (self.termsText.frame.size.height + self.termsText.frame.origin.y)+10, 57.0f, 65.0f)];
 }
@@ -224,7 +228,7 @@
 
 - (void)textViewDidChange:(UITextView *)textView{
     self.defaultLabel.hidden = ([textView.text length] > 0);
-    self.about = aboutTextView.text;
+    //self.about = aboutTextView.text;
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView{
@@ -315,7 +319,7 @@
     [self.firstnameTextField resignFirstResponder];
     [self.lastnameTextField resignFirstResponder];
     [self.confirmPasswordTextField resignFirstResponder];
-    [self.aboutTextView resignFirstResponder];
+    //[self.aboutTextView resignFirstResponder];
     [self.signUpView.passwordField resignFirstResponder];
     [self.signUpView.emailField resignFirstResponder];
     [self.signUpView.usernameField resignFirstResponder];
@@ -335,7 +339,7 @@
     [self.firstnameTextField resignFirstResponder];
     [self.lastnameTextField resignFirstResponder];
     [self.confirmPasswordTextField resignFirstResponder];
-    [self.aboutTextView resignFirstResponder];
+    //[self.aboutTextView resignFirstResponder];
     [self.signUpView.passwordField resignFirstResponder];
     [self.signUpView.emailField resignFirstResponder];
     [self.signUpView.usernameField resignFirstResponder];
