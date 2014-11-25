@@ -9,10 +9,11 @@
 #import "FTFeedViewController.h"
 #import "MBProgressHUD.h"
 #import "ImageCustomNavigationBar.h"
-#import "FTFindFriendsViewController.h"
+#import "FTFollowFriendsViewController.h"
 #import "FTInterestsViewController.h"
 #import "FTInterestViewFlowLayout.h"
 #import "AppDelegate.h"
+#import "FTFlowLayout.h"
 
 #define IMAGE_WIDTH 253.0f
 #define IMAGE_HEIGHT 173.0f
@@ -45,7 +46,7 @@
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     button.frame = CGRectMake( IMAGE_X, IMAGE_Y, IMAGE_WIDTH, IMAGE_HEIGHT);
     [button setBackgroundImage:[UIImage imageNamed:IMAGE_TIMELINE_BLANK] forState:UIControlStateNormal];
-    [button addTarget:self action:@selector(inviteFriendsButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [button addTarget:self action:@selector(followFriendsButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.blankTimelineView addSubview:button];
     
     [self shouldRunTestCode:NO];
@@ -91,21 +92,19 @@
 - (void)shouldRunTestCode:(BOOL)run {
     if (run) {
         NSLog(@"***");
-        for (NSString* family in [UIFont familyNames])
-        {
+        for (NSString* family in [UIFont familyNames]) {
             NSLog(@"%@", family);
             
-            for (NSString* name in [UIFont fontNamesForFamilyName: family])
-            {
+            for (NSString* name in [UIFont fontNamesForFamilyName: family]) {
                 NSLog(@"  %@", name);
             }
         }
     }
 }
 
-- (void)inviteFriendsButtonAction:(id)sender {
-    FTFindFriendsViewController *findFriendsViewController = [[FTFindFriendsViewController alloc] init];
-    [self.navigationController pushViewController:findFriendsViewController animated:YES];
+- (void)followFriendsButtonAction:(id)sender {
+    FTFollowFriendsViewController *followFriendsViewController = [[FTFollowFriendsViewController alloc] init];
+    [self.navigationController pushViewController:followFriendsViewController animated:YES];
 }
 
 - (BOOL)isFirstTimeUser:(PFUser *)user {
@@ -125,22 +124,31 @@
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushMentionsKey];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
-        FTInterestViewFlowLayout *layoutFlow = [[FTInterestViewFlowLayout alloc] init];
-        [layoutFlow setItemSize:CGSizeMake(159.5,42)];
-        [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-        [layoutFlow setMinimumInteritemSpacing:0];
-        [layoutFlow setMinimumLineSpacing:0];
-        [layoutFlow setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-        [layoutFlow setHeaderReferenceSize:CGSizeMake(320,80)];
-        
+        FTInterestViewFlowLayout *interestLayoutFlow = [[FTInterestViewFlowLayout alloc] init];
+        [interestLayoutFlow setItemSize:CGSizeMake(159.5,42)];
+        [interestLayoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
+        [interestLayoutFlow setMinimumInteritemSpacing:0];
+        [interestLayoutFlow setMinimumLineSpacing:0];
+        [interestLayoutFlow setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+        [interestLayoutFlow setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,80)];
+    
         // Show the interests
-        FTInterestsViewController *interestsViewController = [[FTInterestsViewController alloc] initWithCollectionViewLayout:layoutFlow];
+        FTInterestsViewController *interestsViewController = [[FTInterestsViewController alloc] initWithCollectionViewLayout:interestLayoutFlow];
+        interestsViewController.isFirstLaunch = YES;
+    
         UINavigationController *navController = [[UINavigationController alloc] init];
         [navController setViewControllers:@[ interestsViewController ] animated:NO];
-        [self presentViewController:navController animated:YES completion:^(){
+    
+        [self presentViewController:navController animated:NO completion:^(){
             [user setValue:[NSDate date] forKey:kFTUserLastLoginKey];
             if (user) {
-                //[user saveEventually];
+                @try {
+                    [user saveEventually];
+                } @catch (NSException *exception) {
+                    NSLog(@"Exception:%@",exception);
+                } @finally {
+                    
+                }
             }
             [self.tabBarController setSelectedIndex:2];
         }];
