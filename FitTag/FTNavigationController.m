@@ -8,7 +8,7 @@
 
 #import "FTNavigationController.h"
 #import "FTCamViewController.h"
-#import "FTInviteFriendsViewController.h"
+#import "FTFollowFriendsViewController.h"
 
 @implementation FTNavigationController
 
@@ -63,11 +63,11 @@
     
     [self.navigationItem setLeftBarButtonItem:backIndicator];
     
-    FTInviteFriendsViewController *inviteFriendsViewController = [[FTInviteFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
-    inviteFriendsViewController.followUserQueryType = FTFollowUserQueryTypeDefault;
-    [inviteFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
+    FTFollowFriendsViewController *followFriendsViewController = [[FTFollowFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+    followFriendsViewController.followUserQueryType = FTFollowUserQueryTypeDefault;
+    [followFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
     UINavigationController *navController = [[UINavigationController alloc] init];
-    [navController setViewControllers:@[ inviteFriendsViewController ] animated:NO];
+    [navController setViewControllers:@[ followFriendsViewController ] animated:NO];
     
     [self presentViewController:navController animated:YES completion:nil];
 }

@@ -379,7 +379,6 @@
             NSLog(@"postMultipleWithPhotoFiles;");
 
     NSMutableArray *posts = [[NSMutableArray alloc] init];
-    
     for (int i = 0; i < photos.count; i++) {
         // create a post object
         //NSLog(@"create a post object");
