@@ -79,6 +79,7 @@
 #define VIEWCONTROLLER_FOLLOW_CELL @"FTFollowCell"
 #define VIEWCONTROLLER_SEARCH @"FTSearchViewController"
 #define VIEWCONTROLLER_FEED @"FTFeedViewController"
+
 // ACTION BUTTONS
 #define ACTION_HEART @"heart_white"
 #define ACTION_HEART_SELECTED @"heart_selected"
@@ -87,6 +88,13 @@
 #define ACTION_MORE @"more_button"
 
 #define COUNTER_ZERO 0
+
+// REWARDS HEADER MENU
+#define REWARDS_MENU_HEIGHT 40
+
+// TAB BAR INSET
+#define TAB_BAR_INSET_TOP 5
+#define TAB_BAR_INSET_BOTTOM -5
 
 // NOTIFICATION TEXT
 #define NOTIFICATION_TEXT_LIKED @"likes my post"
@@ -132,7 +140,11 @@
 // LOCATION
 #define LOCATION_USERS_WITHIN_MILES 10
 
+// PROFILE
+#define PROFILE_HEADER_VIEW_HEIGHT 350
+
 // IMAGES
+#define IMAGE_PLAY_BUTTON @"play_button"
 #define IMAGE_FOLLOW_SELECTED @"follow_selected"
 #define IMAGE_FOLLOW_UNSELECTED @"follow_unselected"
 #define IMAGE_PROFILE_DEFAULT @"posts_active"
@@ -205,6 +217,7 @@
 #define HOTWORD_LINK @"Link"
 
 // Mail
+#define MAIL_BUSINESS_SUBJECT @"FitTag Fan mail"
 #define MAIL_CANCELLED @"Mail cancelled: you cancelled the operation and no email message was queued."
 #define MAIL_SAVED @"Mail saved: you saved the email message in the drafts folder."
 #define MAIL_SEND @"Mail send: the email message is queued in the outbox. It is ready to send."
@@ -214,12 +227,13 @@
 #define MAIL_TECH_EMAIL @"kevin@fittag.com"
 #define MAIL_FEEDBACK_SUBJECT @"FitTag IOS Feedback"
 #define MAIL_NOT_SUPPORTED @"Your device doesn't support the composer sheet"
+#define MAIL_ERROR @"We are terribly sorry, but at this time we are not able to receive any email messages."
 
 #define HUD_MESSAGE_BIOGRAPHY_LIMIT @"150 character limit"
 #define HUD_MESSAGE_BIOGRAPHY_UPDATED @"Biography updated.."
 #define HUD_MESSAGE_INTERESTS_UPDATED @"Interests updated.."
-#define HUD_EMPTY_BIOGRAPHY_TITLE @"Empty Biography"
-#define HUD_EMPTY_BIOGRAPHY_MESSAGE @"You can not submit an empty biography."
+#define HUD_MESSAGE_BIOGRAPHY_EMPTY_TITLE @"Empty Biography"
+#define HUD_MESSAGE_BIOGRAPHY_EMPTY @"Your bio is empty o_O"
 
 // Switch messages
 #define SWITCH_REWARD_ON @"rewards enabled"
@@ -231,9 +245,15 @@
 #define SWITCH_TWITTER_ON @"twitter sharing enabled"
 #define SWITCH_TWITTER_OFF @"twitter sharing disabled"
 
-// Socail
+// SOCIAL
 #define SOCIAL_TWITTER @"Twitter"
 #define SOCIAL_FACEBOOK @"Facebook"
+
+// SOCIAL BUTTON IMAGES
+#define IMAGE_SOCIAL_FACEBOOK @"facebook_button"
+#define IMAGE_SOCIAL_FACEBOOKOFF @"facebook_button_off"
+#define IMAGE_SOCIAL_TWITTER @"twitter_button"
+#define IMAGE_SOCIAL_TWITTEROFF @"twitter_button_off"
 
 // Twitter Object Keys
 #define TWITTER_PROFILE_HTTPS @"profile_image_url_https"
