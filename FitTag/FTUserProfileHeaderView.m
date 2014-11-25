@@ -37,8 +37,8 @@
 @property (nonatomic, strong) UITextView *profileBiography;
 
 @property (nonatomic, strong) UIButton *gridViewButton;
-@property (nonatomic, strong) UIButton *businessButton;
-@property (nonatomic, strong) UIButton *taggedInButton;
+//@property (nonatomic, strong) UIButton *businessButton;
+//@property (nonatomic, strong) UIButton *taggedInButton;
 @end
 
 @implementation FTUserProfileHeaderView
@@ -51,8 +51,8 @@
 @synthesize profilePictureBackgroundView;
 @synthesize profileBiography;
 @synthesize gridViewButton;
-@synthesize businessButton;
-@synthesize taggedInButton;
+//@synthesize businessButton;
+//@synthesize taggedInButton;
 @synthesize coverPhoto;
 @synthesize userDisplay;
 @synthesize delegate;
@@ -151,8 +151,7 @@
         // User bio text view
         profileBiography = [[UITextView alloc] initWithFrame:CGRectMake(0, userSettingsLabel.frame.origin.y +
                                                                         userSettingsLabel.frame.size.height,
-                                                                        self.frame.size.width, 55)];
-        
+                                                                        self.frame.size.width, 75)];
         [profileBiography setBackgroundColor:[UIColor whiteColor]];
         [profileBiography setTextColor:[UIColor blackColor]];
         [profileBiography setFont:[UIFont boldSystemFontOfSize:14.0f]];
@@ -175,6 +174,7 @@
         [gridViewButton setSelected:YES];
         [profileFilter addSubview:gridViewButton];
         
+        /*
         businessButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [businessButton setTranslatesAutoresizingMaskIntoConstraints:NO];
         [businessButton setBackgroundImage:[UIImage imageNamed:POSTS_IMAGE] forState:UIControlStateNormal];
@@ -184,7 +184,9 @@
         [businessButton addTarget:self action:@selector(didTapBusinessButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [businessButton setSelected:NO];
         [profileFilter addSubview:businessButton];
+        */
         
+        /*
         taggedInButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [taggedInButton setTranslatesAutoresizingMaskIntoConstraints:NO];
         [taggedInButton setBackgroundImage:[UIImage imageNamed:TAGGED_IMAGE] forState:UIControlStateNormal];
@@ -194,6 +196,7 @@
         [taggedInButton addTarget:self action:@selector(didTapTaggedButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [taggedInButton setSelected:NO];
         [profileFilter addSubview:taggedInButton];
+        */
         
         /* // User display label
         userDisplay = [[UILabel alloc] initWithFrame:CGRectMake(0,0,self.frame.size.width,30)];
@@ -213,7 +216,6 @@
 }
 
 #pragma mark - ()
-
 
 - (void)didTapFollowerAction:(id)sender {
     //NSLog(@"- (void)didTapFollowerAction:(id)sender;");
@@ -240,6 +242,7 @@
     }
 }
 
+/*
 - (void)didTapBusinessButtonAction:(UIButton *)button {
     //NSLog(@"%@::didTapBusinessButtonAction:",VIEWCONTROLLER_USER_HEADER);
     if (![businessButton isSelected]) {
@@ -250,7 +253,9 @@
         }
     }
 }
+*/
 
+/*
 - (void)didTapTaggedButtonAction:(UIButton *)button {
     //NSLog(@"%@::didTapTaggedButtonAction:",VIEWCONTROLLER_USER_HEADER);
     if (![taggedInButton isSelected]) {
@@ -261,6 +266,7 @@
         }
     }
 }
+*/
 
 - (void)didTapSettingsButtonAction:(id)sender {
     //NSLog(@"%@::didTapTaggedButtonAction:",VIEWCONTROLLER_USER_HEADER);
@@ -271,8 +277,8 @@
 
 - (void)resetSelectedProfileFilterButtons {
     [gridViewButton setSelected:NO];
-    [taggedInButton setSelected:NO];
-    [businessButton setSelected:NO];
+    //[taggedInButton setSelected:NO];
+    //[businessButton setSelected:NO];
 }
 
 - (void)fetchUserProfileData:(PFUser *)aUser {
@@ -372,6 +378,7 @@
         [userSettingsLabel setUserInteractionEnabled:YES];
     }
     
+    // Biography
     [profileBiography setText:[self.user objectForKey:kFTUserBioKey]];
 }
 
