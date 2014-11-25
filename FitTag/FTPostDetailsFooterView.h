@@ -9,6 +9,8 @@
 @protocol FTPostDetailsFooterViewDelegate;
 
 @interface FTPostDetailsFooterView : UIView
+@property (nonatomic, strong) UIButton *facebookButton;
+@property (nonatomic, strong) UIButton *twitterButton;
 @property (nonatomic, strong) UITextField *commentField;
 @property (nonatomic, strong) UITextField *hashtagTextField;
 @property (nonatomic, strong) UITextField *locationTextField;
@@ -20,7 +22,7 @@
 
 @protocol FTPostDetailsFooterViewDelegate <NSObject>
 @optional
--(void)facebookShareButton:(id)sender;
--(void)twitterShareButton:(id)sender;
--(void)sendPost:(id)sender;
+- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView didTapFacebookShareButton:(UIButton *)button;
+- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView didTapSubmitPostButton:(UIButton *)button;
+- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView didTapTwitterShareButton:(UIButton *)button;
 @end

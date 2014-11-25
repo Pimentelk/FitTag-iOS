@@ -21,8 +21,10 @@
 @synthesize hashtagTextField;
 @synthesize locationTextField;
 @synthesize submitButton;
+@synthesize facebookButton;
+@synthesize twitterButton;
 
--(id)initWithFrame:(CGRect)frame{
+- (id)initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
@@ -71,7 +73,7 @@
         locationTextField.textColor = [UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f];
         locationTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         locationTextField.backgroundColor = [UIColor whiteColor];
-        locationTextField.placeholder = @"";
+        locationTextField.placeholder = EMPTY_STRING;
         locationTextField.userInteractionEnabled = NO;
         [locationTextField setValue:[UIColor colorWithRed:154.0f/255.0f
                                                     green:146.0f/255.0f
@@ -80,22 +82,27 @@
         
         [mainView addSubview:locationTextField];
         
-        UIButton *facebookButton = [UIButton buttonWithType: UIButtonTypeCustom];
+        facebookButton = [UIButton buttonWithType: UIButtonTypeCustom];
         facebookButton.frame = CGRectMake(20.0f, 111.0f, 71.0f, 80.0f);
-        [facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook_button"] forState:UIControlStateNormal];
-        [facebookButton addTarget:self action:@selector(facebookShareButton:) forControlEvents:UIControlEventTouchUpInside];
+        [facebookButton setBackgroundImage:[UIImage imageNamed:IMAGE_SOCIAL_FACEBOOKOFF] forState:UIControlStateNormal];
+        [facebookButton setBackgroundImage:[UIImage imageNamed:IMAGE_SOCIAL_FACEBOOK] forState:UIControlStateSelected];
+        [facebookButton addTarget:self action:@selector(didTapFacebookShareButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        
         [mainView addSubview:facebookButton];
          
-        UIButton *twitterButton = [UIButton buttonWithType: UIButtonTypeCustom];
+        twitterButton = [UIButton buttonWithType: UIButtonTypeCustom];
         twitterButton.frame = CGRectMake(110.0f, 111.0f, 71.0f, 80.0f);
-        [twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter_button"] forState:UIControlStateNormal];
-        [twitterButton addTarget:self action:@selector(twitterShareButton:) forControlEvents:UIControlEventTouchUpInside];
+        [twitterButton setBackgroundImage:[UIImage imageNamed:IMAGE_SOCIAL_TWITTEROFF] forState:UIControlStateNormal];
+        [twitterButton setBackgroundImage:[UIImage imageNamed:IMAGE_SOCIAL_TWITTER] forState:UIControlStateSelected];
+        [twitterButton addTarget:self action:@selector(didTapTwitterShareButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        
         [mainView addSubview:twitterButton];
         
         submitButton = [UIButton buttonWithType: UIButtonTypeCustom];
         submitButton.frame = CGRectMake(230.0f, 111.0f, 71.0f, 80.0f);
         [submitButton setBackgroundImage:[UIImage imageNamed:@"signup_button"] forState:UIControlStateNormal];
-        [submitButton addTarget:self action:@selector(sendPost:) forControlEvents:UIControlEventTouchUpInside];
+        [submitButton addTarget:self action:@selector(didTapSubmitPostButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        
         [mainView addSubview:submitButton];
     }
     
@@ -105,26 +112,59 @@
 #pragma mark - FTDetailsFooterView
 
 + (CGRect)rectForView {
-    return CGRectMake( 0.0f, 0.0f, [UIScreen mainScreen].bounds.size.width, 200);
+    return CGRectMake( 0, 0, [UIScreen mainScreen].bounds.size.width, 200);
 }
 
 #pragma mark - ()
 
--(void)facebookShareButton:(id)sender {
-    if ([self.delegate respondsToSelector:@selector(facebookShareButton:)]){
-        [self.delegate facebookShareButton:sender];
+-(void)didTapFacebookShareButtonAction:(UIButton *)button {
+    if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
+        [button setSelected:![button isSelected]];
+        
+        if ([button isSelected]) {
+            if ([self.delegate respondsToSelector:@selector(postDetailsFooterView:didTapFacebookShareButton:)]){
+                [self.delegate postDetailsFooterView:self didTapFacebookShareButton:button];
+            }
+        }
+    } else {
+        NSLog(@"is not linked with user...");
+        [button setSelected:NO];
+        [[[UIAlertView alloc] initWithTitle:@"Facebook Not Linked"
+                                    message:@"Please visit the shared settings to link your FaceBook account."
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil] show];
     }
 }
 
--(void)twitterShareButton:(id)sender {
-    if ([self.delegate respondsToSelector:@selector(twitterShareButton:)]){
-        [self.delegate twitterShareButton:sender];
+-(void)didTapTwitterShareButtonAction:(UIButton *)button {
+    
+    if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
+        [button setSelected:![button isSelected]];
+        if ([button isSelected]) {
+            if ([self.delegate respondsToSelector:@selector(postDetailsFooterView:didTapTwitterShareButton:)]){
+                [self.delegate postDetailsFooterView:self didTapTwitterShareButton:button];
+            }
+        }
+    } else {
+        // Twitter account is not linked
+        [[[UIAlertView alloc] initWithTitle:@"Twitter Not Linked"
+                                    message:@"Please visit the shared settings to link your Twitter account."
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil] show];
     }
 }
 
--(void)sendPost:(id)sender {
-    if ([self.delegate respondsToSelector:@selector(sendPost:)]){
-        [self.delegate sendPost:sender];
+-(void)didTapSubmitPostButtonAction:(UIButton *)button {
+    
+    if ([button isSelected])
+        return;
+    
+    [button setSelected:YES];
+    
+    if ([self.delegate respondsToSelector:@selector(postDetailsFooterView:didTapSubmitPostButton:)]){
+        [self.delegate postDetailsFooterView:self didTapSubmitPostButton:button];
     }
 }
 @end
