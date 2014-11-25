@@ -148,26 +148,12 @@
 
 #pragma mark - FTPhotoPostDetailsFooterViewDelegate
 
--(void)facebookShareButton:(id)sender{
-    // Share to facebook
-    [[[UIAlertView alloc] initWithTitle:@"Disabled"
-                                message:@"Hey! Facebook share controls have been disabled on this screen :("
-                               delegate:nil
-                      cancelButtonTitle:@"ok"
-                      otherButtonTitles:nil] show];
+- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView didTapFacebookShareButton:(UIButton *)button {
+    // Facebook button is on
 }
 
--(void)twitterShareButton:(id)sender{
-    // Share to twitter
-    [[[UIAlertView alloc] initWithTitle:@"Disabled"
-                                message:@"Hey! Twitter share controls have been disabled on this screen :("
-                               delegate:nil
-                      cancelButtonTitle:@"ok"
-                      otherButtonTitles:nil] show];
-}
-
--(void)sendPost:(id)sender{
-    [self doneButtonAction:sender];
+- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView didTapTwitterShareButton:(UIButton *)button {
+    // Twitter button is on
 }
 
 #pragma mark - ()
@@ -286,7 +272,8 @@
     }];
 }
 
-- (void)doneButtonAction:(id)sender {
+- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView
+       didTapSubmitPostButton:(UIButton *)button {
     
     // Make sure there were no errors creating the image files
     if (!self.photoFile || !self.thumbnailFile) {
@@ -352,6 +339,8 @@
             
                 [self incrementUserPostCount];
                 
+                NSString *description = @"Allow your users to share stories on Facebook from your app using the IOS SDK.";
+                
                 // userInfo might contain any caption which might have been posted by the uploader
                 if (userInfo) {
                     NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
@@ -373,11 +362,39 @@
                     
                         [comment saveEventually];
                         [[FTCache sharedCache] incrementCommentCountForPost:photo];
+                        
+                        description = commentText;
                     }
                 } else {
-                    [photo saveEventually];
+                    //[photo saveEventually];
                 }
             
+                //NSLog(@"photo:%@",photo.objectId);
+                NSString *link = [NSString stringWithFormat:@"http://fittag.com/viewer.php?pid=%@",photo.objectId];
+                
+                PFFile *caption = nil;
+                if ([photo objectForKey:kFTPostImageKey]) {
+                    caption = [photo objectForKey:kFTPostImageKey];
+                }
+                
+                // If facebook icon selected, post to facebook
+                if ([self.postDetailsFooterView.facebookButton isSelected]) {
+                    if (caption.url) {
+                        [FTUtility shareCapturedMomentOnFacebook:[NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                                                  @"Captured Healthy Moment", @"name",
+                                                                  @"Healthy moment was shared via #FitTag.", @"caption",
+                                                                  description, @"description",
+                                                                  link, @"link",
+                                                                  caption.url, @"picture", nil]];
+                    }
+                }
+                
+                // If twitter icon selected, update twitter status
+                if ([self.postDetailsFooterView.twitterButton isSelected]) {
+                    NSString *status = [NSString stringWithFormat:@"Captured a healthy moment via #FitTag http://fittag.com/viewer.php?pid=%@",photo.objectId];
+                    [FTUtility shareCapturedMomentOnTwitter:status];
+                }
+                
                 [[NSNotificationCenter defaultCenter] postNotificationName:FTTabBarControllerDidFinishEditingPhotoNotification object:photo];
             } else {
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
