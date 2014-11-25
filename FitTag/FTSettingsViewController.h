@@ -8,13 +8,13 @@
 
 #import "FTSettingsDetailViewController.h"
 #import "FTInterestsViewController.h"
-#import "FTFindFriendsViewController.h"
+#import "FTFollowFriendsViewController.h"
 #import "FTInterestViewFlowLayout.h"
 #import <MessageUI/MessageUI.h>
 
 @interface FTSettingsViewController : UITableViewController <UITableViewDataSource,UITableViewDelegate,MFMailComposeViewControllerDelegate,FTInterestsViewControllerDelegate>
 
 @property (strong, nonatomic) FTSettingsDetailViewController *settingsDetailViewController;
-@property (strong, nonatomic) FTFindFriendsViewController *findFriendsViewController;
+@property (strong, nonatomic) FTFollowFriendsViewController *followFriendsViewController;
 @property (strong, nonatomic) FTInterestsViewController *interestsViewController;
 @end

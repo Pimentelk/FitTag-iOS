@@ -83,7 +83,7 @@
     // View controllers
     
     self.interestsViewController = [[FTInterestsViewController alloc] initWithCollectionViewLayout:interestFlowLayout];
-    self.findFriendsViewController = [[FTFindFriendsViewController alloc] init];
+    self.followFriendsViewController = [[FTFollowFriendsViewController alloc] init];
     self.settingsDetailViewController = [[FTSettingsDetailViewController alloc] init];
     
     // Table view footer
