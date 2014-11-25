@@ -49,6 +49,8 @@
 		2D7968BC19FC0A7C00DA2DD0 /* FTSwitchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D7968BB19FC0A7C00DA2DD0 /* FTSwitchCell.m */; };
 		2D9949761996A9B0000E321E /* FTCameraToolBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D9949751996A9B0000E321E /* FTCameraToolBar.m */; };
 		2DAA63DE1957A51F003B1DDF /* UIView+FormScroll.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DAA63DD1957A51F003B1DDF /* UIView+FormScroll.m */; };
+		2DAABBF41A11DB5B007F1E44 /* FTVideoEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DAABBF31A11DB5B007F1E44 /* FTVideoEncoder.m */; };
+		2DAABBF81A15BFB5007F1E44 /* FTCameraEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DAABBF71A15BFB5007F1E44 /* FTCameraEngine.m */; };
 		2DABDA03195DA48200379891 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DABDA02195DA48200379891 /* AssetsLibrary.framework */; };
 		2DABDA06195DC0E500379891 /* PhotoCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DABDA05195DC0E500379891 /* PhotoCellCollectionView.m */; };
 		2DABDA0A195DE15900379891 /* ImageCustomNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DABDA09195DE15900379891 /* ImageCustomNavigationBar.m */; };
@@ -217,6 +219,10 @@
 		2D9949751996A9B0000E321E /* FTCameraToolBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCameraToolBar.m; sourceTree = "<group>"; };
 		2DAA63DC1957A51F003B1DDF /* UIView+FormScroll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+FormScroll.h"; sourceTree = "<group>"; };
 		2DAA63DD1957A51F003B1DDF /* UIView+FormScroll.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+FormScroll.m"; sourceTree = "<group>"; };
+		2DAABBF21A11DB5B007F1E44 /* FTVideoEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTVideoEncoder.h; sourceTree = "<group>"; };
+		2DAABBF31A11DB5B007F1E44 /* FTVideoEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTVideoEncoder.m; sourceTree = "<group>"; };
+		2DAABBF61A15BFB5007F1E44 /* FTCameraEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCameraEngine.h; sourceTree = "<group>"; };
+		2DAABBF71A15BFB5007F1E44 /* FTCameraEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCameraEngine.m; sourceTree = "<group>"; };
 		2DABDA02195DA48200379891 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		2DABDA04195DC0E500379891 /* PhotoCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoCellCollectionView.h; sourceTree = "<group>"; };
 		2DABDA05195DC0E500379891 /* PhotoCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoCellCollectionView.m; sourceTree = "<group>"; };
@@ -560,6 +566,17 @@
 			name = UIImageEffects;
 			sourceTree = "<group>";
 		};
+		2DAABBF51A11DB62007F1E44 /* Encoder */ = {
+			isa = PBXGroup;
+			children = (
+				2DAABBF21A11DB5B007F1E44 /* FTVideoEncoder.h */,
+				2DAABBF31A11DB5B007F1E44 /* FTVideoEncoder.m */,
+				2DAABBF61A15BFB5007F1E44 /* FTCameraEngine.h */,
+				2DAABBF71A15BFB5007F1E44 /* FTCameraEngine.m */,
+			);
+			name = Encoder;
+			sourceTree = "<group>";
+		};
 		2DABDA07195DE0F500379891 /* Custom Bars */ = {
 			isa = PBXGroup;
 			children = (
@@ -839,6 +856,7 @@
 		2DD691401949AF5B00B59E75 = {
 			isa = PBXGroup;
 			children = (
+				2DAABBF51A11DB62007F1E44 /* Encoder */,
 				2D054DCC1A0867B300A2886F /* STTweetLabel */,
 				2DDBF14019F1451D009037E2 /* GooglyAnalytics */,
 				2DBE021E19D6FB7F00CD278C /* ELCImagePicker */,
@@ -1071,6 +1089,7 @@
 			files = (
 				2DABDA0A195DE15900379891 /* ImageCustomNavigationBar.m in Sources */,
 				2DD2B6801984100000600A42 /* FTBaseTextCell.m in Sources */,
+				2DAABBF81A15BFB5007F1E44 /* FTCameraEngine.m in Sources */,
 				2D197E9119C1BC7900E91274 /* FTMapViewController.m in Sources */,
 				2DBE020619D0C62D00CD278C /* FTRewardsCollectionHeaderView.m in Sources */,
 				2D7968BC19FC0A7C00DA2DD0 /* FTSwitchCell.m in Sources */,
@@ -1109,6 +1128,7 @@
 				2DBE023819D6FB7F00CD278C /* ELCAssetCell.m in Sources */,
 				2DACD97819656F8900833C14 /* FTInterestViewFlowLayout.m in Sources */,
 				2D4DF06619E0FEB700E2E71E /* FTUserProfileCollectionViewCell.m in Sources */,
+				2DAABBF41A11DB5B007F1E44 /* FTVideoEncoder.m in Sources */,
 				2DAA63DE1957A51F003B1DDF /* UIView+FormScroll.m in Sources */,
 				2DD491E519EF769500A50F5B /* FTBusinessAnnotationView.m in Sources */,
 				2DD2B669198400D800600A42 /* UIImage+RoundedCornerAdditions.m in Sources */,
