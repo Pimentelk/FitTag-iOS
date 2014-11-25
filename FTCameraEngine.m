@@ -23,8 +23,8 @@ static FTCameraEngine *theEngine;
     CMTime _progressTime;
     CMTime _lastVideo;
     CMTime _lastAudio;
-    int _cx;
-    int _cy;
+    long _cx;
+    long _cy;
     int _channels;
     Float64 _samplerate;
 }
@@ -470,7 +470,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 - (void)setFlashMode:(AVCaptureFlashMode)flashMode {
-    NSLog(@"setFlashMode - flashMode:%ld",flashMode);
+    //NSLog(@"setFlashMode - flashMode:%d",flashMode);
     [FTCameraEngine setFlashMode:flashMode forDevice:[[self videoDeviceInput] device]];
 }
 
@@ -480,7 +480,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if ([device hasFlash] && [device isFlashModeSupported:flashMode]) {
         NSError *error = nil;
         if ([device lockForConfiguration:&error]) {
-            NSLog(@"Flash mode updated to: %ld",flashMode);
+            //NSLog(@"Flash mode updated to: %ld",flashMode);
             [device setFlashMode:flashMode];
             [device unlockForConfiguration];
         } else {
