@@ -104,8 +104,8 @@
 }
 
 - (void)inviteFriendsButtonAction:(id)sender {
-    FTFindFriendsViewController *detailViewController = [[FTFindFriendsViewController alloc] init];
-    [self.navigationController pushViewController:detailViewController animated:YES];
+    FTFindFriendsViewController *findFriendsViewController = [[FTFindFriendsViewController alloc] init];
+    [self.navigationController pushViewController:findFriendsViewController animated:YES];
 }
 
 - (BOOL)isFirstTimeUser:(PFUser *)user {
