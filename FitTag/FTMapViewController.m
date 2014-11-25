@@ -547,7 +547,7 @@ enum PinAnnotationTypeTag {
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
     [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(self.mapView.frame.size.width,335)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(self.mapView.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
     
     // Override the back idnicator
     UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
