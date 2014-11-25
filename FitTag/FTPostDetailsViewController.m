@@ -372,6 +372,44 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [self.navigationController pushViewController:mapViewController animated:YES];
 }
 
+- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView didTapMoreButton:(UIButton *)button {
+    
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+                                                             delegate:self
+                                                    cancelButtonTitle:@"Cancel"
+                                               destructiveButtonTitle:nil
+                                                    otherButtonTitles:ACTION_SHARE_ON_FACEBOOK,
+                                  ACTION_SHARE_ON_TWITTER,
+                                  ACTION_REPORT_INAPPROPRIATE, nil];
+    
+    [actionSheet showInView:self.view];
+}
+
+#pragma mark - UIActionSheetDelegate
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    
+    //NSLog(@"You have pressed the %@ button", [actionSheet buttonTitleAtIndex:buttonIndex]);
+    if (!post) {
+        [[[UIAlertView alloc] initWithTitle:@"Post Error"
+                                    message:@"There was a problem with this post."
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil] show];
+        return;
+    }
+    
+    if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_SHARE_ON_FACEBOOK]) {
+        NSLog(@"didTapFacebookShareButtonAction");
+        // Check that the user account is linked
+        [FTUtility prepareToSharePostOnFacebook:post];
+    } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_SHARE_ON_TWITTER]) {
+        [FTUtility prepareToSharePostOnTwitter:post];
+    } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_REPORT_INAPPROPRIATE]) {
+        //[self reportPostInappropriate];
+    }
+}
+
 #pragma mark - FTPhotoDetailsFooterViewDelegate
 
 - (void)photoDetailsFooterView:(FTPhotoDetailsFooterView *)footerView didTapSendButton:(UIButton *)button {
@@ -389,31 +427,6 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 - (void)didTapBackButtonAction:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
 }
-
-/*
-- (void)showShareSheet {
-    [[self.post objectForKey:kFTPostImageKey] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-        if (!error) {
-            NSMutableArray *activityItems = [NSMutableArray arrayWithCapacity:3];
-            
-            // Prefill caption if this is the original poster of the photo, and then only if they added a caption initially.
-            if ([[[PFUser currentUser] objectId] isEqualToString:[[self.post objectForKey:kFTPostUserKey] objectId]] && [self.objects count] > 0) {
-                PFObject *firstActivity = self.objects[0];
-                if ([[[firstActivity objectForKey:kFTActivityFromUserKey] objectId] isEqualToString:[[self.post objectForKey:kFTPostUserKey] objectId]]) {
-                    NSString *commentString = [firstActivity objectForKey:kFTActivityContentKey];
-                    [activityItems addObject:commentString];
-                }
-            }
-            
-            [activityItems addObject:[UIImage imageWithData:data]];
-            [activityItems addObject:[NSURL URLWithString:[NSString stringWithFormat:@"https://anypic.org/#pic/%@", self.post.objectId]]];
-            
-            UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
-            [self.navigationController presentViewController:activityViewController animated:YES completion:nil];
-        }
-    }];
-}
-*/
 
 - (void)handleCommentTimeout:(NSTimer *)aTimer {
     [MBProgressHUD hideHUDForView:self.view.superview animated:YES];

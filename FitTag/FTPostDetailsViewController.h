@@ -10,7 +10,9 @@
 #import "FTPhotoDetailsFooterView.h"
 #import "FTBaseTextCell.h"
 
-@interface FTPostDetailsViewController : PFQueryTableViewController <UITextFieldDelegate, FTPostDetailsHeaderViewDelegate, FTPhotoDetailsFooterViewDelegate, FTBaseTextCellDelegate>
+@interface FTPostDetailsViewController : PFQueryTableViewController <UITextFieldDelegate, FTPostDetailsHeaderViewDelegate,
+                                                                     FTPhotoDetailsFooterViewDelegate, FTBaseTextCellDelegate,
+                                                                     UIActionSheetDelegate>
 
 @property (nonatomic, strong) PFObject *post;
 @property (nonatomic, strong) NSString *type;
