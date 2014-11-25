@@ -224,7 +224,7 @@
         [mailer setMessageBody:EMPTY_STRING isHTML:NO];
         
         [self presentViewController:mailer animated:YES completion:^(){
-            [self.navigationController popViewControllerAnimated:NO];
+            [self dismissViewControllerAnimated:YES completion:nil];
         }];
         
     } else {
