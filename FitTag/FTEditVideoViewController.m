@@ -330,10 +330,6 @@
                       otherButtonTitles:nil] show];
 }
 
--(void)sendPost:(id)sender{
-    [self doneButtonAction:sender];
-}
-
 #pragma mark - ()
 
 - (void)incrementUserPostCount {
@@ -486,7 +482,9 @@
     }];
 }
 
-- (void)doneButtonAction:(id)sender {
+- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView
+       didTapSubmitPostButton:(UIButton *)button {
+
     //NSLog(@"FTEditVideoViewController::doneButtonAction:%@",sender);
     // Make sure there were no errors creating the image files
     if (!self.videoFile || !self.imageFile){
@@ -498,7 +496,7 @@
         return;
     }
     
-    if ([PFUser currentUser]) {        
+    if ([PFUser currentUser]) {
         NSDictionary *userInfo = [NSDictionary dictionary];
         NSString *trimmedComment = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         
@@ -543,6 +541,8 @@
                 
                 [self incrementUserPostCount];
                 
+                NSString *description = @"Allow your users to share stories on Facebook from your app using the IOS SDK.";
+                
                 // userInfo might contain any caption which might have been posted by the uploader
                 if (userInfo) {
                     NSString *commentText = [userInfo objectForKey:kFTEditVideoViewControllerUserInfoCommentKey];
@@ -564,8 +564,37 @@
                         
                         [comment saveEventually];
                         [[FTCache sharedCache] incrementCommentCountForPost:video];
+                        
+                        description = commentText;
                     }
                 }
+                
+                NSLog(@"gallery:%@",video.objectId);
+                NSString *link = [NSString stringWithFormat:@"http://fittag.com/viewer.php?pid=%@",video.objectId];
+                
+                PFFile *caption = nil;
+                if ([video objectForKey:kFTPostImageKey]) {
+                    caption = [video objectForKey:kFTPostImageKey];
+                }
+                
+                // If facebook icon selected, post to facebook
+                if ([self.postDetailsFooterView.facebookButton isSelected]) {
+                    if (caption.url) {
+                        [FTUtility shareCapturedMomentOnFacebook:[NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                                                  @"Captured Healthy Moment", @"name",
+                                                                  @"Healthy moment was shared via #FitTag.", @"caption",
+                                                                  description, @"description",
+                                                                  link, @"link",
+                                                                  caption.url, @"picture", nil]];
+                    }
+                }
+                
+                // If twitter icon selected, update twitter status
+                if ([self.postDetailsFooterView.twitterButton isSelected]) {
+                    NSString *status = [NSString stringWithFormat:@"Captured a healthy moment via #FitTag http://fittag.com/viewer.php?pid=%@",video.objectId];
+                    [FTUtility shareCapturedMomentOnTwitter:status];
+                }
+                
                 [[NSNotificationCenter defaultCenter] postNotificationName:FTTabBarControllerDidFinishEditingPhotoNotification object:video];
             } else {
                 //NSLog(@"Error: %@",error);
@@ -577,7 +606,7 @@
             }
         }];
         
-        // Dismiss this screen        
+        // Dismiss this screen
         [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
         
     } else {

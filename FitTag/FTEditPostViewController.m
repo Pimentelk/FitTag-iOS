@@ -379,7 +379,6 @@
             NSLog(@"postMultipleWithPhotoFiles;");
 
     NSMutableArray *posts = [[NSMutableArray alloc] init];
-
     for (int i = 0; i < photos.count; i++) {
         // create a post object
         //NSLog(@"create a post object");
@@ -404,7 +403,6 @@
     }];
             
     [PFObject saveAllInBackground:posts block:^(BOOL succeeded, NSError *error) {
-                
         if (succeeded) {
             //PFObject *gallery = [PFObject objectWithClassName:@"Gallery"];
             PFObject *gallery = [PFObject objectWithClassName:kFTPostClassKey];
@@ -431,16 +429,18 @@
                     [self incrementUserPostCount];
                     //NSLog(@"userInfo might contain any caption which might have been posted by the uploader");
                     
+                    NSString *description = @"Allow your users to share stories on Facebook from your app using the IOS SDK.";
+                    
                     // userInfo might contain any caption which might have been posted by the uploader
                     if (userInfo) {
                         NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
                         
-                        if (commentText && commentText.length != 0) {
+                        if (commentText && commentText.length > 0) {
                             //NSLog(@"create and save photo caption");
                             // create and save photo caption
                             PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
                             [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
-                            [comment setObject:posts forKey:kFTActivityPostKey];
+                            [comment setObject:gallery forKey:kFTActivityPostKey];
                             [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
                             [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
                             [comment setObject:hashtags forKey:kFTActivityHashtagKey];
@@ -453,11 +453,40 @@
                             
                             [comment saveEventually];
                             [[FTCache sharedCache] incrementCommentCountForPost:gallery];
+                            
+                            description = commentText;
                         }
                         
                     } else {
+                        NSLog(@"error:%@",error);
                         //[post saveEventually];
                     }
+                    
+                    NSLog(@"gallery:%@",gallery.objectId);
+                    NSString *link = [NSString stringWithFormat:@"http://fittag.com/viewer.php?pid=%@",gallery.objectId];
+                    
+                    PFFile *caption = nil;
+                    if ([gallery objectForKey:kFTPostImageKey]) {
+                        caption = [gallery objectForKey:kFTPostImageKey];
+                    }
+                    
+                    // If facebook icon selected, post to facebook
+                    if ([postDetailsFooterView.facebookButton isSelected]) {
+                        if (caption.url) {
+                            [FTUtility shareCapturedMomentOnFacebook:[NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                                                      @"Captured Healthy Moment", @"name",
+                                                                      @"Healthy moment was shared via #FitTag.", @"caption",
+                                                                      description, @"description",
+                                                                      link, @"link",
+                                                                      caption.url, @"picture", nil]];
+                        }
+                    }
+                    
+                    // If twitter icon selected, update twitter status
+                    if ([postDetailsFooterView.twitterButton isSelected]) {
+                        NSString *status = [NSString stringWithFormat:@"Captured a healthy moment via #FitTag http://fittag.com/viewer.php?pid=%@",gallery.objectId];
+                        [FTUtility shareCapturedMomentOnTwitter:status];
+                    }                    
                     
                     [[NSNotificationCenter defaultCenter] postNotificationName:FTTabBarControllerDidFinishEditingPhotoNotification
                                                                         object:posts];
@@ -466,10 +495,10 @@
             
         } else {
             [[[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
-                                       message:nil
-                                      delegate:nil
-                             cancelButtonTitle:nil
-                             otherButtonTitles:@"Dismiss", nil] show];
+                                        message:nil
+                                       delegate:nil
+                              cancelButtonTitle:nil
+                              otherButtonTitles:@"Dismiss", nil] show];
         }
         
         [[UIApplication sharedApplication] endBackgroundTask:self.postBackgroundTaskId];
@@ -478,148 +507,6 @@
     // Dismiss this screen
     [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
     
-}
-
-- (void)doneButtonAction:(id)sender {
-
-    //NSLog(@"- (void)doneButtonAction:(id)sender");
-    if ([PFUser currentUser]) {
-        
-        NSDictionary *userInfo = [NSDictionary dictionary];
-        NSString *trimmedComment = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        
-        if (trimmedComment.length != 0) {
-            userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment, kFTEditVideoViewControllerUserInfoCommentKey, nil];
-        }
-        
-        NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[self checkForHashtag]];
-        NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[self checkForMention]];
-        
-        if ([self.postType isEqualToString:@"MULTI"]) {
-            
-            //NSLog(@"if ([self.postType isEqualToString:@MULTI])");
-            if (!self.photoFiles || !self.thumbFiles) {
-                //NSLog(@"(!self.photoFiles || !self.thumbFiles)");
-                [[[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
-                                            message:nil
-                                           delegate:nil
-                                  cancelButtonTitle:nil
-                                  otherButtonTitles:@"Dismiss", nil] show];
-                return;
-            }
-            
-            [self postMultipleWithPhotoFiles:self.photoFiles
-                                  ThumbFiles:self.thumbFiles
-                                    Mentions:mentions
-                                    Hashtags:hashtags
-                                 AndUserInfo:userInfo];
-            
-        } else if ([self.postType isEqualToString:@"IMAGE"] || [self.postType isEqualToString:@"VIDEO"]) {
-        
-            // Make sure there were no errors creating the image files
-            if (!self.photoFile || !self.thumbFile) {
-                [[[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
-                                            message:nil
-                                           delegate:nil
-                                  cancelButtonTitle:nil
-                                  otherButtonTitles:@"Dismiss", nil] show];
-                return;
-            }
-        
-            // Make sure there were no errors creating the image files
-            if (!self.videoFile || !self.imageFile){
-                [[[UIAlertView alloc] initWithTitle:@"Couldn't post your video"
-                                            message:nil
-                                           delegate:nil
-                                  cancelButtonTitle:nil
-                                  otherButtonTitles:@"Dismiss", nil] show];
-                return;
-            }
-        
-            // create a post object
-            PFObject *post = [PFObject objectWithClassName:kFTPostClassKey];
-            [post setObject:[PFUser currentUser] forKey:kFTPostUserKey];
-            [post setObject:hashtags forKey:kFTPostHashTagKey];
-            
-            if ([self.postType isEqualToString:@"VIDEO"]) {
-                [post setObject:self.imageFile forKey:kFTPostImageKey];
-                [post setObject:self.videoFile forKey:kFTPostVideoKey];
-                [post setObject:kFTPostVideoKey forKey:kFTPostTypeKey];
-            }
-        
-            if ([self.postType isEqualToString:@"IMAGE"]) {
-                [post setObject:self.photoFile forKey:kFTPostImageKey];
-                [post setObject:self.thumbFile forKey:kFTPostThumbnailKey];
-                [post setObject:kFTPostImageKey forKey:kFTPostTypeKey];
-            }
-        
-            if (self.geoPoint) {
-                [post setObject:self.geoPoint forKey:kFTPostLocationKey];
-            }
-        
-            // photos are public, but may only be modified by the user who uploaded them
-            PFACL *photoACL = [PFACL ACLWithUser:[PFUser currentUser]];
-            [photoACL setPublicReadAccess:YES];
-            post.ACL = photoACL;
-        
-            // Request a background execution task to allow us to finish uploading the photo even if the app is backgrounded
-            self.postBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-                [[UIApplication sharedApplication] endBackgroundTask:self.postBackgroundTaskId];
-            }];
-        
-            // Save the Post PFObject
-            [post saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                if (succeeded) {
-                
-                    [[FTCache sharedCache] setAttributesForPost:post
-                                                         likers:[NSArray array]
-                                                     commenters:[NSArray array]
-                                             likedByCurrentUser:NO
-                                                    displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
-                    [self incrementUserPostCount];
-                    
-                    // userInfo might contain any caption which might have been posted by the uploader
-                    if (userInfo) {
-                        NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
-                    
-                        if (commentText && commentText.length != 0) {
-                            // create and save photo caption
-                            PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
-                            [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
-                            [comment setObject:post forKey:kFTActivityPostKey];
-                            [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
-                            [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
-                            [comment setObject:hashtags forKey:kFTActivityHashtagKey];
-                            [comment setObject:mentions forKey:kFTActivityMentionKey];
-                            [comment setObject:commentText forKey:kFTActivityContentKey];
-                        
-                            PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];
-                            [ACL setPublicReadAccess:YES];
-                            comment.ACL = ACL;
-                        
-                            [comment saveEventually];
-                            [[FTCache sharedCache] incrementCommentCountForPost:post];
-                        }
-                    } else {
-                        [post saveEventually];
-                    }
-                
-                    [[NSNotificationCenter defaultCenter] postNotificationName:FTTabBarControllerDidFinishEditingPhotoNotification object:post];
-                } else {
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
-                    [alert show];
-                }
-                [[UIApplication sharedApplication] endBackgroundTask:self.postBackgroundTaskId];
-            }];
-        
-            // Dismiss this screen
-            [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
-        } else {
-            //NSString *caption = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-            //[self setCoverPhoto:self.image Caption:caption];
-            //[self.navigationController dismissViewControllerAnimated:NO completion:nil];
-        }
-    }
 }
 
 #pragma mark - UIBarButtonItem LeftBarButtonItem
@@ -652,11 +539,8 @@
                 return NO;
             }
         
-            self.photoFile = [PFFile fileWithName:@"photo.jpeg"
-                                             data:imageData];
-            
-            self.thumbFile = [PFFile fileWithName:@"thumbnail.png"
-                                             data:imageData];
+            self.photoFile = [PFFile fileWithName:@"photo.jpeg" data:imageData];
+            self.thumbFile = [PFFile fileWithName:@"thumbnail.png" data:imageData];
 
             [self.photoFiles addObject:self.photoFile];
             [self.thumbFiles addObject:self.thumbFile];
@@ -679,7 +563,6 @@
             }
         }];
     }
-    
     return YES;
 }
 
@@ -962,82 +845,161 @@
 
 #pragma mark - FTPhotoPostDetailsFooterViewDelegate
 
-- (void)facebookShareButton:(id)sender {
+- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView
+    didTapFacebookShareButton:(UIButton *)button {
     
-    if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
-        // Check if the Facebook app is installed and we can present the share dialog
-        FBLinkShareParams *params = [[FBLinkShareParams alloc] init];
-        //params.link = [NSURL URLWithString:@"https://developers.facebook.com/docs/ios/share/"];
-        params.link = [NSURL URLWithString:@"http://fittag.com"];
-        // If the Facebook app is installed and we can present the share dialog
-        if ([FBDialogs canPresentShareDialogWithParams:params]) {
-            // Present share dialog
-            [FBDialogs presentShareDialogWithLink:params.link
-                                          handler:^(FBAppCall *call, NSDictionary *results, NSError *error) {
-                                              if(error) {
-                                                  // An error occurred, we need to handle the error
-                                                  // See: https://developers.facebook.com/docs/ios/errors
-                                                  NSLog(@"Error publishing story: %@", error.description);
-                                              } else {
-                                                  // Success
-                                                  NSLog(@"result %@", results);
-                                              }
-                                          }];
-        } else {
-            // Put together the dialog parameters
-            NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                           @"Sharing Tutorial", @"name",
-                                           @"Build great social apps and get more installs.", @"caption",
-                                           @"Allow your users to share stories on Facebook from your app using the iOS SDK.", @"description",
-                                           @"https://developers.facebook.com/docs/ios/share/", @"link",
-                                           @"http://i.imgur.com/g3Qc1HN.png", @"picture",
-                                           nil];
+}
+
+- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView
+     didTapTwitterShareButton:(UIButton *)button
+               showTweetSheet:(SLComposeViewController *)tweetSheet {
+    
+}
+
+- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView
+       didTapSubmitPostButton:(UIButton *)button {
+    //NSLog(@"- (void)doneButtonAction:(id)sender");
+    if ([PFUser currentUser]) {
+        
+        NSDictionary *userInfo = [NSDictionary dictionary];
+        NSString *trimmedComment = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        
+        if (trimmedComment.length != 0) {
+            userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment, kFTEditVideoViewControllerUserInfoCommentKey, nil];
+        }
+        
+        NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[self checkForHashtag]];
+        NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[self checkForMention]];
+        
+        if ([self.postType isEqualToString:@"MULTI"]) {
             
-            // Show the feed dialog
-            [FBWebDialogs presentFeedDialogModallyWithSession:nil
-                                                   parameters:params
-                                                      handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
-                                                          if (error) {
-                                                              // An error occurred, we need to handle the error
-                                                              // See: https://developers.facebook.com/docs/ios/errors
-                                                              NSLog(@"Error publishing story: %@", error.description);
-                                                          } else {
-                                                              if (result == FBWebDialogResultDialogNotCompleted) {
-                                                                  // User cancelled.
-                                                                  NSLog(@"User cancelled.");
-                                                              } else {
-                                                                  // Handle the publish feed callback
-                                                                  NSDictionary *urlParams = [FTUtility parseURLParams:[resultURL query]];
-                                                                  
-                                                                  if (![urlParams valueForKey:@"post_id"]) {
-                                                                      // User cancelled.
-                                                                      NSLog(@"User cancelled.");
-                                                                      
-                                                                  } else {
-                                                                      // User clicked the Share button
-                                                                      NSString *result = [NSString stringWithFormat: @"Posted story, id: %@", [urlParams valueForKey:@"post_id"]];
-                                                                      NSLog(@"result %@", result);
-                                                                  }
-                                                              }
-                                                          }
-                                                      }];
+            //NSLog(@"if ([self.postType isEqualToString:@MULTI])");
+            if (!self.photoFiles || !self.thumbFiles) {
+                //NSLog(@"(!self.photoFiles || !self.thumbFiles)");
+                [[[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
+                                            message:nil
+                                           delegate:nil
+                                  cancelButtonTitle:nil
+                                  otherButtonTitles:@"Dismiss", nil] show];
+                return;
+            }
+            
+            [self postMultipleWithPhotoFiles:self.photoFiles
+                                  ThumbFiles:self.thumbFiles
+                                    Mentions:mentions
+                                    Hashtags:hashtags
+                                 AndUserInfo:userInfo];
+            
+        } else if ([self.postType isEqualToString:@"IMAGE"] || [self.postType isEqualToString:@"VIDEO"]) {
+            
+            // Make sure there were no errors creating the image files
+            if (!self.photoFile || !self.thumbFile) {
+                [[[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
+                                            message:nil
+                                           delegate:nil
+                                  cancelButtonTitle:nil
+                                  otherButtonTitles:@"Dismiss", nil] show];
+                return;
+            }
+            
+            // Make sure there were no errors creating the image files
+            if (!self.videoFile || !self.imageFile){
+                [[[UIAlertView alloc] initWithTitle:@"Couldn't post your video"
+                                            message:nil
+                                           delegate:nil
+                                  cancelButtonTitle:nil
+                                  otherButtonTitles:@"Dismiss", nil] show];
+                return;
+            }
+            
+            // create a post object
+            PFObject *post = [PFObject objectWithClassName:kFTPostClassKey];
+            [post setObject:[PFUser currentUser] forKey:kFTPostUserKey];
+            [post setObject:hashtags forKey:kFTPostHashTagKey];
+            
+            if ([self.postType isEqualToString:@"VIDEO"]) {
+                [post setObject:self.imageFile forKey:kFTPostImageKey];
+                [post setObject:self.videoFile forKey:kFTPostVideoKey];
+                [post setObject:kFTPostVideoKey forKey:kFTPostTypeKey];
+            }
+            
+            if ([self.postType isEqualToString:@"IMAGE"]) {
+                [post setObject:self.photoFile forKey:kFTPostImageKey];
+                [post setObject:self.thumbFile forKey:kFTPostThumbnailKey];
+                [post setObject:kFTPostImageKey forKey:kFTPostTypeKey];
+            }
+            
+            if (self.geoPoint) {
+                [post setObject:self.geoPoint forKey:kFTPostLocationKey];
+            }
+            
+            // photos are public, but may only be modified by the user who uploaded them
+            PFACL *photoACL = [PFACL ACLWithUser:[PFUser currentUser]];
+            [photoACL setPublicReadAccess:YES];
+            post.ACL = photoACL;
+            
+            // Request a background execution task to allow us to finish uploading the photo even if the app is backgrounded
+            self.postBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+                [[UIApplication sharedApplication] endBackgroundTask:self.postBackgroundTaskId];
+            }];
+            
+            // Save the Post PFObject
+            [post saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (succeeded) {
+                    
+                    [[FTCache sharedCache] setAttributesForPost:post
+                                                         likers:[NSArray array]
+                                                     commenters:[NSArray array]
+                                             likedByCurrentUser:NO
+                                                    displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
+                    [self incrementUserPostCount];
+                    
+                    // userInfo might contain any caption which might have been posted by the uploader
+                    if (userInfo) {
+                        NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
+                        
+                        if (commentText && commentText.length != 0) {
+                            // create and save photo caption
+                            PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
+                            [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
+                            [comment setObject:post forKey:kFTActivityPostKey];
+                            [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
+                            [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
+                            [comment setObject:hashtags forKey:kFTActivityHashtagKey];
+                            [comment setObject:mentions forKey:kFTActivityMentionKey];
+                            [comment setObject:commentText forKey:kFTActivityContentKey];
+                            
+                            PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];
+                            [ACL setPublicReadAccess:YES];
+                            comment.ACL = ACL;
+                            
+                            [comment saveEventually];
+                            [[FTCache sharedCache] incrementCommentCountForPost:post];
+                        }
+                    } else {
+                        [post saveEventually];
+                    }
+                    
+                    [[NSNotificationCenter defaultCenter] postNotificationName:FTTabBarControllerDidFinishEditingPhotoNotification
+                                                                        object:post];
+                } else {
+                    [[[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
+                                                message:nil
+                                               delegate:nil
+                                      cancelButtonTitle:nil
+                                      otherButtonTitles:@"Dismiss", nil] show];
+                }
+                [[UIApplication sharedApplication] endBackgroundTask:self.postBackgroundTaskId];
+            }];
+            
+            // Dismiss this screen
+            [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
+        } else {
+            //NSString *caption = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+            //[self setCoverPhoto:self.image Caption:caption];
+            //[self.navigationController dismissViewControllerAnimated:NO completion:nil];
         }
     }
-}
-
-- (void)twitterShareButton:(id)sender {
-    if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
-        if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
-            SLComposeViewController *tweetSheet = [SLComposeViewController
-                                                   composeViewControllerForServiceType:SLServiceTypeTwitter];
-            [tweetSheet setInitialText:@"Test post: Check us out on #Fittag http://fittag.com"];
-            [self presentViewController:tweetSheet animated:YES completion:nil];
-        }
-    }
-}
-
-- (void)sendPost:(id)sender{
-    [self doneButtonAction:sender];
 }
 
 @end
