@@ -3,11 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "rewards_unselected.png"
+      "filename" : "twitter_button_off_small.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x"
+      "scale" : "2x",
+      "filename" : "twitter_button_off.png"
     },
     {
       "idiom" : "universal",
