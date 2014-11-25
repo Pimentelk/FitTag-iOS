@@ -26,16 +26,19 @@ NSString *const kFTLaunchURLHostTakePicture = @"camera";
 
 #pragma mark - NSNotification
 
-NSString *const FTAppDelegateApplicationDidReceiveRemoteNotification           = @"com.fittag.appDelegate.applicationDidReceiveRemoteNotification";
-NSString *const FTUtilityUserFollowingChangedNotification                      = @"com.fittag.utility.userFollowingChanged";
-NSString *const FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification     = @"com.fittag.utility.userLikedUnlikedPhotoCallbackFinished";
-NSString *const FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification     = @"com.fittag.utility.userLikedUnlikedVideoCallbackFinished";
-NSString *const FTUtilityDidFinishProcessingProfilePictureNotification         = @"com.fittag.utility.didFinishProcessingProfilePictureNotification";
-NSString *const FTTabBarControllerDidFinishEditingPhotoNotification            = @"com.fittag.tabBarController.didFinishEditingPhoto";
-NSString *const FTTabBarControllerDidFinishImageFileUploadNotification         = @"com.fittag.tabBarController.didFinishImageFileUploadNotification";
-NSString *const FTPhotoDetailsViewControllerUserDeletedPhotoNotification       = @"com.fittag.photoDetailsViewController.userDeletedPhoto";
-NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification  = @"com.fittag.photoDetailsViewController.userLikedUnlikedPhotoInDetailsViewNotification";
-NSString *const FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification   = @"com.fittag.photoDetailsViewController.userCommentedOnPhotoInDetailsViewNotification";
+NSString *const FTAppDelegateApplicationDidReceiveRemoteNotification                = @"com.fittag.appDelegate.applicationDidReceiveRemoteNotification";
+NSString *const FTUtilityUserFollowingChangedNotification                           = @"com.fittag.utility.userFollowingChanged";
+NSString *const FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification          = @"com.fittag.utility.userLikedUnlikedPhotoCallbackFinished";
+NSString *const FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification          = @"com.fittag.utility.userLikedUnlikedVideoCallbackFinished";
+NSString *const FTUtilityDidFinishProcessingProfilePictureNotification              = @"com.fittag.utility.didFinishProcessingProfilePictureNotification";
+NSString *const FTTabBarControllerDidFinishEditingPhotoNotification                 = @"com.fittag.tabBarController.didFinishEditingPhoto";
+NSString *const FTTabBarControllerDidFinishImageFileUploadNotification              = @"com.fittag.tabBarController.didFinishImageFileUploadNotification";
+NSString *const FTPhotoDetailsViewControllerUserDeletedPhotoNotification            = @"com.fittag.photoDetailsViewController.userDeletedPhoto";
+NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification       = @"com.fittag.photoDetailsViewController.userLikedUnlikedPhotoInDetailsViewNotification";
+NSString *const FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification        = @"com.fittag.photoDetailsViewController.userCommentedOnPhotoInDetailsViewNotification";
+//NSString *const FTRewardsCollectionViewControllerUserDidReceiveRewardNotification   = @"com.fittag.rewardsCollectionViewController.userDidReceiveRewardNotification";
+//NSString *const FTRewardsCollectionViewControllerUserDidRedeemRewardNotification    = @"com.fittag.rewardsCollectionViewController.userDidRedeemRewardNotification";
+//NSString *const FTRewardsCollectionViewControllerUserDidDeleteRewardNotification    = @"com.fittag.rewardsCollectionViewController.userDidDeleteRewardNotification";
 
 #pragma mark - User Info Keys
 NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey = @"liked";
@@ -70,6 +73,7 @@ NSString *const kFTActivityTypeFollow     = @"follow";
 NSString *const kFTActivityTypeComment    = @"comment";
 NSString *const kFTActivityTypeJoined     = @"joined";
 NSString *const kFTActivityTypeReward     = @"reward";
+NSString *const kFTActivityTypeMention    = @"mention";
 
 #pragma mark - User Class
 
@@ -77,6 +81,7 @@ NSString *const kFTActivityTypeReward     = @"reward";
 NSString *const kFTUserClassKey = @"_User";
 
 // Field keys
+NSString *const kFTUserPromoVideo                              = @"promoVideo";
 NSString *const kFTUserObjectIdKey                             = @"objectId";
 NSString *const kFTUserUsernameKey                             = @"username";
 NSString *const kFTUserDisplayNameKey                          = @"displayName";
@@ -186,6 +191,7 @@ NSString *const kFTPushPayloadActivityLikeKey     = @"l";
 NSString *const kFTPushPayloadActivityCommentKey  = @"c";
 NSString *const kFTPushPayloadActivityFollowKey   = @"f";
 NSString *const kFTPushPayloadActivityMentionKey  = @"m";
+//NSString *const kFTPushPayloadActivityRewardKey   = @"r";
 
 NSString *const kFTPushPayloadFromUserObjectIdKey = @"fu";
 NSString *const kFTPushPayloadToUserObjectIdKey   = @"tu";

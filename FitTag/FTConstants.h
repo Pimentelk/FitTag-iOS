@@ -41,6 +41,10 @@ extern NSString *const FTPhotoDetailsViewControllerUserDeletedPhotoNotification;
 extern NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification;
 extern NSString *const FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification;
 
+//extern NSString *const FTRewardsCollectionViewControllerUserDidReceiveRewardNotification;
+//extern NSString *const FTRewardsCollectionViewControllerUserDidRedeemRewardNotification;
+//extern NSString *const FTRewardsCollectionViewControllerUserDidDeleteRewardNotification;
+
 #pragma mark - User Info Keys
 extern NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey;
 extern NSString *const FTVideoDetailsViewControllerUserLikedUnlikedVideoNotificationUserInfoLikedKey;
@@ -74,6 +78,7 @@ extern NSString *const kFTActivityTypeFollow;
 extern NSString *const kFTActivityTypeComment;
 extern NSString *const kFTActivityTypeJoined;
 extern NSString *const kFTActivityTypeReward;
+extern NSString *const kFTActivityTypeMention;
 
 #pragma mark - PFObject Post Class
 extern NSString *const kFTPostClassKey;
@@ -129,6 +134,7 @@ extern NSString *const kFTRewardsTypeExpired;
 extern NSString *const kFTUserClassKey;
 
 // Field keys
+extern NSString *const kFTUserPromoVideo;
 extern NSString *const kFTUserObjectIdKey;
 extern NSString *const kFTUserUsernameKey;
 extern NSString *const kFTUserDisplayNameKey;
