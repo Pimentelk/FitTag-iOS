@@ -6,9 +6,10 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-@interface FTInspirationViewController : UICollectionViewController
+@interface FTInspirationViewController : UICollectionViewController <CLLocationManagerDelegate>
 @property (nonatomic, strong) NSArray *interests;
-@property (nonatomic, strong) NSDictionary *usersToRecommend;
-@property (nonatomic, strong) NSDictionary *usersToRecommendInterests;
-@property (nonatomic, strong) NSArray *userKeys;
+@property (nonatomic, strong) NSArray *usersToRecommend;
+//@property (nonatomic, strong) NSDictionary *usersToRecommend;
+//@property (nonatomic, strong) NSDictionary *usersToRecommendInterests;
+//@property (nonatomic, strong) NSArray *userKeys;
 @end
