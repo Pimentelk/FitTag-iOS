@@ -20,6 +20,7 @@
 @property (nonatomic, strong) UIBarButtonItem *dismissProfileButton;
 @property (nonatomic, strong) FTUserProfileViewController *profileViewController;
 @property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
+@property (nonatomic, strong) PFObject *currentPostMoreOption;
 @end
 
 @implementation FTTimelineViewController
@@ -596,25 +597,35 @@
     }
 }
 
-- (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapCommentOnGalleryButton:(UIButton *)button  gallery:(PFObject *)gallery {
-    NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapCommentOnGalleryButton:gallery:");
+- (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapCommentOnGalleryButton:(UIButton *)button
+                gallery:(PFObject *)gallery {
+    
+    //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapCommentOnGalleryButton:gallery:");
     FTPostDetailsViewController *photoDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:gallery AndType:kFTPostTypeGallery];
     [self.navigationController pushViewController:photoDetailsVC animated:YES];
 }
 
-- (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapMoreButton:(UIButton *)button gallery:(PFObject *)gallery{
-    NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapImageInGalleryAction:gallery:");    
-    [self actionSheetAlert];
+- (void)galleryCellView:(FTGalleryCell *)galleryCellView
+       didTapMoreButton:(UIButton *)button
+                gallery:(PFObject *)gallery{
+    
+    //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapImageInGalleryAction:gallery:");
+    [self actionSheetAlert:gallery];
 }
 
-- (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapImageInGalleryAction:(UIButton *)button gallery:(PFObject *)gallery {
-    NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapImageInGalleryAction:gallery:");
+- (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapImageInGalleryAction:(UIButton *)button
+                gallery:(PFObject *)gallery {
+    
+    //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapImageInGalleryAction:gallery:");
     FTPostDetailsViewController *galleryDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:gallery AndType:kFTPostTypeGallery];
     [self.navigationController pushViewController:galleryDetailsVC animated:YES];
 }
 
-- (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapLocation:(UIButton *)button gallery:(PFObject *)gallery {
-    NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
+- (void)galleryCellView:(FTGalleryCell *)galleryCellView
+         didTapLocation:(UIButton *)button
+                gallery:(PFObject *)gallery {
+    
+    //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
     // Map Home View
     FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
     PFGeoPoint *geoPoint = [gallery objectForKey:kFTPostLocationKey];
@@ -629,22 +640,29 @@
 
 #pragma mark - FTVideoCellViewDelegate
 
-- (void)videoCellView:(FTVideoCell *)videoCellView didTapUserButton:(UIButton *)button user:(PFUser *)user{
-    NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapUserButton:user:");
+- (void)videoCellView:(FTVideoCell *)videoCellView
+     didTapUserButton:(UIButton *)button
+                 user:(PFUser *)user {
+    
+    //NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapUserButton:user:");
     // Push account view controller
     [profileViewController setUser:user];
     [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
 
-- (void)videoCellView:(FTVideoCell *)videoCellView didTapCommentOnVideoButton:(UIButton *)button video:(PFObject *)video {
-    NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapCommentOnVideoButton:video:");
+- (void)videoCellView:(FTVideoCell *)videoCellView didTapCommentOnVideoButton:(UIButton *)button
+                video:(PFObject *)video {
+    //NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapCommentOnVideoButton:video:");
     FTPostDetailsViewController *photoDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:video AndType:kFTPostTypeVideo];
     [self.navigationController pushViewController:photoDetailsVC animated:YES];
 }
 
-- (void)videoCellView:(FTVideoCell *)videoCellView didTapLikeVideoButton:(UIButton *)button counter:(UIButton *)counter video:(PFObject *)video {
-    NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapLikeVideoButton:counter:video:");
+- (void)videoCellView:(FTVideoCell *)videoCellView
+didTapLikeVideoButton:(UIButton *)button
+              counter:(UIButton *)counter
+                video:(PFObject *)video {
+    //NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapLikeVideoButton:counter:video:");
     // Disable the button so users cannot send duplicate requests
     [videoCellView shouldEnableLikeButton:NO];
     
@@ -672,7 +690,6 @@
     [counter setTitle:[numberFormatter stringFromNumber:likeCount] forState:UIControlStateNormal];
     
     if (liked) {
-        
         [FTUtility likeVideoInBackground:video block:^(BOOL succeeded, NSError *error) {
             FTVideoCell *actualView = (FTVideoCell *)[self tableView:self.tableView viewForHeaderInSection:counter.tag];
             [actualView shouldEnableLikeButton:YES];
@@ -688,7 +705,6 @@
         }];
         
     } else {
-        
         [FTUtility unlikeVideoInBackground:video block:^(BOOL succeeded, NSError *error) {
             FTVideoCell *actualView = (FTVideoCell *)[self tableView:self.tableView viewForHeaderInSection:counter.tag];
             [actualView shouldEnableLikeButton:YES];
@@ -705,22 +721,34 @@
     }
 }
 
-- (void)actionSheetAlert {
+- (void)actionSheetAlert:(PFObject *)post {
+    
+    self.currentPostMoreOption = nil;
+    self.currentPostMoreOption = post;
+    
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
                                                              delegate:self
                                                     cancelButtonTitle:@"Cancel"
                                                destructiveButtonTitle:nil
-                                                    otherButtonTitles:@"Share on Facebook", @"Tweet", @"Report as Inappropriate",  nil];
+                                                    otherButtonTitles:ACTION_SHARE_ON_FACEBOOK,
+                                                                      ACTION_SHARE_ON_TWITTER,
+                                                                      ACTION_REPORT_INAPPROPRIATE, nil];
     [actionSheet showInView:self.view];
 }
 
-- (void)videoCellView:(FTVideoCell *)videoCellView didTapMoreButton:(UIButton *)button video:(PFObject *)video {
-    NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapMoreButton:video:");
-    [self actionSheetAlert];
+- (void)videoCellView:(FTVideoCell *)videoCellView
+     didTapMoreButton:(UIButton *)button
+                video:(PFObject *)video {
+    
+    //NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapMoreButton:video:");
+    [self actionSheetAlert:video];
 }
 
-- (void)videoCellView:(FTVideoCell *)videoCellView didTapLocation:(UIButton *)button video:(PFObject *)video {
-    NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
+- (void)videoCellView:(FTVideoCell *)videoCellView
+       didTapLocation:(UIButton *)button
+                video:(PFObject *)video {
+    
+    //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
     // Map Home View
     FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
     PFGeoPoint *geoPoint = [video objectForKey:kFTPostLocationKey];
@@ -742,16 +770,20 @@
 
 #pragma mark - FTPhotoCellViewDelegate
 
-- (void)photoCellView:(FTPhotoCell *)photoCellView didTapUserButton:(UIButton *)button user:(PFUser *)user {
-    NSLog(@"FTPhotoTimelineViewController::photoCellView:didTapUserButton:user:");
+- (void)photoCellView:(FTPhotoCell *)photoCellView
+     didTapUserButton:(UIButton *)button
+                 user:(PFUser *)user {
+    //NSLog(@"FTPhotoTimelineViewController::photoCellView:didTapUserButton:user:");
     // Push account view controller
     [profileViewController setUser:user];
     [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
 
-- (void)photoCellView:(FTPhotoCell *)photoCellView didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter photo:(PFObject *)photo {
-    NSLog(@"FTPhotoTimelineViewController::photoCellView:didTapLikePhotoButton:photo:");
+- (void)photoCellView:(FTPhotoCell *)photoCellView
+didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
+                photo:(PFObject *)photo {
+    //NSLog(@"FTPhotoTimelineViewController::photoCellView:didTapLikePhotoButton:photo:");
     //NSLog(@"FTPhotoTimelineViewController::Updating photoCellView:(FTPhotoCell *) %@ didTapLikePhotoButton:(UIButton *) %@ counter:(UIButton *) %@ photo:(PFObject *) %@",photoCellView,button,counter,photo);
     
 	// Disable the button so users cannot send duplicate requests
@@ -816,20 +848,24 @@
     }
 }
 
-- (void)photoCellView:(FTPhotoCell *)photoCellView didTapCommentOnPhotoButton:(UIButton *)button  photo:(PFObject *)photo {
-    NSLog(@"FTPhotoTimelineViewController::photoCellView:didTapCommentOnPhotoButton:photo:");
+- (void)photoCellView:(FTPhotoCell *)photoCellView didTapCommentOnPhotoButton:(UIButton *)button
+                photo:(PFObject *)photo {
+    //NSLog(@"FTPhotoTimelineViewController::photoCellView:didTapCommentOnPhotoButton:photo:");
     FTPostDetailsViewController *postDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:photo AndType:kFTPostTypeVideo];
     [self.navigationController pushViewController:postDetailsVC animated:YES];
 }
 
-- (void)photoCellView:(FTPhotoCell *)photoCellView didTapMoreButton:(UIButton *)button photo:(PFObject *)photo{
-    NSLog(@"FTPhotoTimelineViewController::photoCellView:didTapMoreButton:photo:");
-    
-    [self actionSheetAlert];
+- (void)photoCellView:(FTPhotoCell *)photoCellView
+     didTapMoreButton:(UIButton *)button
+                photo:(PFObject *)photo {
+    //NSLog(@"FTPhotoTimelineViewController::photoCellView:didTapMoreButton:photo:");
+    [self actionSheetAlert:photo];
 }
 
-- (void)photoCellView:(FTPhotoCell *)photoCellView didTapLocation:(UIButton *)button photo:(PFObject *)photo {
-    NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
+- (void)photoCellView:(FTPhotoCell *)photoCellView
+       didTapLocation:(UIButton *)button
+                photo:(PFObject *)photo {
+    //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
     // Map Home View
     FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
     PFGeoPoint *geoPoint = [photo objectForKey:kFTPostLocationKey];
@@ -851,115 +887,27 @@
 
 #pragma mark - UIActionSheetDelegate
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
-    NSLog(@"You have pressed the %@ button", [actionSheet buttonTitleAtIndex:buttonIndex]);
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     
-    if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:@"Share on Facebook"]) {
+    //NSLog(@"You have pressed the %@ button", [actionSheet buttonTitleAtIndex:buttonIndex]);
+    if (!self.currentPostMoreOption) {
+        [[[UIAlertView alloc] initWithTitle:@"Post Error"
+                                    message:@"There was a problem with this post."
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil] show];
+        return;
+    }
+    
+    if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_SHARE_ON_FACEBOOK]) {
         NSLog(@"didTapFacebookShareButtonAction");
         // Check that the user account is linked
-        
-        NSLog(@"isLinkedWithUser");
-        // Check if the Facebook app is installed and we can present the share dialog
-        FBLinkShareParams *params = [[FBLinkShareParams alloc] init];
-        //params.link = [NSURL URLWithString:@"https://developers.facebook.com/docs/ios/share/"];
-        NSString *postId = @"9qObR72LX7";
-        params.link = [NSURL URLWithString:[NSString stringWithFormat:@"http://fittag.com/viewer.php?pid=%@",postId]];
-        
-        // If the Facebook app is installed and we can present the share dialog
-        if ([FBDialogs canPresentShareDialogWithParams:params]) {
-            NSLog(@"Present share dialog");
-            // Present share dialog
-            [FBDialogs presentShareDialogWithLink:params.link
-                                          handler:^(FBAppCall *call, NSDictionary *results, NSError *error) {
-                                              if(error) {
-                                                  // An error occurred, we need to handle the error
-                                                  // See: https://developers.facebook.com/docs/ios/errors
-                                                  NSLog(@"Error publishing story: %@", error.description);
-                                                  
-                                              } else {
-                                                  // Success
-                                                  NSLog(@"result %@", results);
-                                                  if ([[results objectForKey:@"completionGesture"] isEqualToString:@"cancel"]) {
-                                                      
-                                                  } else if ([[results objectForKey:@"completionGesture"] isEqualToString:@"post"]) {
-                                                      
-                                                  }
-                                              }
-                                          }];
-        } else {
-            NSLog(@"Show the feed dialog");
-            // Put together the dialog parameters
-            NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                           @"Sharing Tutorial", @"name",
-                                           @"Build great social apps and get more installs.", @"caption",
-                                           @"Allow your users to share stories on Facebook from your app using the iOS SDK.", @"description",
-                                           @"https://developers.facebook.com/docs/ios/share/", @"link",
-                                           @"http://i.imgur.com/g3Qc1HN.png", @"picture",
-                                           nil];
-            
-            // Show the feed dialog
-            [FBWebDialogs presentFeedDialogModallyWithSession:nil
-                                                   parameters:params
-                                                      handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
-                                                          if (error) {
-                                                              // An error occurred, we need to handle the error
-                                                              // See: https://developers.facebook.com/docs/ios/errors
-                                                              NSLog(@"Error publishing story: %@", error.description);
-                                                          } else {
-                                                              if (result == FBWebDialogResultDialogNotCompleted) {
-                                                                  // User cancelled.
-                                                                  NSLog(@"User cancelled.");
-                                                              } else {
-                                                                  // Handle the publish feed callback
-                                                                  NSDictionary *urlParams = [FTUtility parseURLParams:[resultURL query]];
-                                                                  
-                                                                  if (![urlParams valueForKey:@"post_id"]) {
-                                                                      // User cancelled.
-                                                                      NSLog(@"User cancelled.");
-                                                                  } else {
-                                                                      // User clicked the Share button
-                                                                      NSString *result = [NSString stringWithFormat: @"Posted story, id: %@", [urlParams valueForKey:@"post_id"]];
-                                                                      NSLog(@"result %@", result);
-                                                                      
-                                                                  }
-                                                              }
-                                                          }
-                                                      }];
-        }
+        [FTUtility prepareToSharePostOnFacebook:self.currentPostMoreOption];
+    } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_SHARE_ON_TWITTER]) {
+        [FTUtility prepareToSharePostOnTwitter:self.currentPostMoreOption];
+    } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_REPORT_INAPPROPRIATE]) {
+        [self reportPostInappropriate];
     }
-    
-    if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:@"Tweet"]) {
-        if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
-            if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
-                SLComposeViewController *tweetSheet = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
-                [tweetSheet setInitialText:@"Test post: Check us out on #Fittag http://fittag.com"];
-                [self presentViewController:tweetSheet animated:YES completion:^{
-                    tweetSheet.completionHandler = ^(SLComposeViewControllerResult res) {
-                        if (res == SLComposeViewControllerResultDone) {
-                            // Composed
-                        } else if (res == SLComposeViewControllerResultCancelled) {
-                            // Cancelled
-                        }
-                    };
-                }];
-            }
-        } else {
-            // Twitter account is not linked
-            [[[UIAlertView alloc] initWithTitle:@"Twitter Not Linked"
-                                        message:@"Please visit the shared settings to link your Twitter account."
-                                       delegate:nil
-                              cancelButtonTitle:@"OK"
-                              otherButtonTitles:nil] show];
-        }
-    }
-    
-    /*
-    [[[UIAlertView alloc] initWithTitle:@"Disabled"
-                                message:@"Hey! These controls have been disabled :("
-                               delegate:nil
-                      cancelButtonTitle:@"ok"
-                      otherButtonTitles:nil] show];
-     */
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -973,6 +921,10 @@
 }
 
 #pragma mark - ()
+
+- (void)reportPostInappropriate {
+    
+}
 
 - (NSIndexPath *)indexPathForObject:(PFObject *)targetObject {
     for (int i = 0; i < self.objects.count; i++) {
