@@ -111,7 +111,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
     [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
     
     profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     
@@ -275,12 +275,18 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     NSString *trimmedComment = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if (trimmedComment.length != 0 && [self.post objectForKey:kFTPostUserKey]) {
+        
+        NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[FTUtility extractHashtagsFromText:trimmedComment]];
+        NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[FTUtility extractMentionsFromText:trimmedComment]];
+        
         PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
         [comment setObject:trimmedComment forKey:kFTActivityContentKey]; // Set comment text
         [comment setObject:[self.post objectForKey:kFTPostUserKey] forKey:kFTActivityToUserKey]; // Set toUser
         [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey]; // Set fromUser
         [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
         [comment setObject:self.post forKey:kFTActivityPostKey];
+        [comment setObject:hashtags forKey:kFTActivityHashtagKey];
+        [comment setObject:mentions forKey:kFTActivityMentionKey];
         
         PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];
         [ACL setPublicReadAccess:YES];
