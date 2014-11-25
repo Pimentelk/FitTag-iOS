@@ -47,8 +47,8 @@
 @implementation FTBusinessProfileHeaderView
 @synthesize profileFilter;
 @synthesize followerCountLabel;
-@synthesize photoCountIconImageView;
 @synthesize followingCountLabel;
+@synthesize photoCountIconImageView;
 @synthesize businessMenuBackground;
 @synthesize profilePictureImageView;
 @synthesize profilePictureBackgroundView;
@@ -93,26 +93,42 @@
         profilePictureImageView.alpha = 0.0f;
         
         // Followers count UILabel
-        followerCountLabel = [[UILabel alloc] initWithFrame:CGRectMake( 0, profilePictureBackgroundView.frame.size.height,
-                                                                       (self.containerView.bounds.size.width / 2), 30)];
+        CGFloat followLabelsY = profilePictureBackgroundView.frame.size.height;
+        CGFloat followLabelsWidth = self.containerView.bounds.size.width / 2;
+        
+        UITapGestureRecognizer *followerLabelTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                                  action:@selector(didTapFollowerAction:)];
+        [followerLabelTapGesture setNumberOfTapsRequired:1];
+        
+        followerCountLabel = [[UILabel alloc] init];
+        [followerCountLabel setFrame:CGRectMake(0, followLabelsY, followLabelsWidth, 30)];
         [followerCountLabel setTextAlignment:NSTextAlignmentCenter];
         [followerCountLabel setBackgroundColor:[UIColor whiteColor]];
         [followerCountLabel setTextColor:[UIColor blackColor]];
         [followerCountLabel setFont:[UIFont boldSystemFontOfSize:14.0f]];
-        [followingCountLabel.layer setBorderColor:[UIColor colorWithRed:234/255.0f green:234/255.0f blue:234/255.0f alpha:1].CGColor];
-        [followingCountLabel.layer setBorderWidth:1.0f];
+        [followerCountLabel.layer setBorderColor:[UIColor colorWithRed:234/255.0f green:234/255.0f blue:234/255.0f alpha:1].CGColor];
+        [followerCountLabel.layer setBorderWidth:1.0f];
+        [followerCountLabel setUserInteractionEnabled:YES];
+        [followerCountLabel addGestureRecognizer:followerLabelTapGesture];
+        [followerCountLabel setText:@"0 FOLLOWERS"];
         [self.containerView addSubview:followerCountLabel];
         
+        UITapGestureRecognizer *followingLabelTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                                   action:@selector(didTapFollowingAction:)];
+        [followingLabelTapGesture setNumberOfTapsRequired:1];
+        
         // Following count UILabel
-        followingCountLabel = [[UILabel alloc] initWithFrame:CGRectMake(followerCountLabel.frame.size.width + 1,
-                                                                        profilePictureBackgroundView.frame.size.height,
-                                                                        (self.containerView.bounds.size.width / 2), 30)];
+        followingCountLabel = [[UILabel alloc] init];
+        [followingCountLabel setFrame:CGRectMake(followerCountLabel.frame.size.width + 1, followLabelsY, followLabelsWidth, 30)];
         [followingCountLabel setTextAlignment:NSTextAlignmentCenter];
         [followingCountLabel setBackgroundColor:[UIColor whiteColor]];
         [followingCountLabel setTextColor:[UIColor blackColor]];
         [followingCountLabel setFont:[UIFont boldSystemFontOfSize:14.0f]];
         [followingCountLabel.layer setBorderColor:[UIColor colorWithRed:234/255.0f green:234/255.0f blue:234/255.0f alpha:1].CGColor];
         [followingCountLabel.layer setBorderWidth:1.0f];
+        [followingCountLabel setUserInteractionEnabled:YES];
+        [followingCountLabel addGestureRecognizer:followingLabelTapGesture];
+        [followingCountLabel setText:@"0 FOLLOWING"];
         [self.containerView addSubview:followingCountLabel];
         
         // User menu background
@@ -176,9 +192,9 @@
         [gridViewButton setFrame:CGRectMake(0, 0, 35, 35)];
         [gridViewButton setCenter:CGPointMake( 20 + gridViewButton.frame.size.width, profileFilter.frame.size.height / 2)];
         [gridViewButton addTarget:self action:@selector(didTapGridButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [gridViewButton setSelected:NO];
+        [gridViewButton setSelected:YES];
         [profileFilter addSubview:gridViewButton];
-        
+        /*
         businessButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [businessButton setTranslatesAutoresizingMaskIntoConstraints:NO];
         [businessButton setBackgroundImage:[UIImage imageNamed:POSTS_IMAGE] forState:UIControlStateNormal];
@@ -198,6 +214,7 @@
         [taggedInButton addTarget:self action:@selector(didTapTaggedButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [taggedInButton setSelected:NO];
         [profileFilter addSubview:taggedInButton];
+        */
         
         [self.containerView addSubview:profileFilter];
         [self addSubview:self.containerView]; // Add the view
@@ -278,6 +295,20 @@
 }
 
 #pragma mark - ()
+
+- (void)didTapFollowerAction:(id)sender {
+    //NSLog(@"- (void)didTapFollowerAction:(id)sender;");
+    if(delegate && [delegate respondsToSelector:@selector(businessProfileCollectionHeaderView:didTapFollowersButton:)]){
+        [delegate businessProfileCollectionHeaderView:self didTapFollowersButton:sender];
+    }
+}
+
+- (void)didTapFollowingAction:(id)sender {
+    //NSLog(@"- (void)didTapFollowingAction:(id)sender;");
+    if(delegate && [delegate respondsToSelector:@selector(businessProfileCollectionHeaderView:didTapFollowingButton:)]){
+        [delegate businessProfileCollectionHeaderView:self didTapFollowingButton:sender];
+    }
+}
 
 - (void)resetSelectedProfileFilterButtons {
     [gridViewButton setSelected:NO];
@@ -361,9 +392,9 @@
                 //self.navigationItem.rightBarButtonItem = nil;
             } else {
                 if (number == 0) {
-                    [self configureFollowButton];
+                    
                 } else {
-                    [self configureUnfollowButton];
+                    
                 }
             }
         }];
@@ -372,24 +403,53 @@
     [profileBiography setText: [self.business objectForKey:kFTUserBioKey]];
 }
 
-- (void)configureFollowButton {
-    /*
-     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Follow"
-     style:UIBarButtonItemStyleBordered
-     target:self
-     action:@selector(followButtonAction:)];
-     [[FTCache sharedCache] setFollowStatus:NO user:self.user];
-     */
+- (void)followButtonAction:(id)sender {
+    UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    [loadingActivityIndicatorView startAnimating];
+    
+    [FTUtility followUserEventually:self.business block:^(BOOL succeeded, NSError *error) {
+        if (error) {
+            
+        }
+        
+        if (succeeded) {
+            NSLog(@"followButtonAction::succeeded");
+            [self updateFollowingCount];
+        } else {
+            NSLog(@"followButtonAction::error");
+        }
+    }];
 }
 
-- (void)configureUnfollowButton {
-    /*
-     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Unfollow"
-     style:UIBarButtonItemStyleBordered
-     target:self
-     action:@selector(unfollowButtonAction:)];
-     [[FTCache sharedCache] setFollowStatus:YES user:self.user];
-     */
+- (void)unfollowButtonAction:(id)sender {
+    UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    [loadingActivityIndicatorView startAnimating];
+    
+    [FTUtility unfollowUserEventually:self.business block:^(NSError *error) {
+        if (error) {
+            
+        }
+        
+        if (!error) {
+            NSLog(@"unfollowButtonAction::succeeded");
+            [self updateFollowingCount];
+        } else {
+            NSLog(@"unfollowButtonAction::error");
+        }
+    }];
 }
+
+- (void)updateFollowingCount {
+    PFQuery *queryFollowerCount = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [queryFollowerCount whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
+    [queryFollowerCount whereKey:kFTActivityToUserKey equalTo:self.business];
+    [queryFollowerCount setCachePolicy:kPFCachePolicyCacheThenNetwork];
+    [queryFollowerCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+        if (!error) {
+            [followerCountLabel setText:[NSString stringWithFormat:@"%d FOLLOWER%@", number, number==1?@"":@"S"]];
+        }
+    }];
+}
+
 
 @end
