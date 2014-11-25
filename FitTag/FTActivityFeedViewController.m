@@ -13,7 +13,7 @@
 #import "FTLoadMoreCell.h"
 #import "MBProgressHUD.h"
 #import "FTPostDetailsViewController.h"
-#import "FTFindFriendsViewController.h"
+#import "FTFollowFriendsViewController.h"
 
 @interface FTActivityFeedViewController ()
 
@@ -340,10 +340,10 @@
 
 #pragma mark - ()
 
-- (void)inviteFriendsButtonAction:(id)sender {
-    NSLog(@"FTActivityFeedViewController::inviteFriendsButtonAction:");
-    FTFindFriendsViewController *inviteFriendsViewController = [[FTFindFriendsViewController alloc] init];
-    [self.navigationController pushViewController:inviteFriendsViewController animated:YES];
+- (void)followFriendsButtonAction:(id)sender {
+    NSLog(@"FTActivityFeedViewController::followFriendsButtonAction:");
+    FTFollowFriendsViewController *followFriendsViewController = [[FTFollowFriendsViewController alloc] init];
+    [self.navigationController pushViewController:followFriendsViewController animated:YES];
 }
 
 - (void)applicationDidReceiveRemoteNotification:(NSNotification *)note {
