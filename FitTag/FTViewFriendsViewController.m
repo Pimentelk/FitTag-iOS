@@ -82,7 +82,7 @@
     [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
     [followingActivitiesQuery whereKey:kFTActivityFromUserKey equalTo:self.user];
     [followingActivitiesQuery setCachePolicy:kPFCachePolicyNetworkOnly];
-    [followingActivitiesQuery setLimit:100];
+    [followingActivitiesQuery setLimit:1000];
     [followingActivitiesQuery whereKeyExists:kFTActivityToUserKey];
     [followingActivitiesQuery includeKey:kFTActivityToUserKey];
     [followingActivitiesQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -112,7 +112,7 @@
     [followerActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
     [followerActivitiesQuery whereKey:kFTActivityToUserKey equalTo:self.user];
     [followerActivitiesQuery setCachePolicy:kPFCachePolicyNetworkOnly];
-    [followerActivitiesQuery setLimit:100];
+    [followerActivitiesQuery setLimit:1000];
     [followerActivitiesQuery whereKeyExists:kFTActivityFromUserKey];
     [followerActivitiesQuery includeKey:kFTActivityFromUserKey];
     [followerActivitiesQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
