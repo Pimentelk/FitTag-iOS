@@ -168,7 +168,7 @@
         [flowLayout setMinimumInteritemSpacing:0];
         [flowLayout setMinimumLineSpacing:0];
         [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-        [flowLayout setHeaderReferenceSize:CGSizeMake(320,356)];
+        [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
         
         PFUser *business = self.cells[indexPath.row];
         NSLog(@"FTUserProfileCollectionViewController:: business: %@",business);

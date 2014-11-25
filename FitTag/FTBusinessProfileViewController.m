@@ -10,8 +10,9 @@
 #import "FTUserProfileCollectionViewCell.h"
 #import "FTPostDetailsViewController.h"
 #import "FTCamViewController.h"
-//#import "MBProgressHUD.h"
+#import "MBProgressHUD.h"
 #import "FTMapViewController.h"
+#import "FTViewFriendsViewController.h"
 
 #define GRID_SMALL @"SMALLGRID"
 #define GRID_FULL @"FULLGRID"
@@ -25,11 +26,16 @@
 }
 @property (nonatomic, strong) NSArray *cells;
 @property (nonatomic, strong) MFMailComposeViewController *mailer;
+@property (nonatomic, strong) MBProgressHUD *hud;
+@property (nonatomic, strong) FTViewFriendsViewController *viewFriendsViewController;
+@property (nonatomic, strong) MPMoviePlayerViewController *mpViewController;
 @end
 
 @implementation FTBusinessProfileViewController
 @synthesize business;
 @synthesize mailer;
+@synthesize viewFriendsViewController;
+@synthesize mpViewController;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -65,6 +71,18 @@
     [self.collectionView setDelegate: self];
     [self.collectionView setDataSource: self];
     [self queryForTable:self.business];
+    
+    // initialize FTViewFriendsViewController
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
+    [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backIndicator setStyle:UIBarButtonItemStylePlain];
+    [backIndicator setTarget:self];
+    [backIndicator setAction:@selector(didTapBackButtonAction:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    
+    viewFriendsViewController = [[FTViewFriendsViewController alloc] init];
+    [viewFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
+    [viewFriendsViewController setUser:self.business];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -121,16 +139,18 @@
     NSLog(@"indexpath: %ld",(long)indexPath.row);
     if ([cellTab isEqualToString:kFTUserTypeBusiness]) {
         
+        CGFloat itemLength = (self.view.frame.size.width / 3);
+        
         UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-        [flowLayout setItemSize:CGSizeMake(105.5,105)];
+        [flowLayout setItemSize:CGSizeMake(itemLength,itemLength)];
         [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
         [flowLayout setMinimumInteritemSpacing:0];
         [flowLayout setMinimumLineSpacing:0];
-        [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-        [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+        [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+        [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
         
         PFUser *followedBusiness = self.cells[indexPath.row];
-        NSLog(@"FTUserProfileCollectionViewController:: followedBusiness: %@",followedBusiness);
+        //NSLog(@"FTUserProfileCollectionViewController:: followedBusiness: %@",followedBusiness);
         if (followedBusiness) {
             FTBusinessProfileViewController *businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
             [businessProfileViewController setBusiness:followedBusiness];
@@ -138,10 +158,9 @@
         }
         
     } else {
-        
-        FTPostDetailsViewController *postDetailView = [[FTPostDetailsViewController alloc] initWithPost:self.cells[indexPath.row] AndType:nil];
+        FTPostDetailsViewController *postDetailView = [[FTPostDetailsViewController alloc] initWithPost:self.cells[indexPath.row]
+                                                                                                AndType:nil];
         [self.navigationController pushViewController:postDetailView animated:YES];
-        
     }
 }
 
@@ -161,7 +180,6 @@
             [cell setPost:object];
         }
     }
-    
     return cell;
 }
 
@@ -171,30 +189,6 @@
  return CGSizeMake(self.view.frame.size.width, 60);
  }
  */
-
-#pragma mark - MFMessageComposeViewControllerDelegate
-
--(void)mailComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
-    switch (result) {
-        case MFMailComposeResultCancelled:
-            NSLog(@"Mail cancelled: you cancelled the operation and no email message was queued.");
-            break;
-        case MFMailComposeResultSaved:
-            NSLog(@"Mail saved: you saved the email message in the drafts folder.");
-            break;
-        case MFMailComposeResultSent:
-            NSLog(@"Mail send: the email message is queued in the outbox. It is ready to send.");
-            break;
-        //case MFMailComposeResultFailed:
-            //NSLog(@"Mail failed: the email message was not saved or queued, possibly due to an error.");
-            //break;
-        default:
-            NSLog(@"Mail not sent.");
-            break;
-    }
-    // Remove the mail view
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
 
 #pragma mark - Navigation Bar
 
@@ -211,6 +205,7 @@
 
 - (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
                        didTapGetThereButton:(UIButton *)button {
+    
     FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:40.7409816 longitude:-74.03021560000002];
@@ -220,7 +215,6 @@
 
 - (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
                            didTapCallButton:(UIButton *)button {
-    
     
     NSString *phNo = @"+8638525694";
     NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",phNo]];
@@ -240,40 +234,147 @@
 - (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
                           didTapVideoButton:(UIButton *)button {
     
+    if ([business objectForKey:kFTUserPromoVideo]) {
+        PFFile *videoFile = [business objectForKey:kFTUserPromoVideo];
+        NSURL *videoURL = [NSURL URLWithString:videoFile.url];
+        NSLog(@"videoURL:%@",videoURL);
+        
+        mpViewController = [[MPMoviePlayerViewController alloc] initWithContentURL:videoURL];
+        [mpViewController.moviePlayer setScalingMode:MPMovieScalingModeAspectFit];
+        [mpViewController.moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
+        [mpViewController.moviePlayer setShouldAutoplay:NO];
+        [mpViewController.moviePlayer prepareToPlay];
+        [mpViewController.moviePlayer play];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(moviePlayerStateChange:)
+                                                     name:MPMoviePlayerPlaybackStateDidChangeNotification
+                                                   object:mpViewController.moviePlayer];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(loadStateDidChange:)
+                                                     name:MPMoviePlayerLoadStateDidChangeNotification
+                                                   object:mpViewController.moviePlayer];
+        
+        [self presentViewController:mpViewController animated:YES completion:nil];
+        
+    } else {
+        [[[UIAlertView alloc]initWithTitle:@"Alert"
+                                   message:@"No video available!!!"
+                                  delegate:nil
+                         cancelButtonTitle:@"ok"
+                         otherButtonTitles:nil, nil] show];
+    }
 }
+
+- (void)movieFinishedCallBack:(NSNotification *)notification {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:self.mpViewController.moviePlayer];
+}
+
+- (void)loadStateDidChange:(NSNotification *)notification {
+    
+    NSLog(@"loadStateDidChange: %@",notification);
+    
+    if (self.mpViewController.moviePlayer.loadState & MPMovieLoadStatePlayable) {
+        NSLog(@"loadState... MPMovieLoadStatePlayable");
+    }
+    
+    if (self.mpViewController.moviePlayer.loadState & MPMovieLoadStatePlaythroughOK) {
+        //[moviePlayer.view setHidden:NO];
+        
+        NSLog(@"loadState... MPMovieLoadStatePlaythroughOK");
+        //[self.imageView setHidden:YES];
+    }
+    
+    if (self.mpViewController.moviePlayer.loadState & MPMovieLoadStateStalled) {
+        NSLog(@"loadState... MPMovieLoadStateStalled");
+    }
+    
+    if (self.mpViewController.moviePlayer.loadState & MPMovieLoadStateUnknown) {
+        NSLog(@"loadState... MPMovieLoadStateUnknown");
+    }
+}
+
+- (void)moviePlayerStateChange:(NSNotification *)notification{
+    
+    NSLog(@"moviePlayerStateChange: %@",notification);
+    
+    if (self.mpViewController.moviePlayer.loadState & (MPMovieLoadStatePlayable | MPMovieLoadStatePlaythroughOK)) {
+        NSLog(@"loadState... MPMovieLoadStatePlayable | MPMovieLoadStatePlaythroughOK..");
+        //[self.playButton setHidden:YES];
+        
+        if (self.mpViewController.moviePlayer.playbackState & MPMoviePlaybackStatePlaying){
+            NSLog(@"moviePlayer... MPMoviePlaybackStatePlaying");
+            //[UIView animateWithDuration:1 animations:^{
+                //[self.mpViewController.moviePlayer.view setAlpha:1];
+            //}];
+        }
+    }
+    
+    if (self.mpViewController.moviePlayer.playbackState & MPMoviePlaybackStatePlaying){
+        NSLog(@"moviePlayer... MPMoviePlaybackStatePlaying");
+    }
+    
+    if (self.mpViewController.moviePlayer.playbackState & MPMoviePlaybackStateStopped){
+        //[self.playButton setHidden:NO];
+        
+        NSLog(@"moviePlayer... MPMoviePlaybackStateStopped");
+    }
+    
+    if (self.mpViewController.moviePlayer.playbackState & MPMoviePlaybackStatePaused){
+        //[self.playButton setHidden:NO];
+        /*
+        [UIView animateWithDuration:0.3 animations:^{
+            [self.mpViewController.moviePlayer.view setAlpha:0];
+            [self.mpViewController.moviePlayer prepareToPlay];
+        }];
+        */
+        NSLog(@"moviePlayer... MPMoviePlaybackStatePaused");
+    }
+    
+    if (self.mpViewController.moviePlayer.playbackState & MPMoviePlaybackStateInterrupted){
+        NSLog(@"moviePlayer... Interrupted");
+        //[self.moviePlayer stop];
+    }
+    
+    if (self.mpViewController.moviePlayer.playbackState & MPMoviePlaybackStateSeekingForward){
+        NSLog(@"moviePlayer... Forward");
+    }
+    
+    if (self.mpViewController.moviePlayer.playbackState & MPMoviePlaybackStateSeekingBackward){
+        NSLog(@"moviePlayer... Backward");
+    }
+}
+
 
 - (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
                           didTapEmailButton:(UIButton *)button {
-    
     if ([MFMailComposeViewController canSendMail]) {
         
         mailer = [[MFMailComposeViewController alloc] init];
         self.mailer.mailComposeDelegate = self;
-        [mailer setSubject:@"A Message from MobileTuts+"];
-        [mailer setToRecipients:[NSArray arrayWithObjects:@"de56ep@gmail.com", nil]];
-        /*
-        NSArray *toRecipients = [NSArray arrayWithObjects:@"fisrtMail@<span class="skimlinks-unlinked">example.com</span>", @"secondMail@<span class="skimlinks-unlinked">example.com</span>", nil];
-        */
+        [mailer setSubject:MAIL_BUSINESS_SUBJECT];
+        //[mailer setToRecipients:[NSArray arrayWithObjects:MAIL_FEEDBACK_EMAIL, nil]];
+        if ([business objectForKey:kFTUserEmailKey]) {
+            [mailer setToRecipients:[NSArray arrayWithObjects:[business objectForKey:kFTUserEmailKey], nil]];
+        } else {
+            [[[UIAlertView alloc] initWithTitle:MAIL_FAIL
+                                        message:MAIL_ERROR
+                                       delegate:nil
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles: nil] show];
+            return;
+        }
         
-        //[mailer setToRecipients:@"de56ep@gmail.com"];
-        
-        //UIImage *myImage = [UIImage imageNamed:@"<span class="skimlinks-unlinked">mobiletuts-logo.png</span>"];
-        //NSData *imageData = UIImagePNGRepresentation(myImage);
-        //[mailer addAttachmentData:imageData mimeType:@"image/png" fileName:@"mobiletutsImage"];
-        
-        NSString *emailBody = @"Message body here";
-        [mailer setMessageBody:emailBody isHTML:NO];
-        
+        [mailer setMessageBody:EMPTY_STRING isHTML:NO];
         [self presentViewController:mailer animated:YES completion:nil];
         
     } else {
-        
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Failure"
-                                                        message:@"Your device doesn't support the composer sheet"
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles: nil];
-        [alert show];
+        [[[UIAlertView alloc] initWithTitle:MAIL_FAIL
+                                    message:MAIL_NOT_SUPPORTED
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles: nil] show];
     }
 }
 
@@ -389,6 +490,61 @@
 - (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
                        didTapSettingsButton:(id)sender {
     
+}
+
+- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
+                      didTapFollowersButton:(id)sender {
+    [viewFriendsViewController queryForFollowers];
+    [self.navigationController pushViewController:viewFriendsViewController animated:YES];
+}
+
+- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
+                      didTapFollowingButton:(id)sender {
+    [viewFriendsViewController queryForFollowing];
+    [self.navigationController pushViewController:viewFriendsViewController animated:YES];
+    
+}
+
+#pragma mark - MFMessageComposeViewControllerDelegate
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller
+          didFinishWithResult:(MFMailComposeResult)result
+                        error:(NSError *)error {
+    if (!error) {
+        switch (result) {
+            case MFMailComposeResultCancelled:
+                NSLog(MAIL_CANCELLED);
+                break;
+            case MFMailComposeResultSaved:
+                NSLog(MAIL_SAVED);
+                break;
+            case MFMailComposeResultSent:
+                NSLog(MAIL_SENT);
+                
+                self.hud = [MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
+                self.hud.mode = MBProgressHUDModeText;
+                self.hud.margin = 10.f;
+                self.hud.yOffset = 150.f;
+                self.hud.removeFromSuperViewOnHide = YES;
+                self.hud.userInteractionEnabled = NO;
+                self.hud.labelText = MAIL_SENT;
+                [self.hud hide:YES afterDelay:3];
+                
+                break;
+            default:
+                NSLog(MAIL_FAIL);
+                break;
+        }
+        // Remove the mail view
+        [self dismissViewControllerAnimated:YES completion:nil];
+    } else {
+        NSLog(@"error %@",error);
+        [[[UIAlertView alloc] initWithTitle:@"Error"
+                                    message:@"Could not send mail."
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles: nil] show];
+    }
 }
 
 @end
