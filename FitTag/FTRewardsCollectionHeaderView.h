@@ -10,9 +10,9 @@
 
 @interface FTRewardsCollectionHeaderView : UICollectionReusableView
 
-@property (nonatomic, strong) UIButton *activeButton;
-@property (nonatomic, strong) UIButton *usedButton;
-@property (nonatomic, strong) UIButton *expiredButton;
+@property (nonatomic, strong) UILabel *activeTab;
+@property (nonatomic, strong) UILabel *usedTab;
+@property (nonatomic, strong) UILabel *expiredTab;
 
 /*! @name Delegate */
 @property (nonatomic,weak) id <FTRewardsCollectionHeaderViewDelegate> delegate;
@@ -21,15 +21,14 @@
  Initializes the view with the specified frame
  */
 - (id)initWithFrame:(CGRect)frame;
-- (void)setReward:(NSInteger)cap;
-- (void)clearSelectedButtons;
+//- (void)setReward:(NSInteger)cap;
 @end
 
 @protocol FTRewardsCollectionHeaderViewDelegate <NSObject>
 @optional
 
-- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapActiveButton:(UIButton *)button;
-- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapUsedButton:(UIButton *)button;
-- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapExpiredButton:(UIButton *)button;
+- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapActiveTab:(id)tab;
+- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapUsedTab:(id)tab;
+- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapExpiredTab:(id)tab;
 
 @end
