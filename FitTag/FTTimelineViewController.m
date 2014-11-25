@@ -95,8 +95,8 @@
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
     
     profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
 }
@@ -603,13 +603,8 @@
 }
 
 - (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapMoreButton:(UIButton *)button gallery:(PFObject *)gallery{
-    NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapImageInGalleryAction:gallery:");
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-                                                             delegate:self
-                                                    cancelButtonTitle:@"Cancel"
-                                               destructiveButtonTitle:nil
-                                                    otherButtonTitles:@"ReTag", @"Share on Facebook", @"Tweet", @"Report as Inappropriate",  nil];
-    [actionSheet showInView:self.view];
+    NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapImageInGalleryAction:gallery:");    
+    [self actionSheetAlert];
 }
 
 - (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapImageInGalleryAction:(UIButton *)button gallery:(PFObject *)gallery {
@@ -710,14 +705,18 @@
     }
 }
 
-- (void)videoCellView:(FTVideoCell *)videoCellView didTapMoreButton:(UIButton *)button video:(PFObject *)video {
-    NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapMoreButton:video:");
+- (void)actionSheetAlert {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
                                                              delegate:self
                                                     cancelButtonTitle:@"Cancel"
                                                destructiveButtonTitle:nil
-                                                    otherButtonTitles:@"ReTag", @"Share on Facebook", @"Tweet", @"Report as Inappropriate",  nil];
+                                                    otherButtonTitles:@"Share on Facebook", @"Tweet", @"Report as Inappropriate",  nil];
     [actionSheet showInView:self.view];
+}
+
+- (void)videoCellView:(FTVideoCell *)videoCellView didTapMoreButton:(UIButton *)button video:(PFObject *)video {
+    NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapMoreButton:video:");
+    [self actionSheetAlert];
 }
 
 - (void)videoCellView:(FTVideoCell *)videoCellView didTapLocation:(UIButton *)button video:(PFObject *)video {
@@ -825,12 +824,8 @@
 
 - (void)photoCellView:(FTPhotoCell *)photoCellView didTapMoreButton:(UIButton *)button photo:(PFObject *)photo{
     NSLog(@"FTPhotoTimelineViewController::photoCellView:didTapMoreButton:photo:");
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-                                                             delegate:self
-                                                    cancelButtonTitle:@"Cancel"
-                                               destructiveButtonTitle:nil
-                                                    otherButtonTitles:@"ReTag", @"Share on Facebook", @"Tweet", @"Report as Inappropriate",  nil];
-    [actionSheet showInView:self.view];
+    
+    [self actionSheetAlert];
 }
 
 - (void)photoCellView:(FTPhotoCell *)photoCellView didTapLocation:(UIButton *)button photo:(PFObject *)photo {
@@ -857,12 +852,114 @@
 #pragma mark - UIActionSheetDelegate
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
-    //NSLog(@"You have pressed the %@ button", [actionSheet buttonTitleAtIndex:buttonIndex]);
+    NSLog(@"You have pressed the %@ button", [actionSheet buttonTitleAtIndex:buttonIndex]);
+    
+    if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:@"Share on Facebook"]) {
+        NSLog(@"didTapFacebookShareButtonAction");
+        // Check that the user account is linked
+        
+        NSLog(@"isLinkedWithUser");
+        // Check if the Facebook app is installed and we can present the share dialog
+        FBLinkShareParams *params = [[FBLinkShareParams alloc] init];
+        //params.link = [NSURL URLWithString:@"https://developers.facebook.com/docs/ios/share/"];
+        NSString *postId = @"9qObR72LX7";
+        params.link = [NSURL URLWithString:[NSString stringWithFormat:@"http://fittag.com/viewer.php?pid=%@",postId]];
+        
+        // If the Facebook app is installed and we can present the share dialog
+        if ([FBDialogs canPresentShareDialogWithParams:params]) {
+            NSLog(@"Present share dialog");
+            // Present share dialog
+            [FBDialogs presentShareDialogWithLink:params.link
+                                          handler:^(FBAppCall *call, NSDictionary *results, NSError *error) {
+                                              if(error) {
+                                                  // An error occurred, we need to handle the error
+                                                  // See: https://developers.facebook.com/docs/ios/errors
+                                                  NSLog(@"Error publishing story: %@", error.description);
+                                                  
+                                              } else {
+                                                  // Success
+                                                  NSLog(@"result %@", results);
+                                                  if ([[results objectForKey:@"completionGesture"] isEqualToString:@"cancel"]) {
+                                                      
+                                                  } else if ([[results objectForKey:@"completionGesture"] isEqualToString:@"post"]) {
+                                                      
+                                                  }
+                                              }
+                                          }];
+        } else {
+            NSLog(@"Show the feed dialog");
+            // Put together the dialog parameters
+            NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                           @"Sharing Tutorial", @"name",
+                                           @"Build great social apps and get more installs.", @"caption",
+                                           @"Allow your users to share stories on Facebook from your app using the iOS SDK.", @"description",
+                                           @"https://developers.facebook.com/docs/ios/share/", @"link",
+                                           @"http://i.imgur.com/g3Qc1HN.png", @"picture",
+                                           nil];
+            
+            // Show the feed dialog
+            [FBWebDialogs presentFeedDialogModallyWithSession:nil
+                                                   parameters:params
+                                                      handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
+                                                          if (error) {
+                                                              // An error occurred, we need to handle the error
+                                                              // See: https://developers.facebook.com/docs/ios/errors
+                                                              NSLog(@"Error publishing story: %@", error.description);
+                                                          } else {
+                                                              if (result == FBWebDialogResultDialogNotCompleted) {
+                                                                  // User cancelled.
+                                                                  NSLog(@"User cancelled.");
+                                                              } else {
+                                                                  // Handle the publish feed callback
+                                                                  NSDictionary *urlParams = [FTUtility parseURLParams:[resultURL query]];
+                                                                  
+                                                                  if (![urlParams valueForKey:@"post_id"]) {
+                                                                      // User cancelled.
+                                                                      NSLog(@"User cancelled.");
+                                                                  } else {
+                                                                      // User clicked the Share button
+                                                                      NSString *result = [NSString stringWithFormat: @"Posted story, id: %@", [urlParams valueForKey:@"post_id"]];
+                                                                      NSLog(@"result %@", result);
+                                                                      
+                                                                  }
+                                                              }
+                                                          }
+                                                      }];
+        }
+    }
+    
+    if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:@"Tweet"]) {
+        if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
+            if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
+                SLComposeViewController *tweetSheet = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+                [tweetSheet setInitialText:@"Test post: Check us out on #Fittag http://fittag.com"];
+                [self presentViewController:tweetSheet animated:YES completion:^{
+                    tweetSheet.completionHandler = ^(SLComposeViewControllerResult res) {
+                        if (res == SLComposeViewControllerResultDone) {
+                            // Composed
+                        } else if (res == SLComposeViewControllerResultCancelled) {
+                            // Cancelled
+                        }
+                    };
+                }];
+            }
+        } else {
+            // Twitter account is not linked
+            [[[UIAlertView alloc] initWithTitle:@"Twitter Not Linked"
+                                        message:@"Please visit the shared settings to link your Twitter account."
+                                       delegate:nil
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil] show];
+        }
+    }
+    
+    /*
     [[[UIAlertView alloc] initWithTitle:@"Disabled"
                                 message:@"Hey! These controls have been disabled :("
                                delegate:nil
                       cancelButtonTitle:@"ok"
                       otherButtonTitles:nil] show];
+     */
 }
 
 #pragma mark - UIScrollViewDelegate
