@@ -57,7 +57,7 @@
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
     [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(320,335)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
     
     profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
 }
