@@ -68,6 +68,14 @@
 @optional
 
 /*!
+ Sent to the delegate when the more button is tapped
+ @param button the tapped UIButton
+ @param user the PFUser for the photograper
+ */
+
+- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView didTapMoreButton:(UIButton *)button;
+
+/*!
  Sent to the delegate when the photgrapher's name/avatar is tapped
  @param button the tapped UIButton
  @param user the PFUser for the photograper

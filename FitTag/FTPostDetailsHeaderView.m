@@ -410,6 +410,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [moreButton setBackgroundColor:[UIColor clearColor]];
     [moreButton setBackgroundImage:[UIImage imageNamed:ACTION_MORE] forState:UIControlStateNormal];
     [moreButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
+    [moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [previewButtons addSubview:moreButton];
     
     [self bringSubviewToFront:previewButtons];
@@ -593,6 +594,12 @@ static TTTTimeIntervalFormatter *timeFormatter;
 }
 
 #pragma mark - ()
+
+- (void)didTapMoreButtonAction:(UIButton *)button {
+    if (delegate && [delegate respondsToSelector:@selector(postDetailsHeaderView:didTapMoreButton:)]) {
+        [delegate postDetailsHeaderView:self didTapMoreButton:button];
+    }
+}
 
 - (void)killScroll {
     self.carousel.scrollEnabled = NO;
