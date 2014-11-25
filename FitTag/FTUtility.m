@@ -16,6 +16,7 @@
 
 #import "FTUtility.h"
 #import "UIImage+ResizeAdditions.h"
+#import "MBProgressHUD.h"
 
 @implementation FTUtility
 
@@ -362,6 +363,7 @@
                                           
                                           // Link posted successfully to Facebook
                                           //NSLog(@"result: %@", result);
+                                          [FTUtility showHudMessage:@"Shared to Facebook" WithDuration:3];
                                       } else {
                                           NSLog(@"startWithGraphPath:error");
                                           
@@ -470,11 +472,84 @@
     }
 }
 
++ (void)prepareToSharePostOnFacebook:(PFObject *)post {
+    NSLog(@"sharePostOnFacebook");
+    
+    if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
+        
+        // Facebook account is linked
+        NSString *description = EMPTY_STRING;
+        PFFile *caption = nil;
+        
+        if ([post objectForKey:kFTPostImageKey]) {
+            caption = [post objectForKey:kFTPostImageKey];
+        }
+        
+        if (!post.objectId) {
+            [[[UIAlertView alloc] initWithTitle:@"Post Error"
+                                        message:@"There was a problem sharing this post to facebook."
+                                       delegate:nil
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil] show];
+            return;
+        }
+        
+        if (!caption) {
+            [[[UIAlertView alloc] initWithTitle:@"Post Error"
+                                        message:@"There was a problem sharing this post to facebook."
+                                       delegate:nil
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil] show];
+            return;
+        }
+        
+        NSString *link = [NSString stringWithFormat:@"http://fittag.com/viewer.php?pid=%@",post.objectId];
+        
+        if (caption.url) {
+            [FTUtility shareCapturedMomentOnFacebook:[NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                                      @"Captured Healthy Moment", @"name",
+                                                      @"Healthy moment was shared via #FitTag.", @"caption",
+                                                      description, @"description",
+                                                      link, @"link",
+                                                      caption.url, @"picture", nil]];
+        }
+        
+    } else {
+        
+        NSLog(@"is not linked with user...");
+        [[[UIAlertView alloc] initWithTitle:@"Facebook Not Linked"
+                                    message:@"Please visit the shared settings to link your FaceBook account."
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil] show];
+        
+    }
+}
+
 #pragma mark Twitter Update
+
++ (void)prepareToSharePostOnTwitter:(PFObject *)post {
+    
+    if (post && [PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
+        
+        NSString *status = [NSString stringWithFormat:@"Captured a healthy moment via #FitTag http://fittag.com/viewer.php?pid=%@",post.objectId];
+        [FTUtility shareCapturedMomentOnTwitter:status];
+        
+    } else {
+        // Twitter account is not linked
+        [[[UIAlertView alloc] initWithTitle:@"Twitter Not Linked"
+                                    message:@"Please visit the shared settings to link your Twitter account."
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil] show];
+    }
+}
 
 + (void)shareCapturedMomentOnTwitter:(NSString *)status {
     
     if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
+        
+        [FTUtility showHudMessage:@"Posting to Twitter" WithDuration:3];
         
         ACAccountStore *twitterAccountStore = [[ACAccountStore alloc] init];
         ACAccountType *TWaccountType= [twitterAccountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
@@ -496,8 +571,8 @@
                                                           
                                                           request.account = [accounts lastObject];
                                                           [request performRequestWithHandler:^(NSData *data, NSHTTPURLResponse *response, NSError *error) {
-                                                              
-                                                              if(!error){
+                                                              if (!error) {
+                                                                  
                                                                   NSLog(@"Not an error...");
                                                                   
                                                                   NSError *listError = nil;
@@ -507,13 +582,13 @@
                                                                   
                                                                   NSLog(@"list:%@",list);
                                                                   
-                                                                  if(![list objectForKey:@"errors"]){
+                                                                  if (![list objectForKey:@"errors"]) {
                                                                       if([list objectForKey:@"error"] != nil){
                                                                           //Delegate For Fail
                                                                           NSLog(@"error:%@",[list objectForKey:@"error"]);
                                                                           return;
                                                                       }
-                                                                  }
+                                                                  }                                                                  
                                                                   
                                                               } else {
                                                                   NSLog(@"error:%@",error);
@@ -540,23 +615,28 @@
 #pragma mark Display Name
 
 + (NSString *)firstNameForDisplayName:(NSString *)displayName {
+    
     if (!displayName || displayName.length == 0) {
         return @"Someone";
     }
     
     NSArray *displayNameComponents = [displayName componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     NSString *firstName = [displayNameComponents objectAtIndex:0];
+    
     if (firstName.length > 100) {
         // truncate to 100 so that it fits in a Push payload
         firstName = [firstName substringToIndex:100];
     }
+    
     return firstName;
 }
 
 
 #pragma mark User Following
 
-+ (void)followUserInBackground:(PFUser *)user block:(void (^)(BOOL succeeded, NSError *error))completionBlock {
++ (void)followUserInBackground:(PFUser *)user
+                         block:(void (^)(BOOL succeeded, NSError *error))completionBlock {
+    
     if ([[user objectId] isEqualToString:[[PFUser currentUser] objectId]]) {
         return;
     }
@@ -575,10 +655,13 @@
             completionBlock(succeeded, error);
         }
     }];
+    
     [[FTCache sharedCache] setFollowStatus:YES user:user];
 }
 
-+ (void)followUserEventually:(PFUser *)user block:(void (^)(BOOL succeeded, NSError *error))completionBlock {
++ (void)followUserEventually:(PFUser *)user
+                       block:(void (^)(BOOL succeeded, NSError *error))completionBlock {
+    
     if ([[user objectId] isEqualToString:[[PFUser currentUser] objectId]]) {
         return;
     }
@@ -596,14 +679,17 @@
     [[FTCache sharedCache] setFollowStatus:YES user:user];
 }
 
-+ (void)followUsersEventually:(NSArray *)users block:(void (^)(BOOL succeeded, NSError *error))completionBlock {
++ (void)followUsersEventually:(NSArray *)users
+                        block:(void (^)(BOOL succeeded, NSError *error))completionBlock {
+    
     for (PFUser *user in users) {
         [FTUtility followUserEventually:user block:completionBlock];
         [[FTCache sharedCache] setFollowStatus:YES user:user];
     }
 }
 
-+ (void)unfollowUserEventually:(PFUser *)user block:(void (^)(NSError *error))completionBlock {
++ (void)unfollowUserEventually:(PFUser *)user
+                         block:(void (^)(NSError *error))completionBlock {
     
     //[FTUtility unfollowUserEventually:user block:completionBlock];
     //[[FTCache sharedCache] setFollowStatus:NO user:user];
@@ -625,10 +711,12 @@
             completionBlock(error);
         }
     }];
+    
     [[FTCache sharedCache] setFollowStatus:NO user:user];
 }
 
 + (void)unfollowUserEventually:(PFUser *)user {
+    
     PFQuery *query = [PFQuery queryWithClassName:kFTActivityClassKey];
     [query whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
     [query whereKey:kFTActivityToUserKey equalTo:user];
@@ -642,10 +730,12 @@
             }
         }
     }];
+    
     [[FTCache sharedCache] setFollowStatus:NO user:user];
 }
 
 + (void)unfollowUsersEventually:(NSArray *)users {
+    
     PFQuery *query = [PFQuery queryWithClassName:kFTActivityClassKey];
     [query whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
     [query whereKey:kFTActivityToUserKey containedIn:users];
@@ -655,6 +745,7 @@
             [activity deleteEventually];
         }
     }];
+    
     for (PFUser *user in users) {
         [[FTCache sharedCache] setFollowStatus:NO user:user];
     }
@@ -663,7 +754,9 @@
 
 #pragma mark Activities
 
-+ (PFQuery *)queryForActivitiesOnPost:(PFObject *)post cachePolicy:(PFCachePolicy)cachePolicy {
++ (PFQuery *)queryForActivitiesOnPost:(PFObject *)post
+                          cachePolicy:(PFCachePolicy)cachePolicy {
+    
     PFQuery *queryLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
     [queryLikes whereKey:kFTActivityPostKey equalTo:post];
     [queryLikes whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
@@ -917,6 +1010,21 @@
         [matchedResults addObject:word];
     }
     return matchedResults;
+}
+
+#pragma mark showHudMessage
+
++ (void)showHudMessage:(NSString *)message WithDuration:(NSTimeInterval)duration {
+    //NSLog(@"%@::showHudMessage:WithDuration:",VIEWCONTROLLER_SETTINGS_DETAIL);    
+    UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:keyWindow animated:YES];
+    hud.mode = MBProgressHUDModeText;
+    hud.margin = 10.f;
+    hud.yOffset = 0.f;
+    hud.removeFromSuperViewOnHide = YES;
+    hud.userInteractionEnabled = NO;
+    hud.labelText = message;
+    [hud hide:YES afterDelay:duration];
 }
 
 @end

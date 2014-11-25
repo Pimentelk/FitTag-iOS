@@ -14,6 +14,8 @@
 
 + (void)processFacebookProfilePictureData:(NSData *)data;
 
++ (void)prepareToSharePostOnFacebook:(PFObject *)post;
++ (void)prepareToSharePostOnTwitter:(PFObject *)post;
 + (void)shareCapturedMomentOnFacebook:(NSMutableDictionary *)moment;
 + (void)shareCapturedMomentOnTwitter:(NSString *)status;
 
@@ -42,6 +44,8 @@
 
 + (NSArray *)extractHashtagsFromText:(NSString *)text;
 + (NSArray *)extractMentionsFromText:(NSString *)text;
+
++ (void)showHudMessage:(NSString *)message WithDuration:(NSTimeInterval)duration;
 
 //+ (PFQuery *)queryForActivitiesOnPhoto:(PFObject *)photo cachePolicy:(PFCachePolicy)cachePolicy;
 //+ (PFQuery *)queryForActivitiesOnVideo:(PFObject *)video cachePolicy:(PFCachePolicy)cachePolicy;
