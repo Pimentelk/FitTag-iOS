@@ -425,9 +425,12 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
         UIImageView *photo = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:[representation fullResolutionImage]
                                                                                     scale:scale orientation:orientation]];
         if (photo) {
-            UIImageView *cameraRollHexagon = [FTUtility getProfileHexagonWithFrame:self.cameraRollButton.frame];
-            photo.frame = cameraRollHexagon.frame;
-            photo.layer.mask = cameraRollHexagon.layer.mask;
+            //UIImageView *cameraRollHexagon = [FTUtility getProfileHexagonWithFrame:self.cameraRollButton.frame];
+            //photo.frame = cameraRollHexagon.frame;
+            //photo.layer.mask = cameraRollHexagon.layer.mask;
+            photo.frame = self.cameraRollButton.frame;
+            photo.layer.cornerRadius = CORNERRADIUS(self.cameraRollButton.frame.size.width);
+            photo.clipsToBounds = YES;            
             [self.view addSubview:photo];
         }
     };
