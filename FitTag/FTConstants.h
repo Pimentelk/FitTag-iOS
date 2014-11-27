@@ -24,7 +24,7 @@ extern NSString *const kFTUserDefaultsSettingsViewControllerPushCommentsKey;
 extern NSString *const kFTUserDefaultsSettingsViewControllerPushMentionsKey;
 extern NSString *const kFTUserDefaultsSettingsViewControllerPushFollowsKey;
 extern NSString *const kFTUserDefaultsActivityFeedViewControllerLastRefreshKey;
-//extern NSString *const kFTUserDefaultsCacheFacebookFriendsKey;
+extern NSString *const kFTUserDefaultsCacheFacebookFriendsKey;
 
 #pragma mark - Launch URLs
 extern NSString *const kFTLaunchURLHostTakePicture;

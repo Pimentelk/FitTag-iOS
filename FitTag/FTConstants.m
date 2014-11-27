@@ -18,7 +18,7 @@ NSString *const kFTUserDefaultsSettingsViewControllerPushCommentsKey       = @"c
 NSString *const kFTUserDefaultsSettingsViewControllerPushMentionsKey       = @"com.fittag.userDefaults.settingsDetailViewController.pushMentions";
 NSString *const kFTUserDefaultsSettingsViewControllerPushFollowsKey        = @"com.fittag.userDefaults.settingsDetailViewController.pushFollows";
 NSString *const kFTUserDefaultsActivityFeedViewControllerLastRefreshKey    = @"com.fittag.userDefaults.activityFeedViewController.lastRefresh";
-//NSString *const kFTUserDefaultsCacheFacebookFriendsKey                     = @"com.fittag.userDefaults.cache.facebookFriends";
+NSString *const kFTUserDefaultsCacheFacebookFriendsKey                     = @"com.fittag.userDefaults.cache.facebookFriends";
 
 #pragma mark - Launch URLs
 
