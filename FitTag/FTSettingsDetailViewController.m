@@ -8,7 +8,6 @@
 
 #import "FTSettingsDetailViewController.h"
 #import "UIImage+ResizeAdditions.h"
-#import "MBProgressHUD.h"
 #import "AppDelegate.h"
 
 #define LEFT_PADDING 15
@@ -744,7 +743,7 @@
         NSError *error = nil;
         NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
         
-        if (error == nil){
+        if (error == nil) {
             NSDictionary* TWuser = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
             NSString *profile_image_normal = [TWuser objectForKey:TWITTER_PROFILE_HTTPS];
             NSString *profile_image = [profile_image_normal stringByReplacingOccurrencesOfString:@"_normal" withString:@""];
