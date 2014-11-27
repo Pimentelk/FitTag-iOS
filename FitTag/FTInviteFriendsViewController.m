@@ -7,7 +7,6 @@
 //
 
 #import "FTInviteFriendsViewController.h"
-#import "FTInviteFriendsCollectionViewCell.h"
 #import "FTCollectionHeaderView.h"
 #import "FTFlowLayout.h"
 #import "FTExternalFriendsView.h"
