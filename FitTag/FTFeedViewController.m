@@ -7,7 +7,6 @@
 //
 
 #import "FTFeedViewController.h"
-#import "MBProgressHUD.h"
 #import "ImageCustomNavigationBar.h"
 #import "FTFollowFriendsViewController.h"
 #import "FTInterestsViewController.h"
@@ -130,7 +129,7 @@
         [interestLayoutFlow setMinimumInteritemSpacing:0];
         [interestLayoutFlow setMinimumLineSpacing:0];
         [interestLayoutFlow setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-        [interestLayoutFlow setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,80)];
+        [interestLayoutFlow setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width, 80)];
     
         // Show the interests
         FTInterestsViewController *interestsViewController = [[FTInterestsViewController alloc] initWithCollectionViewLayout:interestLayoutFlow];
