@@ -87,11 +87,14 @@
         self.superview.clipsToBounds = YES;
         [self setBackgroundColor:[UIColor clearColor]];
         
-        UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:4 Y:4 width:42 hegiht:42];
+        //UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:4 Y:4 width:42 hegiht:42];
         
         self.avatarImageView = [[FTProfileImageView alloc] init];
-        self.avatarImageView.frame = profileHexagon.frame;
-        self.avatarImageView.layer.mask = profileHexagon.layer.mask;
+        //self.avatarImageView.frame = profileHexagon.frame;
+        //self.avatarImageView.layer.mask = profileHexagon.layer.mask;
+        self.avatarImageView.frame = CGRectMake(4, 4, 42, 42);
+        self.avatarImageView.layer.cornerRadius = CORNERRADIUS(42);
+        self.avatarImageView.clipsToBounds = YES;
         [self.avatarImageView.profileButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [self.contentView addSubview:self.avatarImageView];
         

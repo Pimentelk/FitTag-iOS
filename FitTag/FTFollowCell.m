@@ -51,9 +51,13 @@
         self.profileImageView.userInteractionEnabled = YES;
         [self.profileImageView addGestureRecognizer:tapGestureRecognizer];
         
-        UIImageView *profileHexagon = [FTUtility getProfileHexagonWithFrame:profileImageView.frame];
-        self.profileImageView.frame = profileHexagon.frame;
-        self.profileImageView.layer.mask = profileHexagon.layer.mask;
+        //UIImageView *profileHexagon = [FTUtility getProfileHexagonWithFrame:profileImageView.frame];
+        //self.profileImageView.frame = profileHexagon.frame;
+        //self.profileImageView.layer.mask = profileHexagon.layer.mask;
+        
+        self.contentView.frame = profileImageView.frame;
+        self.contentView.layer.cornerRadius = CORNERRADIUS(profileImageView.frame.size.width);
+        self.contentView.clipsToBounds = YES;
         
         [self.contentView addSubview:profileImageView];
         
