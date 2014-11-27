@@ -8,7 +8,6 @@
 
 #import "FTEditVideoViewController.h"
 #import "UIImage+ResizeAdditions.h"
-#import "MBProgressHUD.h"
 
 @interface FTEditVideoViewController (){
     CLLocationManager *locationManager;

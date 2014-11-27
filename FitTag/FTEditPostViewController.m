@@ -8,7 +8,6 @@
 
 #import "FTEditPostViewController.h"
 #import "UIImage+ResizeAdditions.h"
-#import "MBProgressHUD.h"
 
 @interface FTEditPostViewController () {
     CLLocationManager *locationManager;
