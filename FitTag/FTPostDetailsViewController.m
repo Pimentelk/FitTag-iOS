@@ -13,7 +13,6 @@
 #import "FTUserProfileViewController.h"
 #import "FTLoadMoreCell.h"
 #import "FTUtility.h"
-#import "MBProgressHUD.h"
 #import "FTCamViewController.h"
 #import "FTMapViewController.h"
 #import "FTSearchViewController.h"

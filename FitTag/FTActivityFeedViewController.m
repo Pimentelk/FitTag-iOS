@@ -11,7 +11,6 @@
 #import "FTUserProfileViewController.h"
 #import "FTBaseTextCell.h"
 #import "FTLoadMoreCell.h"
-#import "MBProgressHUD.h"
 #import "FTPostDetailsViewController.h"
 #import "FTFollowFriendsViewController.h"
 
