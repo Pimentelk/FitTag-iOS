@@ -85,12 +85,15 @@
         [profilePictureImageView setContentMode:UIViewContentModeScaleAspectFill];
         [self.containerView addSubview:profilePictureImageView];
         
-        UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:5 Y:40 width:100 hegiht:115];
+        //UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:5 Y:40 width:100 hegiht:115];
         //[profileHexagon setCenter:CGPointMake((self.frame.size.width / 2), 10 + (profileHexagon.frame.size.height / 2))];
         [profilePictureImageView setContentMode:UIViewContentModeScaleAspectFill];
-        profilePictureImageView.frame = profileHexagon.frame;
-        profilePictureImageView.layer.mask = profileHexagon.layer.mask;
-        profilePictureImageView.alpha = 0.0f;
+        //profilePictureImageView.frame = profileHexagon.frame;
+        //profilePictureImageView.layer.mask = profileHexagon.layer.mask;
+        profilePictureImageView.frame = CGRectMake(5, 40, 100, 100);
+        profilePictureImageView.layer.cornerRadius = CORNERRADIUS(100);
+        profilePictureImageView.clipsToBounds = YES;
+        profilePictureImageView.alpha = 0.0;
         
         // Followers count UILabel
         CGFloat followLabelsY = profilePictureBackgroundView.frame.size.height;
