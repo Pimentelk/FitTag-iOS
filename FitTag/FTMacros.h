@@ -13,6 +13,17 @@
 #define APP_VERSION @"2.0"
 #define APP_STORE_ID @"com.library.FitTag"
 #define FITTAG_LOGO @"fittag_logo"
+#define FITTAG_EXPERIENCE @"experience_fittag"
+
+// Profile Image
+#define CORNER_RADIUS 30
+#define CORNERRADIUS(d) d / 4
+
+// Profile Hexagon
+#define PROFILE_WIDTH 26
+#define PROFILE_HEIGHT 30
+#define PROFILE_X 2
+#define PROFILE_Y 2
 
 // UIAlertView
 #define ACTION_SHARE_ON_FACEBOOK @"Share on Facebook"
@@ -85,6 +96,7 @@
 #define VIEWCONTROLLER_FOLLOW_CELL @"FTFollowCell"
 #define VIEWCONTROLLER_SEARCH @"FTSearchViewController"
 #define VIEWCONTROLLER_FEED @"FTFeedViewController"
+#define VIEWCONTROLLER_FOLLOW @"FTFollowFriendsViewController"
 
 // ACTION BUTTONS
 #define ACTION_HEART @"heart_white"
