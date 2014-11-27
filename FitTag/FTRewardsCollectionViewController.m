@@ -9,7 +9,6 @@
 #import "FTRewardsCollectionViewController.h"
 #import "FTRewardsCollectionViewCell.h"
 #import "FTRewardsDetailView.h"
-#import "MBProgressHUD.h"
 
 // Rewards Filter States
 #define REWARDS_FILTER_ACTIVE @"ACTIVE"
