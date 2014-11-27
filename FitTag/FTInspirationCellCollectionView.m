@@ -56,9 +56,12 @@
         imageView = [[PFImageView alloc] initWithFrame:CGRectMake(8, 37, 52, 52)];
         imageView.backgroundColor = [UIColor clearColor];
         
-        UIImageView *profileHexagon = [FTUtility getProfileHexagonWithFrame:imageView.frame];
-        imageView.frame = profileHexagon.frame;
-        imageView.layer.mask = profileHexagon.layer.mask;
+        //UIImageView *profileHexagon = [FTUtility getProfileHexagonWithFrame:imageView.frame];
+        //imageView.frame = profileHexagon.frame;
+        //imageView.layer.mask = profileHexagon.layer.mask;
+        imageView.frame = CGRectMake(9, 37, 52, 52);
+        imageView.layer.cornerRadius = CORNERRADIUS(52);
+        imageView.clipsToBounds = YES;
         
         [self addSubview:imageView];
     }
