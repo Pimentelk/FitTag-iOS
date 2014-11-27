@@ -38,11 +38,14 @@
         
         [self.containerView setBackgroundColor:[UIColor colorWithRed:234/255.0f green:234/255.0f blue:234/255.0f alpha:1]];
         
-        UIImageView *profileHexagon = [self getProfileHexagon];
-        FTProfileImageView *avatarImageView = [[FTProfileImageView alloc] initWithFrame:CGRectMake(6.0f, 8.0f, 50.0f, 50.0f)];
+        //UIImageView *profileHexagon = [self getProfileHexagon];
+        FTProfileImageView *avatarImageView = [[FTProfileImageView alloc] initWithFrame:CGRectMake(6, 8, 50, 50)];
         [avatarImageView setBackgroundColor:[UIColor clearColor]];
-        [avatarImageView setFrame:profileHexagon.frame];
-        [avatarImageView.layer setMask:profileHexagon.layer.mask];
+        //[avatarImageView setFrame:profileHexagon.frame];
+        //[avatarImageView.layer setMask:profileHexagon.layer.mask];
+        [avatarImageView setFrame:CGRectMake(5, 8, 57, 57)];
+        [avatarImageView.layer setCornerRadius:CORNER_RADIUS];
+        [avatarImageView setClipsToBounds:YES];
         [avatarImageView.profileButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [self.containerView addSubview:avatarImageView];
         
@@ -127,6 +130,7 @@
     return self;
 }
 
+/*
 - (UIImageView *)getProfileHexagon{
     
     UIImageView *imageView = [[UIImageView alloc] init];
@@ -165,6 +169,7 @@
     
     return imageView;
 }
+*/
 
 - (void)didTapUserButtonAction:(id)sender {
     

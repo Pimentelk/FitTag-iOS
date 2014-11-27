@@ -11,11 +11,6 @@
 #import "TTTTimeIntervalFormatter.h"
 #import "FTGallerySwiperView.h"
 
-#define PROFILE_HEXAGON_X 4
-#define PROFILE_HEXAGON_Y 4
-#define PROFILE_HEXAGON_WIDTH 42
-#define PROFILE_HEXAGON_HEIGHT 42
-
 #define EXTRA_PADDING 3
 #define REMOVE_EXTRA_PADDING 4
 
@@ -424,18 +419,21 @@ static TTTTimeIntervalFormatter *timeFormatter;
         if (!error) {
             
             // Create top of header view with name and avatar
-            
+            /*
             UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:PROFILE_HEXAGON_X
                                                                           Y:PROFILE_HEXAGON_Y
                                                                       width:PROFILE_HEXAGON_WIDTH
                                                                      hegiht:PROFILE_HEXAGON_HEIGHT];
-            
+            */
             avatarImageView = [[FTProfileImageView alloc] initWithFrame:CGRectMake(avatarImageX, avatarImageY, avatarImageDim, avatarImageDim)];
             [avatarImageView setFile:[self.photographer objectForKey:kFTUserProfilePicSmallKey]];
             [avatarImageView setBackgroundColor:[UIColor blackColor]];
-            [avatarImageView setFrame:profileHexagon.frame];
+            //[avatarImageView setFrame:profileHexagon.frame];
             [avatarImageView setUserInteractionEnabled:YES];
-            [avatarImageView.layer setMask:profileHexagon.layer.mask];
+            //[avatarImageView.layer setMask:profileHexagon.layer.mask];
+            [avatarImageView setFrame:CGRectMake(PROFILE_X, PROFILE_Y, PROFILE_WIDTH, PROFILE_HEIGHT)];
+            [avatarImageView.layer setCornerRadius:CORNERRADIUS(PROFILE_WIDTH)];
+            [avatarImageView setClipsToBounds:YES];
             [avatarImageView.profileButton addTarget:self action:@selector(didTapUserNameButtonAction:) forControlEvents:UIControlEventTouchUpInside];
             
             // Ribbon

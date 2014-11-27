@@ -160,6 +160,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     }
 }
 
+/*
 - (UIImageView *)getProfileHexagon{
     
     UIImageView *imageView = [[UIImageView alloc] init];
@@ -198,6 +199,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     
     return imageView;
 }
+*/
 
 - (void)setLikeUsers:(NSMutableArray *)anArray {
     likeUsers = [anArray sortedArrayUsingComparator:^NSComparisonResult(PFUser *liker1, PFUser *liker2) {
@@ -289,12 +291,16 @@ static TTTTimeIntervalFormatter *timeFormatter;
     // Load data for header
     [self.photographer fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         // Create avatar view
-        UIImageView *profileHexagon = [self getProfileHexagon];
+        //UIImageView *profileHexagon = [self getProfileHexagon];
         FTProfileImageView *avatarImageView = [[FTProfileImageView alloc] initWithFrame:CGRectMake(avatarImageX, avatarImageY, avatarImageDim, avatarImageDim)];
         [avatarImageView setFile:[self.photographer objectForKey:kFTUserProfilePicSmallKey]];
         [avatarImageView setBackgroundColor:[UIColor clearColor]];
-        [avatarImageView setFrame:profileHexagon.frame];
-        [avatarImageView.layer setMask:profileHexagon.layer.mask];
+        [avatarImageView setFrame:CGRectMake(4, 4, 42, 42)];
+        [avatarImageView.layer setCornerRadius:CORNERRADIUS(42)];
+        [avatarImageView setClipsToBounds:YES];
+        
+        //[avatarImageView setFrame:profileHexagon.frame];
+        //[avatarImageView.layer setMask:profileHexagon.layer.mask];
         //[avatarImageView setOpaque:NO];
         [avatarImageView.profileButton addTarget:self action:@selector(didTapUserNameButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [nameHeaderView addSubview:avatarImageView];
