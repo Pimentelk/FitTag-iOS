@@ -16,7 +16,6 @@
 
 #import "FTUtility.h"
 #import "UIImage+ResizeAdditions.h"
-#import "MBProgressHUD.h"
 
 @implementation FTUtility
 
@@ -283,6 +282,7 @@
 
 #pragma mark Facebook
 
+/*
 + (void)processFacebookProfilePictureData:(NSData *)newProfilePictureData {
     if (newProfilePictureData.length == 0) {
         return;
@@ -332,6 +332,7 @@
         }];
     }
 }
+*/
 
 + (BOOL)userHasValidFacebookData:(PFUser *)user {
     NSString *facebookId = [user objectForKey:kFTUserFacebookIDKey];
@@ -926,6 +927,7 @@
 
 #pragma mark Profile Hexagons
 
+/*
 + (UIImageView *)getProfileHexagonWithFrame:(CGRect)rect {
     return [self getProfileHexagonWithX:rect.origin.x
                                       Y:rect.origin.y
@@ -975,6 +977,7 @@
     
     return imageView;
 }
+*/
 
 #pragma mark Hashtags & Mentions
 

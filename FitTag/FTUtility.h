@@ -12,7 +12,7 @@
 + (void)unlikePhotoInBackground:(id)photo block:(void (^)(BOOL succeeded, NSError *error))completionBlock;
 + (void)unlikeVideoInBackground:(id)video block:(void (^)(BOOL succeeded, NSError *error))completionBlock;
 
-+ (void)processFacebookProfilePictureData:(NSData *)data;
+//+ (void)processFacebookProfilePictureData:(NSData *)data;
 
 + (void)prepareToSharePostOnFacebook:(PFObject *)post;
 + (void)prepareToSharePostOnTwitter:(PFObject *)post;
@@ -36,12 +36,13 @@
 + (void)drawSideAndTopDropShadowForRect:(CGRect)rect inContext:(CGContextRef)context;
 + (void)addBottomDropShadowToNavigationBarForNavigationController:(UINavigationController *)navigationController;
 + (NSDictionary*)parseURLParams:(NSString *)query;
+/*
 + (UIImageView *)getProfileHexagonWithFrame:(CGRect)rect;
 + (UIImageView *)getProfileHexagonWithX:(CGFloat)hexX
                                       Y:(CGFloat)hexY
                                   width:(CGFloat)hexW
                                  hegiht:(CGFloat)hexH;
-
+*/
 + (NSArray *)extractHashtagsFromText:(NSString *)text;
 + (NSArray *)extractMentionsFromText:(NSString *)text;
 
