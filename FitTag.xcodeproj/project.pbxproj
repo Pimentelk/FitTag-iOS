@@ -23,6 +23,10 @@
 		2D0A53A81971997F0091FFCA /* FTInspirationCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A53A71971997F0091FFCA /* FTInspirationCellCollectionView.m */; };
 		2D197E8E19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D197E8D19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.m */; };
 		2D197E9119C1BC7900E91274 /* FTMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D197E9019C1BC7900E91274 /* FTMapViewController.m */; };
+		2D3721141A24F0C300260AD8 /* FTInviteFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D3721131A24F0C300260AD8 /* FTInviteFriendsViewController.m */; };
+		2D37211A1A25118F00260AD8 /* FTSocialMediaFriendsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D3721191A25118F00260AD8 /* FTSocialMediaFriendsView.m */; };
+		2D37211D1A2519F200260AD8 /* FTExternalFriendsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D37211C1A2519F200260AD8 /* FTExternalFriendsView.m */; };
+		2D3721201A26499200260AD8 /* FTContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D37211F1A26499200260AD8 /* FTContactCell.m */; };
 		2D410F4C1973581A00CE2940 /* FeedCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D410F4B1973581A00CE2940 /* FeedCollectionViewFlowLayout.m */; };
 		2D429A0B1977ED6000F8A9A0 /* FTBusinessProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A0A1977ED6000F8A9A0 /* FTBusinessProfileViewController.m */; };
 		2D429A0E1977EE7700F8A9A0 /* _FTSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A0D1977EE7700F8A9A0 /* _FTSearchViewController.m */; };
@@ -168,6 +172,14 @@
 		2D197E8D19C1B5BA00E91274 /* FTAmbassadorGeoPointAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTAmbassadorGeoPointAnnotation.m; sourceTree = "<group>"; };
 		2D197E8F19C1BC7900E91274 /* FTMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTMapViewController.h; sourceTree = "<group>"; };
 		2D197E9019C1BC7900E91274 /* FTMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTMapViewController.m; sourceTree = "<group>"; };
+		2D3721121A24F0C300260AD8 /* FTInviteFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTInviteFriendsViewController.h; sourceTree = "<group>"; };
+		2D3721131A24F0C300260AD8 /* FTInviteFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTInviteFriendsViewController.m; sourceTree = "<group>"; };
+		2D3721181A25118F00260AD8 /* FTSocialMediaFriendsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTSocialMediaFriendsView.h; sourceTree = "<group>"; };
+		2D3721191A25118F00260AD8 /* FTSocialMediaFriendsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSocialMediaFriendsView.m; sourceTree = "<group>"; };
+		2D37211B1A2519F200260AD8 /* FTExternalFriendsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTExternalFriendsView.h; sourceTree = "<group>"; };
+		2D37211C1A2519F200260AD8 /* FTExternalFriendsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTExternalFriendsView.m; sourceTree = "<group>"; };
+		2D37211E1A26499200260AD8 /* FTContactCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTContactCell.h; sourceTree = "<group>"; };
+		2D37211F1A26499200260AD8 /* FTContactCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTContactCell.m; sourceTree = "<group>"; };
 		2D410F4A1973581A00CE2940 /* FeedCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedCollectionViewFlowLayout.h; sourceTree = "<group>"; };
 		2D410F4B1973581A00CE2940 /* FeedCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		2D429A091977ED6000F8A9A0 /* FTBusinessProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTBusinessProfileViewController.h; sourceTree = "<group>"; };
@@ -483,6 +495,17 @@
 			name = Home;
 			sourceTree = "<group>";
 		};
+		2D3721211A26E95300260AD8 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				2D3721181A25118F00260AD8 /* FTSocialMediaFriendsView.h */,
+				2D3721191A25118F00260AD8 /* FTSocialMediaFriendsView.m */,
+				2D37211B1A2519F200260AD8 /* FTExternalFriendsView.h */,
+				2D37211C1A2519F200260AD8 /* FTExternalFriendsView.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
 		2D410F49197357E900CE2940 /* Layouts */ = {
 			isa = PBXGroup;
 			children = (
@@ -512,6 +535,8 @@
 				2DBC6EA0195CBCE2008B5AD3 /* FTInterestsViewController.m */,
 				2DACD979196578DA00833C14 /* FTInspirationViewController.h */,
 				2DACD97A196578DA00833C14 /* FTInspirationViewController.m */,
+				2D3721121A24F0C300260AD8 /* FTInviteFriendsViewController.h */,
+				2D3721131A24F0C300260AD8 /* FTInviteFriendsViewController.m */,
 			);
 			name = "First Login";
 			sourceTree = "<group>";
@@ -822,6 +847,8 @@
 				2DCB7D621A00647F00E349F6 /* FTFollowCell.m */,
 				2D054E051A0CA22300A2886F /* FTSearchCell.h */,
 				2D054E061A0CA22300A2886F /* FTSearchCell.m */,
+				2D37211E1A26499200260AD8 /* FTContactCell.h */,
+				2D37211F1A26499200260AD8 /* FTContactCell.m */,
 			);
 			name = UITableViewCells;
 			sourceTree = "<group>";
@@ -840,6 +867,7 @@
 		2DD31E0219AF4F41000A6D2D /* Friends */ = {
 			isa = PBXGroup;
 			children = (
+				2D3721211A26E95300260AD8 /* Views */,
 				2DCB7D4619FF1C0D00E349F6 /* FTFollowFriendsViewController.h */,
 				2DCB7D4719FF1C0D00E349F6 /* FTFollowFriendsViewController.m */,
 				2D054E081A0E914F00A2886F /* FTViewFriendsViewController.h */,
@@ -1117,6 +1145,7 @@
 				2D429A111977EE8F00F8A9A0 /* FTActivityFeedViewController.m in Sources */,
 				2DACE8141966FF7200154504 /* FTCollectionHeaderView.m in Sources */,
 				2D054DD21A0867B300A2886F /* STTweetTextStorage.m in Sources */,
+				2D3721141A24F0C300260AD8 /* FTInviteFriendsViewController.m in Sources */,
 				2D0A53A81971997F0091FFCA /* FTInspirationCellCollectionView.m in Sources */,
 				2D429A1B197AF37000F8A9A0 /* Reachability.m in Sources */,
 				2DE7C77F19ECD07100F72188 /* FTGallerySwiperView.m in Sources */,
@@ -1135,6 +1164,7 @@
 				2DBEEE5719AB4F1E00AAD238 /* FTPostDetailsFooterView.m in Sources */,
 				2DBE023919D6FB7F00CD278C /* ELCAssetTablePicker.m in Sources */,
 				2D429A0E1977EE7700F8A9A0 /* _FTSearchViewController.m in Sources */,
+				2D37211D1A2519F200260AD8 /* FTExternalFriendsView.m in Sources */,
 				2DBE024719DCF84000CD278C /* FTEditPostViewController.m in Sources */,
 				2DDBF13C19F0BF27009037E2 /* FTMapScrollView.m in Sources */,
 				2DACD97B196578DA00833C14 /* FTInspirationViewController.m in Sources */,
@@ -1148,6 +1178,7 @@
 				2DBE023719D6FB7F00CD278C /* ELCAsset.m in Sources */,
 				2DD491DF19EF65BA00A50F5B /* FTBusinessGeoPointAnnotation.m in Sources */,
 				2D429A17197AD47000F8A9A0 /* FTConstants.m in Sources */,
+				2D3721201A26499200260AD8 /* FTContactCell.m in Sources */,
 				2D429A0B1977ED6000F8A9A0 /* FTBusinessProfileViewController.m in Sources */,
 				2DC507D5199FBE030041A03D /* FTFeedViewController.m in Sources */,
 				2DBE023619D6FB7F00CD278C /* ELCAlbumPickerController.m in Sources */,
@@ -1157,6 +1188,7 @@
 				2DD2B676198403FC00600A42 /* FTPhotoDetailsFooterView.m in Sources */,
 				2DBE021019D1A1F100CD278C /* FTRewardsCollectionViewCell.m in Sources */,
 				2D429A2D197B345300F8A9A0 /* MBProgressHUD.m in Sources */,
+				2D37211A1A25118F00260AD8 /* FTSocialMediaFriendsView.m in Sources */,
 				2DBE023B19D6FB7F00CD278C /* ELCImagePickerController.m in Sources */,
 				2D4DF05419E0443400E2E71E /* FTPostDetailsViewController.m in Sources */,
 				2DD2B6731984039500600A42 /* FTPhotoDetailsHeaderView.m in Sources */,
