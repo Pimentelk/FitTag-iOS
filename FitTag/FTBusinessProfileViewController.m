@@ -10,7 +10,6 @@
 #import "FTUserProfileCollectionViewCell.h"
 #import "FTPostDetailsViewController.h"
 #import "FTCamViewController.h"
-#import "MBProgressHUD.h"
 #import "FTMapViewController.h"
 #import "FTViewFriendsViewController.h"
 
