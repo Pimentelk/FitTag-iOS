@@ -8,8 +8,8 @@
 
 #import "FTSettingsCell.h"
 #import "FTSettingsViewController.h"
+#import "FTInviteFriendsViewController.h"
 #import "AppDelegate.h"
-#import "MBProgressHUD.h"
 
 #define REUSEABLE_IDENTIFIER_DATA @"DataCell"
 
@@ -24,6 +24,12 @@
 @property NSArray *settingsSectionTitles;
 @property (nonatomic, strong) MFMailComposeViewController *mailer;
 @property (nonatomic, strong) MBProgressHUD *hud;
+
+@property (strong, nonatomic) FTSettingsDetailViewController *settingsDetailViewController;
+@property (strong, nonatomic) FTFollowFriendsViewController *followFriendsViewController;
+@property (strong, nonatomic) FTInterestsViewController *interestsViewController;
+@property (strong, nonatomic) FTInviteFriendsViewController *inviteFriendsViewController;
+
 @end
 
 @implementation FTSettingsViewController
@@ -77,14 +83,16 @@
     [interestFlowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [interestFlowLayout setMinimumInteritemSpacing:0];
     [interestFlowLayout setMinimumLineSpacing:0];
-    [interestFlowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
-    [interestFlowLayout setHeaderReferenceSize:CGSizeMake(320,80)];
+    [interestFlowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+    [interestFlowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,80)];
     
     // View controllers
     
     self.interestsViewController = [[FTInterestsViewController alloc] initWithCollectionViewLayout:interestFlowLayout];
     self.followFriendsViewController = [[FTFollowFriendsViewController alloc] init];
     self.settingsDetailViewController = [[FTSettingsDetailViewController alloc] init];
+    self.inviteFriendsViewController = [[FTInviteFriendsViewController alloc] init];
+    self.inviteFriendsViewController.isSettingsChild = YES;
     
     // Table view footer
     
@@ -176,15 +184,8 @@
         [self.navigationController pushViewController:self.interestsViewController animated:YES];
         [self.settingsDetailViewController setDetailItem:setting];
     } else if([setting isEqualToString:INVITE_FRIENDS]) {
-        //[self.navigationController pushViewController:self.findFriendsViewController animated:YES];
-        //[self.settingsDetailViewController setDetailItem:setting];
-        
-        [[[UIAlertView alloc] initWithTitle:@"Screen Not Finished"
-                                    message:@"This find friends screen is not enabled."
-                                   delegate:nil
-                          cancelButtonTitle:@"ok"
-                          otherButtonTitles:nil] show];
-        
+        [self.navigationController pushViewController:self.inviteFriendsViewController animated:YES];
+        [self.settingsDetailViewController setDetailItem:setting];
     } else if([setting isEqualToString:GIVE_FEEDBACK]) {
         [self presentFeedbackMessage];
     } else if([setting isEqualToString:REVIEW_US]) {
@@ -223,9 +224,7 @@
         [mailer setToRecipients:[NSArray arrayWithObjects:MAIL_TECH_EMAIL, nil]];
         [mailer setMessageBody:EMPTY_STRING isHTML:NO];
         
-        [self presentViewController:mailer animated:YES completion:^(){
-            [self dismissViewControllerAnimated:YES completion:nil];
-        }];
+        [self presentViewController:mailer animated:YES completion:nil];
         
     } else {
         [[[UIAlertView alloc] initWithTitle:MAIL_FAIL
@@ -257,7 +256,7 @@
     [self.hud hide:YES afterDelay:duration];
 }
 
-#pragma mark - MFMessageComposeViewControllerDelegate
+#pragma mark - MFMailComposeViewControllerDelegate
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error {
     switch (result) {

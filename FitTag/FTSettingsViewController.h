@@ -14,7 +14,4 @@
 
 @interface FTSettingsViewController : UITableViewController <UITableViewDataSource,UITableViewDelegate,MFMailComposeViewControllerDelegate,FTInterestsViewControllerDelegate>
 
-@property (strong, nonatomic) FTSettingsDetailViewController *settingsDetailViewController;
-@property (strong, nonatomic) FTFollowFriendsViewController *followFriendsViewController;
-@property (strong, nonatomic) FTInterestsViewController *interestsViewController;
 @end
