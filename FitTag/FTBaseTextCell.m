@@ -63,9 +63,11 @@ static TTTTimeIntervalFormatter *timeFormatter;
         [self.avatarImageView setBackgroundColor:[UIColor clearColor]];
         [self.avatarImageView setOpaque:YES];
         
-        UIImageView *profileHexagon = [FTUtility getProfileHexagonWithFrame:avatarImageView.frame];
-        self.avatarImageView.frame = profileHexagon.frame;
-        self.avatarImageView.layer.mask = profileHexagon.layer.mask;
+        //UIImageView *profileHexagon = [FTUtility getProfileHexagonWithFrame:avatarImageView.frame];
+        //self.avatarImageView.frame = profileHexagon.frame;
+        //self.avatarImageView.layer.mask = profileHexagon.layer.mask;
+        self.avatarImageView.layer.cornerRadius = CORNERRADIUS(avatarDim);
+        self.avatarImageView.clipsToBounds = YES;
         
         [mainView addSubview:self.avatarImageView];
         
@@ -126,7 +128,10 @@ static TTTTimeIntervalFormatter *timeFormatter;
         [mainView addSubview:self.timeLabel];
         
         self.avatarImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [self.avatarImageButton setFrame:profileHexagon.frame];
+        //[self.avatarImageButton setFrame:profileHexagon.frame];
+        self.avatarImageButton.frame = avatarImageView.frame;
+        self.avatarImageButton.layer.cornerRadius = CORNERRADIUS(avatarImageView.frame.size.width);
+        self.avatarImageButton.clipsToBounds = YES;
         [self.avatarImageButton setBackgroundColor:[UIColor clearColor]];
         [self.avatarImageButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         
