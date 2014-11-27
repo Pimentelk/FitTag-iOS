@@ -17,12 +17,6 @@
 #define SELF_FRAME_X 0
 #define SELF_FRAME_Y 0
 
-// Profile Hexagon
-#define PROFILE_HEXAGON_WIDTH 26
-#define PROFILE_HEXAGON_HEIGHT 30
-#define PROFILE_HEXAGON_X 2
-#define PROFILE_HEXAGON_Y 2
-
 @interface FTBusinessAnnotationView ()
 @property (nonatomic, strong) PFUser *user;
 @end
@@ -50,14 +44,20 @@
                 self.image = [UIImage imageNamed:BUSINESS_MAP_ICON];
                 self.frame = CGRectMake(SELF_FRAME_Y, SELF_FRAME_X, SELF_FRAME_WIDTH, SELF_FRAME_HEIGHT);
                 
+                /*
                 UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:PROFILE_HEXAGON_X
                                                                               Y:PROFILE_HEXAGON_Y
                                                                           width:PROFILE_HEXAGON_WIDTH
                                                                          hegiht:PROFILE_HEXAGON_HEIGHT];
+                */
                 
                 UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:data]];
-                [imageView setFrame: profileHexagon.frame];
-                [imageView.layer setMask: profileHexagon.layer.mask];
+                //[imageView setFrame:profileHexagon.frame];
+                //[imageView.layer setMask:profileHexagon.layer.mask];
+                imageView.frame = CGRectMake(PROFILE_X, PROFILE_Y, PROFILE_WIDTH, PROFILE_HEIGHT);
+                imageView.layer.cornerRadius = CORNERRADIUS(PROFILE_WIDTH);
+                imageView.clipsToBounds = YES;
+                
                 [self addSubview:imageView];
             }
         }];
