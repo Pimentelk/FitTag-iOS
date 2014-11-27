@@ -14,7 +14,6 @@
 #import "FTBusinessGeoPointAnnotation.h"
 #import "FTMapScrollView.h"
 #import "FTFollowFriendsViewController.h"
-#import "MBProgressHUD.h"
 #import "FTSearchViewController.h"
 #import "FTBusinessProfileViewController.h"
 #import "FTNavigationController.h"
