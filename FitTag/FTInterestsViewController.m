@@ -26,6 +26,7 @@
 @property (nonatomic, strong) PFUser *user;
 @property (nonatomic, strong) UILabel *continueMessage;
 @property (nonatomic, strong) UIButton *continueButton;
+@property (nonatomic, strong) FTInspirationViewController *inspirationViewController;
 @end
 
 @implementation FTInterestsViewController
@@ -33,6 +34,7 @@
 @synthesize delegate;
 @synthesize continueMessage;
 @synthesize continueButton;
+@synthesize inspirationViewController;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -61,6 +63,19 @@
     [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:FT_RED_COLOR_RED
                                                                              green:FT_RED_COLOR_GREEN
                                                                               blue:FT_RED_COLOR_BLUE alpha:1.0f]];
+    
+    if (self.isFirstLaunch) {
+        // Layout param
+        FTFlowLayout *inspirationLayoutFlow = [[FTFlowLayout alloc] init];
+        [inspirationLayoutFlow setItemSize:CGSizeMake(self.view.frame.size.width,100)];
+        [inspirationLayoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
+        [inspirationLayoutFlow setMinimumInteritemSpacing:0];
+        [inspirationLayoutFlow setMinimumLineSpacing:0];
+        [inspirationLayoutFlow setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+        [inspirationLayoutFlow setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,42)];
+        
+        inspirationViewController = [[FTInspirationViewController alloc] initWithCollectionViewLayout:inspirationLayoutFlow];
+    }
     
     // Back button
     UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] init];
@@ -204,19 +219,7 @@
     
     if (self.isFirstLaunch) {
         // If this is part of the first time launch flow show the inspiration screen next.
-        
-        // Layout param
-        FTFlowLayout *inspirationLayoutFlow = [[FTFlowLayout alloc] init];
-        [inspirationLayoutFlow setItemSize:CGSizeMake(self.view.frame.size.width,100)];
-        [inspirationLayoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-        [inspirationLayoutFlow setMinimumInteritemSpacing:0];
-        [inspirationLayoutFlow setMinimumLineSpacing:0];
-        [inspirationLayoutFlow setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-        [inspirationLayoutFlow setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,42)];
-        
-        FTInspirationViewController *inspirationViewController = [[FTInspirationViewController alloc] initWithCollectionViewLayout:inspirationLayoutFlow];
         [self.navigationController pushViewController:inspirationViewController animated:YES];
-        
         return;
     }
     
