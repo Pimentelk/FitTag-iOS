@@ -9,6 +9,8 @@
 #import "FTInspirationViewController.h"
 #import "FTCollectionHeaderView.h"
 #import "FTInspirationCellCollectionView.h"
+#import "FTInviteFriendsViewController.h"
+#import "FTFlowLayout.h"
 
 #define REUSABLE_IDENTIFIER_HEADER @"HeaderView"
 #define REUSABLE_IDENTIFIER_MEMBER @"MemberCell"
@@ -20,6 +22,8 @@
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) PFGeoPoint *geoPoint;
 @property (nonatomic) BOOL locationUpdated;
+
+@property (nonatomic, strong) FTInviteFriendsViewController *inviteFriendsViewController;
 @end
 
 @implementation FTInspirationViewController
@@ -28,6 +32,7 @@
 @synthesize locationManager;
 @synthesize geoPoint;
 @synthesize locationUpdated;
+@synthesize inviteFriendsViewController;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -81,6 +86,17 @@
     if ([[PFUser currentUser] objectForKey:kFTUserInterestsKey]) {
         self.interests = [[PFUser currentUser] objectForKey:kFTUserInterestsKey];
     }
+    
+    // Layout param
+    FTFlowLayout *inviteFriendsFlowLayout = [[FTFlowLayout alloc] init];
+    [inviteFriendsFlowLayout setItemSize:CGSizeMake(self.view.frame.size.width,100)];
+    [inviteFriendsFlowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [inviteFriendsFlowLayout setMinimumInteritemSpacing:0];
+    [inviteFriendsFlowLayout setMinimumLineSpacing:0];
+    [inviteFriendsFlowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+    [inviteFriendsFlowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,42)];
+    
+    inviteFriendsViewController = [[FTInviteFriendsViewController alloc] init];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -124,18 +140,8 @@
     continueMessage = nil;
 }
 
-- (void)submitUserInspiration:(id)sender {
-    // Layout param
-    
-    // Show the interests
-    //FindFriendsViewController *findFriendsViewContoller = [[FindFriendsViewController alloc] initWithCollectionViewLayout:layoutFlow];
-    //UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:findFriendsViewContoller];
-    //[self presentViewController:navController animated:YES completion:NULL];
-}
-
 - (void)queryForUsers {
     // Select all users who share similar interests
-    
     // List of all users being followed by the current user
     PFQuery *followingActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
     [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
@@ -348,7 +354,6 @@
         return;
     }
     locationUpdated = YES;
-    
     [locationManager stopUpdatingLocation];
     
     PFUser *user = [PFUser currentUser];
@@ -373,8 +378,11 @@
 }
 
 - (void)didTapContinueButtonAction:(UIButton *)button {
-    
+    //[self.navigationController pushViewController:inviteFriendsViewController animated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
+
+#pragma mark follow/unfollow users
 
 - (void)didTapUserFollowAction:(PFUser *)targetUser {
     //UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];

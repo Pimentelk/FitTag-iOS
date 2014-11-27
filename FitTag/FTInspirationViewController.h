@@ -9,7 +9,4 @@
 @interface FTInspirationViewController : UICollectionViewController <CLLocationManagerDelegate>
 @property (nonatomic, strong) NSArray *interests;
 @property (nonatomic, strong) NSArray *usersToRecommend;
-//@property (nonatomic, strong) NSDictionary *usersToRecommend;
-//@property (nonatomic, strong) NSDictionary *usersToRecommendInterests;
-//@property (nonatomic, strong) NSArray *userKeys;
 @end
