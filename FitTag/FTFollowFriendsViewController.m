@@ -81,7 +81,7 @@
     [super viewWillAppear:animated];
     
     id tracker = [[GAI sharedInstance] defaultTracker];
-    [tracker set:kGAIScreenName value:VIEWCONTROLLER_INVITE];
+    [tracker set:kGAIScreenName value:VIEWCONTROLLER_FOLLOW];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
 }
 
