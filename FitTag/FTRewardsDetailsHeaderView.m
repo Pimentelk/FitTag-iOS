@@ -44,7 +44,7 @@
         //[avatarImageView setFrame:profileHexagon.frame];
         //[avatarImageView.layer setMask:profileHexagon.layer.mask];
         [avatarImageView setFrame:CGRectMake(5, 8, 57, 57)];
-        [avatarImageView.layer setCornerRadius:CORNER_RADIUS];
+        [avatarImageView.layer setCornerRadius:CORNERRADIUS(57)];
         [avatarImageView setClipsToBounds:YES];
         [avatarImageView.profileButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [self.containerView addSubview:avatarImageView];
