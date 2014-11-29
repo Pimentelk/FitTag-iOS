@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
 @property (nonatomic, strong) FTUserProfileViewController *profileViewController;
 @property (nonatomic, strong) FTInviteTableHeaderView *headerView;
+@property (nonatomic, strong) FTLocationManager *locationManager;
 @end
 
 @implementation FTFollowFriendsViewController
@@ -24,6 +25,7 @@
 @synthesize profileViewController;
 @synthesize followUserQueryType;
 @synthesize headerView;
+@synthesize locationManager;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -33,6 +35,8 @@
                                           blue:FT_GRAY_COLOR_BLUE
                                          alpha:1.0f];
     
+    locationManager = [[FTLocationManager alloc] init];
+    [locationManager requestLocationAuthorization];
     
     //[self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     [self.tableView setSeparatorColor:[UIColor clearColor]];
@@ -52,7 +56,7 @@
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
     
     profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
@@ -149,7 +153,6 @@
             
             // Obtain an array of object ids for all users being followed
             for (PFObject *aFollowedUser in followedUsers) {
-                
                 PFUser *followedUser = [aFollowedUser objectForKey:kFTActivityToUserKey];                
                 if (followedUser.objectId) {
                     [followedUserIds addObject:followedUser.objectId];
