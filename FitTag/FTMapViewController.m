@@ -73,7 +73,6 @@ enum PinAnnotationTypeTag {
 };
 
 @interface FTMapViewController () {
-    CLLocationManager *locationManager;
     UIScrollView *scrollView;
     NSMutableArray *mapItems;
     UISearchBar *searchBar;
@@ -93,6 +92,7 @@ enum PinAnnotationTypeTag {
 @property (nonatomic, strong) FTCircleOverlay *targetOverlay;
 @property (nonatomic, strong) FTFollowFriendsViewController *followFriendsViewController;
 @property (nonatomic, strong) UINavigationController *followFriendsNavController;
+@property (nonatomic, strong) FTLocationManager *locationManager;
 @end
 
 @implementation FTMapViewController
@@ -101,6 +101,7 @@ enum PinAnnotationTypeTag {
 @synthesize searchViewController;
 @synthesize followFriendsViewController;
 @synthesize followFriendsNavController;
+@synthesize locationManager;
 
 - (void)viewDidLoad{
     [super viewDidLoad];
@@ -120,14 +121,9 @@ enum PinAnnotationTypeTag {
     [self.mapView setZoomEnabled:YES];
     [self.mapView setHidden:NO];
     
-    // Update the users location
-    if (IS_OS_8_OR_LATER) {
-        [[self locationManager] requestAlwaysAuthorization];
-    }    
-    [[self locationManager] startUpdatingLocation];
-    
-    // Set Background
-    [self.view setBackgroundColor:[UIColor whiteColor]];
+    // manage user location
+    locationManager = [[FTLocationManager alloc] init];
+    [locationManager setDelegate:self];
     
     // Set radius
     self.radius = KILOMETER_FIVE;
@@ -223,6 +219,11 @@ enum PinAnnotationTypeTag {
     [taggersLabel setBackgroundColor:[UIColor whiteColor]];
     [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
     isTaggersSelected = NO;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [locationManager requestLocationAuthorization];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -347,8 +348,10 @@ enum PinAnnotationTypeTag {
 
 - (void)setInitialLocation:(CLLocation *)aLocation {
     NSLog(@"%@::setInitialLocation: %@",VIEWCONTROLLER_MAP,aLocation);
-    self.location = aLocation;
-    [self configureOverlay];
+    if (!self.location) {
+        self.location = aLocation;
+        [self configureOverlay];
+    }
 }
 
 #pragma mark - ()
@@ -386,28 +389,9 @@ enum PinAnnotationTypeTag {
 }
 
 - (void)configureOverlay {
-    //NSLog(@"%@::configureOverlay",VIEWCONTROLLER_MAP);
-    /*
-    if (self.location) {
-        [self.mapView removeAnnotations:self.mapView.annotations];
-        [self.mapView removeOverlays:self.mapView.overlays];
-        
-        FTCircleOverlay *overlay = [[FTCircleOverlay alloc] initWithCoordinate:self.location.coordinate radius:self.radius];
-        [self.mapView addOverlay:overlay];
-        
-        FTGeoQueryAnnotation *annotation = [[FTGeoQueryAnnotation alloc] initWithCoordinate:self.location.coordinate radius:self.radius];
-        [self.mapView addAnnotation:annotation];
-        
-        //[self updateLocations];
-    }*/
-    
+    NSLog(@"%@::configureOverlay:",VIEWCONTROLLER_MAP);
     [self.mapView removeAnnotations:self.mapView.annotations];
     [self.mapView removeOverlays:self.mapView.overlays];
-    
-    //self.location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-    //NSLog(@"self.location: %@",self.location);
-    
-    //self.mapView.region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(geoPoint.latitude, geoPoint.longitude), MKCoordinateSpanMake(0.01f, 0.01f));
     
     // center our map view around this geopoint
     MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(geoPoint.latitude, geoPoint.longitude), MKCoordinateSpanMake(0.0225f, 0.0225f));
@@ -416,18 +400,6 @@ enum PinAnnotationTypeTag {
     [self.mapView setRegion:region animated:NO];
     [self.view addSubview: self.mapView];
     [self updateLocations];
-    
-    // Set marker on current location
-    //FTGeoQueryAnnotation *annotation = [[FTGeoQueryAnnotation alloc] initWithCoordinate:self.location.coordinate radius:self.radius];
-    //[self.mapView addAnnotation:annotation];
-    
-    /*
-    // Add radius on current user location
-    FTCircleOverlay *overlay = [[FTCircleOverlay alloc] initWithCoordinate:self.location.coordinate
-                                                                    radius:self.radius];
-    [self.mapView addOverlay:overlay];
-    */
-    
 }
 
 - (void)updateLocations {
@@ -576,45 +548,11 @@ enum PinAnnotationTypeTag {
     return [textField resignFirstResponder];
 }
 
-#pragma mark - CLLocationManagerDelegate
+#pragma mark - FTLocationManagerDelegate
 
-- (CLLocationManager *)locationManager {
-    //NSLog(@"%@::locationManager",VIEWCONTROLLER_MAP);
-    if (locationManager != nil) {
-        return locationManager;
-    }
-    locationManager = [[CLLocationManager alloc] init];
-    locationManager.delegate = self;
-    locationManager.distanceFilter = kCLDistanceFilterNone;
-    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    return locationManager;
-}
-
-- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    //NSLog(@"%@::didFailWithError: %@", VIEWCONTROLLER_MAP, error);
-    [[[UIAlertView alloc] initWithTitle:@"Error"
-                                message:@"Failed to Get Your Location"
-                               delegate:nil
-                      cancelButtonTitle:@"OK"
-                      otherButtonTitles:nil] show];
-}
-
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-    //NSLog(@"%@::locationManager:didUpdateLocations:",VIEWCONTROLLER_MAP);
-    [locationManager stopUpdatingLocation];
-    PFUser *user = [PFUser currentUser];
-    if (user) {
-        CLLocation *location = [locations lastObject];
-        geoPoint = [PFGeoPoint geoPointWithLatitude:location.coordinate.latitude
-                                          longitude:location.coordinate.longitude];
-        [user setValue:geoPoint forKey:kFTUserLocationKey];
-        [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            if (succeeded) {
-                //NSLog(@"%@::locationManager:didUpdateLocations: - User location updated successfully.",VIEWCONTROLLER_MAP);
-                [self setInitialLocation:location];
-            }
-        }];
-    }
+- (void)locationManager:(FTLocationManager *)locationManager didUpdateUserLocation:(CLLocation *)location geoPoint:(PFGeoPoint *)aGeoPoint {
+    geoPoint = aGeoPoint;
+    [self setInitialLocation:location];
 }
 
 @end

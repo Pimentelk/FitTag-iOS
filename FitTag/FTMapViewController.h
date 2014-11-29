@@ -12,6 +12,7 @@
 #import "FTToolbar.h"
 #import "FTMapScrollViewItem.h"
 #import "FTFollowFriendsViewController.h"
+#import "FTLocationManager.h"
 
 @interface FTMapViewController : UIViewController <FTSearchHeaderViewDelegate,
                                                    FTMapScrollViewItemDelegate,
@@ -19,7 +20,7 @@
                                                    UIScrollViewDelegate,
                                                    UISearchBarDelegate,
                                                    UITextFieldDelegate,
-                                                   CLLocationManagerDelegate>
+                                                   FTLocationManagerDelegate>
 @property (nonatomic, strong) PFObject *user;
 @property (nonatomic, strong) MKMapView *mapView;
 
