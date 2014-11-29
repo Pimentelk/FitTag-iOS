@@ -125,8 +125,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [loadCamera setTintColor:[UIColor whiteColor]];
     [self.navigationItem setRightBarButtonItem:loadCamera];
 
-    self.headerView = [[FTPostDetailsHeaderView alloc] initWithFrame:[FTPostDetailsHeaderView rectForView]
-                                                                post:self.post type:self.type];
+    self.headerView = [[FTPostDetailsHeaderView alloc] initWithFrame:[FTPostDetailsHeaderView rectForView] post:self.post type:self.type];
     self.headerView.delegate = self;
     self.tableView.tableHeaderView = self.headerView;
     
@@ -424,7 +423,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 }
 
 - (void)didTapBackButtonAction:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
+    [self.navigationController popViewControllerAnimated:NO];
 }
 
 - (void)handleCommentTimeout:(NSTimer *)aTimer {
