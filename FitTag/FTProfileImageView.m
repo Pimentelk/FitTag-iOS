@@ -41,9 +41,16 @@
     [super layoutSubviews];
     [self bringSubviewToFront:self.borderImageview];
     
-    self.profileImageView.frame = CGRectMake( 1.0f, 0.0f, self.frame.size.width - 2.0f, self.frame.size.height - 2.0f);
+    self.profileImageView.frame = CGRectMake( 0.0f, 0.0f, self.frame.size.width, self.frame.size.height);
     self.borderImageview.frame = CGRectMake( 0.0f, 0.0f, self.frame.size.width, self.frame.size.height);
     self.profileButton.frame = CGRectMake( 0.0f, 0.0f, self.frame.size.width, self.frame.size.height);
+    
+    self.profileImageView.layer.cornerRadius = CORNERRADIUS(self.frame.size.width);
+    self.profileImageView.clipsToBounds = YES;
+    self.borderImageview.layer.cornerRadius = CORNERRADIUS(self.frame.size.width);
+    self.borderImageview.clipsToBounds = YES;
+    self.profileButton.layer.cornerRadius = CORNERRADIUS(self.frame.size.width);
+    self.profileButton.clipsToBounds = YES;
 }
 
 #pragma mark - FTProfileImageView
