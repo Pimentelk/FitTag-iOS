@@ -8,7 +8,6 @@
 
 #import "FTCamViewController.h"
 #import "FTCamRollViewController.h"
-#import "PhotoCellCollectionView.h"
 #import "ImageCustomNavigationBar.h"
 #import "FTEditPhotoViewController.h"
 #import "FTOverlayView.h"
