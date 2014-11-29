@@ -1,5 +1,5 @@
 //
-//  FTPhotoTimelineViewController.m
+//  FTTimelineViewController.m
 //  FitTag
 //
 //  Created by Kevin Pimentel on 7/26/14.
@@ -73,7 +73,7 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     [super viewDidLoad];
-    
+        
     // Override the back idnicator
     dismissProfileButton = [[UIBarButtonItem alloc] init];
     [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
@@ -122,20 +122,6 @@
     if (self.paginationEnabled && sections != 0)
         sections++;
     return sections;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 1;
-}
-
-#pragma mark - UITableViewDelegate
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section >= self.objects.count) {
-        // Load More Section
-        return 0;
-    }
-    return 320.0f;
 }
 
 #pragma mark - PFQueryTableViewController
@@ -191,7 +177,45 @@
     return nil;
 }
 
-#pragma mark - PFTableViewCellDelegate
+#pragma mark - UITableViewDelegate
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return 1;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section >= self.objects.count) {
+        // Load More Section
+        return 0;
+    }
+    return 350;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    if (section == self.objects.count) {
+        return 0;
+    }
+    return 44;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    if (section == self.objects.count) {
+        // Load More section
+        return nil;
+    }
+    
+    FTPostHeaderView *postHeaderView = [self dequeueReusableSectionHeaderView];
+    if (!postHeaderView) {
+        postHeaderView = [[FTPostHeaderView alloc] initWithFrame:CGRectMake(0,0,self.tableView.frame.size.width,44)];
+        postHeaderView.delegate = self;
+        [self.reusableSectionHeaderViews addObject:postHeaderView];
+    }
+    
+    PFObject *post = [self.objects objectAtIndex:section];
+    [postHeaderView setPost:post];
+    
+    return postHeaderView;
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath object:(PFObject *)object {
     
@@ -228,7 +252,7 @@
             [galleryCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:gallery]];
             [galleryCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:gallery] description] forState:UIControlStateNormal];
             [galleryCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:gallery] description] forState:UIControlStateNormal];
-            [galleryCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:gallery] description] forState:UIControlStateNormal];
+            //[galleryCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:gallery] description] forState:UIControlStateNormal];
         } else {
             @synchronized(self) {
                 // check if we can update the cache
@@ -278,7 +302,7 @@
                                     [galleryCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:gallery]];
                                     [galleryCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:gallery] description] forState:UIControlStateNormal];
                                     [galleryCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:gallery] description] forState:UIControlStateNormal];
-                                    [galleryCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:gallery] description] forState:UIControlStateNormal];
+                                    //[galleryCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:gallery] description] forState:UIControlStateNormal];
                                 } else {
                                     NSLog(@"ERROR##: %@",error);
                                 }
@@ -316,11 +340,8 @@
     }
     
     // If the cell is a video
-    if ([[object objectForKey:kFTPostTypeKey] isEqualToString:kFTPostTypeVideo]) {
-        
+    if ([[object objectForKey:kFTPostTypeKey] isEqualToString:kFTPostTypeVideo]) {        
         PFObject *video = [self.objects objectAtIndex:indexPath.section];
-        PFFile *videoFile = [video objectForKey:kFTPostVideoKey];
-        [videoCell.moviePlayer setContentURL:[NSURL URLWithString:videoFile.url]];
         [videoCell setVideo:video];
         [videoCell setTag:indexPath.section];
         [videoCell.likeCounter setTag:indexPath.section];
@@ -331,7 +352,7 @@
             [videoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:video]];
             [videoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:video] description] forState:UIControlStateNormal];
             [videoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:video] description] forState:UIControlStateNormal];
-            [videoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:video] description] forState:UIControlStateNormal];
+            //[videoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:video] description] forState:UIControlStateNormal];
         } else {
             @synchronized(self) {
                 // check if we can update the cache
@@ -382,7 +403,7 @@
                                     [videoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:video]];
                                     [videoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:video] description] forState:UIControlStateNormal];
                                     [videoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:video] description] forState:UIControlStateNormal];
-                                    [videoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:video] description] forState:UIControlStateNormal];
+                                    //[videoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:video] description] forState:UIControlStateNormal];
                                 } else {
                                     NSLog(@"ERROR##: %@",error);
                                 }
@@ -392,7 +413,7 @@
                 }
             }
         }
-
+        
         videoCell.videoButton.tag = indexPath.section;
         videoCell.imageView.image = [UIImage imageNamed:PLACEHOLDER_LIGHTGRAY];
         
@@ -401,8 +422,10 @@
             // PFQTVC will take care of asynchronously downloading files, but will only load them when the tableview is not moving. If the data is there, let's load it right away.
             if ([videoCell.imageView.file isDataAvailable]) {
                 [videoCell.imageView loadInBackground];
+                videoCell.imageView.contentMode = UIViewContentModeScaleAspectFill;
             }
         }
+         
         return videoCell;
     }
     
@@ -429,7 +452,7 @@
             [photoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:photo]];
             [photoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:photo] description] forState:UIControlStateNormal];
             [photoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:photo] description] forState:UIControlStateNormal];
-            [photoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:photo] description] forState:UIControlStateNormal];
+            //[photoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:photo] description] forState:UIControlStateNormal];
         } else {
             
             @synchronized(self) {
@@ -480,7 +503,7 @@
                                     [photoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:photo]];
                                     [photoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:photo] description] forState:UIControlStateNormal];
                                     [photoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:photo] description] forState:UIControlStateNormal];
-                                    [photoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:photo] description] forState:UIControlStateNormal];
+                                    //[photoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:photo] description] forState:UIControlStateNormal];
                                 } else {
                                     NSLog(@"ERROR##: %@",error);
                                 }
@@ -508,23 +531,25 @@
     return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
 }
 
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    return [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
+}
+
 #pragma mark - FTPhotoTimelineViewController
 
-- (FTPhotoCell *)dequeueReusableSectionHeaderView {
-    for (FTPhotoCell *sectionHeaderView in self.reusableSectionHeaderViews) {
+- (FTPostHeaderView *)dequeueReusableSectionHeaderView {
+    for (FTPostHeaderView *sectionHeaderView in self.reusableSectionHeaderViews) {
         if (!sectionHeaderView.superview) {
             // we found a section header that is no longer visible
             return sectionHeaderView;
         }
     }
-    
     return nil;
 }
 
 #pragma mark - FTGalleryCellViewDelegate
 
 - (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapUserButton:(UIButton *)button user:(PFUser *)user {
-    
     // Push account view controller
     [profileViewController setUser:user];
     [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
@@ -542,7 +567,7 @@
     BOOL liked = !button.selected;
     [galleryCellView setLikeStatus:liked];
     
-    NSString *originalButtonTitle = counter.titleLabel.text;
+    //NSString *originalButtonTitle = counter.titleLabel.text;
     
     NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
     [numberFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"]];
@@ -565,31 +590,12 @@
     
     if (liked) {
         [FTUtility likePhotoInBackground:gallery block:^(BOOL succeeded, NSError *error) {
-            FTPhotoCell *actualView = (FTPhotoCell *)[self tableView:self.tableView viewForHeaderInSection:counter.tag];
-            [actualView shouldEnableLikeButton:YES];
-            [actualView setLikeStatus:succeeded];
-            
-            if (!succeeded) {
-                //[actualView.likeButton setTitle:originalButtonTitle forState:UIControlStateNormal];
-                [actualView.likeCounter setTitle:originalButtonTitle forState:UIControlStateNormal];
-            }
-            
             if (error) {
-                NSLog(@"ERROR###: %@",error);
+                NSLog(@"ERROR#: %@",error);
             }
         }];
     } else {
-        // warnParseOperationOnMainThread()
         [FTUtility unlikePhotoInBackground:gallery block:^(BOOL succeeded, NSError *error) {
-            FTPhotoCell *actualView = (FTPhotoCell *)[self tableView:self.tableView viewForHeaderInSection:counter.tag];
-            [actualView shouldEnableLikeButton:YES];
-            [actualView setLikeStatus:!succeeded];
-            
-            if (!succeeded) {
-                //[actualView.likeButton setTitle:originalButtonTitle forState:UIControlStateNormal];
-                [actualView.likeCounter setTitle:originalButtonTitle forState:UIControlStateNormal];
-            }
-            
             if(error){
                 NSLog(@"ERROR#: %@",error);
             }
@@ -602,7 +608,7 @@
     
     //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapCommentOnGalleryButton:gallery:");
     FTPostDetailsViewController *photoDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:gallery AndType:kFTPostTypeGallery];
-    [self.navigationController pushViewController:photoDetailsVC animated:YES];
+    [self.navigationController pushViewController:photoDetailsVC animated:NO];
 }
 
 - (void)galleryCellView:(FTGalleryCell *)galleryCellView
@@ -618,7 +624,7 @@
     
     //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapImageInGalleryAction:gallery:");
     FTPostDetailsViewController *galleryDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:gallery AndType:kFTPostTypeGallery];
-    [self.navigationController pushViewController:galleryDetailsVC animated:YES];
+    [self.navigationController pushViewController:galleryDetailsVC animated:NO];
 }
 
 - (void)galleryCellView:(FTGalleryCell *)galleryCellView
@@ -669,7 +675,7 @@ didTapLikeVideoButton:(UIButton *)button
     BOOL liked = !button.selected;
     [videoCellView setLikeStatus:liked];
     
-    NSString *originalButtonTitle = counter.titleLabel.text;
+    //NSString *originalButtonTitle = counter.titleLabel.text;
     
     NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
     [numberFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"]];
@@ -691,14 +697,6 @@ didTapLikeVideoButton:(UIButton *)button
     
     if (liked) {
         [FTUtility likeVideoInBackground:video block:^(BOOL succeeded, NSError *error) {
-            FTVideoCell *actualView = (FTVideoCell *)[self tableView:self.tableView viewForHeaderInSection:counter.tag];
-            [actualView shouldEnableLikeButton:YES];
-            [actualView setLikeStatus:succeeded];
-            
-            if (!succeeded) {
-                [actualView.likeCounter setTitle:originalButtonTitle forState:UIControlStateNormal];
-            }
-            
             if (error) {
                 NSLog(@"ERROR###: %@",error);
             }
@@ -706,15 +704,7 @@ didTapLikeVideoButton:(UIButton *)button
         
     } else {
         [FTUtility unlikeVideoInBackground:video block:^(BOOL succeeded, NSError *error) {
-            FTVideoCell *actualView = (FTVideoCell *)[self tableView:self.tableView viewForHeaderInSection:counter.tag];
-            [actualView shouldEnableLikeButton:YES];
-            [actualView setLikeStatus:!succeeded];
-            
-            if (!succeeded) {
-                [actualView.likeCounter setTitle:originalButtonTitle forState:UIControlStateNormal];
-            }
-            
-            if(error){
+            if(error) {
                 NSLog(@"ERROR###: %@",error);
             }
         }];
@@ -764,7 +754,7 @@ didTapLikeVideoButton:(UIButton *)button
     PFObject *video = [self.objects objectAtIndex:videoCellView.tag];
     if (video) {
         FTPostDetailsViewController *galleryDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:video AndType:kFTPostTypeVideo];
-        [self.navigationController pushViewController:galleryDetailsVC animated:YES];
+        [self.navigationController pushViewController:galleryDetailsVC animated:NO];
     }
 }
 
@@ -792,8 +782,6 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
     BOOL liked = !button.selected;
     [photoCellView setLikeStatus:liked];
     
-    NSString *originalButtonTitle = counter.titleLabel.text;
-    
     NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
     [numberFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"]];
     
@@ -815,35 +803,16 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
 
     if (liked) {
         [FTUtility likePhotoInBackground:photo block:^(BOOL succeeded, NSError *error) {
-            FTPhotoCell *actualView = (FTPhotoCell *)[self tableView:self.tableView viewForHeaderInSection:counter.tag];
-            [actualView shouldEnableLikeButton:YES];
-            [actualView setLikeStatus:succeeded];
-            
-            if (!succeeded) {
-                //[actualView.likeButton setTitle:originalButtonTitle forState:UIControlStateNormal];
-                [actualView.likeCounter setTitle:originalButtonTitle forState:UIControlStateNormal];
-            }
-            
             if (error) {
-                NSLog(@"ERROR###: %@",error);
+                NSLog(@"%@::likePhotoInBackground",ERROR_MESSAGE);
             }
         }];
     } else {
         // warnParseOperationOnMainThread()
         [FTUtility unlikePhotoInBackground:photo block:^(BOOL succeeded, NSError *error) {
-            FTPhotoCell *actualView = (FTPhotoCell *)[self tableView:self.tableView viewForHeaderInSection:counter.tag];
-            [actualView shouldEnableLikeButton:YES];
-            [actualView setLikeStatus:!succeeded];
-            
-            if (!succeeded) {
-                //[actualView.likeButton setTitle:originalButtonTitle forState:UIControlStateNormal];
-                [actualView.likeCounter setTitle:originalButtonTitle forState:UIControlStateNormal];
+            if (error) {
+                NSLog(@"%@::unlikePhotoInBackground",ERROR_MESSAGE);
             }
-            
-            if(error){
-                NSLog(@"ERROR###: %@",error);
-            }
-            
         }];
     }
 }
@@ -852,7 +821,7 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
                 photo:(PFObject *)photo {
     //NSLog(@"FTPhotoTimelineViewController::photoCellView:didTapCommentOnPhotoButton:photo:");
     FTPostDetailsViewController *postDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:photo AndType:kFTPostTypeVideo];
-    [self.navigationController pushViewController:postDetailsVC animated:YES];
+    [self.navigationController pushViewController:postDetailsVC animated:NO];
 }
 
 - (void)photoCellView:(FTPhotoCell *)photoCellView
@@ -881,7 +850,7 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
     PFObject *photo = [self.objects objectAtIndex:photoCellView.tag];
     if (photo) {
         FTPostDetailsViewController *postDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:photo AndType:kFTPostTypeVideo];
-        [self.navigationController pushViewController:postDetailsVC animated:YES];
+        [self.navigationController pushViewController:postDetailsVC animated:NO];
     }
 }
 
