@@ -439,7 +439,7 @@
     [cell setContactLabel:contactLabels[indexPath.row]];
     [cell.selectUserButton setSelected:NO];
     
-    if ([selectedContacts containsObject:[NSString stringWithFormat:@"%ld",indexPath.row]]) {
+    if ([selectedContacts containsObject:[NSString stringWithFormat:@"%ld",(long)indexPath.row]]) {
         [cell.selectUserButton setSelected:YES];
     }
     
@@ -453,11 +453,11 @@
 #pragma mark - FTContactCellDelegate
 
 - (void)contactCell:(FTContactCell *)contactCell didTapSelectButton:(UIButton *)button index:(NSInteger)index {
-    [selectedContacts addObject:[NSString stringWithFormat:@"%ld",index]];
+    [selectedContacts addObject:[NSString stringWithFormat:@"%ld",(long)index]];
 }
 
 - (void)contactCell:(FTContactCell *)contactCell didTapUnselectButton:(UIButton *)button index:(NSInteger)index {
-    NSString *indexString = [NSString stringWithFormat:@"%ld",index];
+    NSString *indexString = [NSString stringWithFormat:@"%ld",(long)index];
     if ([selectedContacts containsObject:indexString]) {
         [selectedContacts removeObject:indexString];
     }    
