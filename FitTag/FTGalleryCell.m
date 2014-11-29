@@ -18,24 +18,18 @@
 @interface FTGalleryCell ()
 @property (nonatomic, strong) UIButton *moreButton;
 @property (nonatomic, strong) UIButton *userButton;
-
 @property (nonatomic, strong) UIView *containerView;
-
-@property (nonatomic, strong) FTProfileImageView *avatarImageView;
-
+//@property (nonatomic, strong) FTProfileImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *locationLabel;
-
 @property (nonatomic, strong) TTTTimeIntervalFormatter *timeIntervalFormatter;
-
 @property (nonatomic, assign) CGFloat lastContentOffset;
-
-@property (nonatomic, strong) FTGallerySwiperView *swiperView;
+//@property (nonatomic, strong) FTGallerySwiperView *swiperView;
 @end
 
 @implementation FTGalleryCell
 @synthesize galleryButton;
 @synthesize containerView;
-@synthesize avatarImageView;
+//@synthesize avatarImageView;
 @synthesize userButton;
 @synthesize locationLabel;
 @synthesize timeIntervalFormatter;
@@ -47,9 +41,9 @@
 @synthesize commentCounter;
 @synthesize likeCounter;
 @synthesize moreButton;
-@synthesize usernameRibbon;
+//@synthesize usernameRibbon;
 @synthesize carousel;
-@synthesize swiperView;
+//@synthesize swiperView;
 
 #pragma mark - NSObject
 
@@ -57,89 +51,71 @@
     reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        // Initialization code
-        self.opaque = NO;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.accessoryType = UITableViewCellAccessoryNone;
         
+        self.opaque = NO;
+        self.clipsToBounds = YES;
+        self.superview.clipsToBounds = YES;
+        
         self.backgroundColor = [UIColor clearColor];
         
-        self.imageView.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
+        self.imageView.frame = CGRectMake(0,0,self.frame.size.width,320);
         self.imageView.backgroundColor = [UIColor clearColor];
         self.imageView.contentMode = UIViewContentModeScaleAspectFill;
         
         self.galleryButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.galleryButton.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
+        self.galleryButton.frame = CGRectMake(0,0,self.frame.size.width,320);
         self.galleryButton.backgroundColor = [UIColor clearColor];
+        
         [self.contentView addSubview:self.galleryButton];
         
         UIView *galleryCellButtonsContainer = [[UIView alloc] init];
-        galleryCellButtonsContainer.frame = CGRectMake(120.0f, 295.0f, 200.0f, 22.0f);
-        galleryCellButtonsContainer.backgroundColor = [UIColor clearColor];
+        galleryCellButtonsContainer.frame = CGRectMake(0,self.galleryButton.frame.size.height,self.frame.size.width,30);
+        galleryCellButtonsContainer.backgroundColor = FT_GRAY;
         [self.contentView addSubview:galleryCellButtonsContainer];
         
         FTGalleryCellButtons otherButtons = FTGalleryCellButtonsDefault;
         [FTGalleryCell validateButtons:otherButtons];
         buttons = otherButtons;
         
-        self.clipsToBounds = YES;
-        self.containerView.clipsToBounds = YES;
-        self.superview.clipsToBounds = YES;
-        [self setBackgroundColor:[UIColor clearColor]];
-        
-        //UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:4 Y:4 width:42 hegiht:42];
-        
-        self.avatarImageView = [[FTProfileImageView alloc] init];
-        //self.avatarImageView.frame = profileHexagon.frame;
-        //self.avatarImageView.layer.mask = profileHexagon.layer.mask;
-        self.avatarImageView.frame = CGRectMake(4, 4, 42, 42);
-        self.avatarImageView.layer.cornerRadius = CORNERRADIUS(42);
-        self.avatarImageView.clipsToBounds = YES;
-        [self.avatarImageView.profileButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [self.contentView addSubview:self.avatarImageView];
-        
-        //username_ribbon
-        self.usernameRibbon = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *image = [FTGalleryCell imageWithImage:[UIImage imageNamed:@"username_ribbon"] scaledToSize:CGSizeMake(88.0f, 20.0f)];
-        [self.usernameRibbon setBackgroundColor:[UIColor colorWithPatternImage:image]];
-        self.usernameRibbon.frame = CGRectMake(self.avatarImageView.frame.size.width + self.avatarImageView.frame.origin.x - 4,
-                                               self.avatarImageView.frame.origin.y + 10,88.0f, 20.0f);
-                
-        [self.usernameRibbon addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [self.usernameRibbon setTitle:EMPTY_STRING forState:UIControlStateNormal];
-        [self.usernameRibbon.titleLabel setFont:BENDERSOLID(11)];
-        [self.usernameRibbon setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
-        [self.usernameRibbon setContentEdgeInsets:UIEdgeInsetsMake(0, 5, 0, 0)];
-        
-        [self.contentView addSubview:self.usernameRibbon];
-        [self.contentView bringSubviewToFront:self.avatarImageView];
-        
-        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 285, 110, 40)];
+        //location label
+        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(5,BUTTONS_TOP_PADDING,120,20)];
         [locationLabel setText:EMPTY_STRING];
-        [locationLabel setFont:[UIFont systemFontOfSize:12.0f]];
         [locationLabel setBackgroundColor:[UIColor clearColor]];
-        [locationLabel setTextColor:[UIColor whiteColor]];
+        [locationLabel setTextColor:[UIColor blackColor]];
+        [locationLabel setFont:BENDERSOLID(16)];
         
-        [self addSubview:locationLabel];
-        [self bringSubviewToFront:locationLabel];
+        [galleryCellButtonsContainer addSubview:locationLabel];
         
         if (self.buttons & FTGalleryCellButtonsLike) {
             // like button
             likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [galleryCellButtonsContainer addSubview:self.likeButton];
-            [self.likeButton setFrame:CGRectMake(5.0f, 1.0f, 21.0f, 18.0f)];
+            [self.likeButton setFrame:CGRectMake(locationLabel.frame.size.width + locationLabel.frame.origin.y, BUTTONS_TOP_PADDING, 21, 18)];
             [self.likeButton setBackgroundColor:[UIColor clearColor]];
-            [self.likeButton setTitle:@"" forState:UIControlStateNormal];
+            [self.likeButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_white"] forState:UIControlStateNormal];
             [self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateSelected];
             [self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateHighlighted];
+            [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+            [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
             [self.likeButton setSelected:NO];
             
+            [galleryCellButtonsContainer addSubview:self.likeButton];
+            
             likeCounter = [UIButton buttonWithType:UIButtonTypeCustom];
-            [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x + 3.0f, likeButton.frame.origin.y, 37.0f, 19.0f)];
+            [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x, BUTTONS_TOP_PADDING, 37.0f, 19.0f)];
             [likeCounter setBackgroundColor:[UIColor clearColor]];
             [likeCounter setTitle:@"0" forState:UIControlStateNormal];
+            [likeCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+            [likeCounter.titleLabel setFont:BENDERSOLID(16)];
+            [likeCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
             [likeCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
+            [likeCounter setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [likeCounter setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+            [likeCounter setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+            
             [galleryCellButtonsContainer addSubview:likeCounter];
         }
         
@@ -147,34 +123,45 @@
             
             // comments button
             commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [galleryCellButtonsContainer addSubview:self.commentButton];
-            [self.commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x + 15.0f, likeCounter.frame.origin.y, 21.0f, 18.0f)];
+            [self.commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x, BUTTONS_TOP_PADDING, 21.0f, 18.0f)];
             [self.commentButton setBackgroundColor:[UIColor clearColor]];
             [self.commentButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [self.commentButton setBackgroundImage:[UIImage imageNamed:@"comment_bubble"] forState:UIControlStateNormal];
+            [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+            [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
             [self.commentButton setSelected:NO];
             
+            [galleryCellButtonsContainer addSubview:self.commentButton];
+            
             commentCounter = [UIButton buttonWithType:UIButtonTypeCustom];
-            [commentCounter setFrame: CGRectMake(self.commentButton.frame.origin.x + self.commentButton.frame.size.width + 3.0f, self.commentButton.frame.origin.y, 37.0f, 19.0f)];
+            [commentCounter setFrame:CGRectMake(self.commentButton.frame.origin.x + self.commentButton.frame.size.width, BUTTONS_TOP_PADDING, 37, 19)];
             [commentCounter setBackgroundColor:[UIColor clearColor]];
             [commentCounter setTitle:EMPTY_STRING forState:UIControlStateNormal];
+            [commentCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+            [commentCounter.titleLabel setFont:BENDERSOLID(16)];
+            [commentCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
             [commentCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
+            [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+            [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+            
             [galleryCellButtonsContainer addSubview:commentCounter];
         }
         
         moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [moreButton setBackgroundImage:[UIImage imageNamed:@"more_button"] forState:UIControlStateNormal];
-        [moreButton setFrame:CGRectMake(commentCounter.frame.size.width + commentCounter.frame.origin.x + 15.0f, commentCounter.frame.origin.y, 35.0f, 19.0f)];
+        [moreButton setFrame:CGRectMake(self.frame.size.width - 45, BUTTONS_TOP_PADDING, 35, 19)];
         [moreButton setBackgroundColor:[UIColor clearColor]];
         [moreButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
         [galleryCellButtonsContainer addSubview:moreButton];
-        
+        /*
         swiperView = [[FTGallerySwiperView alloc] initWithFrame:CGRectMake(usernameRibbon.frame.origin.x + EXTRA_PADDING,
                                                                            usernameRibbon.frame.origin.y + usernameRibbon.frame.size.height,
                                                                            usernameRibbon.frame.size.width - REMOVE_EXTRA_PADDING,
                                                                            usernameRibbon.frame.size.height)];
-        
-        carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 320.0f,320.0f)];
+        */
+        carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0,0,320,320)];
         [carousel setDelegate:self];
         [carousel setUserInteractionEnabled:YES];
         [carousel setDelaysContentTouches:YES];
@@ -206,7 +193,7 @@
 - (void)setGallery:(PFObject *)aGallery {
     gallery = aGallery;
     
-    [self.swiperView setAlpha:0];
+    //[self.swiperView setAlpha:0];
     
     // Clear the carousel
     for (UIView *carouseSubView in carousel.subviews) {
@@ -242,21 +229,21 @@
                 }];
                 i++;
             }
-            
+            /*
             if (objects.count > 1) {
                 [self.swiperView setNumberOfDashes:i];
                 [self.contentView addSubview:self.swiperView];
                 [self.swiperView setAlpha:1];
             }
-            
+            */
             [carousel setContentSize: CGSizeMake(320.0f * objects.count, 320.0f)];
        } 
     }];
      
     // User profile image
     PFUser *user = [self.gallery objectForKey:kFTPostUserKey];
-    PFFile *profilePictureSmall = [user objectForKey:kFTUserProfilePicSmallKey];
-    [self.avatarImageView setFile:profilePictureSmall];
+    //PFFile *profilePictureSmall = [user objectForKey:kFTUserProfilePicSmallKey];
+    //[self.avatarImageView setFile:profilePictureSmall];
     
     NSString *authorName = [user objectForKey:kFTUserDisplayNameKey];
     [self.userButton setTitle:authorName forState:UIControlStateNormal];
@@ -343,9 +330,9 @@
     NSInteger page = lround(fractionalPage);
     if (previousPage != page) {
         if (previousPage < page) {
-            [self.swiperView onGallerySwipedLeft: page];
+            //[self.swiperView onGallerySwipedLeft: page];
         } else if (previousPage > page) {
-            [self.swiperView onGallerySwipedRight: page];
+            //[self.swiperView onGallerySwipedRight: page];
         }
         previousPage = page;
     }

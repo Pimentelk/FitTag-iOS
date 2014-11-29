@@ -13,20 +13,18 @@
 
 @interface FTPhotoCell ()
 @property (nonatomic, strong) UIButton *moreButton;
-@property (nonatomic, strong) UIView *containerView;
-@property (nonatomic, strong) FTProfileImageView *avatarImageView;
+//@property (nonatomic, strong) FTProfileImageView *avatarImageView;
 @property (nonatomic, strong) UIButton *userButton;
 @property (nonatomic, strong) UILabel *locationLabel;
-@property (nonatomic, strong) TTTTimeIntervalFormatter *timeIntervalFormatter;
+//@property (nonatomic, strong) TTTTimeIntervalFormatter *timeIntervalFormatter;
 @end
 
 @implementation FTPhotoCell
 @synthesize photoButton;
-@synthesize containerView;
-@synthesize avatarImageView;
+//@synthesize avatarImageView;
 @synthesize userButton;
 @synthesize locationLabel;
-@synthesize timeIntervalFormatter;
+//@synthesize timeIntervalFormatter;
 @synthesize photo;
 @synthesize buttons;
 @synthesize likeButton;
@@ -35,7 +33,7 @@
 @synthesize commentCounter;
 @synthesize likeCounter;
 @synthesize moreButton;
-@synthesize usernameRibbon;
+//@synthesize usernameRibbon;
 
 #pragma mark - NSObject
 
@@ -43,15 +41,17 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     
     if (self) {
-        // Initialization code
-        self.opaque = NO;
+        
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.accessoryType = UITableViewCellAccessoryNone;
+        
+        self.opaque = NO;        
         self.clipsToBounds = NO;
+        self.superview.clipsToBounds = NO;
         
         self.backgroundColor = [UIColor clearColor];
                 
-        self.imageView.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
+        self.imageView.frame = CGRectMake(0,0,self.frame.size.width,self.frame.size.width);
         self.imageView.backgroundColor = [UIColor clearColor];
         self.imageView.contentMode = UIViewContentModeScaleAspectFit;
         
@@ -59,68 +59,59 @@
         singleTap.numberOfTapsRequired = 1;
         
         self.photoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.photoButton.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
+        self.photoButton.frame = CGRectMake(0,0,self.frame.size.width,self.frame.size.width);
         self.photoButton.backgroundColor = [UIColor clearColor];
         [self.photoButton addGestureRecognizer:singleTap];
+        
         [self.contentView addSubview:self.photoButton];
         
         UIView *photoCellButtonsContainer = [[UIView alloc] init];
-        photoCellButtonsContainer.frame = CGRectMake(120.0f, 295.0f, 200.0f, 22.0f);
-        photoCellButtonsContainer.backgroundColor = [UIColor clearColor];
+        photoCellButtonsContainer.frame = CGRectMake(0,self.photoButton.frame.size.height,self.frame.size.width,30);
+        photoCellButtonsContainer.backgroundColor = FT_GRAY;
+        
         [self.contentView addSubview:photoCellButtonsContainer];
         
         FTPhotoCellButtons otherButtons = FTPhotoCellButtonsDefault;
         [FTPhotoCell validateButtons:otherButtons];
         buttons = otherButtons;
         
-        self.clipsToBounds = NO;
-        self.containerView.clipsToBounds = NO;
-        self.superview.clipsToBounds = NO;
-        [self setBackgroundColor:[UIColor clearColor]];
+        //location label
+        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(5,BUTTONS_TOP_PADDING,120,20)];
+        [locationLabel setText:EMPTY_STRING];
+        [locationLabel setBackgroundColor:[UIColor clearColor]];
+        [locationLabel setTextColor:[UIColor blackColor]];
+        [locationLabel setFont:BENDERSOLID(16)];
         
-        //UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:4 Y:4 width:42 hegiht:42];
-        
-        self.avatarImageView = [[FTProfileImageView alloc] init];
-        //self.avatarImageView.frame = profileHexagon.frame;
-        //self.avatarImageView.layer.mask = profileHexagon.layer.mask;
-        self.avatarImageView.frame = CGRectMake(4, 4, 42, 42);
-        self.avatarImageView.layer.cornerRadius = CORNERRADIUS(42);
-        self.avatarImageView.clipsToBounds = YES;
-        [self.avatarImageView.profileButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [self.contentView addSubview:self.avatarImageView];
-        
-        //username_ribbon
-        self.usernameRibbon = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *image = [FTPhotoCell imageWithImage:[UIImage imageNamed:@"username_ribbon"] scaledToSize:CGSizeMake(88.0f, 20.0f)];
-        [self.usernameRibbon setBackgroundColor:[UIColor colorWithPatternImage:image]];
-        self.usernameRibbon.frame = CGRectMake(self.avatarImageView.frame.size.width + self.avatarImageView.frame.origin.x - 4,
-                                               self.avatarImageView.frame.origin.y + 10,88.0f, 20.0f);
-        
-        [self.usernameRibbon addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [self.usernameRibbon setTitle:EMPTY_STRING forState:UIControlStateNormal];
-        [self.usernameRibbon.titleLabel setFont:BENDERSOLID(11)];
-        self.usernameRibbon.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-        self.usernameRibbon.contentEdgeInsets = UIEdgeInsetsMake(0, 5, 0, 0);
-        [self.contentView addSubview:self.usernameRibbon];
-        [self.contentView bringSubviewToFront:self.avatarImageView];
+        [photoCellButtonsContainer addSubview:locationLabel];
         
         if (self.buttons & FTPhotoCellButtonsLike) {
             // like button
             likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [photoCellButtonsContainer addSubview:self.likeButton];
-            [self.likeButton setFrame:CGRectMake(5.0f, 1.0f, 21.0f, 18.0f)];
+            [self.likeButton setFrame:CGRectMake(locationLabel.frame.size.width + locationLabel.frame.origin.y, BUTTONS_TOP_PADDING, 21, 18)];
             [self.likeButton setBackgroundColor:[UIColor clearColor]];
             [self.likeButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_white"] forState:UIControlStateNormal];
             [self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateSelected];
             [self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateHighlighted];
+            [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+            [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
             [self.likeButton setSelected:NO];
             
+            [photoCellButtonsContainer addSubview:self.likeButton];
+            
             likeCounter = [UIButton buttonWithType:UIButtonTypeCustom];
-            [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x + 3.0f, likeButton.frame.origin.y, 37.0f, 19.0f)];
+            [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x, BUTTONS_TOP_PADDING, 37.0f, 19.0f)];
             [likeCounter setBackgroundColor:[UIColor clearColor]];
             [likeCounter setTitle:@"0" forState:UIControlStateNormal];
+            [likeCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+            [likeCounter.titleLabel setFont:BENDERSOLID(16)];
+            [likeCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
             [likeCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
+            [likeCounter setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [likeCounter setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+            [likeCounter setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+            
             [photoCellButtonsContainer addSubview:likeCounter];
         }
         
@@ -128,36 +119,39 @@
             
             // comments button
             commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [photoCellButtonsContainer addSubview:self.commentButton];
-            [self.commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x + 15.0f, likeCounter.frame.origin.y, 21.0f, 18.0f)];
+            [self.commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x, BUTTONS_TOP_PADDING, 21.0f, 18.0f)];
             [self.commentButton setBackgroundColor:[UIColor clearColor]];
             [self.commentButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [self.commentButton setBackgroundImage:[UIImage imageNamed:@"comment_bubble"] forState:UIControlStateNormal];
+            [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+            [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
             [self.commentButton setSelected:NO];
             
+            [photoCellButtonsContainer addSubview:self.commentButton];
+            
             commentCounter = [UIButton buttonWithType:UIButtonTypeCustom];
-            [commentCounter setFrame: CGRectMake(self.commentButton.frame.origin.x + self.commentButton.frame.size.width + 3.0f, self.commentButton.frame.origin.y, 37.0f, 19.0f)];
+            [commentCounter setFrame:CGRectMake(self.commentButton.frame.origin.x + self.commentButton.frame.size.width, BUTTONS_TOP_PADDING, 37, 19)];
             [commentCounter setBackgroundColor:[UIColor clearColor]];
             [commentCounter setTitle:EMPTY_STRING forState:UIControlStateNormal];
+            [commentCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+            [commentCounter.titleLabel setFont:BENDERSOLID(16)];
+            [commentCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
             [commentCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
+            [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+            [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+            
             [photoCellButtonsContainer addSubview:commentCounter];
         }
         
         moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [moreButton setBackgroundImage:[UIImage imageNamed:@"more_button"] forState:UIControlStateNormal];
-        [moreButton setFrame:CGRectMake(commentCounter.frame.size.width + commentCounter.frame.origin.x + 15.0f, commentCounter.frame.origin.y, 35.0f, 19.0f)];
+        [moreButton setFrame:CGRectMake(self.frame.size.width - 45, BUTTONS_TOP_PADDING, 35, 19)];
         [moreButton setBackgroundColor:[UIColor clearColor]];
         [moreButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
-        [photoCellButtonsContainer addSubview:moreButton];
         
-        /* location label */
-        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 285, 110, 40)];
-        [locationLabel setText:EMPTY_STRING];
-        [locationLabel setFont:[UIFont systemFontOfSize:12.0f]];
-        [locationLabel setBackgroundColor:[UIColor clearColor]];
-        [locationLabel setTextColor:[UIColor whiteColor]];
-        [self addSubview:locationLabel];
-        [self bringSubviewToFront:locationLabel];
+        [photoCellButtonsContainer addSubview:moreButton];
     }
     
     return self;
@@ -167,8 +161,8 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.imageView.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
-    self.photoButton.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
+    self.imageView.frame = CGRectMake(0,0,320,320);
+    self.photoButton.frame = CGRectMake(0,0,320,320);
 }
 
 #pragma mark - FTPhotoCellView
@@ -179,17 +173,19 @@
     
     // User profile image
     PFUser *user = [self.photo objectForKey:kFTPostUserKey];
-    PFFile *profilePictureSmall = [user objectForKey:kFTUserProfilePicSmallKey];
-    [self.avatarImageView setFile:profilePictureSmall];
+    //PFFile *profilePictureSmall = [user objectForKey:kFTUserProfilePicSmallKey];
+    //[self.avatarImageView setFile:profilePictureSmall];
     
     NSString *authorName = [user objectForKey:kFTUserDisplayNameKey];
     [self.userButton setTitle:authorName forState:UIControlStateNormal];
     
     //CGFloat constrainWidth = containerView.bounds.size.width;
     
+    /*
     if (self.buttons & FTPhotoCellButtonsUser){
         [self.userButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
+    */
     
     if (self.buttons & FTPhotoCellButtonsComment){
         //constrainWidth = self.commentButton.frame.origin.x;
@@ -206,7 +202,7 @@
         [self.moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
-    /* Location */
+    //Location
     PFGeoPoint *geoPoint = [self.photo objectForKey:kFTPostLocationKey];
     if (geoPoint) {
         CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
@@ -237,13 +233,12 @@
 
 - (void)setLikeStatus:(BOOL)liked {
     [self.likeButton setSelected:liked];
-    
     if (liked) {
-        [self.likeButton setTitleEdgeInsets:UIEdgeInsetsMake(-1.0f, 0.0f, 0.0f, 0.0f)];
-        [[self.likeButton titleLabel] setShadowOffset:CGSizeMake(0.0f, -1.0f)];
+        [self.likeButton setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+        [[self.likeButton titleLabel] setShadowOffset:CGSizeMake(0,0)];
     } else {
-        [self.likeButton setTitleEdgeInsets:UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f)];
-        [[self.likeButton titleLabel] setShadowOffset:CGSizeMake(0.0f, 1.0f)];
+        [self.likeButton setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+        [[self.likeButton titleLabel] setShadowOffset:CGSizeMake(0,0)];
     }
 }
 

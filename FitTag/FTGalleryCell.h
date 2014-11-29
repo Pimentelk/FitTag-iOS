@@ -31,7 +31,7 @@ typedef enum {
 @property (nonatomic, strong) UIButton *commentCounter;
 @property (nonatomic, strong) UIButton *likeCounter;
 @property (nonatomic, strong) UIButton *galleryButton;
-@property (nonatomic, strong) UIButton *usernameRibbon;
+//@property (nonatomic, strong) UIButton *usernameRibbon;
 
 /*! @name Creating Gallery Header View */
 /*!

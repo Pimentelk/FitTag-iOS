@@ -24,8 +24,7 @@ typedef enum {
 @property (nonatomic, strong) UIButton *commentCounter;
 @property (nonatomic, strong) UIButton *likeCounter;
 @property (nonatomic, strong) UIButton *videoButton;
-@property (nonatomic, strong) UIButton *usernameRibbon;
-@property (nonatomic, retain) MPMoviePlayerController *moviePlayer;
+@property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
 
 
 /*! @name Creating Video Header View */
@@ -42,9 +41,6 @@ typedef enum {
 @property (nonatomic, readonly, assign) FTVideoCellButtons buttons;
 
 /*! @name Accessing Interaction Elements */
-
-/// The Play Video button
-@property (nonatomic,readonly) UIButton *playButton;
 
 /// The Like Video button
 @property (nonatomic,readonly) UIButton *likeButton;

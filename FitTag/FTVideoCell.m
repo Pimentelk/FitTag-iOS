@@ -14,17 +14,14 @@
 @interface FTVideoCell ()
 @property (nonatomic, strong) UIButton *moreButton;
 @property (nonatomic, strong) UIButton *userButton;
-@property (nonatomic, strong) UIView *containerView;
 @property (nonatomic, strong) UILabel *locationLabel;
-@property (nonatomic, strong) FTProfileImageView *avatarImageView;
 @property (nonatomic, strong) TTTTimeIntervalFormatter *timeIntervalFormatter;
+@property (nonatomic, strong) UIButton *playButton;
 @end
 
 @implementation FTVideoCell
 @synthesize playButton;
 @synthesize videoButton;
-@synthesize containerView;
-@synthesize avatarImageView;
 @synthesize userButton;
 @synthesize locationLabel;
 @synthesize timeIntervalFormatter;
@@ -36,131 +33,115 @@
 @synthesize commentCounter;
 @synthesize likeCounter;
 @synthesize moreButton;
-@synthesize usernameRibbon;
 @synthesize moviePlayer;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     
     if (self) {
-        self.opaque = NO;
+        
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.accessoryType = UITableViewCellAccessoryNone;
+        
+        self.opaque = NO;
         self.clipsToBounds = YES;
+        self.superview.clipsToBounds = YES;
         
         self.backgroundColor = [UIColor clearColor];
-        
-        self.imageView.frame = CGRectMake( 0.0f, 0.0f, self.frame.size.width, 320.0f);
-        self.imageView.backgroundColor = [UIColor clearColor];
-        self.imageView.contentMode = UIViewContentModeScaleAspectFill;
         
         UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapVideoButtonAction:)];
         singleTap.numberOfTapsRequired = 1;
         
         self.videoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.videoButton.frame = CGRectMake( 0.0f, 0.0f, self.frame.size.width, 320.0f);
+        self.videoButton.frame = CGRectMake(0,0,self.frame.size.width,320);
         self.videoButton.backgroundColor = [UIColor clearColor];
+        self.videoButton.clipsToBounds = YES;
         
         [self.videoButton addGestureRecognizer:singleTap];
         [self.contentView addSubview:self.videoButton];
         
         UIView *videoCellButtonsContainer = [[UIView alloc] init];
-        videoCellButtonsContainer.frame = CGRectMake(120.0f, 295.0f, 200.0f, 22.0f);
-        videoCellButtonsContainer.backgroundColor = [UIColor clearColor];
+        videoCellButtonsContainer.frame = CGRectMake(0,self.videoButton.frame.size.height,self.frame.size.width,30);
+        videoCellButtonsContainer.backgroundColor = FT_GRAY;
         [self.contentView addSubview:videoCellButtonsContainer];
         
         FTVideoCellButtons otherButtons = FTVideoCellButtonsDefault;
         [FTVideoCell validateButtons:otherButtons];
         buttons = otherButtons;
         
-        self.clipsToBounds = YES;
-        self.containerView.clipsToBounds = YES;
-        self.superview.clipsToBounds = YES;
+        //location label
+        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(5,BUTTONS_TOP_PADDING,120,20)];
+        [locationLabel setText:EMPTY_STRING];
+        [locationLabel setBackgroundColor:[UIColor clearColor]];
+        [locationLabel setTextColor:[UIColor blackColor]];
+        [locationLabel setFont:BENDERSOLID(16)];
         
-        //UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:4 Y:4 width:42 hegiht:42];
-        
-        self.avatarImageView = [[FTProfileImageView alloc] init];
-        //self.avatarImageView.frame = profileHexagon.frame;
-        //self.avatarImageView.layer.mask = profileHexagon.layer.mask;
-        self.avatarImageView.frame = CGRectMake(4, 4, 42, 42);
-        self.avatarImageView.layer.cornerRadius = CORNER_RADIUS;
-        self.avatarImageView.clipsToBounds = YES;
-        
-        [self.avatarImageView.profileButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [self.contentView addSubview:self.avatarImageView];
-        
-        //username_ribbon
-        self.usernameRibbon = [UIButton buttonWithType:UIButtonTypeCustom];
-        
-        UIImage *image = [FTVideoCell imageWithImage:[UIImage imageNamed:@"username_ribbon"] scaledToSize:CGSizeMake(88.0f, 20.0f)];
-        [self.usernameRibbon setBackgroundColor:[UIColor colorWithPatternImage:image]];
-        
-        self.usernameRibbon.frame = CGRectMake(self.avatarImageView.frame.size.width + self.avatarImageView.frame.origin.x - 4,
-                                               self.avatarImageView.frame.origin.y + 10,88.0f, 20.0f);
-        
-        [self.usernameRibbon addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [self.usernameRibbon setTitle:EMPTY_STRING forState:UIControlStateNormal];
-        [self.usernameRibbon.titleLabel setFont:BENDERSOLID(11)];
-        
-        self.usernameRibbon.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-        self.usernameRibbon.contentEdgeInsets = UIEdgeInsetsMake(0, 5, 0, 0);
-        
-        [self.contentView addSubview:self.usernameRibbon];
-        [self.contentView bringSubviewToFront:self.avatarImageView];
-        
-        // Play Button
-        if (self.buttons & FTVideoCellButtonsPlay) {
-            float centerX = (self.videoButton.frame.size.width - 60) / 2;
-            float centerY = (self.videoButton.frame.size.height - 60) / 2;
-            playButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [self.playButton setFrame:CGRectMake(centerX,centerY,60.0f,60.0f)];
-            [self.playButton setBackgroundImage:[UIImage imageNamed:@"play_button"] forState:UIControlStateNormal];
-            [self.playButton setSelected:NO];
-            [self.contentView addSubview:self.playButton];
-            [self.contentView bringSubviewToFront:self.playButton];
-        }
+        [videoCellButtonsContainer addSubview:locationLabel];
         
         if (self.buttons & FTVideoCellButtonsLike) {
             // like button
             likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [videoCellButtonsContainer addSubview:self.likeButton];
-            [self.likeButton setFrame:CGRectMake(5.0f, 1.0f, 21.0f, 18.0f)];
+            [self.likeButton setFrame:CGRectMake(locationLabel.frame.size.width + locationLabel.frame.origin.y, BUTTONS_TOP_PADDING, 21, 18)];
             [self.likeButton setBackgroundColor:[UIColor clearColor]];
             [self.likeButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_white"] forState:UIControlStateNormal];
             [self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateSelected];
             [self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateHighlighted];
+            [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+            [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
             [self.likeButton setSelected:NO];
             
+            [videoCellButtonsContainer addSubview:self.likeButton];
+            
             likeCounter = [UIButton buttonWithType:UIButtonTypeCustom];
-            [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x + 3.0f, likeButton.frame.origin.y, 37.0f, 19.0f)];
+            [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x, BUTTONS_TOP_PADDING, 37.0f, 19.0f)];
             [likeCounter setBackgroundColor:[UIColor clearColor]];
             [likeCounter setTitle:@"0" forState:UIControlStateNormal];
+            [likeCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+            [likeCounter.titleLabel setFont:BENDERSOLID(16)];
+            [likeCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
             [likeCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
+            [likeCounter setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [likeCounter setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+            [likeCounter setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+            
             [videoCellButtonsContainer addSubview:likeCounter];
         }
         
         if (self.buttons & FTVideoCellButtonsComment) {
+            
             // comments button
             commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [videoCellButtonsContainer addSubview:self.commentButton];
-            [self.commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x + 15.0f, likeCounter.frame.origin.y, 21.0f, 18.0f)];
+            [self.commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x, BUTTONS_TOP_PADDING, 21.0f, 18.0f)];
             [self.commentButton setBackgroundColor:[UIColor clearColor]];
             [self.commentButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [self.commentButton setBackgroundImage:[UIImage imageNamed:@"comment_bubble"] forState:UIControlStateNormal];
+            [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+            [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
             [self.commentButton setSelected:NO];
             
+            [videoCellButtonsContainer addSubview:self.commentButton];
+            
             commentCounter = [UIButton buttonWithType:UIButtonTypeCustom];
-            [commentCounter setFrame: CGRectMake(self.commentButton.frame.origin.x + self.commentButton.frame.size.width + 3.0f, self.commentButton.frame.origin.y, 37.0f, 19.0f)];
+            [commentCounter setFrame:CGRectMake(self.commentButton.frame.origin.x + self.commentButton.frame.size.width, BUTTONS_TOP_PADDING, 37, 19)];
             [commentCounter setBackgroundColor:[UIColor clearColor]];
             [commentCounter setTitle:EMPTY_STRING forState:UIControlStateNormal];
+            [commentCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+            [commentCounter.titleLabel setFont:BENDERSOLID(16)];
+            [commentCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
             [commentCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
+            [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+            [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+            
             [videoCellButtonsContainer addSubview:commentCounter];
         }
         
         moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [moreButton setBackgroundImage:[UIImage imageNamed:@"more_button"] forState:UIControlStateNormal];
-        [moreButton setFrame:CGRectMake(commentCounter.frame.size.width + commentCounter.frame.origin.x + 15.0f, commentCounter.frame.origin.y, 35.0f, 19.0f)];
+        [moreButton setFrame:CGRectMake(self.frame.size.width - 45, BUTTONS_TOP_PADDING, 35, 19)];
         [moreButton setBackgroundColor:[UIColor clearColor]];
         [moreButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
         
@@ -169,24 +150,7 @@
         // setup the video player
         //NSLog(@"Setting up...");
         moviePlayer = [[MPMoviePlayerController alloc] init];
-        [moviePlayer setControlStyle:MPMovieControlStyleNone];
-        [moviePlayer setScalingMode:MPMovieScalingModeAspectFill];
-        [moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
-        [moviePlayer setShouldAutoplay:NO];
-        [moviePlayer.view setFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
-        [moviePlayer.view setBackgroundColor:[UIColor clearColor]];
-        [moviePlayer.view setUserInteractionEnabled:NO];
-        [moviePlayer.view setHidden:YES];
-        [videoButton addSubview:moviePlayer.view];
         
-        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 285, 110, 40)];
-        [locationLabel setText:EMPTY_STRING];
-        [locationLabel setFont:[UIFont systemFontOfSize:12.0f]];
-        [locationLabel setBackgroundColor:[UIColor clearColor]];
-        [locationLabel setTextColor:[UIColor whiteColor]];
-        
-        [self addSubview:locationLabel];
-        [self bringSubviewToFront:locationLabel];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(movieFinishedCallBack:)
@@ -202,8 +166,20 @@
                                                  selector:@selector(loadStateDidChange:)
                                                      name:MPMoviePlayerLoadStateDidChangeNotification
                                                    object:moviePlayer];
-    }
-    
+        
+        // Play Button
+        if (self.buttons & FTVideoCellButtonsPlay) {
+            float centerX = (self.videoButton.frame.size.width - 60) / 2;
+            float centerY = (self.videoButton.frame.size.height - 60) / 2;
+            playButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            [self.playButton setFrame:CGRectMake(centerX,centerY,60,60)];
+            [self.playButton setBackgroundImage:[UIImage imageNamed:@"play_button"] forState:UIControlStateNormal];
+            [self.playButton setSelected:NO];
+            
+            [videoButton addSubview:self.playButton];
+            [videoButton bringSubviewToFront:self.playButton];
+        }
+    }    
     return self;
 }
 
@@ -211,60 +187,63 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.imageView.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
-    self.videoButton.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
+    self.imageView.frame = CGRectMake(0, 0, 320, 320);
+    self.videoButton.frame = CGRectMake(0, 0, 320, 320);
 }
 
 #pragma mark - FTVideoCellView
 
-- (void)setVideo:(PFObject *)aVideo {
-    
-    //[moviePlayer.view setHidden:YES];
+- (void)setVideo:(PFObject *)aVideo {    
     
     video = aVideo;
     
+    NSLog(@"moviePlayer:%@",moviePlayer);
+    PFFile *videoFile = [video objectForKey:kFTPostVideoKey];
+    [moviePlayer setControlStyle:MPMovieControlStyleNone];
+    [moviePlayer setScalingMode:MPMovieScalingModeAspectFill];
+    [moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
+    [moviePlayer setShouldAutoplay:NO];
+    [moviePlayer setContentURL:[NSURL URLWithString:videoFile.url]];
+    [moviePlayer.view setFrame:CGRectMake(0,0,320,320)];
+    [moviePlayer.view setBackgroundColor:[UIColor clearColor]];
+    [moviePlayer.view setUserInteractionEnabled:NO];
+    [moviePlayer.view setAlpha:0];
+    [moviePlayer.backgroundView setBackgroundColor:[UIColor clearColor]];
+    [moviePlayer prepareToPlay];
+    for(UIView *aSubView in moviePlayer.view.subviews) {
+        aSubView.backgroundColor = [UIColor clearColor];
+    }
+    
+    [videoButton addSubview:moviePlayer.view];
+    [videoButton bringSubviewToFront:moviePlayer.view];
+    
     // Get the profile image
     PFUser *user = [video objectForKey:kFTPostUserKey];
-    PFFile *profilePictureSmall = [user objectForKey:kFTUserProfilePicSmallKey];
     NSString *authorName = [user objectForKey:kFTUserDisplayNameKey];
     
-    //CGFloat constrainWidth = containerView.bounds.size.width;
-
-    [self.avatarImageView setFile:profilePictureSmall];
-    [self.userButton setTitle:authorName
-                     forState:UIControlStateNormal];
+    [self.userButton setTitle:authorName forState:UIControlStateNormal];
     
     if (self.buttons & FTVideoCellButtonsPlay) {
-        [self.playButton addTarget:self
-                            action:@selector(didTapVideoPlayButtonAction:)
-                  forControlEvents:UIControlEventTouchUpInside];
+        [self.playButton addTarget:self action:@selector(didTapVideoPlayButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTVideoCellButtonsUser){
-        [self.userButton addTarget:self
-                            action:@selector(didTapUserButtonAction:)
-                  forControlEvents:UIControlEventTouchUpInside];
+        [self.userButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTVideoCellButtonsUser){
         //constrainWidth = self.commentButton.frame.origin.x;
-        [self.commentButton addTarget:self
-                               action:@selector(didTapCommentOnVideoButtonAction:)
-                     forControlEvents:UIControlEventTouchUpInside];
+        [self.commentButton addTarget:self action:@selector(didTapCommentOnVideoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTVideoCellButtonsUser){
         //constrainWidth = self.likeButton.frame.origin.x;
-        [self.likeButton addTarget:self
-                            action:@selector(didTapLikeVideoButtonAction:)
-                  forControlEvents:UIControlEventTouchUpInside];
+        [self.likeButton addTarget:self action:@selector(didTapLikeVideoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTVideoCellButtonsUser){
         //constrainWidth = self.likeButton.frame.origin.x;
-        [self.moreButton addTarget:self
-                            action:@selector(didTapMoreButtonAction:)
-                  forControlEvents:UIControlEventTouchUpInside];
+        [self.moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
     /* Location */
@@ -299,28 +278,30 @@
 - (void)movieFinishedCallBack:(NSNotification *)notification{
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:MPMoviePlayerPlaybackDidFinishNotification
-                                                  object:self.moviePlayer];
+                                                  object:moviePlayer];
 }
 
 - (void)loadStateDidChange:(NSNotification *)notification{
+    
     //NSLog(@"loadStateDidChange: %@",notification);
     
-    if (self.moviePlayer.loadState & MPMovieLoadStatePlayable) {
-        //NSLog(@"loadState... MPMovieLoadStatePlayable");
+    if (moviePlayer.loadState & MPMovieLoadStatePlayable) {
+        NSLog(@"loadState... MPMovieLoadStatePlayable");
     }
     
-    if (self.moviePlayer.loadState & MPMovieLoadStatePlaythroughOK) {
-        //NSLog(@"loadState... MPMovieLoadStatePlaythroughOK");
-        [moviePlayer.view setHidden:NO];
-        [self.imageView setHidden:YES];
+    if (moviePlayer.loadState & MPMovieLoadStatePlaythroughOK) {
+        //[moviePlayer.view setHidden:NO];
+        
+        NSLog(@"loadState... MPMovieLoadStatePlaythroughOK");
+        //[self.imageView setHidden:YES];
     }
     
-    if (self.moviePlayer.loadState & MPMovieLoadStateStalled) {
-        //NSLog(@"loadState... MPMovieLoadStateStalled");
+    if (moviePlayer.loadState & MPMovieLoadStateStalled) {
+        NSLog(@"loadState... MPMovieLoadStateStalled");
     }
     
-    if (self.moviePlayer.loadState & MPMovieLoadStateUnknown) {
-        //NSLog(@"loadState... MPMovieLoadStateUnknown");
+    if (moviePlayer.loadState & MPMovieLoadStateUnknown) {
+        NSLog(@"loadState... MPMovieLoadStateUnknown");
     }
 }
 
@@ -328,51 +309,51 @@
     
     //NSLog(@"moviePlayerStateChange: %@",notification);
     
-    if (self.moviePlayer.playbackState == MPMoviePlaybackStatePlaying){
-        //NSLog(@"moviePlayer... Playing");
-        [self.playButton setHidden:YES];
-        if (self.moviePlayer.loadState & MPMovieLoadStatePlayable) {
-            //NSLog(@"2 loadState... MPMovieLoadStatePlayable");
-            [moviePlayer.view setHidden:NO];
-            [self.imageView setHidden:YES];
+    if (moviePlayer.loadState & (MPMovieLoadStatePlayable | MPMovieLoadStatePlaythroughOK)) {
+        NSLog(@"loadState... MPMovieLoadStatePlayable | MPMovieLoadStatePlaythroughOK..");
+        if (moviePlayer.playbackState & MPMoviePlaybackStatePlaying){
+            //NSLog(@"moviePlayer... MPMoviePlaybackStatePlaying");
+            [UIView animateWithDuration:1 animations:^{
+                [moviePlayer.view setAlpha:1];
+            }];
         }
     }
     
-    if (self.moviePlayer.playbackState & MPMoviePlaybackStateStopped){
-        //NSLog(@"moviePlayer... Stopped");
-        [self.playButton setHidden:NO];
+    if (moviePlayer.playbackState & MPMoviePlaybackStateStopped){
+        NSLog(@"moviePlayer... MPMoviePlaybackStateStopped");
     }
     
-    if (self.moviePlayer.playbackState & MPMoviePlaybackStatePaused){
-        //NSLog(@"moviePlayer... Paused");
-        [self.playButton setHidden:NO];
-        [moviePlayer.view setHidden:YES];
-        [self.imageView setHidden:NO];
+    if (moviePlayer.playbackState & MPMoviePlaybackStatePaused){
+        [UIView animateWithDuration:0.3 animations:^{
+            [moviePlayer.view setAlpha:0];
+            [moviePlayer prepareToPlay];
+        }];
+        
+        NSLog(@"moviePlayer... MPMoviePlaybackStatePaused");
     }
     
-    if (self.moviePlayer.playbackState & MPMoviePlaybackStateInterrupted){
-        //NSLog(@"moviePlayer... Interrupted");
+    if (moviePlayer.playbackState & MPMoviePlaybackStateInterrupted){
+        NSLog(@"moviePlayer... Interrupted");
         //[self.moviePlayer stop];
     }
     
-    if (self.moviePlayer.playbackState & MPMoviePlaybackStateSeekingForward){
-        //NSLog(@"moviePlayer... Forward");
+    if (moviePlayer.playbackState & MPMoviePlaybackStateSeekingForward){
+        NSLog(@"moviePlayer... Forward");
     }
     
-    if (self.moviePlayer.playbackState & MPMoviePlaybackStateSeekingBackward){
-        //NSLog(@"moviePlayer... Backward");
+    if (moviePlayer.playbackState & MPMoviePlaybackStateSeekingBackward){
+        NSLog(@"moviePlayer... Backward");
     }
 }
 
 - (void)setLikeStatus:(BOOL)liked {
     [self.likeButton setSelected:liked];
-    
     if (liked) {
-        [self.likeButton setTitleEdgeInsets:UIEdgeInsetsMake(-1.0f, 0.0f, 0.0f, 0.0f)];
-        [[self.likeButton titleLabel] setShadowOffset:CGSizeMake(0.0f, -1.0f)];
+        [self.likeButton setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+        [[self.likeButton titleLabel] setShadowOffset:CGSizeMake(0,0)];
     } else {
-        [self.likeButton setTitleEdgeInsets:UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f)];
-        [[self.likeButton titleLabel] setShadowOffset:CGSizeMake(0.0f, 1.0f)];
+        [self.likeButton setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+        [[self.likeButton titleLabel] setShadowOffset:CGSizeMake(0,0)];
     }
 }
 
@@ -394,8 +375,8 @@
     //UIGraphicsBeginImageContext(newSize);
     // In next line, pass 0.0 to use the current device's pixel scaling factor (and thus account for Retina resolution).
     // Pass 1.0 to force exact pixel size.
-    UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
-    [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+    UIGraphicsBeginImageContextWithOptions(newSize,NO,0);
+    [image drawInRect:CGRectMake(0,0,newSize.width,newSize.height)];
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return newImage;
@@ -433,12 +414,15 @@
 }
 
 - (void)didTapVideoPlayButtonAction:(UIButton *)sender{
-    [moviePlayer play];
-    /*
-    if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapPlayButton:forVideoFile:)]){
-        [delegate videoCellView:self didTapPlayButton:sender forVideoFile:[self.video objectForKey:kFTPostVideoKey]];
+    if (moviePlayer) {
+        [moviePlayer play];
+    } else {
+        [[[UIAlertView alloc] initWithTitle:@"Playback Error"
+                                    message:@"Could not play video at this time. If the problem continues please yell at our developers by visiting settings > feedback"
+                                   delegate:self
+                          cancelButtonTitle:@"ok"
+                          otherButtonTitles:nil] show];
     }
-    */
 }
 
 - (void)didTapLocationAction:(FTVideoCell *)sender {
