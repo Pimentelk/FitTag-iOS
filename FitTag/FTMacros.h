@@ -16,14 +16,21 @@
 #define FITTAG_EXPERIENCE @"experience_fittag"
 
 // Profile Image
-#define CORNER_RADIUS 30
-#define CORNERRADIUS(d) d / 4
+#define CORNERRADIUS(d) d / 2
 
 // Profile Hexagon
 #define PROFILE_WIDTH 26
 #define PROFILE_HEIGHT 30
 #define PROFILE_X 2
 #define PROFILE_Y 2
+
+// Profile Avatar
+#define AVATAR_WIDTH 36
+#define AVATAR_HEIGHT 36
+#define AVATAR_X 4
+#define AVATAR_Y 4
+
+#define BUTTONS_TOP_PADDING 5
 
 // UIAlertView
 #define ACTION_SHARE_ON_FACEBOOK @"Share on Facebook"
@@ -147,6 +154,7 @@
 #define FT_RED_COLOR_BLUE 37.0f/255.0f
 #define FT_RED_COLOR_GREEN 37.0f/255.0f
 
+#define FT_GRAY [UIColor colorWithRed:FT_GRAY_COLOR_RED green:FT_GRAY_COLOR_GREEN blue:FT_GRAY_COLOR_BLUE alpha:1]
 #define FT_GRAY_COLOR_RED 234/255.0f
 #define FT_GRAY_COLOR_BLUE 234/255.0f
 #define FT_GRAY_COLOR_GREEN 234/255.0f
@@ -219,6 +227,9 @@
 #define USER_NOT_LOGIN_TWITTER @"User is not logged in to Twitter"
 #define RETURNING_USER @"This is a returning user."
 #define FIRSTTIME_USER @"This is a firsttime user."
+
+// Post Button Macros
+#define POSTRECT(x,w,h) CGRectMake(x,BUTTONS_TOP_PADDING,w,h)
 
 // Placeholders
 #define PLACEHOLDER_RED @"placeholder_red"
