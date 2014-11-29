@@ -26,7 +26,7 @@
 #define nameHeaderX baseHorizontalOffset
 #define nameHeaderY 0.0f
 #define nameHeaderWidth baseWidth
-#define nameHeaderHeight 0.0f
+#define nameHeaderHeight 44.0f
 
 #define avatarImageX horiBorderSpacing
 #define avatarImageY vertBorderSpacing
@@ -47,7 +47,7 @@
 #define likeBarX baseHorizontalOffset
 #define likeBarY nameHeaderHeight + mainImageHeight
 #define likeBarWidth baseWidth
-#define likeBarHeight 0.0f
+#define likeBarHeight 30.0f
 
 #define likeButtonX 9.0f
 #define likeButtonY 7.0f
@@ -69,12 +69,12 @@
 @property (nonatomic, strong) UIView *likeBarView;
 @property (nonatomic, strong) NSMutableArray *currentLikeAvatars;
 @property (nonatomic, strong) UIButton *moreButton;
-@property (nonatomic, strong) FTGallerySwiperView *swiperView;
+//@property (nonatomic, strong) FTGallerySwiperView *swiperView;
 @property (nonatomic, strong) FTProfileImageView *avatarImageView;
-
+@property (nonatomic, strong) UIButton *userButton;
 // Redeclare for edit
 @property (nonatomic, strong, readwrite) PFUser *photographer;
-
+@property (nonatomic, strong) UILabel *locationLabel;
 // Private methods
 - (void)createView;
 
@@ -94,14 +94,16 @@ static TTTTimeIntervalFormatter *timeFormatter;
 @synthesize likeButton;
 @synthesize delegate;
 @synthesize currentLikeAvatars;
-@synthesize usernameRibbon;
+//@synthesize usernameRibbon;
 @synthesize likeCounter;
 @synthesize commentCounter;
 @synthesize commentButton;
 @synthesize moreButton;
 @synthesize carousel;
-@synthesize swiperView;
+///@synthesize swiperView;
 @synthesize avatarImageView;
+@synthesize userButton;
+@synthesize locationLabel;
 
 #pragma mark - NSObject
 
@@ -159,7 +161,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
 #pragma mark - FTPhotoDetailsHeaderView
 
 + (CGRect)rectForView {
-    return CGRectMake( 0.0f, 0.0f, [UIScreen mainScreen].bounds.size.width, viewTotalHeight);
+    return CGRectMake(0,0,[UIScreen mainScreen].bounds.size.width,viewTotalHeight);
 }
 
 - (void)setPost:(PFObject *)aPost {
@@ -305,9 +307,9 @@ static TTTTimeIntervalFormatter *timeFormatter;
     NSInteger page = lround(fractionalPage);
     if (previousPage != page) {
         if (previousPage < page) {
-            [self.swiperView onGallerySwipedLeft: page];
+            //[self.swiperView onGallerySwipedLeft: page];
         } else if (previousPage > page) {
-            [self.swiperView onGallerySwipedRight: page];
+            //[self.swiperView onGallerySwipedRight: page];
         }
         previousPage = page;
     }
@@ -328,9 +330,9 @@ static TTTTimeIntervalFormatter *timeFormatter;
     self.postImageView = [[PFImageView alloc] initWithFrame:CGRectMake(mainImageX, mainImageY, mainImageWidth, mainImageHeight)];
     self.postImageView.backgroundColor = [UIColor blackColor];
     self.postImageView.contentMode = UIViewContentModeScaleAspectFill;
+    self.postImageView.clipsToBounds = YES;
     
     PFFile *imageFile = [self.post objectForKey:kFTPostImageKey];
-    
     if (imageFile) {
         self.postImageView.file = imageFile;
         [self.postImageView loadInBackground];
@@ -361,54 +363,69 @@ static TTTTimeIntervalFormatter *timeFormatter;
     
     // Create bottom section for the header view; the likes
     
-    UIView *previewButtons = [[UIView alloc] init];
-    previewButtons.frame = CGRectMake( 120.0f, 295.0f, 200.0f, 22.0f);
-    previewButtons.backgroundColor = [UIColor clearColor];
-    [self addSubview:previewButtons];
+    UIView *postButtons = [[UIView alloc] init];
+    postButtons.frame = CGRectMake( 0, 320 + 44, self.frame.size.width, 30);
+    postButtons.backgroundColor = FT_GRAY;
+    [self addSubview:postButtons];
     
-    // Create the heart-shaped like button
-
+    // post buttons
+    
+    locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(5,BUTTONS_TOP_PADDING,120,20)];
+    [postButtons addSubview:locationLabel];
+    
     likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [likeButton setFrame:CGRectMake( 5.0f, 1.0f, 21.0f, 18.0f )];
+    [likeButton setFrame:CGRectMake( locationLabel.frame.size.width + locationLabel.frame.origin.y, BUTTONS_TOP_PADDING, 21, 18 )];
     [likeButton setBackgroundColor:[UIColor clearColor]];
     [likeButton setAdjustsImageWhenDisabled:NO];
     [likeButton setAdjustsImageWhenHighlighted:NO];
     [likeButton setBackgroundImage:[UIImage imageNamed:ACTION_HEART] forState:UIControlStateNormal];
     [likeButton setBackgroundImage:[UIImage imageNamed:ACTION_HEART_SELECTED] forState:UIControlStateSelected];
     [likeButton setBackgroundImage:[UIImage imageNamed:ACTION_HEART_SELECTED] forState:UIControlStateHighlighted];
-    [previewButtons addSubview:likeButton];
+    [postButtons addSubview:likeButton];
     
     likeCounter = [UIButton buttonWithType:UIButtonTypeCustom];
-    [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x + 3.0f, likeButton.frame.origin.y, 37.0f, 19.0f)];
+    [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x, BUTTONS_TOP_PADDING, 37.0f, 19.0f)];
     [likeCounter setBackgroundColor:[UIColor clearColor]];
     [likeCounter setTitle:COUNTER_ZERO forState:UIControlStateNormal];
+    [likeCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+    [likeCounter.titleLabel setFont:BENDERSOLID(16)];
+    [likeCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
     [likeCounter setBackgroundImage:[UIImage imageNamed:ACTION_LIKE_COMMENT_BOX] forState:UIControlStateNormal];
-    [previewButtons addSubview:likeCounter];
+    [likeCounter setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [likeCounter setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+    [likeCounter setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+    [postButtons addSubview:likeCounter];
     
     commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x + 15.0f, likeCounter.frame.origin.y, 21.0f, 18.0f)];
+    [commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x, BUTTONS_TOP_PADDING, 21.0f, 18.0f)];
     [commentButton setBackgroundColor:[UIColor clearColor]];
     [commentButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
     [commentButton setBackgroundImage:[UIImage imageNamed:ACTION_COMMENT_BUBBLE] forState:UIControlStateNormal];
     [commentButton setSelected:NO];
-    [previewButtons addSubview:commentButton];
+    [postButtons addSubview:commentButton];
     
     commentCounter = [UIButton buttonWithType:UIButtonTypeCustom];
-    [commentCounter setFrame:CGRectMake(self.commentButton.frame.origin.x + self.commentButton.frame.size.width + 3.0f, self.commentButton.frame.origin.y, 37.0f, 19.0f)];
+    [commentCounter setFrame:CGRectMake(self.commentButton.frame.origin.x + self.commentButton.frame.size.width, BUTTONS_TOP_PADDING, 37.0f, 19.0f)];
     [commentCounter setBackgroundColor:[UIColor clearColor]];
-    [commentCounter setBackgroundImage:[UIImage imageNamed:ACTION_LIKE_COMMENT_BOX] forState:UIControlStateNormal];
     [commentCounter setTitle:COUNTER_ZERO forState:UIControlStateNormal];
-    [previewButtons addSubview:commentCounter];
+    [commentCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+    [commentCounter.titleLabel setFont:BENDERSOLID(16)];
+    [commentCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
+    [commentCounter setBackgroundImage:[UIImage imageNamed:ACTION_LIKE_COMMENT_BOX] forState:UIControlStateNormal];
+    [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+    [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+    [postButtons addSubview:commentCounter];
     
     moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [moreButton setFrame:CGRectMake(commentCounter.frame.size.width + commentCounter.frame.origin.x + 15.0f, commentCounter.frame.origin.y, 35.0f, 19.0f)];
+    [moreButton setFrame:CGRectMake(self.frame.size.width - 45, BUTTONS_TOP_PADDING, 35, 19)];
     [moreButton setBackgroundColor:[UIColor clearColor]];
     [moreButton setBackgroundImage:[UIImage imageNamed:ACTION_MORE] forState:UIControlStateNormal];
     [moreButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
     [moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-    [previewButtons addSubview:moreButton];
+    [postButtons addSubview:moreButton];
     
-    [self bringSubviewToFront:previewButtons];
+    [self bringSubviewToFront:postButtons];
     [self reloadLikeBar];
 }
 
@@ -418,39 +435,43 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [aPhotographer fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         if (!error) {
             
-            // Create top of header view with name and avatar
-            /*
-            UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:PROFILE_HEXAGON_X
-                                                                          Y:PROFILE_HEXAGON_Y
-                                                                      width:PROFILE_HEXAGON_WIDTH
-                                                                     hegiht:PROFILE_HEXAGON_HEIGHT];
-            */
             avatarImageView = [[FTProfileImageView alloc] initWithFrame:CGRectMake(avatarImageX, avatarImageY, avatarImageDim, avatarImageDim)];
             [avatarImageView setFile:[self.photographer objectForKey:kFTUserProfilePicSmallKey]];
             [avatarImageView setBackgroundColor:[UIColor blackColor]];
-            //[avatarImageView setFrame:profileHexagon.frame];
             [avatarImageView setUserInteractionEnabled:YES];
-            //[avatarImageView.layer setMask:profileHexagon.layer.mask];
-            [avatarImageView setFrame:CGRectMake(PROFILE_X, PROFILE_Y, PROFILE_WIDTH, PROFILE_HEIGHT)];
-            [avatarImageView.layer setCornerRadius:CORNERRADIUS(PROFILE_WIDTH)];
+            [avatarImageView setFrame:CGRectMake(AVATAR_X,AVATAR_Y,AVATAR_WIDTH,AVATAR_HEIGHT)];
+            [avatarImageView.layer setCornerRadius:CORNERRADIUS(AVATAR_WIDTH)];
             [avatarImageView setClipsToBounds:YES];
             [avatarImageView.profileButton addTarget:self action:@selector(didTapUserNameButtonAction:) forControlEvents:UIControlEventTouchUpInside];
             
-            // Ribbon
-            
-            usernameRibbon = [UIButton buttonWithType:UIButtonTypeCustom];
-            UIImage *image = [FTPostDetailsHeaderView imageWithImage:[UIImage imageNamed:IMAGE_USERNAME_RIBBON] scaledToSize:CGSizeMake(88.0f,20.0f)];
-            [usernameRibbon setBackgroundColor:[UIColor colorWithPatternImage:image]];
-            [usernameRibbon setFrame:CGRectMake(avatarImageView.frame.size.width + avatarImageView.frame.origin.x - 4,
-                                                avatarImageView.frame.origin.y + 10, 88.0f, 20.0f)];
-            [usernameRibbon setUserInteractionEnabled:YES];
-            [usernameRibbon addTarget:self action:@selector(didTapUserNameButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-            [usernameRibbon setTitle:[self.photographer objectForKey:kFTUserDisplayNameKey] forState:UIControlStateNormal];
-            [usernameRibbon.titleLabel setFont:BENDERSOLID(11)];
-            [usernameRibbon setContentHorizontalAlignment: UIControlContentHorizontalAlignmentLeft];
-            [usernameRibbon setContentEdgeInsets:UIEdgeInsetsMake(0, 5, 0, 0)];
+            self.userButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            [self.userButton setBackgroundColor:[UIColor clearColor]];
+            [self.userButton setTitleColor:[UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+            [self.userButton setTitleColor:[UIColor colorWithRed:134.0f/255.0f green:100.0f/255.0f blue:65.0f/255.0f alpha:1.0f] forState:UIControlStateHighlighted];
+            [self.userButton setTitleShadowColor:[UIColor colorWithWhite:1 alpha:0.750f] forState:UIControlStateNormal];
+            [self.userButton setTitle:[self.photographer objectForKey:kFTUserDisplayNameKey] forState:UIControlStateNormal];
+            [self.userButton setContentHorizontalAlignment: UIControlContentHorizontalAlignmentLeft];
+            [self.userButton.titleLabel setFont:BENDERSOLID(18)];
+            [self.userButton.titleLabel setLineBreakMode:NSLineBreakByTruncatingTail];
+            [self.userButton.titleLabel setShadowOffset:CGSizeMake(0,1)];
 
-            [self addSubview:usernameRibbon];
+            // we resize the button to fit the user's name to avoid having a huge touch area
+            CGFloat constrainWidth = self.frame.size.width;
+            CGFloat userButtonPointWidth = AVATAR_X + AVATAR_WIDTH + 9;
+            CGFloat userButtonPointHeight = (nameHeaderHeight - 10) / 2;
+            CGPoint userButtonPoint = CGPointMake(userButtonPointWidth,userButtonPointHeight);
+            constrainWidth -= userButtonPoint.x;
+            CGSize constrainSize = CGSizeMake(constrainWidth, nameHeaderHeight - userButtonPoint.y*2.0f);
+            
+            CGSize userButtonSize = [self.userButton.titleLabel.text boundingRectWithSize:constrainSize
+                                                                                  options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
+                                                                               attributes:@{NSFontAttributeName:self.userButton.titleLabel.font}
+                                                                                  context:nil].size;
+            
+            CGRect userButtonFrame = CGRectMake(userButtonPoint.x, userButtonPoint.y, userButtonSize.width, userButtonSize.height);
+            [self.userButton setFrame:userButtonFrame];
+            
+            [self addSubview:userButton];
             [self addSubview:avatarImageView];
             
             [self setNeedsDisplay];
@@ -462,7 +483,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     NSLog(@"%@::configGallery",VIEWCONTROLLER_POST_HEADER);
     [PFObject fetchAllIfNeededInBackground:[aGallery objectForKey:kFTPostPostsKey] block:^(NSArray *objects, NSError *error) {
         if (!error) {
-            carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 320.0f,320.0f)];
+            carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0, nameHeaderHeight, 320.0f,320.0f)];
             [carousel setUserInteractionEnabled:YES];
             [carousel setDelaysContentTouches:YES];
             [carousel setExclusiveTouch:YES];
@@ -473,12 +494,12 @@ static TTTTimeIntervalFormatter *timeFormatter;
             carousel.pagingEnabled = YES;
             [carousel setAlwaysBounceVertical:NO];
             [carousel setContentSize: CGSizeMake(320.0f * objects.count, 320.0f)];
-            
+            /*
             swiperView = [[FTGallerySwiperView alloc] initWithFrame:CGRectMake(usernameRibbon.frame.origin.x + EXTRA_PADDING,
                                                                                usernameRibbon.frame.origin.y + usernameRibbon.frame.size.height,
                                                                                usernameRibbon.frame.size.width - REMOVE_EXTRA_PADDING,
                                                                                usernameRibbon.frame.size.height)];
-            
+            */
             int i = 0;
             for (PFObject *object in objects) {
                 PFFile *file = [object objectForKey:kFTPostImageKey];
@@ -508,11 +529,12 @@ static TTTTimeIntervalFormatter *timeFormatter;
                     [self.postImageView setHidden:YES];
                 }
             }
-            
+            /*
             if (objects.count > 1) {
                 [self.swiperView setNumberOfDashes:i];
                 [self addSubview:self.swiperView];
             }
+            */
         }
     }];
 }
@@ -528,7 +550,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
     [moviePlayer setShouldAutoplay:NO];
     [moviePlayer setContentURL:[NSURL URLWithString:videoFile.url]];
-    [moviePlayer.view setFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
+    [moviePlayer.view setFrame:CGRectMake(0,nameHeaderHeight,320,320)];
     [moviePlayer.view setBackgroundColor:[UIColor clearColor]];
     [moviePlayer.view setUserInteractionEnabled:NO];
     [moviePlayer.view setHidden:YES];
@@ -539,7 +561,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     float centerY = (self.frame.size.height - 60) / 2;
     
     playButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.playButton setFrame:CGRectMake(centerX,centerY,60.0f,60.0f)];
+    [self.playButton setFrame:CGRectMake(centerX,centerY,60,60)];
     [self.playButton setBackgroundImage:[UIImage imageNamed:@"play_button"] forState:UIControlStateNormal];
     [self.playButton addTarget:self action:@selector(didTapVideoPlayButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.playButton setSelected:NO];
@@ -554,7 +576,6 @@ static TTTTimeIntervalFormatter *timeFormatter;
 
 - (void)configImage:(PFObject *)aPost {
     NSLog(@"%@::configImage:",VIEWCONTROLLER_POST_HEADER);
-    
 }
 
 - (void)configLocation:(PFGeoPoint *)geoPoint {
@@ -564,23 +585,18 @@ static TTTTimeIntervalFormatter *timeFormatter;
         [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
             if (!error) {
                 for (CLPlacemark *placemark in placemarks) {
-                    UILabel *locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 285, 110, 40)];
                     NSString *postLocation = [NSString stringWithFormat:@" %@, %@", [placemark locality], [placemark administrativeArea]];
                     if (postLocation) {
                         [locationLabel setUserInteractionEnabled:YES];
                         [locationLabel setText:postLocation];
-                        [locationLabel setFont:[UIFont systemFontOfSize:12.0f]];
+                        [locationLabel setFont:BENDERSOLID(16)];
                         [locationLabel setBackgroundColor:[UIColor clearColor]];
-                        [locationLabel setTextColor:[UIColor whiteColor]];
+                        [locationLabel setTextColor:[UIColor blackColor]];
                         
                         UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
                         locationTapRecognizer.numberOfTapsRequired = 1;
                         [locationLabel addGestureRecognizer:locationTapRecognizer];
-                        
                     }
-                    
-                    [self addSubview:locationLabel];
-                    [self bringSubviewToFront:locationLabel];
                 }
             } else {
                 NSLog(@"ERROR: %@",error);
