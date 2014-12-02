@@ -66,7 +66,7 @@
 		2DBE020619D0C62D00CD278C /* FTRewardsCollectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE020519D0C62D00CD278C /* FTRewardsCollectionHeaderView.m */; };
 		2DBE021019D1A1F100CD278C /* FTRewardsCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE020F19D1A1F100CD278C /* FTRewardsCollectionViewCell.m */; };
 		2DBE021419D37AF900CD278C /* FTRewardsDetailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE021319D37AF900CD278C /* FTRewardsDetailView.m */; };
-		2DBE021719D3D45F00CD278C /* FTRewardsDetailsHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE021619D3D45F00CD278C /* FTRewardsDetailsHeaderView.m */; };
+		2DBE021719D3D45F00CD278C /* FTRewardsDetailHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE021619D3D45F00CD278C /* FTRewardsDetailHeaderView.m */; };
 		2DBE021A19D44F9F00CD278C /* TTTAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE021919D44F9F00CD278C /* TTTAttributedLabel.m */; };
 		2DBE021D19D4682500CD278C /* FTRewardsDetailFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE021C19D4682500CD278C /* FTRewardsDetailFooterView.m */; };
 		2DBE023619D6FB7F00CD278C /* ELCAlbumPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE022019D6FB7F00CD278C /* ELCAlbumPickerController.m */; };
@@ -133,6 +133,8 @@
 		2DD6919E1949B74400B59E75 /* FTSignupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD6919D1949B74400B59E75 /* FTSignupViewController.m */; };
 		2DD691A01949C7BA00B59E75 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6919F1949C7BA00B59E75 /* Social.framework */; };
 		2DD691A21949C7C700B59E75 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD691A11949C7C700B59E75 /* Accounts.framework */; };
+		2DD6DB261A29598D0002CBCD /* FTNetworkViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD6DB251A29598D0002CBCD /* FTNetworkViewController.m */; };
+		2DD6DB321A2BD71F0002CBCD /* FTHandleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD6DB311A2BD71F0002CBCD /* FTHandleViewController.m */; };
 		2DDBF13C19F0BF27009037E2 /* FTMapScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DDBF13B19F0BF27009037E2 /* FTMapScrollView.m */; };
 		2DDBF13F19F0D51A009037E2 /* FTMapScrollViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DDBF13E19F0D51A009037E2 /* FTMapScrollViewItem.m */; };
 		2DDBF14819F145A8009037E2 /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DDBF14719F145A8009037E2 /* libGoogleAnalyticsServices.a */; };
@@ -252,8 +254,8 @@
 		2DBE020F19D1A1F100CD278C /* FTRewardsCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTRewardsCollectionViewCell.m; sourceTree = "<group>"; };
 		2DBE021219D37AF900CD278C /* FTRewardsDetailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTRewardsDetailView.h; sourceTree = "<group>"; };
 		2DBE021319D37AF900CD278C /* FTRewardsDetailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTRewardsDetailView.m; sourceTree = "<group>"; };
-		2DBE021519D3D45F00CD278C /* FTRewardsDetailsHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTRewardsDetailsHeaderView.h; sourceTree = "<group>"; };
-		2DBE021619D3D45F00CD278C /* FTRewardsDetailsHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTRewardsDetailsHeaderView.m; sourceTree = "<group>"; };
+		2DBE021519D3D45F00CD278C /* FTRewardsDetailHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTRewardsDetailHeaderView.h; sourceTree = "<group>"; };
+		2DBE021619D3D45F00CD278C /* FTRewardsDetailHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTRewardsDetailHeaderView.m; sourceTree = "<group>"; };
 		2DBE021819D44F9F00CD278C /* TTTAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTTAttributedLabel.h; sourceTree = "<group>"; };
 		2DBE021919D44F9F00CD278C /* TTTAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTTAttributedLabel.m; sourceTree = "<group>"; };
 		2DBE021B19D4682500CD278C /* FTRewardsDetailFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTRewardsDetailFooterView.h; sourceTree = "<group>"; };
@@ -372,6 +374,10 @@
 		2DD6919D1949B74400B59E75 /* FTSignupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTSignupViewController.m; sourceTree = "<group>"; };
 		2DD6919F1949C7BA00B59E75 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		2DD691A11949C7C700B59E75 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
+		2DD6DB241A29598D0002CBCD /* FTNetworkViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTNetworkViewController.h; sourceTree = "<group>"; };
+		2DD6DB251A29598D0002CBCD /* FTNetworkViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTNetworkViewController.m; sourceTree = "<group>"; };
+		2DD6DB301A2BD71F0002CBCD /* FTHandleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTHandleViewController.h; sourceTree = "<group>"; };
+		2DD6DB311A2BD71F0002CBCD /* FTHandleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTHandleViewController.m; sourceTree = "<group>"; };
 		2DDBF13A19F0BF27009037E2 /* FTMapScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTMapScrollView.h; sourceTree = "<group>"; };
 		2DDBF13B19F0BF27009037E2 /* FTMapScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTMapScrollView.m; sourceTree = "<group>"; };
 		2DDBF13D19F0D51A009037E2 /* FTMapScrollViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTMapScrollViewItem.h; sourceTree = "<group>"; };
@@ -531,8 +537,8 @@
 		2D3721251A27689C00260AD8 /* Reward */ = {
 			isa = PBXGroup;
 			children = (
-				2DBE021519D3D45F00CD278C /* FTRewardsDetailsHeaderView.h */,
-				2DBE021619D3D45F00CD278C /* FTRewardsDetailsHeaderView.m */,
+				2DBE021519D3D45F00CD278C /* FTRewardsDetailHeaderView.h */,
+				2DBE021619D3D45F00CD278C /* FTRewardsDetailHeaderView.m */,
 				2DBE021B19D4682500CD278C /* FTRewardsDetailFooterView.h */,
 				2DBE021C19D4682500CD278C /* FTRewardsDetailFooterView.m */,
 			);
@@ -568,6 +574,8 @@
 				2DACD97A196578DA00833C14 /* FTInspirationViewController.m */,
 				2D3721121A24F0C300260AD8 /* FTInviteFriendsViewController.h */,
 				2D3721131A24F0C300260AD8 /* FTInviteFriendsViewController.m */,
+				2DD6DB301A2BD71F0002CBCD /* FTHandleViewController.h */,
+				2DD6DB311A2BD71F0002CBCD /* FTHandleViewController.m */,
 			);
 			name = "First Login";
 			sourceTree = "<group>";
@@ -956,6 +964,8 @@
 			children = (
 				2DD6915B1949AF5B00B59E75 /* AppDelegate.h */,
 				2DD6915C1949AF5B00B59E75 /* AppDelegate.m */,
+				2DD6DB241A29598D0002CBCD /* FTNetworkViewController.h */,
+				2DD6DB251A29598D0002CBCD /* FTNetworkViewController.m */,
 				2D0A53A91971A65F0091FFCA /* Categories */,
 				2D429A1D197B2D2600F8A9A0 /* Controllers */,
 				2DABDA07195DE0F500379891 /* Custom Bars */,
@@ -1143,7 +1153,7 @@
 				2DD2B691198417D500600A42 /* FTLoadMoreCell.m in Sources */,
 				2DBE021D19D4682500CD278C /* FTRewardsDetailFooterView.m in Sources */,
 				2D007B6419B6A5A1006E1484 /* FTSearchHeaderView.m in Sources */,
-				2DBE021719D3D45F00CD278C /* FTRewardsDetailsHeaderView.m in Sources */,
+				2DBE021719D3D45F00CD278C /* FTRewardsDetailHeaderView.m in Sources */,
 				2DD2B6551983FD0E00600A42 /* FTUtility.m in Sources */,
 				2D6E0224196A24A1004DC010 /* FTFlowLayout.m in Sources */,
 				2DBE023A19D6FB7F00CD278C /* ELCConsole.m in Sources */,
@@ -1161,6 +1171,7 @@
 				2D054DD21A0867B300A2886F /* STTweetTextStorage.m in Sources */,
 				2D3721141A24F0C300260AD8 /* FTInviteFriendsViewController.m in Sources */,
 				2D0A53A81971997F0091FFCA /* FTInspirationCellCollectionView.m in Sources */,
+				2DD6DB321A2BD71F0002CBCD /* FTHandleViewController.m in Sources */,
 				2D429A1B197AF37000F8A9A0 /* Reachability.m in Sources */,
 				2DE7C77F19ECD07100F72188 /* FTGallerySwiperView.m in Sources */,
 				2DBE023819D6FB7F00CD278C /* ELCAssetCell.m in Sources */,
@@ -1196,6 +1207,7 @@
 				2D429A0B1977ED6000F8A9A0 /* FTBusinessProfileViewController.m in Sources */,
 				2DC507D5199FBE030041A03D /* FTFeedViewController.m in Sources */,
 				2DBE023619D6FB7F00CD278C /* ELCAlbumPickerController.m in Sources */,
+				2DD6DB261A29598D0002CBCD /* FTNetworkViewController.m in Sources */,
 				2DCB7D961A00CC9900E349F6 /* FTInviteTableHeaderView.m in Sources */,
 				2DC507CC199829940041A03D /* FTCamViewController.m in Sources */,
 				2DD2B6631984005300600A42 /* UIImage+AlphaAdditions.m in Sources */,
