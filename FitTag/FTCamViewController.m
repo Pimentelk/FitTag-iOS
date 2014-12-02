@@ -66,6 +66,8 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 @property (nonatomic) dispatch_queue_t sessionQueue;
 //@property (nonatomic) AVCaptureDeviceInput *videoDeviceInput;
 
+@property (nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
+
 // Utilities.
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundRecordingID;
 @property (nonatomic, getter = isDeviceAuthorized) BOOL deviceAuthorized;
@@ -96,14 +98,11 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 @synthesize editPhotoViewController;
 @synthesize camFlashButtonState;
 @synthesize camEngine;
+@synthesize previewLayer;
+@synthesize liveView;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    camEngine = [FTCameraEngine engine];
-    [camEngine startup];
-    [camEngine setDelegate:self];
-    [camEngine setFlashMode:AVCaptureFlashModeAuto];
     
     // Set the default flash state to auto
     camFlashButtonState = FTCamFlashButtonStateAuto;
@@ -128,6 +127,18 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
     [self.tabBarController.tabBar setHidden:YES];
     
     dispatch_async([self sessionQueue], ^{
+                
+        camEngine = [FTCameraEngine engine];
+        [camEngine startup];
+        [camEngine setDelegate:self];
+        [camEngine setFlashMode:AVCaptureFlashModeAuto];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            previewLayer = [camEngine getPreviewLayer];
+            [previewLayer removeFromSuperlayer];
+            [previewLayer setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height * .65)];
+            [liveView.layer addSublayer:previewLayer];
+        });
         
         [self addObserver:self
                forKeyPath:@"deviceAuthorized"
@@ -175,8 +186,6 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    //[[FTCameraEngine engine] startup];
-    
     // Show the tabbar
     [self.tabBarController.tabBar setHidden:NO];
     
@@ -186,6 +195,8 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
      
          [self removeObserver:self forKeyPath:@"deviceAuthorized" context:DeviceAuthorizedContext];
          [self removeObserver:self forKeyPath:@"camEngine.stillImageOutput.capturingStillImage" context:CapturingStillImageContext];
+         [camEngine shutdown];
+         camEngine = nil;
      });
 }
 
@@ -242,7 +253,7 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
     
     // Camera View
     
-    UIView *liveView = [[UIImageView alloc] init];
+    liveView = [[UIImageView alloc] init];
     [liveView setBackgroundColor:[UIColor blackColor]];
     [liveView setFrame:CGRectMake(0, 0, self.view.frame.size.width, previewHeight)];
     [liveView setUserInteractionEnabled:YES];
@@ -250,11 +261,6 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapPreviewLayerAction:)];
     [tapGesture setNumberOfTapsRequired:1];
     [liveView addGestureRecognizer:tapGesture];
-    
-    AVCaptureVideoPreviewLayer *previewLayer = [camEngine getPreviewLayer];
-    [previewLayer removeFromSuperlayer];
-    [previewLayer setFrame:CGRectMake(0, 0, self.view.frame.size.width, previewHeight)];
-    [liveView.layer addSublayer:previewLayer];
     
     // Container
     
@@ -387,9 +393,9 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
     [cameraRollButton setFrame:CGRectMake(40, [self getTopPaddingNavigationBarHeight:navigationBarHeight
                                                                        previewHeight:previewHeight
                                                                        elementHeight:50
-                                                                         frameHeight:self.view.frame.size.height], 44, 50)];
+                                                                         frameHeight:self.view.frame.size.height], 50, 50)];
     
-    [cameraRollButton setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_CAMERA_ROLL] forState:UIControlStateNormal];
+    //[cameraRollButton setBackgroundImage:[UIImage imageNamed:BUTTON_IMAGE_CAMERA_ROLL] forState:UIControlStateNormal];
     [cameraRollButton addTarget:self action:@selector(didTapCameraRollButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [cameraRollButton setTintColor:[UIColor grayColor]];
     [cameraRollButton setClipsToBounds:YES];
@@ -493,21 +499,21 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
             NSLog(@"FTCamFlashButtonStateAuto -> FTCamFlashButtonStateOn");
             camFlashButtonState = FTCamFlashButtonStateOn;
             [toggleFlashButton setImage:[UIImage imageNamed:FLASH_IMAGE_ON] forState:UIControlStateNormal];
-            [toggleFlashButton setFrame:CGRectMake(250, 4, 15, 24)];
+            [toggleFlashButton setFrame:CGRectMake(250, 4, 24, 24)];
             [camEngine setFlashMode:AVCaptureFlashModeOn];
             break;
         case FTCamFlashButtonStateOn:
             NSLog(@"FTCamFlashButtonStateOn -> FTCamFlashButtonStateOff");
             camFlashButtonState = FTCamFlashButtonStateOff;
             [toggleFlashButton setImage:[UIImage imageNamed:FLASH_IMAGE_OFF] forState:UIControlStateNormal];
-            [toggleFlashButton setFrame:CGRectMake(250, 4, 25, 25)];
+            [toggleFlashButton setFrame:CGRectMake(250, 4, 24, 24)];
             [camEngine setFlashMode:AVCaptureFlashModeOff];
             break;
         case FTCamFlashButtonStateOff:
             NSLog(@"FTCamFlashButtonStateOff -> FTCamFlashButtonStateAuto");
             camFlashButtonState = FTCamFlashButtonStateAuto;
             [toggleFlashButton setImage:[UIImage imageNamed:FLASH_IMAGE_AUTO] forState:UIControlStateNormal];
-            [toggleFlashButton setFrame:CGRectMake(250, 4, 18, 24)];
+            [toggleFlashButton setFrame:CGRectMake(250, 4, 24, 24)];
             [camEngine setFlashMode:AVCaptureFlashModeAuto];
             break;
         default:
@@ -716,6 +722,12 @@ progressStatusUpdate:(CGFloat)update {
             }
         });
     });
+}
+
+- (void)cameraEngine:(FTCameraEngine *)cameraEngine stopRecording:(BOOL)isPaused {
+    NSLog(@"stopRecording");
+    [[self changeCameraButton] setEnabled:NO];
+    [[self recordButton] setEnabled:NO];
 }
 
 - (void)cameraEngine:(FTCameraEngine *)cameraEngine capturedVideoData:(NSData *)data {
