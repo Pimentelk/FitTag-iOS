@@ -176,15 +176,6 @@
     
     video = aVideo;
     
-    //NSLog(@"moviePlayer:%@",moviePlayer);
-    //PFFile *videoFile = [video objectForKey:kFTPostVideoKey];
-    
-    //[moviePlayer setContentURL:[NSURL URLWithString:videoFile.url]];
-    //[moviePlayer prepareToPlay];
-    
-    //[videoButton addSubview:moviePlayer.view];
-    //[videoButton bringSubviewToFront:moviePlayer.view];
-    
     // Get the profile image
     PFUser *user = [video objectForKey:kFTPostUserKey];
     NSString *authorName = [user objectForKey:kFTUserDisplayNameKey];
@@ -242,79 +233,6 @@
     
     [self setNeedsDisplay];
 }
-
-/*
-- (void)movieFinishedCallBack:(NSNotification *)notification{
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:MPMoviePlayerPlaybackDidFinishNotification
-                                                  object:moviePlayer];
-}
-
-- (void)loadStateDidChange:(NSNotification *)notification{
-    
-    //NSLog(@"loadStateDidChange: %@",notification);
-    
-    if (moviePlayer.loadState & MPMovieLoadStatePlayable) {
-        NSLog(@"loadState... MPMovieLoadStatePlayable");
-    }
-    
-    if (moviePlayer.loadState & MPMovieLoadStatePlaythroughOK) {
-        //[moviePlayer.view setHidden:NO];
-        
-        NSLog(@"loadState... MPMovieLoadStatePlaythroughOK");
-        //[self.imageView setHidden:YES];
-    }
-    
-    if (moviePlayer.loadState & MPMovieLoadStateStalled) {
-        NSLog(@"loadState... MPMovieLoadStateStalled");
-    }
-    
-    if (moviePlayer.loadState & MPMovieLoadStateUnknown) {
-        NSLog(@"loadState... MPMovieLoadStateUnknown");
-    }
-}
-
-- (void)moviePlayerStateChange:(NSNotification *)notification{
-    
-    //NSLog(@"moviePlayerStateChange: %@",notification);
-    
-    if (moviePlayer.loadState & (MPMovieLoadStatePlayable | MPMovieLoadStatePlaythroughOK)) {
-        NSLog(@"loadState... MPMovieLoadStatePlayable | MPMovieLoadStatePlaythroughOK..");
-        if (moviePlayer.playbackState & MPMoviePlaybackStatePlaying){
-            //NSLog(@"moviePlayer... MPMoviePlaybackStatePlaying");
-            [UIView animateWithDuration:1 animations:^{
-                [moviePlayer.view setAlpha:1];
-            }];
-        }
-    }
-    
-    if (moviePlayer.playbackState & MPMoviePlaybackStateStopped){
-        NSLog(@"moviePlayer... MPMoviePlaybackStateStopped");
-    }
-    
-    if (moviePlayer.playbackState & MPMoviePlaybackStatePaused){
-        [UIView animateWithDuration:0.3 animations:^{
-            [moviePlayer.view setAlpha:0];
-            [moviePlayer prepareToPlay];
-        }];
-        
-        NSLog(@"moviePlayer... MPMoviePlaybackStatePaused");
-    }
-    
-    if (moviePlayer.playbackState & MPMoviePlaybackStateInterrupted){
-        NSLog(@"moviePlayer... Interrupted");
-        //[self.moviePlayer stop];
-    }
-    
-    if (moviePlayer.playbackState & MPMoviePlaybackStateSeekingForward){
-        NSLog(@"moviePlayer... Forward");
-    }
-    
-    if (moviePlayer.playbackState & MPMoviePlaybackStateSeekingBackward){
-        NSLog(@"moviePlayer... Backward");
-    }
-}
-*/
 
 - (void)setLikeStatus:(BOOL)liked {
     [self.likeButton setSelected:liked];
