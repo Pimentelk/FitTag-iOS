@@ -36,7 +36,13 @@
 }
 @property (nonatomic, strong) UIImageView *userProfileImageView;
 @property (nonatomic, strong) UIImageView *coverPhotoImageView;
+
 @property (nonatomic, strong) UITextView *userBiography;
+@property (nonatomic, strong) UITextField *userFirstname;
+@property (nonatomic, strong) UITextField *userLastname;
+@property (nonatomic, strong) UITextField *userHandle;
+@property (nonatomic, strong) UITextField *userWebsite;
+
 @property (nonatomic, strong) PFUser *user;
 @property (nonatomic, strong) MBProgressHUD *hud;
 @property (nonatomic, strong) UIWebView *webView;
@@ -54,6 +60,10 @@
 @synthesize doneButtonItem;
 @synthesize backButtonItem;
 @synthesize coverPhotoImageView;
+@synthesize userFirstname;
+@synthesize userLastname;
+@synthesize userHandle;
+@synthesize userWebsite;
 
 #pragma mark - Managing the detail item
 
@@ -277,18 +287,78 @@
     [self.view bringSubviewToFront:takePhotoButton];
 }
 
+- (void)didGestureHideKeyboardAction {
+    [userFirstname resignFirstResponder];
+    [userLastname resignFirstResponder];
+    [userHandle resignFirstResponder];
+    [userWebsite resignFirstResponder];
+    [userBiography resignFirstResponder];
+}
+
 - (void)configureBiography {
     //NSLog(@"%@::configureBiography",VIEWCONTROLLER_SETTINGS_DETAIL);
     
+    UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(didGestureHideKeyboardAction)];
+    [swipeGesture setDirection:UISwipeGestureRecognizerDirectionDown];
+    
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didGestureHideKeyboardAction)];
+    [tapGesture setNumberOfTapsRequired:1];
+    
+    [self.view setGestureRecognizers:@[ swipeGesture, tapGesture ]];
+    
+    CGFloat textViewX = 10;
+    CGFloat textViewHeight = 30;
+    CGFloat textViewWidth = self.view.frame.size.width - (textViewX * 2);
+    
+    userFirstname = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, navigationBarEnd + TOP_PADDING, textViewWidth, textViewHeight)];
+    [userFirstname setPlaceholder:@"FIRST NAME"];
+    [userFirstname setBackgroundColor:[UIColor whiteColor]];
+    [userFirstname setFont:BENDERSOLID(14)];
+    if ([self.user objectForKey:kFTUserFirstnameKey]) {
+        [userFirstname setText:[self.user objectForKey:kFTUserFirstnameKey]];
+    }
+    [self.view addSubview:userFirstname];
+    
+    userLastname = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, userFirstname.frame.size.height+userFirstname.frame.origin.y+TOP_PADDING,
+                                                                 textViewWidth, textViewHeight)];
+    [userLastname setPlaceholder:@"LAST NAME"];
+    [userLastname setBackgroundColor:[UIColor whiteColor]];
+    [userLastname setFont:BENDERSOLID(14)];
+    if ([self.user objectForKey:kFTUserLastnameKey]) {
+        [userLastname setText:[self.user objectForKey:kFTUserLastnameKey]];
+    }
+    [self.view addSubview:userLastname];
+    
+    userHandle = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, userLastname.frame.size.height+userLastname.frame.origin.y+TOP_PADDING, textViewWidth, textViewHeight)];
+    [userHandle setPlaceholder:@"USER HANDLE"];
+    [userHandle setBackgroundColor:[UIColor whiteColor]];
+    [userHandle setFont:BENDERSOLID(14)];
+    if ([self.user objectForKey:kFTUserDisplayNameKey]) {
+        [userHandle setText:[self.user objectForKey:kFTUserDisplayNameKey]];
+    }
+    [userHandle setAutocorrectionType:UITextAutocorrectionTypeNo];
+    [userHandle setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+    [self.view addSubview:userHandle];
+    
+    userWebsite = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, userHandle.frame.size.height+userHandle.frame.origin.y+TOP_PADDING, textViewWidth, textViewHeight)];
+    [userWebsite setPlaceholder:@"WEBSITE"];
+    [userWebsite setBackgroundColor:[UIColor whiteColor]];
+    [userWebsite setFont:BENDERSOLID(14)];
+    if ([self.user objectForKey:kFTUserWebsiteKey]) {
+        [userWebsite setText:[self.user objectForKey:kFTUserWebsiteKey]];
+    }
+    [self.view addSubview:userWebsite];
+    
     // User bio text view
-    userBiography = [[UITextView alloc] initWithFrame:CGRectMake(10, navigationBarEnd + TOP_PADDING, self.view.frame.size.width - 20, 150)];
+    userBiography = [[UITextView alloc] initWithFrame:CGRectMake(textViewX, userWebsite.frame.size.height+userWebsite.frame.origin.y+TOP_PADDING, textViewWidth, 150)];
     [userBiography setBackgroundColor:[UIColor whiteColor]];
     [userBiography setTextColor:[UIColor blackColor]];
-    [userBiography setFont:[UIFont boldSystemFontOfSize:14.0f]];
+    [userBiography setFont:BENDERSOLID(14)];
     [userBiography setUserInteractionEnabled:YES];
     [userBiography setDelegate:self];
-    [userBiography setText:[self.user objectForKey:kFTUserBioKey]];
-    
+    if ([self.user objectForKey:kFTUserBioKey]) {
+        [userBiography setText:[self.user objectForKey:kFTUserBioKey]];
+    }
     [self.view addSubview:userBiography];
 }
 
@@ -604,7 +674,7 @@
 - (void)camViewController:(FTCamViewController *)camViewController coverPhoto:(UIImage *)photo {
     [coverPhotoImageView setImage:photo];
     
-    UIImage *resizedImage = [photo resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(320.0f, 160.0f) interpolationQuality:kCGInterpolationHigh];
+    UIImage *resizedImage = [photo resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(640, 320) interpolationQuality:kCGInterpolationHigh];
     NSData *coverPhotoImageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
     
     PFUser *user = [PFUser currentUser];
@@ -919,20 +989,9 @@
     
     BOOL doneEditing = YES;
     
-    if ([self.detailItem isEqualToString:PROFILE_PICTURE]) {
-
-    } else if ([self.detailItem isEqualToString:COVER_PHOTO]) {
-
-    } else if ([self.detailItem isEqualToString:EDIT_BIO]) {
-        doneEditing = [self saveBiography];
-    } else if ([self.detailItem isEqualToString:SHARE_SETTINGS]) {
-
-    } else if ([self.detailItem isEqualToString:NOTIFICATION_SETTINGS]) {
-
-    } else if ([self.detailItem isEqualToString:REWARD_SETTIGNS]) {
-
-    } else if ([self.detailItem isEqualToString:FITTAG_BLOG]) {
-
+    if ([self.detailItem isEqualToString:EDIT_BIO]) {
+        [self updateUserInformation];
+        return;
     }
     
     if (doneEditing) {
@@ -940,32 +999,83 @@
     }    
 }
 
-- (BOOL)saveBiography {
-    //NSLog(@"%@::saveBiography:",VIEWCONTROLLER_SETTINGS_DETAIL);
+- (void)updateUserInformation {
+    //NSLog(@"%@::updateUserInformation:",VIEWCONTROLLER_SETTINGS_DETAIL);
     
-    if (!userBiography || userBiography.text.length == 0) {
-        [self showHudMessage:HUD_MESSAGE_BIOGRAPHY_EMPTY WithDuration:3];
-        return NO;
+    [self didGestureHideKeyboardAction];
+    
+    if (userFirstname.text.length > 0) {
+        if (userFirstname.text.length < 20) {
+            [self.user setObject:userFirstname.text forKey:kFTUserFirstnameKey];
+        } else {
+            [self showHudMessage:HUD_MESSAGE_CHARACTER_LIMIT WithDuration:2];
+            return;
+        }
+    }
+    
+    if (userLastname.text.length > 0) {
+        if (userLastname.text.length < 20) {
+            [self.user setObject:userLastname.text forKey:kFTUserLastnameKey];
+        } else {
+            [self showHudMessage:HUD_MESSAGE_CHARACTER_LIMIT WithDuration:2];
+            return;
+        }
+    }
+    
+    if (userWebsite.text.length > 0) {
+        [self.user setObject:userWebsite.text forKey:kFTUserWebsiteKey];
+    }
+    
+    if (userHandle.text.length > 0) {
+        if (userHandle.text.length < 15) {
+            
+            NSCharacterSet *alphaNumericSet = [NSCharacterSet alphanumericCharacterSet];
+            if ([[userHandle.text stringByTrimmingCharactersInSet:alphaNumericSet] isEqualToString:EMPTY_STRING]) {
+                [self.user setObject:[userHandle.text lowercaseString] forKey:kFTUserDisplayNameKey];
+            } else {
+                [self showHudMessage:HUD_MESSAGE_HANDLE_INVALID WithDuration:2];
+                return;
+            }
+            
+        } else {
+            [self showHudMessage:HUD_MESSAGE_CHARACTER_LIMIT WithDuration:2];
+            return;
+        }
+    } else {
+        [self showHudMessage:HUD_MESSAGE_HANDLE_EMPTY WithDuration:2];
+        return;
     }
     
     if (userBiography.text.length > 150) {
-        [self showHudMessage:HUD_MESSAGE_BIOGRAPHY_LIMIT WithDuration:3];
-        return NO;
+        [self showHudMessage:HUD_MESSAGE_BIOGRAPHY_LIMIT WithDuration:2];
+        return;
     }
     
-    [userBiography resignFirstResponder];
-    
-    if (userBiography.text.length <= 150) {
-        [self showHudMessage:HUD_MESSAGE_BIOGRAPHY_UPDATED WithDuration:3];
+    if (userBiography.text.length <= 150 && userBiography.text.length > 0) {
         [self.user setObject:userBiography.text forKey:kFTUserBioKey];
-        [self.user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            if (succeeded) {
-                NSLog(HUD_MESSAGE_BIOGRAPHY_UPDATED);
-            }
-        }];
-        return YES;
     }
-    return NO;
+    
+    [self.user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            NSLog(HUD_MESSAGE_UPDATED);
+            [self showHudMessage:HUD_MESSAGE_UPDATED WithDuration:3];
+            [self.navigationController popViewControllerAnimated:NO];
+        }
+        
+        if (error) {
+            NSLog(@"%@",error);
+            
+            switch (error.code) {
+                case 142:
+                    [self showHudMessage:HUD_MESSAGE_HANDLE_TAKEN WithDuration:2];
+                    break;
+                    
+                default:
+                    break;
+            }
+            
+        }
+    }];
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
