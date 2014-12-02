@@ -248,7 +248,7 @@
     } else if ([self.postType isEqualToString:@"VIDEO"]) {
         
         // Videoplayer background image
-        videoPlaceHolderView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
+        videoPlaceHolderView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
         [videoPlaceHolderView setBackgroundColor:[UIColor clearColor]];
         [videoPlaceHolderView setContentMode:UIViewContentModeScaleAspectFill];
         
@@ -260,7 +260,7 @@
         [moviePlayer setScalingMode:MPMovieScalingModeAspectFill];
         [moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
         [moviePlayer setShouldAutoplay:NO];
-        [moviePlayer.view setFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
+        [moviePlayer.view setFrame:CGRectMake(0, 0, 320, 320)];
         [moviePlayer.view setBackgroundColor:[UIColor clearColor]];
         [moviePlayer.view setUserInteractionEnabled:NO];
         [moviePlayer.view setHidden:YES];
@@ -284,11 +284,11 @@
                                                    object:moviePlayer];
         
         // setup the playbutton
-        float centerX = (videoImageView.frame.size.width - 60) / 2;
-        float centerY = (videoImageView.frame.size.height - 60) / 2;
         playButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [self.playButton setFrame:CGRectMake(centerX,centerY,60.0f,60.0f)];
-        [self.playButton setBackgroundImage:[UIImage imageNamed:@"play_button"] forState:UIControlStateNormal];
+        [self.playButton setFrame:CGRectMake(VIDEOCGRECTFRAMECENTER(videoImageView.frame.size.width,73),
+                                             VIDEOCGRECTFRAMECENTER(videoImageView.frame.size.height,72),73,72)];
+        
+        [self.playButton setBackgroundImage:IMAGE_PLAY_BUTTON forState:UIControlStateNormal];
         [self.playButton addTarget:self action:@selector(didTapVideoPlayButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [self.playButton setSelected:NO];
         [self.scrollView addSubview:self.playButton];
