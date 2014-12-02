@@ -30,7 +30,6 @@
 @property (nonatomic, strong) UILabel *userDisplay;
 
 @property (nonatomic, strong) UIImageView *photoCountIconImageView;
-@property (nonatomic, strong) UIImageView *coverPhoto;
 @property (nonatomic, strong) PFImageView *profilePictureImageView;
 @property (nonatomic, strong) PFImageView *coverPhotoImageView;
 
@@ -53,7 +52,6 @@
 @synthesize gridViewButton;
 //@synthesize businessButton;
 //@synthesize taggedInButton;
-@synthesize coverPhoto;
 @synthesize userDisplay;
 @synthesize delegate;
 @synthesize coverPhotoImageView;
@@ -71,22 +69,21 @@
         [self.containerView setBackgroundColor:[UIColor whiteColor]];
         
         // Profile Picture Background (this is the view area)
-        profilePictureBackgroundView = [[UIView alloc] initWithFrame:CGRectMake( 0, 0, self.frame.size.width, self.frame.size.width / 2)];
+        profilePictureBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 160)];
         [profilePictureBackgroundView setBackgroundColor:[UIColor clearColor]];
-        [profilePictureBackgroundView setAlpha: 0.0f];
-        [profilePictureBackgroundView setClipsToBounds: YES];
+        [profilePictureBackgroundView setAlpha:0.0f];
         [self.containerView addSubview:profilePictureBackgroundView];
         
         // Profile Picture Image
-        profilePictureImageView = [[PFImageView alloc] initWithFrame:CGRectMake( 0, 0, self.frame.size.width, self.frame.size.width / 2)];
+        profilePictureImageView = [[PFImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.width / 2)];
         [profilePictureImageView setClipsToBounds: YES];
         [profilePictureImageView setContentMode:UIViewContentModeScaleAspectFill];
         [self.containerView addSubview:profilePictureImageView];
         
         // Cover Photo
-        coverPhotoImageView = [[PFImageView alloc] initWithFrame:CGRectMake( 0, 0, self.frame.size.width, self.frame.size.width / 2)];
+        coverPhotoImageView = [[PFImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.width)];
         [coverPhotoImageView setClipsToBounds: YES];
-        [coverPhotoImageView setContentMode:UIViewContentModeScaleAspectFill];
+        //[coverPhotoImageView setContentMode:UIViewContentModeScaleAspectFill];
         [self.containerView addSubview:coverPhotoImageView];
         
         //UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:5 Y:40 width:100 hegiht:115];
@@ -163,6 +160,7 @@
         
         [self.containerView addSubview:profileBiography];
         
+        /*
         // Image filter
         profileFilter = [[UIView alloc] initWithFrame:CGRectMake(0, profileBiography.frame.size.height + profileBiography.frame.origin.y,self.frame.size.width, 60)];
         [profileFilter setBackgroundColor:[UIColor whiteColor]];
@@ -176,6 +174,7 @@
         [gridViewButton addTarget:self action:@selector(didTapGridButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [gridViewButton setSelected:YES];
         [profileFilter addSubview:gridViewButton];
+        */
         
         /*
         businessButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -212,7 +211,7 @@
         [self.containerView addSubview:userDisplay];
         */
         
-        [self.containerView addSubview:profileFilter];
+        //[self.containerView addSubview:profileFilter];
         [self addSubview:self.containerView]; // Add the view
     }
     return self;
@@ -299,7 +298,7 @@
         [coverPhotoImageView setFile:coverPhotoFile];
         [coverPhotoImageView loadInBackground:^(UIImage *image, NSError *error) {
             if (!error) {
-                coverPhoto = [[UIImageView alloc] initWithImage:image];
+                UIImageView *coverPhoto = [[UIImageView alloc] initWithImage:image];
                 coverPhoto.frame = self.bounds;
                 coverPhoto.alpha = 0.0f;
                 coverPhoto.clipsToBounds = YES;

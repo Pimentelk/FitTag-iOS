@@ -42,6 +42,8 @@
 @property (nonatomic, strong) UIButton *gridViewButton;
 @property (nonatomic, strong) UIButton *businessButton;
 @property (nonatomic, strong) UIButton *taggedInButton;
+
+@property (nonatomic, strong) PFImageView *coverPhotoImageView;
 @end
 
 @implementation FTBusinessProfileHeaderView
@@ -59,6 +61,7 @@
 @synthesize backgroundImageView;
 @synthesize userDisplay;
 @synthesize delegate;
+@synthesize coverPhotoImageView;
 
 - (id)initWithFrame:(CGRect)frame {
     
@@ -73,17 +76,23 @@
         [self.containerView setBackgroundColor:[UIColor whiteColor]];
         
         // Profile Picture Backgroudn
-        profilePictureBackgroundView = [[UIView alloc] initWithFrame:CGRectMake( 0, 0, 320.0f, 160.0f)];
+        profilePictureBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 160)];
         [profilePictureBackgroundView setBackgroundColor:[UIColor clearColor]];
         [profilePictureBackgroundView setAlpha: 0.0f];
         [profilePictureBackgroundView setClipsToBounds: YES];
         [self.containerView addSubview:profilePictureBackgroundView];
         
         // Profile Picture Image
-        profilePictureImageView = [[PFImageView alloc] initWithFrame:CGRectMake( 0, 0, 320.0f, 160.0f)];
+        profilePictureImageView = [[PFImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 160)];
         [profilePictureImageView setClipsToBounds: YES];
-        [profilePictureImageView setContentMode:UIViewContentModeScaleAspectFill];
+        //[profilePictureImageView setContentMode:UIViewContentModeScaleAspectFill];
         [self.containerView addSubview:profilePictureImageView];
+        
+        // Cover Photo
+        coverPhotoImageView = [[PFImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 160)];
+        [coverPhotoImageView setClipsToBounds: YES];
+        [coverPhotoImageView setContentMode:UIViewContentModeScaleAspectFill];
+        [self.containerView addSubview:coverPhotoImageView];
         
         //UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:5 Y:40 width:100 hegiht:115];
         //[profileHexagon setCenter:CGPointMake((self.frame.size.width / 2), 10 + (profileHexagon.frame.size.height / 2))];
@@ -184,6 +193,7 @@
         [profileBiography setUserInteractionEnabled:NO];
         [self.containerView addSubview:profileBiography];
         
+        /*
         // Image filter
         profileFilter = [[UIView alloc] initWithFrame:CGRectMake(0, profileBiography.frame.size.height + profileBiography.frame.origin.y,self.frame.size.width, 60)];
         [profileFilter setBackgroundColor:[UIColor whiteColor]];
@@ -197,7 +207,7 @@
         [gridViewButton addTarget:self action:@selector(didTapGridButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [gridViewButton setSelected:YES];
         [profileFilter addSubview:gridViewButton];
-        /*
+        
         businessButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [businessButton setTranslatesAutoresizingMaskIntoConstraints:NO];
         [businessButton setBackgroundImage:[UIImage imageNamed:POSTS_IMAGE] forState:UIControlStateNormal];
@@ -217,9 +227,11 @@
         [taggedInButton addTarget:self action:@selector(didTapTaggedButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [taggedInButton setSelected:NO];
         [profileFilter addSubview:taggedInButton];
-        */
+        
         
         [self.containerView addSubview:profileFilter];
+         */
+        
         [self addSubview:self.containerView]; // Add the view
     }
     return self;
@@ -323,6 +335,26 @@
     
     if (!aBusiness) {
         [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
+    }
+    
+    PFFile *coverPhotoFile = [self.business objectForKey:kFTUserCoverPhotoKey];
+    if (coverPhotoFile) {
+        [coverPhotoImageView setFile:coverPhotoFile];
+        [coverPhotoImageView loadInBackground:^(UIImage *image, NSError *error) {
+            if (!error) {
+                UIImageView *coverPhoto = [[UIImageView alloc] initWithImage:image];
+                coverPhoto.frame = self.bounds;
+                coverPhoto.alpha = 0.0f;
+                coverPhoto.clipsToBounds = YES;
+                
+                [self.containerView addSubview:coverPhoto];
+                [self.containerView sendSubviewToBack:coverPhoto];
+                
+                [UIView animateWithDuration:0.2f animations:^{
+                    coverPhoto.alpha = 1.0f;
+                }];
+            }
+        }];
     }
     
     PFFile *imageFile = [self.business objectForKey:kFTUserProfilePicMediumKey];
