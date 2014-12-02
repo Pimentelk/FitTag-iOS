@@ -19,7 +19,7 @@
 #define CORNERRADIUS(d) d / 2
 
 // Profile Hexagon
-#define PROFILE_WIDTH 26
+#define PROFILE_WIDTH 30
 #define PROFILE_HEIGHT 30
 #define PROFILE_X 2
 #define PROFILE_Y 2
@@ -34,8 +34,12 @@
 
 // UIAlertView
 #define ACTION_SHARE_ON_FACEBOOK @"Share on Facebook"
-#define ACTION_SHARE_ON_TWITTER @"Tweet"
+#define ACTION_SHARE_ON_TWITTER @"Share to Twitter"
 #define ACTION_REPORT_INAPPROPRIATE @"Report as Inappropriate"
+
+// Video CGRECTMAKE
+//#define VIDEOCGRECTFRAME CGRectMake(VIDEOCGRECTFRAMECENTER(146),VIDEOCGRECTFRAMECENTER(144),146,144)
+#define VIDEOCGRECTFRAMECENTER(l,w) (l - w) / 2
 
 // Font
 #define BENDERSOLID(s) [UIFont fontWithName:@"BenderSolid" size:s]
@@ -150,6 +154,7 @@
 #define FITTAG_BLOG @"FitTag Blog"
 
 // FT COLORS
+#define FT_RED [UIColor colorWithRed:FT_RED_COLOR_RED green:FT_RED_COLOR_GREEN blue:FT_RED_COLOR_BLUE alpha:1]
 #define FT_RED_COLOR_RED 234.0f/255.0f
 #define FT_RED_COLOR_BLUE 37.0f/255.0f
 #define FT_RED_COLOR_GREEN 37.0f/255.0f
@@ -167,10 +172,10 @@
 #define LOCATION_USERS_WITHIN_MILES 10
 
 // PROFILE
-#define PROFILE_HEADER_VIEW_HEIGHT 350
+#define PROFILE_HEADER_VIEW_HEIGHT 290
 
 // IMAGES
-#define IMAGE_PLAY_BUTTON @"play_button"
+#define IMAGE_PLAY_BUTTON [UIImage imageNamed:@"play_button"]
 #define IMAGE_FOLLOW_SELECTED @"follow_selected"
 #define IMAGE_FOLLOW_UNSELECTED @"follow_unselected"
 #define IMAGE_PROFILE_DEFAULT @"posts_active"
@@ -199,7 +204,7 @@
 #define NAVIGATION_TITLE_USER_PROFILE @"PROFILE"
 #define NAVIGATION_TITLE_REWARDS @"REWARDS"
 #define NAVIGATION_TITLE_NOTIFICATIONS @"NOTIFICATIONS"
-#define NAVIGATION_TITLE_CAM @"TAG YOUR FIT"
+#define NAVIGATION_TITLE_CAM @"What Will You Tag"
 #define NAVIGATION_TITLE_SETTINGS @"SETTINGS"
 #define NAVIGATION_TITLE_COMMENT @"COMMENT"
 #define NAVIGATION_TITLE_PROFILE @"PROFILE"
@@ -247,7 +252,8 @@
 #define HOTWORD_LINK @"Link"
 
 // Mail
-#define MAIL_BUSINESS_SUBJECT @"FitTag Fan mail"
+#define MAIL_INAPPROPRIATE_SUBJECT @"Reporting Inappropriate Post"
+#define MAIL_BUSINESS_SUBJECT @"Saw You On FitTag"
 #define MAIL_CANCELLED @"Mail cancelled: you cancelled the operation and no email message was queued."
 #define MAIL_SAVED @"Mail saved: you saved the email message in the drafts folder."
 #define MAIL_SEND @"Mail send: the email message is queued in the outbox. It is ready to send."
@@ -264,6 +270,12 @@
 #define HUD_MESSAGE_INTERESTS_UPDATED @"Interests updated.."
 #define HUD_MESSAGE_BIOGRAPHY_EMPTY_TITLE @"Empty Biography"
 #define HUD_MESSAGE_BIOGRAPHY_EMPTY @"Your bio is empty o_O"
+#define HUD_MESSAGE_HANDLE_EMPTY @"User Handle Required"
+#define HUD_MESSAGE_HANDLE_UPDATED @"User Handle Updated"
+#define HUD_MESSAGE_UPDATED @"Updated.."
+#define HUD_MESSAGE_HANDLE_TAKEN @"Handle is taken"
+#define HUD_MESSAGE_CHARACTER_LIMIT @"15 Character Limit"
+#define HUD_MESSAGE_HANDLE_INVALID @"Invalid Characters"
 
 // Switch messages
 #define SWITCH_REWARD_ON @"rewards enabled"
