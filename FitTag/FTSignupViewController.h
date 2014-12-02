@@ -9,10 +9,11 @@
 #import "FTEditPhotoViewController.h"
 #import "FTCamViewController.h"
 
-@interface FTSignupViewController : PFSignUpViewController <UITextViewDelegate, UITextFieldDelegate, FTCamViewControllerDelegate>
-@property NSString *firstname;
-@property NSString *lastname;
+
+@interface FTSignupViewController : PFSignUpViewController <UITextViewDelegate, UITextFieldDelegate,FTCamViewControllerDelegate>
+//@property (nonatomic,strong) NSString *firstname;
+//@property (nonatomic,strong) NSString *lastname;
+@property (nonatomic,strong) UIImage *profilePhoto;
+//@property (nonatomic) BOOL isPasswordConfirmed;
 //@property NSString *about;
-@property UIImage *profilePhoto;
-@property BOOL isPasswordConfirmed;
 @end
