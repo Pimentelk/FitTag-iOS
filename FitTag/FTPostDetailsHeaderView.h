@@ -68,6 +68,13 @@
 @optional
 
 /*!
+ Sent to the delegate when the comment button is tapped
+ @param button the tapped UIButton
+ */
+
+- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView didTapCommentButton:(UIButton *)button;
+
+/*!
  Sent to the delegate when the more button is tapped
  @param button the tapped UIButton
  @param user the PFUser for the photograper

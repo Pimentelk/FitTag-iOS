@@ -144,7 +144,6 @@ static TTTTimeIntervalFormatter *timeFormatter;
         if (self.post && self.type && self.photographer && self.likeUsers) {
             [self createView];
         }
-        
     }
     return self;
 }
@@ -161,7 +160,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
 #pragma mark - FTPhotoDetailsHeaderView
 
 + (CGRect)rectForView {
-    return CGRectMake(0,0,[UIScreen mainScreen].bounds.size.width,viewTotalHeight);
+    return CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, viewTotalHeight);
 }
 
 - (void)setPost:(PFObject *)aPost {
@@ -212,11 +211,11 @@ static TTTTimeIntervalFormatter *timeFormatter;
 
 - (void)setLikeButtonState:(BOOL)selected {
     if (selected) {
-        [likeButton setTitleEdgeInsets:UIEdgeInsetsMake( -1.0f, 0.0f, 0.0f, 0.0f)];
-        [[likeButton titleLabel] setShadowOffset:CGSizeMake( 0.0f, -1.0f)];
+        [likeButton setTitleEdgeInsets:UIEdgeInsetsMake(-1, 0, 0, 0)];
+        [[likeButton titleLabel] setShadowOffset:CGSizeMake(0, -1)];
     } else {
-        [likeButton setTitleEdgeInsets:UIEdgeInsetsMake( 0.0f, 0.0f, 0.0f, 0.0f)];
-        [[likeButton titleLabel] setShadowOffset:CGSizeMake( 0.0f, 1.0f)];
+        [likeButton setTitleEdgeInsets:UIEdgeInsetsMake( 0, 0, 0, 0)];
+        [[likeButton titleLabel] setShadowOffset:CGSizeMake(0, 1)];
     }
     [likeButton setSelected:selected];
 }
@@ -230,68 +229,82 @@ static TTTTimeIntervalFormatter *timeFormatter;
 #pragma mark - NSNotificationCenter
 
 - (void)movieFinishedCallBack:(NSNotification *)notification {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:self.moviePlayer];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:MPMoviePlayerPlaybackDidFinishNotification
+                                                  object:moviePlayer];
 }
 
 - (void)loadStateDidChange:(NSNotification *)notification {
     //NSLog(@"loadStateDidChange: %@",notification);
-    
-    if (self.moviePlayer.loadState & MPMovieLoadStatePlayable) {
-        NSLog(@"loadState... MPMovieLoadStatePlayable");
-    }
-    
-    if (self.moviePlayer.loadState & MPMovieLoadStatePlaythroughOK) {
-        NSLog(@"loadState... MPMovieLoadStatePlaythroughOK");
-        [moviePlayer.view setHidden:NO];
-        [self.postImageView setHidden:YES];
-    }
-    
-    if (self.moviePlayer.loadState & MPMovieLoadStateStalled) {
-        NSLog(@"loadState... MPMovieLoadStateStalled");
-    }
-    
-    if (self.moviePlayer.loadState & MPMovieLoadStateUnknown) {
-        NSLog(@"loadState... MPMovieLoadStateUnknown");
+    switch (moviePlayer.loadState) {
+        case MPMovieLoadStatePlayable: {
+            NSLog(@"moviePlayer... MPMovieLoadStatePlayable");
+            [UIView animateWithDuration:1 animations:^{
+                [moviePlayer.view setAlpha:1];
+            }];
+        }
+            break;
+        case MPMovieLoadStatePlaythroughOK: {
+            NSLog(@"moviePlayer... MPMovieLoadStatePlaythroughOK");
+            
+        }
+            break;
+        case MPMovieLoadStateStalled: {
+            NSLog(@"moviePlayer... MPMovieLoadStateStalled");
+            
+        }
+            break;
+        case MPMovieLoadStateUnknown: {
+            NSLog(@"moviePlayer... MPMovieLoadStateUnknown");
+            
+        }
+            break;
+        default:
+            break;
     }
 }
 
 - (void)moviePlayerStateChange:(NSNotification *)notification {
-    
     //NSLog(@"moviePlayerStateChange: %@",notification);
-    
-    if (self.moviePlayer.playbackState == MPMoviePlaybackStatePlaying){
-        NSLog(@"moviePlayer... Playing");
-        [self.playButton setHidden:YES];
-        if (self.moviePlayer.loadState & MPMovieLoadStatePlayable) {
-            NSLog(@"2 loadState... MPMovieLoadStatePlayable");
-            [moviePlayer.view setHidden:NO];
-            [self.postImageView setHidden:YES];
+    switch (moviePlayer.playbackState) {
+        case MPMoviePlaybackStateStopped: {
+            NSLog(@"moviePlayer... MPMoviePlaybackStateStopped");
+            
         }
-    }
-    
-    if (self.moviePlayer.playbackState & MPMoviePlaybackStateStopped){
-        NSLog(@"moviePlayer... Stopped");
-        [self.playButton setHidden:NO];
-    }
-    
-    if (self.moviePlayer.playbackState & MPMoviePlaybackStatePaused){
-        NSLog(@"moviePlayer... Paused");
-        [self.playButton setHidden:NO];
-        [moviePlayer.view setHidden:YES];
-        [self.postImageView setHidden:NO];
-    }
-    
-    if (self.moviePlayer.playbackState & MPMoviePlaybackStateInterrupted){
-        NSLog(@"moviePlayer... Interrupted");
-        //[self.moviePlayer stop];
-    }
-    
-    if (self.moviePlayer.playbackState & MPMoviePlaybackStateSeekingForward){
-        NSLog(@"moviePlayer... Forward");
-    }
-    
-    if (self.moviePlayer.playbackState & MPMoviePlaybackStateSeekingBackward){
-        NSLog(@"moviePlayer... Backward");
+            break;
+        case MPMoviePlaybackStatePlaying: {
+            NSLog(@"moviePlayer... MPMoviePlaybackStatePlaying");
+            NSLog(@"moviePlayer... MPMovieLoadStatePlayable");
+            [UIView animateWithDuration:1 animations:^{
+                [moviePlayer.view setAlpha:1];
+            }];
+        }
+            break;
+        case MPMoviePlaybackStatePaused: {
+            NSLog(@"moviePlayer... MPMoviePlaybackStatePaused");
+            [UIView animateWithDuration:0.3 animations:^{
+                [moviePlayer.view setAlpha:0];
+                [moviePlayer prepareToPlay];
+            }];
+        }
+            break;
+        case MPMoviePlaybackStateInterrupted: {
+            NSLog(@"moviePlayer... MPMoviePlaybackStateInterrupted");
+            
+        }
+            break;
+        case MPMoviePlaybackStateSeekingForward: {
+            NSLog(@"moviePlayer... MPMoviePlaybackStateSeekingForward");
+            
+        }
+            break;
+        case MPMoviePlaybackStateSeekingBackward: {
+            NSLog(@"moviePlayer... MPMoviePlaybackStateSeekingBackward");
+            
+        }
+            break;
+        default:
+            break;
     }
 }
 
@@ -364,17 +377,17 @@ static TTTTimeIntervalFormatter *timeFormatter;
     // Create bottom section for the header view; the likes
     
     UIView *postButtons = [[UIView alloc] init];
-    postButtons.frame = CGRectMake( 0, 320 + 44, self.frame.size.width, 30);
+    postButtons.frame = CGRectMake( 0, mainImageHeight + nameHeaderHeight, self.frame.size.width, likeBarHeight);
     postButtons.backgroundColor = FT_GRAY;
     [self addSubview:postButtons];
     
     // post buttons
     
-    locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(5,BUTTONS_TOP_PADDING,120,20)];
+    locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, BUTTONS_TOP_PADDING, 120, 20)];
     [postButtons addSubview:locationLabel];
     
     likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [likeButton setFrame:CGRectMake( locationLabel.frame.size.width + locationLabel.frame.origin.y, BUTTONS_TOP_PADDING, 21, 18 )];
+    [likeButton setFrame:CGRectMake(locationLabel.frame.size.width + locationLabel.frame.origin.y, BUTTONS_TOP_PADDING, 21, 18)];
     [likeButton setBackgroundColor:[UIColor clearColor]];
     [likeButton setAdjustsImageWhenDisabled:NO];
     [likeButton setAdjustsImageWhenHighlighted:NO];
@@ -384,7 +397,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [postButtons addSubview:likeButton];
     
     likeCounter = [UIButton buttonWithType:UIButtonTypeCustom];
-    [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x, BUTTONS_TOP_PADDING, 37.0f, 19.0f)];
+    [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x, BUTTONS_TOP_PADDING, 37, 19)];
     [likeCounter setBackgroundColor:[UIColor clearColor]];
     [likeCounter setTitle:COUNTER_ZERO forState:UIControlStateNormal];
     [likeCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
@@ -397,21 +410,23 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [postButtons addSubview:likeCounter];
     
     commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x, BUTTONS_TOP_PADDING, 21.0f, 18.0f)];
+    [commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x, BUTTONS_TOP_PADDING, 21, 18)];
     [commentButton setBackgroundColor:[UIColor clearColor]];
     [commentButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
     [commentButton setBackgroundImage:[UIImage imageNamed:ACTION_COMMENT_BUBBLE] forState:UIControlStateNormal];
+    [commentButton addTarget:self action:@selector(didTapCommentButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [commentButton setSelected:NO];
     [postButtons addSubview:commentButton];
     
     commentCounter = [UIButton buttonWithType:UIButtonTypeCustom];
-    [commentCounter setFrame:CGRectMake(self.commentButton.frame.origin.x + self.commentButton.frame.size.width, BUTTONS_TOP_PADDING, 37.0f, 19.0f)];
+    [commentCounter setFrame:CGRectMake(self.commentButton.frame.origin.x + self.commentButton.frame.size.width, BUTTONS_TOP_PADDING, 37, 19)];
     [commentCounter setBackgroundColor:[UIColor clearColor]];
     [commentCounter setTitle:COUNTER_ZERO forState:UIControlStateNormal];
     [commentCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
     [commentCounter.titleLabel setFont:BENDERSOLID(16)];
     [commentCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
     [commentCounter setBackgroundImage:[UIImage imageNamed:ACTION_LIKE_COMMENT_BOX] forState:UIControlStateNormal];
+    [commentCounter addTarget:self action:@selector(didTapCommentButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
     [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
@@ -442,7 +457,9 @@ static TTTTimeIntervalFormatter *timeFormatter;
             [avatarImageView setFrame:CGRectMake(AVATAR_X,AVATAR_Y,AVATAR_WIDTH,AVATAR_HEIGHT)];
             [avatarImageView.layer setCornerRadius:CORNERRADIUS(AVATAR_WIDTH)];
             [avatarImageView setClipsToBounds:YES];
-            [avatarImageView.profileButton addTarget:self action:@selector(didTapUserNameButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+            [avatarImageView.profileButton addTarget:self
+                                              action:@selector(didTapUserNameButtonAction:)
+                                    forControlEvents:UIControlEventTouchUpInside];
             
             self.userButton = [UIButton buttonWithType:UIButtonTypeCustom];
             [self.userButton setBackgroundColor:[UIColor clearColor]];
@@ -483,7 +500,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     NSLog(@"%@::configGallery",VIEWCONTROLLER_POST_HEADER);
     [PFObject fetchAllIfNeededInBackground:[aGallery objectForKey:kFTPostPostsKey] block:^(NSArray *objects, NSError *error) {
         if (!error) {
-            carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0, nameHeaderHeight, 320.0f,320.0f)];
+            carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0, nameHeaderHeight, 320, 320)];
             [carousel setUserInteractionEnabled:YES];
             [carousel setDelaysContentTouches:YES];
             [carousel setExclusiveTouch:YES];
@@ -493,7 +510,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
             //add the scrollview to the view
             carousel.pagingEnabled = YES;
             [carousel setAlwaysBounceVertical:NO];
-            [carousel setContentSize: CGSizeMake(320.0f * objects.count, 320.0f)];
+            [carousel setContentSize: CGSizeMake(320 * objects.count, 320)];
             /*
             swiperView = [[FTGallerySwiperView alloc] initWithFrame:CGRectMake(usernameRibbon.frame.origin.x + EXTRA_PADDING,
                                                                                usernameRibbon.frame.origin.y + usernameRibbon.frame.size.height,
@@ -510,8 +527,9 @@ static TTTTimeIntervalFormatter *timeFormatter;
                         //singleTap.numberOfTapsRequired = 1;
                         
                         CGFloat xOrigin = i * 320;
-                        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, 320.0f, 320.0f)];
+                        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, 320, 320)];
                         [imageView setBackgroundColor:[UIColor blackColor]];
+                        
                         UIImage *image = [UIImage imageWithData:data];
                         [imageView setImage:image];
                         [imageView setClipsToBounds:YES];
@@ -550,19 +568,19 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
     [moviePlayer setShouldAutoplay:NO];
     [moviePlayer setContentURL:[NSURL URLWithString:videoFile.url]];
-    [moviePlayer.view setFrame:CGRectMake(0,nameHeaderHeight,320,320)];
+    [moviePlayer.view setFrame:CGRectMake(0,nameHeaderHeight,mainImageWidth,mainImageHeight)];
     [moviePlayer.view setBackgroundColor:[UIColor clearColor]];
     [moviePlayer.view setUserInteractionEnabled:NO];
-    [moviePlayer.view setHidden:YES];
-    
-    [self addSubview:moviePlayer.view];
-    
-    float centerX = (self.frame.size.width - 60) / 2;
-    float centerY = (self.frame.size.height - 60) / 2;
+    [moviePlayer.view setAlpha:1];
+    [moviePlayer.backgroundView setBackgroundColor:[UIColor clearColor]];
+    for(UIView *aSubView in moviePlayer.view.subviews) {
+        aSubView.backgroundColor = [UIColor clearColor];
+    }
     
     playButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.playButton setFrame:CGRectMake(centerX,centerY,60,60)];
-    [self.playButton setBackgroundImage:[UIImage imageNamed:@"play_button"] forState:UIControlStateNormal];
+    [self.playButton setFrame:CGRectMake(VIDEOCGRECTFRAMECENTER(self.frame.size.width,73),
+                                        (VIDEOCGRECTFRAMECENTER(self.frame.size.height-nameHeaderHeight-likeBarHeight,72))+nameHeaderHeight,73,72)];
+    [self.playButton setBackgroundImage:IMAGE_PLAY_BUTTON forState:UIControlStateNormal];
     [self.playButton addTarget:self action:@selector(didTapVideoPlayButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.playButton setSelected:NO];
     
@@ -572,6 +590,9 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieFinishedCallBack:) name:MPMoviePlayerPlaybackDidFinishNotification object:moviePlayer];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerStateChange:) name:MPMoviePlayerPlaybackStateDidChangeNotification object:moviePlayer];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadStateDidChange:) name:MPMoviePlayerLoadStateDidChangeNotification object:moviePlayer];
+    
+    [self addSubview:moviePlayer.view];
+    [self bringSubviewToFront:moviePlayer.view];
 }
 
 - (void)configImage:(PFObject *)aPost {
@@ -608,6 +629,12 @@ static TTTTimeIntervalFormatter *timeFormatter;
 }
 
 #pragma mark - ()
+
+- (void)didTapCommentButtonAction:(UIButton *)button {
+    if (delegate && [delegate respondsToSelector:@selector(postDetailsHeaderView:didTapCommentButton:)]) {
+        [delegate postDetailsHeaderView:self didTapCommentButton:button];
+    }
+}
 
 - (void)didTapMoreButtonAction:(UIButton *)button {
     if (delegate && [delegate respondsToSelector:@selector(postDetailsHeaderView:didTapMoreButton:)]) {
@@ -702,6 +729,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
 */
 - (void)didTapVideoPlayButtonAction:(id)sender {
     NSLog(@"- (void)didTapVideoPlayButtonAction:(id)sender");
+    [moviePlayer prepareToPlay];
     [moviePlayer play];
 }
 
