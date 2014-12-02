@@ -9,15 +9,6 @@
 @protocol FTMapScrollViewItemDelegate;
 @interface FTMapScrollViewItem : UIImageView
 
-@property (nonatomic, strong) PFObject *post;
-@property (nonatomic, strong) PFObject *item;
-@property (nonatomic, strong) PFUser *user;
-
-@property (nonatomic, strong) UIView *containerView;
-@property (nonatomic, strong) UIImageView *itemImageView;
-@property (nonatomic, strong) UILabel *titleLabel;
-@property (nonatomic, strong) UILabel *locationLabel;
-
 /*! @name Delegate */
 @property (nonatomic, weak) id <FTMapScrollViewItemDelegate> delegate;
 
