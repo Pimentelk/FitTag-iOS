@@ -26,9 +26,9 @@
 #define COMMENT_BOX_HEIGHT 43
 
 // Comment field
-#define COMMENT_FIELD_X 7
+#define COMMENT_FIELD_X 12
 #define COMMENT_FIELD_Y 6
-#define COMMENT_FIELD_WIDTH 252
+#define COMMENT_FIELD_WIDTH 242
 #define COMMENT_FIELD_HEIGHT 31
 
 // System font size
