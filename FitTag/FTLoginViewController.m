@@ -7,7 +7,6 @@
 //
 
 #import "FTLoginViewController.h"
-#import <QuickLook/QuickLook.h>
 #import "UIView+FormScroll.h"
 
 @interface FTLoginViewController ()
@@ -31,6 +30,7 @@
     [super viewDidLoad];
     
     // Set background image
+    [self.logInView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     [self.logInView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"login_background_image_01"]]];
     
     // Set logo image
@@ -124,8 +124,10 @@
     [self.logInView.externalLogInLabel setText:nil];
     
     // Gesture recognizer
-    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
-    [self.logInView addGestureRecognizer:gestureRecognizer];
+    
+    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapHideKeyboardAction:)];
+    
+    [self.view setGestureRecognizers:@[ tapGestureRecognizer ]];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -154,8 +156,8 @@
     
     [self.logInView.logInButton setBackgroundImage:[UIImage imageNamed:@"login_button"] forState:UIControlStateHighlighted];
     [self.logInView.logInButton setBackgroundImage:[UIImage imageNamed:@"login_button"] forState:UIControlStateNormal];
-    [self.logInView.logInButton setTitle:@"" forState:UIControlStateNormal];
-    [self.logInView.logInButton setTitle:@"" forState:UIControlStateHighlighted];
+    [self.logInView.logInButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
+    [self.logInView.logInButton setTitle:EMPTY_STRING forState:UIControlStateHighlighted];
     
     [self.logInView.logInButton setFrame:CGRectMake([self getCenterX: 32.0f], 310.0f, 32.0f, 17.0f)];
     
@@ -176,7 +178,7 @@
     return (self.view.frame.size.width)/2.0f - elementWith/2.0f;
 }
 
-- (void)hideKeyboard {
+- (void)didTapHideKeyboardAction:(id)sender {
     [self.logInView.usernameField resignFirstResponder];
     [self.logInView.passwordField resignFirstResponder];
     [self.logInView scrollToY:0];
