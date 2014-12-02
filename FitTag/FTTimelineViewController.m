@@ -21,6 +21,7 @@
 @property (nonatomic, strong) FTUserProfileViewController *profileViewController;
 @property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
 @property (nonatomic, strong) PFObject *currentPostMoreOption;
+@property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
 @end
 
 @implementation FTTimelineViewController
@@ -30,6 +31,7 @@
 @synthesize dismissProfileButton;
 @synthesize flowLayout;
 @synthesize profileViewController;
+@synthesize moviePlayer;
 
 #pragma mark - Initialization
 
@@ -73,7 +75,36 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     [super viewDidLoad];
-        
+    
+    moviePlayer = [[MPMoviePlayerController alloc] init];
+    [moviePlayer setControlStyle:MPMovieControlStyleNone];
+    [moviePlayer setScalingMode:MPMovieScalingModeAspectFill];
+    [moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
+    [moviePlayer setShouldAutoplay:NO];
+    [moviePlayer.view setFrame:CGRectMake(0,0,320,320)];
+    [moviePlayer.view setBackgroundColor:[UIColor clearColor]];
+    [moviePlayer.view setUserInteractionEnabled:NO];
+    [moviePlayer.view setAlpha:1];
+    [moviePlayer.backgroundView setBackgroundColor:[UIColor clearColor]];
+    for(UIView *aSubView in moviePlayer.view.subviews) {
+        aSubView.backgroundColor = [UIColor clearColor];
+    }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(movieFinishedCallBack:)
+                                                 name:MPMoviePlayerPlaybackDidFinishNotification
+                                               object:moviePlayer];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(moviePlayerStateChange:)
+                                                 name:MPMoviePlayerPlaybackStateDidChangeNotification
+                                               object:moviePlayer];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(loadStateDidChange:)
+                                                 name:MPMoviePlayerLoadStateDidChangeNotification
+                                               object:moviePlayer];
+    
     // Override the back idnicator
     dismissProfileButton = [[UIBarButtonItem alloc] init];
     [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
@@ -108,6 +139,14 @@
     if (self.shouldReloadOnAppear) {
         self.shouldReloadOnAppear = YES;
         [self loadObjects];
+    }
+    [self.tableView reloadData];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    if (moviePlayer) {
+        [moviePlayer stop];
     }
 }
 
@@ -548,14 +587,14 @@
 }
 
 #pragma mark - FTGalleryCellViewDelegate
-
+/*
 - (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapUserButton:(UIButton *)button user:(PFUser *)user {
     // Push account view controller
     [profileViewController setUser:user];
     [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
-
+*/
 - (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapLikeGalleryButton:(UIButton *)button counter:(UIButton *)counter gallery:(PFObject *)gallery {
     NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLikeGalleryButton:counter:gallery:");
     
@@ -645,7 +684,7 @@
 }
 
 #pragma mark - FTVideoCellViewDelegate
-
+/*
 - (void)videoCellView:(FTVideoCell *)videoCellView
      didTapUserButton:(UIButton *)button
                  user:(PFUser *)user {
@@ -656,7 +695,7 @@
     [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
-
+*/
 - (void)videoCellView:(FTVideoCell *)videoCellView didTapCommentOnVideoButton:(UIButton *)button
                 video:(PFObject *)video {
     //NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapCommentOnVideoButton:video:");
@@ -711,21 +750,6 @@ didTapLikeVideoButton:(UIButton *)button
     }
 }
 
-- (void)actionSheetAlert:(PFObject *)post {
-    
-    self.currentPostMoreOption = nil;
-    self.currentPostMoreOption = post;
-    
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-                                                             delegate:self
-                                                    cancelButtonTitle:@"Cancel"
-                                               destructiveButtonTitle:nil
-                                                    otherButtonTitles:ACTION_SHARE_ON_FACEBOOK,
-                                                                      ACTION_SHARE_ON_TWITTER,
-                                                                      ACTION_REPORT_INAPPROPRIATE, nil];
-    [actionSheet showInView:self.view];
-}
-
 - (void)videoCellView:(FTVideoCell *)videoCellView
      didTapMoreButton:(UIButton *)button
                 video:(PFObject *)video {
@@ -750,7 +774,8 @@ didTapLikeVideoButton:(UIButton *)button
     [self.navigationController pushViewController:mapViewController animated:YES];
 }
 
-- (void)videoCellView:(FTVideoCell *)videoCellView didTapVideoButton:(UIButton *)button {
+- (void)videoCellView:(FTVideoCell *)videoCellView
+    didTapVideoButton:(UIButton *)button {
     PFObject *video = [self.objects objectAtIndex:videoCellView.tag];
     if (video) {
         FTPostDetailsViewController *galleryDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:video AndType:kFTPostTypeVideo];
@@ -758,8 +783,25 @@ didTapLikeVideoButton:(UIButton *)button
     }
 }
 
-#pragma mark - FTPhotoCellViewDelegate
+- (void)videoCellView:(FTVideoCell *)videoCellView
+didTapVideoPlayButton:(UIButton *)button
+                video:(PFObject *)video {
+    
+    [FTUtility showHudMessage:@"loading.." WithDuration:1];
+    
+    NSLog(@"videoCellView:didTapVideoPlayButton:video:");
+    PFFile *videoFile = [video objectForKey:kFTPostVideoKey];
+    
+    [moviePlayer setContentURL:[NSURL URLWithString:videoFile.url]];
+    [moviePlayer prepareToPlay];
+    [moviePlayer play];
+    
+    [videoCellView addSubview:moviePlayer.view];
+    [videoCellView bringSubviewToFront:moviePlayer.view];
+}
 
+#pragma mark - FTPhotoCellViewDelegate
+/*
 - (void)photoCellView:(FTPhotoCell *)photoCellView
      didTapUserButton:(UIButton *)button
                  user:(PFUser *)user {
@@ -769,6 +811,7 @@ didTapLikeVideoButton:(UIButton *)button
     [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
+*/
 
 - (void)photoCellView:(FTPhotoCell *)photoCellView
 didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
@@ -846,7 +889,8 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
     [self.navigationController pushViewController:mapViewController animated:YES];
 }
 
-- (void)photoCellView:(FTPhotoCell *)photoCellView didTapPhotoButton:(UIButton *)button {
+- (void)photoCellView:(FTPhotoCell *)photoCellView
+    didTapPhotoButton:(UIButton *)button {
     PFObject *photo = [self.objects objectAtIndex:photoCellView.tag];
     if (photo) {
         FTPostDetailsViewController *postDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:photo AndType:kFTPostTypeVideo];
@@ -875,7 +919,7 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
     } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_SHARE_ON_TWITTER]) {
         [FTUtility prepareToSharePostOnTwitter:self.currentPostMoreOption];
     } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_REPORT_INAPPROPRIATE]) {
-        [self reportPostInappropriate];
+        [self reportPostInappropriate:self.currentPostMoreOption];
     }
 }
 
@@ -889,10 +933,107 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
     }
 }
 
+#pragma mark - UIHeaderViewDelegate
+
+- (void)postHeaderView:(FTPostHeaderView *)postHeaderView didTapUserButton:(UIButton *)button user:(PFUser *)user {
+    [profileViewController setUser:user];
+    [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
+    [self.navigationController pushViewController:profileViewController animated:YES];
+}
+
 #pragma mark - ()
 
-- (void)reportPostInappropriate {
+- (void)movieFinishedCallBack:(NSNotification *)notification {
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:MPMoviePlayerPlaybackDidFinishNotification
+                                                  object:moviePlayer];
+}
+
+- (void)loadStateDidChange:(NSNotification *)notification {
+    //NSLog(@"loadStateDidChange: %@",notification);
+    switch (moviePlayer.loadState) {
+        case MPMovieLoadStatePlayable: {
+            NSLog(@"moviePlayer... MPMovieLoadStatePlayable");
+            [UIView animateWithDuration:1 animations:^{
+                [moviePlayer.view setAlpha:1];
+            }];
+        }
+            break;
+        case MPMovieLoadStatePlaythroughOK: {
+            NSLog(@"moviePlayer... MPMovieLoadStatePlaythroughOK");
+            
+        }
+            break;
+        case MPMovieLoadStateStalled: {
+            NSLog(@"moviePlayer... MPMovieLoadStateStalled");
+            
+        }
+            break;
+        case MPMovieLoadStateUnknown: {
+            NSLog(@"moviePlayer... MPMovieLoadStateUnknown");
+            
+        }
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)moviePlayerStateChange:(NSNotification *)notification {
+    //NSLog(@"moviePlayerStateChange: %@",notification);
+    switch (moviePlayer.playbackState) {
+        case MPMoviePlaybackStateStopped: {
+            NSLog(@"moviePlayer... MPMoviePlaybackStateStopped");
+        }
+            break;
+        case MPMoviePlaybackStatePlaying: {
+            NSLog(@"moviePlayer... MPMoviePlaybackStatePlaying");
+            [UIView animateWithDuration:1 animations:^{
+                [moviePlayer.view setAlpha:1];
+            }];
+        }
+            break;
+        case MPMoviePlaybackStatePaused: {
+            NSLog(@"moviePlayer... MPMoviePlaybackStatePaused");
+            [UIView animateWithDuration:0.3 animations:^{
+                [moviePlayer.view setAlpha:0];
+                [moviePlayer prepareToPlay];
+            }];
+        }
+            break;
+        case MPMoviePlaybackStateInterrupted: {
+            NSLog(@"moviePlayer... MPMoviePlaybackStateInterrupted");
+            
+        }
+            break;
+        case MPMoviePlaybackStateSeekingForward: {
+            NSLog(@"moviePlayer... MPMoviePlaybackStateSeekingForward");
+            
+        }
+            break;
+        case MPMoviePlaybackStateSeekingBackward: {
+            NSLog(@"moviePlayer... MPMoviePlaybackStateSeekingBackward");
+            
+        }
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)actionSheetAlert:(PFObject *)post {
     
+    self.currentPostMoreOption = nil;
+    self.currentPostMoreOption = post;
+    
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+                                                             delegate:self
+                                                    cancelButtonTitle:@"Cancel"
+                                               destructiveButtonTitle:nil
+                                                    otherButtonTitles:ACTION_SHARE_ON_FACEBOOK,
+                                                                      ACTION_SHARE_ON_TWITTER,
+                                                                      ACTION_REPORT_INAPPROPRIATE, nil];
+    [actionSheet showInView:self.view];
 }
 
 - (NSIndexPath *)indexPathForObject:(PFObject *)targetObject {
@@ -924,10 +1065,10 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
 }
 
 - (void)userDidPublishPhoto:(NSNotification *)note {
+    [FTUtility showHudMessage:@"post uploaded" WithDuration:1];
     if (self.objects.count > 0) {
         [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }
-    
     [self loadObjects];
 }
 
@@ -957,4 +1098,49 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
     }
 }
 */
+
+- (void)reportPostInappropriate:(PFObject *)post {
+    if ([MFMailComposeViewController canSendMail]) {
+        
+        MFMailComposeViewController *mailer = [[MFMailComposeViewController alloc] init];
+        [mailer setMailComposeDelegate:self];
+        [mailer setSubject:[NSString stringWithFormat:@"%@: %@",MAIL_INAPPROPRIATE_SUBJECT,post.objectId]];
+        [mailer setToRecipients:[NSArray arrayWithObjects:MAIL_TECH_EMAIL, nil]];
+        [mailer setMessageBody:EMPTY_STRING isHTML:NO];
+        
+        [self presentViewController:mailer animated:YES completion:nil];
+        
+    } else {
+        [[[UIAlertView alloc] initWithTitle:MAIL_FAIL
+                                    message:MAIL_NOT_SUPPORTED
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles: nil] show];
+    }
+}
+#pragma mark - MFMailComposeViewControllerDelegate
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller
+          didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
+    
+    switch (result) {
+        case MFMailComposeResultCancelled:
+            NSLog(MAIL_CANCELLED);
+            break;
+        case MFMailComposeResultSaved:
+            NSLog(MAIL_SAVED);
+            break;
+        case MFMailComposeResultSent:
+            NSLog(MAIL_SENT);
+            
+            [FTUtility showHudMessage:MAIL_SENT WithDuration:2];
+            break;
+        default:
+            NSLog(MAIL_FAIL);
+            break;
+    }
+    // Remove the mail view
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 @end

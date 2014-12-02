@@ -10,13 +10,15 @@
 #import "FTVideoCell.h"
 #import "FTGalleryCell.h"
 #import "FTPostHeaderView.h"
+#import <MessageUI/MessageUI.h>
 
 @interface FTTimelineViewController : PFQueryTableViewController <FTPhotoCellDelegate,
                                                                   FTVideoCellDelegate,
                                                                   FTGalleryCellDelegate,
                                                                   FTPostHeaderViewDelegate,
                                                                   UIActionSheetDelegate,
-                                                                  UIGestureRecognizerDelegate>
+                                                                  UIGestureRecognizerDelegate,
+                                                                  MFMailComposeViewControllerDelegate>
 
 - (FTPostHeaderView *)dequeueReusableSectionHeaderView;
 
