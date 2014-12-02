@@ -19,7 +19,6 @@
 #define SETTINGS_BUTTON_HEIGHT 32
 
 @interface FTSettingsViewController ()
-
 @property NSDictionary *settingsDictionary;
 @property NSArray *settingsSectionTitles;
 @property (nonatomic, strong) MFMailComposeViewController *mailer;
@@ -29,7 +28,6 @@
 @property (strong, nonatomic) FTFollowFriendsViewController *followFriendsViewController;
 @property (strong, nonatomic) FTInterestsViewController *interestsViewController;
 @property (strong, nonatomic) FTInviteFriendsViewController *inviteFriendsViewController;
-
 @end
 
 @implementation FTSettingsViewController
@@ -209,7 +207,7 @@
 
 - (void)interestsViewController:(FTInterestsViewController *)interestsViewController didUpdateUserInterests:(NSArray *)interests {
     [self.navigationController popViewControllerAnimated:YES];
-    [self showHudMessage:HUD_MESSAGE_INTERESTS_UPDATED WithDuration:3];
+    [FTUtility showHudMessage:HUD_MESSAGE_INTERESTS_UPDATED WithDuration:3];
 }
 
 #pragma mark - ()
@@ -243,7 +241,7 @@
 - (void)didTapBackButtonAction:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
-
+/*
 - (void)showHudMessage:(NSString *)message WithDuration:(NSTimeInterval)duration {
     //NSLog(@"%@::showHudMessage:WithDuration:",VIEWCONTROLLER_SETTINGS_DETAIL);
     self.hud = [MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
@@ -255,7 +253,7 @@
     self.hud.labelText = message;
     [self.hud hide:YES afterDelay:duration];
 }
-
+*/
 #pragma mark - MFMailComposeViewControllerDelegate
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error {
