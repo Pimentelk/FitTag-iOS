@@ -25,9 +25,6 @@
          channels:(int)ch
           samples:(Float64)rate {
     
-    //NSLog(@"cy: %ld",cy);
-    //NSLog(@"cx: %ld",cx);
-    
     self.path = path;
     
     [[NSFileManager defaultManager] removeItemAtPath:self.path error:nil];
@@ -40,37 +37,6 @@
                               [NSNumber numberWithLong: cx], AVVideoWidthKey,
                               [NSNumber numberWithLong: cy], AVVideoHeightKey,
                               nil];
-    /*
-    NSDictionary *videoCleanApertureSettings = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                [NSNumber numberWithInt:cx], AVVideoCleanApertureWidthKey,
-                                                [NSNumber numberWithInt:cx], AVVideoCleanApertureHeightKey,
-                                                [NSNumber numberWithInt:10], AVVideoCleanApertureHorizontalOffsetKey,
-                                                [NSNumber numberWithInt:10], AVVideoCleanApertureVerticalOffsetKey,
-                                                nil];
-    
-    NSDictionary *videoAspectRatioSettings = [NSDictionary dictionaryWithObjectsAndKeys:
-                                              [NSNumber numberWithInt:3], AVVideoPixelAspectRatioHorizontalSpacingKey,
-                                              [NSNumber numberWithInt:3],AVVideoPixelAspectRatioVerticalSpacingKey,
-                                              nil];
-    
-    float bitsPerPixel = 11.4 * cy * cx;
-    
-    NSDictionary *codecSettings = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   [NSNumber numberWithInt:bitsPerPixel], AVVideoAverageBitRateKey,
-                                   [NSNumber numberWithInt:30],AVVideoMaxKeyFrameIntervalKey,
-                                   videoCleanApertureSettings, AVVideoCleanApertureKey,
-                                   videoAspectRatioSettings, AVVideoPixelAspectRatioKey,
-                                   //AVVideoProfileLevelH264Main30, AVVideoProfileLevelKey,
-                                   nil];
-    
-    NSDictionary *videoSettings = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   AVVideoScalingModeResizeAspectFill,AVVideoScalingModeKey,
-                                   AVVideoCodecH264, AVVideoCodecKey,
-                                   codecSettings,AVVideoCompressionPropertiesKey,
-                                   [NSNumber numberWithInt:cx], AVVideoWidthKey,
-                                   [NSNumber numberWithInt:cx], AVVideoHeightKey,
-                                   nil];
-     */
     
     _videoInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:settings];
     _videoInput.expectsMediaDataInRealTime = YES;
@@ -89,9 +55,8 @@
     [_writer addInput:_audioInput];
 }
 
-- (void) finishWithCompletionHandler:(void (^)(void))handler
-{
-    [_writer finishWritingWithCompletionHandler: handler];
+- (void) finishWithCompletionHandler:(void (^)(void))handler {
+    [_writer finishWritingWithCompletionHandler:handler];
 }
 
 - (BOOL) encodeFrame:(CMSampleBufferRef)sampleBuffer isVideo:(BOOL)bVideo
