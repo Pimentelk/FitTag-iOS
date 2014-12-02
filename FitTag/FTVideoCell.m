@@ -33,7 +33,7 @@
 @synthesize commentCounter;
 @synthesize likeCounter;
 @synthesize moreButton;
-@synthesize moviePlayer;
+//@synthesize moviePlayer;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
@@ -147,33 +147,12 @@
         
         [videoCellButtonsContainer addSubview:moreButton];
         
-        // setup the video player
-        //NSLog(@"Setting up...");
-        moviePlayer = [[MPMoviePlayerController alloc] init];
-        
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(movieFinishedCallBack:)
-                                                     name:MPMoviePlayerPlaybackDidFinishNotification
-                                                   object:moviePlayer];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(moviePlayerStateChange:)
-                                                     name:MPMoviePlayerPlaybackStateDidChangeNotification
-                                                   object:moviePlayer];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(loadStateDidChange:)
-                                                     name:MPMoviePlayerLoadStateDidChangeNotification
-                                                   object:moviePlayer];
-        
         // Play Button
         if (self.buttons & FTVideoCellButtonsPlay) {
-            float centerX = (self.videoButton.frame.size.width - 60) / 2;
-            float centerY = (self.videoButton.frame.size.height - 60) / 2;
             playButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [self.playButton setFrame:CGRectMake(centerX,centerY,60,60)];
-            [self.playButton setBackgroundImage:[UIImage imageNamed:@"play_button"] forState:UIControlStateNormal];
+            [self.playButton setFrame:CGRectMake(VIDEOCGRECTFRAMECENTER(self.videoButton.frame.size.width,73),
+                                                 VIDEOCGRECTFRAMECENTER(self.videoButton.frame.size.height,72),73,72)];
+            [self.playButton setBackgroundImage:IMAGE_PLAY_BUTTON forState:UIControlStateNormal];
             [self.playButton setSelected:NO];
             
             [videoButton addSubview:self.playButton];
@@ -197,25 +176,14 @@
     
     video = aVideo;
     
-    NSLog(@"moviePlayer:%@",moviePlayer);
-    PFFile *videoFile = [video objectForKey:kFTPostVideoKey];
-    [moviePlayer setControlStyle:MPMovieControlStyleNone];
-    [moviePlayer setScalingMode:MPMovieScalingModeAspectFill];
-    [moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
-    [moviePlayer setShouldAutoplay:NO];
-    [moviePlayer setContentURL:[NSURL URLWithString:videoFile.url]];
-    [moviePlayer.view setFrame:CGRectMake(0,0,320,320)];
-    [moviePlayer.view setBackgroundColor:[UIColor clearColor]];
-    [moviePlayer.view setUserInteractionEnabled:NO];
-    [moviePlayer.view setAlpha:0];
-    [moviePlayer.backgroundView setBackgroundColor:[UIColor clearColor]];
-    [moviePlayer prepareToPlay];
-    for(UIView *aSubView in moviePlayer.view.subviews) {
-        aSubView.backgroundColor = [UIColor clearColor];
-    }
+    //NSLog(@"moviePlayer:%@",moviePlayer);
+    //PFFile *videoFile = [video objectForKey:kFTPostVideoKey];
     
-    [videoButton addSubview:moviePlayer.view];
-    [videoButton bringSubviewToFront:moviePlayer.view];
+    //[moviePlayer setContentURL:[NSURL URLWithString:videoFile.url]];
+    //[moviePlayer prepareToPlay];
+    
+    //[videoButton addSubview:moviePlayer.view];
+    //[videoButton bringSubviewToFront:moviePlayer.view];
     
     // Get the profile image
     PFUser *user = [video objectForKey:kFTPostUserKey];
@@ -246,7 +214,7 @@
         [self.moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
-    /* Location */
+    // Location
     PFGeoPoint *geoPoint = [self.video objectForKey:kFTPostLocationKey];
     if (geoPoint) {
         CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
@@ -275,6 +243,7 @@
     [self setNeedsDisplay];
 }
 
+/*
 - (void)movieFinishedCallBack:(NSNotification *)notification{
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:MPMoviePlayerPlaybackDidFinishNotification
@@ -345,6 +314,7 @@
         NSLog(@"moviePlayer... Backward");
     }
 }
+*/
 
 - (void)setLikeStatus:(BOOL)liked {
     [self.likeButton setSelected:liked];
@@ -388,33 +358,39 @@
     }
 }
 
-- (void)didTapUserButtonAction:(UIButton *)sender{
+- (void)didTapUserButtonAction:(UIButton *)sender {
     NSLog(@"FTVideoCell::didTapUserButtonAction");
     if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapUserButton:user:)]) {
         [delegate videoCellView:self didTapUserButton:sender user:[self.video objectForKey:kFTPostUserKey]];
     }
 }
 
-- (void)didTapLikeVideoButtonAction:(UIButton *)button{
+- (void)didTapLikeVideoButtonAction:(UIButton *)button {
     if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapLikeVideoButton:counter:video:)]) {
         [delegate videoCellView:self didTapLikeVideoButton:button counter:self.likeCounter video:self.video];
     }
 }
 
-- (void)didTapCommentOnVideoButtonAction:(UIButton *)sender{
+- (void)didTapCommentOnVideoButtonAction:(UIButton *)sender {
     if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapCommentOnVideoButton:video:)]) {
         [delegate videoCellView:self didTapCommentOnVideoButton:sender video:self.video];
     }
 }
 
-- (void)didTapMoreButtonAction:(UIButton *)sender{
+- (void)didTapMoreButtonAction:(UIButton *)sender {
     if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapMoreButton:video:)]){
         [delegate videoCellView:self didTapMoreButton:sender video:self.video];
     }
 }
 
-- (void)didTapVideoPlayButtonAction:(UIButton *)sender{
+
+- (void)didTapVideoPlayButtonAction:(UIButton *)sender {
+    if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapVideoPlayButton:video:)]){
+        [delegate videoCellView:self didTapVideoPlayButton:sender video:video];
+    }
+    /*
     if (moviePlayer) {
+        [moviePlayer prepareToPlay];
         [moviePlayer play];
     } else {
         [[[UIAlertView alloc] initWithTitle:@"Playback Error"
@@ -423,6 +399,7 @@
                           cancelButtonTitle:@"ok"
                           otherButtonTitles:nil] show];
     }
+    */
 }
 
 - (void)didTapLocationAction:(FTVideoCell *)sender {
