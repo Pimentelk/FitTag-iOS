@@ -7,6 +7,7 @@
 //
 
 #import "FTRewardsDetailView.h"
+#import "FTBusinessProfileViewController.h"
 
 #define CLOUD_SUCESS_MESSAGE @"Email has been sent!"
 #define CLOUD_ERROR_MESSAGE @"Email could not be sent, make sure your email has been submitted in settings."
@@ -27,7 +28,7 @@
 #define REWARD_FOOTER_HEIGHT 73.0f
 
 @interface FTRewardsDetailView ()
-@property (nonatomic, strong) FTRewardsDetailsHeaderView *headerView;
+@property (nonatomic, strong) FTRewardsDetailHeaderView *headerView;
 @property (nonatomic, strong) FTRewardsDetailFooterView *footerView;
 @property (nonatomic, strong) UIImageView *rewardPhoto;
 @property (nonatomic, strong) UIView *popUpView;
@@ -81,7 +82,7 @@
     
     // Set table header
     
-    self.headerView = [[FTRewardsDetailsHeaderView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, REWARD_HEADER_HEIGHT) reward:reward];
+    self.headerView = [[FTRewardsDetailHeaderView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, REWARD_HEADER_HEIGHT) reward:reward];
     self.headerView.delegate = self;
     self.tableView.tableHeaderView = self.headerView;
     
@@ -269,7 +270,7 @@
     // Block reward
 }
 
-#pragma mark - FTRewardsDetailFooterView
+#pragma mark - FTRewardsDetailFooterViewDelegate
 
 - (void)rewardsDetailFooterView:(FTRewardsDetailFooterView *)footerView didTapRedeemButton:(UIButton *)button {
     if (self.isPopupHidden) {
@@ -277,6 +278,23 @@
     } else {
         [self removePopup];
     }
+}
+
+#pragma mark - FTRewardsDetailHeaderViewDelegate
+
+- (void)rewardsDetailHeaderView:(FTRewardsDetailHeaderView *)rewardsDetailHeaderView didTapBusinessButton:(UIButton *)button business:(PFUser *)business {
+    
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [flowLayout setItemSize:CGSizeMake(105.5,105)];
+    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [flowLayout setMinimumInteritemSpacing:0];
+    [flowLayout setMinimumLineSpacing:0];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
+    
+    FTBusinessProfileViewController *businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    [businessProfileViewController setBusiness:business];
+    [self.navigationController pushViewController:businessProfileViewController animated:YES];
 }
 
 @end

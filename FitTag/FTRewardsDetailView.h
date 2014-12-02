@@ -6,10 +6,10 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-#import "FTRewardsDetailsHeaderView.h"
+#import "FTRewardsDetailHeaderView.h"
 #import "FTRewardsDetailFooterView.h"
 
-@interface FTRewardsDetailView : PFQueryTableViewController <FTRewardsDetailsHeaderViewDelegate,FTRewardsDetailsFooterViewDelegate>
+@interface FTRewardsDetailView : PFQueryTableViewController <FTRewardsDetailHeaderViewDelegate,FTRewardsDetailsFooterViewDelegate>
 @property (nonatomic, strong) PFObject *reward;
 - (id)initWithReward:(PFObject *)aReward;
 @end
