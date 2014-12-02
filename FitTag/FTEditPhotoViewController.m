@@ -397,7 +397,11 @@
                 
                 [[NSNotificationCenter defaultCenter] postNotificationName:FTTabBarControllerDidFinishEditingPhotoNotification object:photo];
             } else {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
+                                                                message:nil
+                                                               delegate:nil
+                                                      cancelButtonTitle:nil
+                                                      otherButtonTitles:@"Dismiss", nil];
                 [alert show];
             }
             [[UIApplication sharedApplication] endBackgroundTask:self.photoPostBackgroundTaskId];
