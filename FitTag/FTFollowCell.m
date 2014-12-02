@@ -49,15 +49,9 @@
         self.profileImageView = [[UIImageView alloc] initWithFrame:CGRectMake(PROFILE_IMAGE_X, 4, PROFILE_IMAGE_WIDTH, PROFILE_IMAGE_HEIGHT)];
         self.profileImageView.backgroundColor = [UIColor redColor];
         self.profileImageView.userInteractionEnabled = YES;
+        self.profileImageView.layer.cornerRadius = CORNERRADIUS(profileImageView.frame.size.width);
+        self.profileImageView.clipsToBounds = YES;
         [self.profileImageView addGestureRecognizer:tapGestureRecognizer];
-        
-        //UIImageView *profileHexagon = [FTUtility getProfileHexagonWithFrame:profileImageView.frame];
-        //self.profileImageView.frame = profileHexagon.frame;
-        //self.profileImageView.layer.mask = profileHexagon.layer.mask;
-        
-        self.contentView.frame = profileImageView.frame;
-        self.contentView.layer.cornerRadius = CORNERRADIUS(profileImageView.frame.size.width);
-        self.contentView.clipsToBounds = YES;
         
         [self.contentView addSubview:profileImageView];
         
