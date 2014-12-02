@@ -197,12 +197,10 @@
     }
     
     // setup the playbutton
-    float centerX = (videoImageView.frame.size.width - 60) / 2;
-    float centerY = (videoImageView.frame.size.height - 60) / 2;
-    
     playButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.playButton setFrame:CGRectMake(centerX,centerY,60.0f,60.0f)];
-    [self.playButton setBackgroundImage:[UIImage imageNamed:@"play_button"] forState:UIControlStateNormal];
+    [self.playButton setFrame:CGRectMake(VIDEOCGRECTFRAMECENTER(videoImageView.frame.size.width,73),
+                                         VIDEOCGRECTFRAMECENTER(videoImageView.frame.size.height,72),73,72)];
+    [self.playButton setBackgroundImage:IMAGE_PLAY_BUTTON forState:UIControlStateNormal];
     [self.playButton addTarget:self action:@selector(didTapVideoPlayButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.playButton setSelected:NO];
     
@@ -387,79 +385,31 @@
     return matchedResults;
 }
 
-- (void)didTapBackButtonAction:(id)sender{
+- (void)didTapBackButtonAction:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
+    /*
+    [[[UIAlertView alloc] initWithTitle:@"Video Alert"
+                                message:@"Returning to the capture screen will cause your video to be deleted. Are you sure you want to continue?"
+                               delegate:self
+                      cancelButtonTitle:@"cancel"
+                      otherButtonTitles:@"yes", nil] show];
+    */
 }
 
-/*
-- (BOOL)shouldUploadVideo:(NSData *)aVideo {
-    NSLog(@"FTEditVideoViewController::shouldUploadVideo:");
-    if(!aVideo){
-        return NO;
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    switch (buttonIndex) {
+        case 0: {
+        
+        }
+            break;
+        case 1: {
+            [self.navigationController popViewControllerAnimated:YES];
+        }
+            break;
+        default:
+            break;
     }
-    
-    if ([PFUser currentUser]) {
-        // Set the video
-        
-        //[MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
-        
-        self.videoFile = [PFFile fileWithName:@"video.mp4" data:aVideo];
-        
-        // Request a background execution task to allow us to finish uploading the video even if the app is backgrounded
-        self.fileUploadBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
-        }];
- 
-        [self.videoFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            if (succeeded) {
-                
-                // Get the first frame of the video and save it as an image
-                NSURL *url = [NSURL URLWithString:self.videoFile.url];
-                
-                // Set video url
-                [self.moviePlayer setContentURL:url];
-                [self.moviePlayer prepareToPlay];
-                
-                AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:nil];
-                AVAssetImageGenerator *generateImg = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-                generateImg.appliesPreferredTrackTransform = YES;
-                
-                NSError *error = NULL;
-                CMTime time = CMTimeMake(1, 65);
-                CGImageRef refImg = [generateImg copyCGImageAtTime:time actualTime:NULL error:&error];
-                UIImage *anImage = [[UIImage alloc] initWithCGImage:refImg];
-                UIImage *resizedImage = [anImage resizedImageWithContentMode:UIViewContentModeScaleAspectFill bounds:CGSizeMake(320.0f, 320.0f) interpolationQuality:kCGInterpolationHigh];
-                NSData *imageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
-                
-                // Set placeholder image
-                [videoPlaceHolderView setImage:[UIImage imageWithData:imageData]];
-                
-                //[MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
-                self.imageFile = [PFFile fileWithName:@"photo.jpeg" data:imageData];
-                
-                [self.imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                    [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
-                    [postDetailsFooterView.submitButton setEnabled:YES];
-                    
-                    if(!succeeded){
-                        [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
-                    }
-                    
-                    if(error){
-                        NSLog(@"self.videoFile saveInBackgroundWithBlock: %@", error);
-                    }
-                }];
-            }
-            
-            if (error) {
-                NSLog(@"self.imageFile saveInBackgroundWithBlock: %@", error);
-            }
-        }];
-    }
-    
-    return YES;
 }
-*/
 
 - (void)keyboardWillShow:(NSNotification *)note {
     CGRect keyboardFrameEnd = [[note.userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
@@ -606,6 +556,7 @@
         }];
         
         // Dismiss this screen
+        [FTUtility showHudMessage:@"uploading.." WithDuration:1];
         [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
         
     } else {
