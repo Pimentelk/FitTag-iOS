@@ -9,8 +9,6 @@
 #import "FTMapViewController.h"
 #import "FTCircleOverlay.h"
 #import "FTAmbassadorGeoPointAnnotation.h"
-#import "FTAmbassadorAnnotationView.h"
-#import "FTBusinessAnnotationView.h"
 #import "FTBusinessGeoPointAnnotation.h"
 #import "FTMapScrollView.h"
 #import "FTFollowFriendsViewController.h"
@@ -82,6 +80,7 @@ enum PinAnnotationTypeTag {
     FTSearchQueryType searchQueryType;
     BOOL isTaggersSelected;
     UIColor *redColor;
+    int position;
 }
 
 @property (nonatomic, strong) CLLocation *location;
@@ -233,12 +232,6 @@ enum PinAnnotationTypeTag {
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
 }
 
-#pragma mark - Navigation Bar
-
-- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
-    
-}
-
 #pragma mark - SearchBarDelegate
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
@@ -255,7 +248,7 @@ enum PinAnnotationTypeTag {
     }];
     
     if (isTaggersSelected) {
-        NSString *lowercaseStringWithoutSymbols = [[searchBar.text stringByReplacingOccurrencesOfString:@"@" withString:@""] lowercaseString];
+        NSString *lowercaseStringWithoutSymbols = [[searchBar.text stringByReplacingOccurrencesOfString:@"@" withString:EMPTY_STRING] lowercaseString];
         [followFriendsViewController setFollowUserQueryType:FTFollowUserQueryTypeTagger];
         [followFriendsViewController setSearchString:lowercaseStringWithoutSymbols];
         [followFriendsViewController querySearchForUser];
@@ -286,8 +279,9 @@ enum PinAnnotationTypeTag {
     //NSLog(@"%@::mapView:viewForAnnotation:",VIEWCONTROLLER_MAP);
     static NSString *GeoPointBusinessAnnotationIdentifier = ANNOTATION_IDENTIFIER_BUSINESSES;
     static NSString *GeoPointAmbassadorAnnotationIdentifier = ANNOTATION_IDENTIFIER_AMBASSADOR;
-
+    
     if ([annotation isKindOfClass:[FTAmbassadorGeoPointAnnotation class]]) {
+    
         FTAmbassadorAnnotationView *annotationView = (FTAmbassadorAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:GeoPointAmbassadorAnnotationIdentifier];
         if (!annotationView) {
             annotationView = [[FTAmbassadorAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:GeoPointAmbassadorAnnotationIdentifier];
@@ -296,6 +290,9 @@ enum PinAnnotationTypeTag {
             annotationView.tag = PinAnnotationTypeTagGeoQuery;
             annotationView.canShowCallout = NO;
             annotationView.draggable = NO;
+            annotationView.position = position;
+            annotationView.delegate = self;
+            position++;
         }
         return annotationView;
         
@@ -307,6 +304,11 @@ enum PinAnnotationTypeTag {
             annotationView.tag = PinAnnotationTypeTagGeoPoint;
             annotationView.canShowCallout = NO;
             annotationView.draggable = NO;
+            annotationView.position = position;
+            annotationView.delegate = self;
+            FTBusinessGeoPointAnnotation *businessGeoPointAnnotation = annotation;
+            annotationView.file = [businessGeoPointAnnotation file];
+            position++;
         }
         return annotationView;
     }
@@ -553,6 +555,24 @@ enum PinAnnotationTypeTag {
 - (void)locationManager:(FTLocationManager *)locationManager didUpdateUserLocation:(CLLocation *)location geoPoint:(PFGeoPoint *)aGeoPoint {
     geoPoint = aGeoPoint;
     [self setInitialLocation:location];
+}
+
+#pragma mark - FTBusinessAnnotationViewDelegate
+
+- (void)businessAnnotationView:(FTBusinessAnnotationView *)businessAnnotationView didTapBusinessAnnotationView:(id)sender {
+    NSLog(@"businessAnnotationView:%d",businessAnnotationView.position);
+    [UIView animateWithDuration:1 animations:^{
+        [scrollView setContentOffset:CGPointMake(businessAnnotationView.position * self.view.frame.size.width,0)];
+    }];
+}
+
+#pragma mark - FTAmbassadorAnnotationViewDelegate
+
+- (void)ambassadorAnnotationView:(FTAmbassadorAnnotationView *)ambassadorAnnotationView didTapAmbassadorAnnotationView:(id)sender {
+    NSLog(@"ambassadorAnnotationView:%d",ambassadorAnnotationView.position);
+    [UIView animateWithDuration:1 animations:^{
+        [scrollView setContentOffset:CGPointMake(ambassadorAnnotationView.position * self.view.frame.size.width,0)];
+    }];
 }
 
 @end

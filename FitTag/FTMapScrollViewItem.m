@@ -49,7 +49,6 @@
         UITapGestureRecognizer *itemSingleTap;
         
         if ([item objectForKey:kFTUserProfilePicSmallKey]) {
-            NSLog(@"user");
             user = (PFUser *)item;
             file = [item objectForKey:kFTUserProfilePicSmallKey];
             title = [NSString stringWithFormat:@"@%@",[user objectForKey:kFTUserDisplayNameKey]];
@@ -60,7 +59,6 @@
             itemSingleTap.numberOfTapsRequired = 1;
             
         } else if ([item objectForKey:kFTPostImageKey]) {
-            NSLog(@"post");
             post = (PFObject *)item;
             file = [item objectForKey:kFTPostImageKey];
             PFUser *postUser = [item objectForKey:kFTPostUserKey];

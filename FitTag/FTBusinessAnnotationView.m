@@ -19,44 +19,59 @@
 
 @interface FTBusinessAnnotationView ()
 @property (nonatomic, strong) PFUser *user;
+@property (nonatomic, strong) UIImageView *imageView;
 @end
 
 @implementation FTBusinessAnnotationView
-
+@synthesize delegate;
 @synthesize user;
 @synthesize coordinate;
 @synthesize title;
 @synthesize subtitle;
+@synthesize imageView;
+@synthesize annotation;
+@synthesize file;
 
 #pragma mark - Initialization
 
-- (instancetype)initWithAnnotation:(id<MKAnnotation>)annotation
+- (instancetype)initWithAnnotation:(id<MKAnnotation>)aAnnotation
                    reuseIdentifier:(NSString *)reuseIdentifier {
     
     NSLog(@"%@::initWithAnnotation:reuseIdentifier:",VIEWCONTROLLER_BUSINESS_ANNOTATION);
-    self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
+    self = [super initWithAnnotation:aAnnotation reuseIdentifier:reuseIdentifier];
     if (self) {
-        NSLog(@"annotation: %@",annotation);
-        FTBusinessGeoPointAnnotation *businessGeoPointAnnotation = annotation;
-        PFFile *file = [businessGeoPointAnnotation file];
-        [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-            if (!error) {
-                //self.image = [UIImage imageNamed:BUSINESS_MAP_ICON];
-                self.frame = CGRectMake(SELF_FRAME_Y, SELF_FRAME_X, SELF_FRAME_WIDTH, SELF_FRAME_HEIGHT);
-                
-                UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:data]];
-                imageView.frame = CGRectMake(PROFILE_X, PROFILE_Y, PROFILE_WIDTH, PROFILE_HEIGHT);
-                imageView.layer.cornerRadius = CORNERRADIUS(PROFILE_WIDTH);
-                imageView.clipsToBounds = YES;
-                
-                [self addSubview:imageView];
-            }
-        }];
-    
+        
+        annotation = aAnnotation;
+        
+        imageView = [[UIImageView alloc] init];
+        imageView.frame = CGRectMake(PROFILE_X, PROFILE_Y, PROFILE_WIDTH, PROFILE_HEIGHT);
+        imageView.layer.cornerRadius = CORNERRADIUS(PROFILE_WIDTH);
+        imageView.clipsToBounds = YES;
+        [self addSubview:imageView];
+        
         self.canShowCallout = YES;
         self.draggable = NO;
     }
     return self;
+}
+
+- (void)setFile:(PFFile *)aFile {
+    
+    file = aFile;
+    
+    [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+        if (!error) {
+            //self.image = [UIImage imageNamed:BUSINESS_MAP_ICON];
+            self.frame = CGRectMake(SELF_FRAME_Y, SELF_FRAME_X, SELF_FRAME_WIDTH, SELF_FRAME_HEIGHT);
+            
+            imageView.image = [UIImage imageWithData:data];
+            imageView.layer.cornerRadius = CORNERRADIUS(PROFILE_WIDTH);
+            imageView.clipsToBounds = YES;
+            
+            UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapBusinessAnnotationAction:)];
+            [self addGestureRecognizer:tapGesture];
+        }
+    }];
 }
 
 /*
@@ -76,6 +91,12 @@
 }
 
 #pragma mark - ()
+
+- (void)didTapBusinessAnnotationAction:(UIButton *)sender {
+    if (delegate && [delegate respondsToSelector:@selector(businessAnnotationView:didTapBusinessAnnotationView:)]) {
+        [delegate businessAnnotationView:self didTapBusinessAnnotationView:sender];
+    }
+}
 
 - (void)setGeoPoint:(PFGeoPoint *)geoPoint {
     NSLog(@"%@::setGeoPoint:",VIEWCONTROLLER_BUSINESS_ANNOTATION);

@@ -8,12 +8,21 @@
 
 #import <MapKit/MapKit.h>
 
+@protocol FTAmbassadorAnnotationViewDelegate;
 @interface FTAmbassadorAnnotationView : MKAnnotationView <MKAnnotation>
 
-- (id)initWithObject:(PFObject *)aObject;
+//- (id)initWithObject:(PFObject *)aObject;
 
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 @property (nonatomic, readonly, copy) NSString *title;
 @property (nonatomic, readonly, copy) NSString *subtitle;
+@property (nonatomic) int position;
+@property (nonatomic, weak) id<FTAmbassadorAnnotationViewDelegate> delegate;
+@end
+
+@protocol FTAmbassadorAnnotationViewDelegate <NSObject>
+@optional
+
+- (void)ambassadorAnnotationView:(FTAmbassadorAnnotationView *)ambassadorAnnotationView didTapAmbassadorAnnotationView:(id)sender;
 
 @end

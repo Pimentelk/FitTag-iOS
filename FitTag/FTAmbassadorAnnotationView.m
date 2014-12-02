@@ -19,8 +19,21 @@
 @synthesize coordinate;
 @synthesize title;
 @synthesize subtitle;
+@synthesize delegate;
 
 #pragma mark - Initialization
+
+
+- (instancetype)initWithAnnotation:(id<MKAnnotation>)annotation
+                   reuseIdentifier:(NSString *)reuseIdentifier {
+    self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
+    if (self) {        
+        NSLog(@"tapGesture set");
+        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapAmbassadorAnnotationAction:)];
+        [self addGestureRecognizer:tapGesture];
+    }
+    return self;
+}
 
 - (id)initWithObject:(PFObject *)aPost {
     self = [super init];
@@ -44,6 +57,13 @@
 }
 
 #pragma mark - ()
+
+- (void)didTapAmbassadorAnnotationAction:(UIButton *)sender {
+    NSLog(@"didTapAmbassadorAnnotationAction");
+    if (delegate && [delegate respondsToSelector:@selector(ambassadorAnnotationView:didTapAmbassadorAnnotationView:)]) {
+        [delegate ambassadorAnnotationView:self didTapAmbassadorAnnotationView:sender];
+    }
+}
 
 - (void)setGeoPoint:(PFGeoPoint *)geoPoint {
     coordinate = CLLocationCoordinate2DMake(geoPoint.latitude, geoPoint.longitude);
