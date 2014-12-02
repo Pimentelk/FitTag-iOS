@@ -9,10 +9,11 @@
 #import "FTPostDetailsHeaderView.h"
 #import "FTPhotoDetailsFooterView.h"
 #import "FTBaseTextCell.h"
+#import <MessageUI/MessageUI.h>
 
 @interface FTPostDetailsViewController : PFQueryTableViewController <UITextFieldDelegate, FTPostDetailsHeaderViewDelegate,
                                                                      FTPhotoDetailsFooterViewDelegate, FTBaseTextCellDelegate,
-                                                                     UIActionSheetDelegate>
+                                                                     UIActionSheetDelegate,MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, strong) PFObject *post;
 @property (nonatomic, strong) NSString *type;

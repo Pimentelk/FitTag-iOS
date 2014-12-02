@@ -156,7 +156,12 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     }
 }
 
-
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    if ([self.headerView moviePlayer]) {
+        [[self.headerView moviePlayer] stop];
+    }
+}
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -348,6 +353,10 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 
 #pragma mark - FTPostDetailsHeaderViewDelegate
 
+- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView didTapCommentButton:(UIButton *)button {
+    [footerView.commentField becomeFirstResponder];
+}
+
 - (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView didTapUserButton:(UIButton *)button user:(PFUser *)user {
     [self shouldPresentAccountViewForUser:user];
 }
@@ -404,7 +413,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_SHARE_ON_TWITTER]) {
         [FTUtility prepareToSharePostOnTwitter:post];
     } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_REPORT_INAPPROPRIATE]) {
-        //[self reportPostInappropriate];
+        [self reportPostInappropriate:post];
     }
 }
 
@@ -524,4 +533,49 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [[NSNotificationCenter defaultCenter] postNotificationName:FTPhotoDetailsViewControllerUserDeletedPhotoNotification object:[self.post objectId]];
     [self.navigationController popViewControllerAnimated:YES];
 }
+
+- (void)reportPostInappropriate:(PFObject *)aPost {
+    if ([MFMailComposeViewController canSendMail]) {
+        
+        MFMailComposeViewController *mailer = [[MFMailComposeViewController alloc] init];
+        [mailer setMailComposeDelegate:self];
+        [mailer setSubject:[NSString stringWithFormat:@"%@: %@",MAIL_INAPPROPRIATE_SUBJECT,aPost.objectId]];
+        [mailer setToRecipients:[NSArray arrayWithObjects:MAIL_TECH_EMAIL, nil]];
+        [mailer setMessageBody:EMPTY_STRING isHTML:NO];
+        
+        [self presentViewController:mailer animated:YES completion:nil];
+        
+    } else {
+        [[[UIAlertView alloc] initWithTitle:MAIL_FAIL
+                                    message:MAIL_NOT_SUPPORTED
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles: nil] show];
+    }
+}
+#pragma mark - MFMailComposeViewControllerDelegate
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller
+          didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
+    
+    switch (result) {
+        case MFMailComposeResultCancelled:
+            NSLog(MAIL_CANCELLED);
+            break;
+        case MFMailComposeResultSaved:
+            NSLog(MAIL_SAVED);
+            break;
+        case MFMailComposeResultSent:
+            NSLog(MAIL_SENT);
+            
+            [FTUtility showHudMessage:MAIL_SENT WithDuration:2];
+            break;
+        default:
+            NSLog(MAIL_FAIL);
+            break;
+    }
+    // Remove the mail view
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 @end
