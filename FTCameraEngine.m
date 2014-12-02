@@ -15,6 +15,7 @@ static FTCameraEngine *theEngine;
 
 @interface FTCameraEngine () <AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate> {
     FTVideoEncoder *_encoder;
+    BOOL _isLimitReached;
     BOOL _isCapturing;
     BOOL _isPaused;
     BOOL _discont;
@@ -153,12 +154,17 @@ static FTCameraEngine *theEngine;
                     _timeOffset = CMTimeMake(0,0);
                     _progressTime = CMTimeMake(0,0);
                     self.isCapturing = YES;
+                    _isLimitReached = NO;
                 }
         }
 }
 
 - (void)stopCapture {
     NSLog(@"stopCapture");
+        
+    _lastVideo.flags = 0;
+    _lastAudio.flags = 0;
+    
     @synchronized(self) {
         if (self.isCapturing) {
             
@@ -166,11 +172,6 @@ static FTCameraEngine *theEngine;
             NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:filename];
             NSURL *url = [NSURL fileURLWithPath:path];
             _currentFile++;
-            
-            NSLog(@"filename:%@",filename);
-            NSLog(@"path:%@",path);
-            NSLog(@"url:%@",url);
-            NSLog(@"_currentFile:%d",_currentFile);
             
             // serialize with audio and video capture
             self.isCapturing = NO;
@@ -273,10 +274,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             return;
         }
         
-        //if (delegate && [delegate respondsToSelector:@selector(cameraEngine:progressStatusUpdate:)]) {
-        //    [delegate cameraEngine:self progressStatusUpdate:videoData];
-        //}
-        
         if (connection != self.videoConnection)
             bVideo = NO;
         
@@ -304,8 +301,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                     pts = CMTimeSubtract(pts, _timeOffset);
                 }
                 CMTime offset = CMTimeSubtract(pts, last);
-                NSLog(@"Setting offset from %s", bVideo?"video": "audio");
-                NSLog(@"Adding %f to %f (pts %f)", ((double)offset.value)/offset.timescale, ((double)_timeOffset.value)/_timeOffset.timescale, ((double)pts.value/pts.timescale));
+                //NSLog(@"Setting offset from %s", bVideo?"video": "audio");
+                //NSLog(@"Adding %f to %f (pts %f)", ((double)offset.value)/offset.timescale, ((double)_timeOffset.value)/_timeOffset.timescale, ((double)pts.value/pts.timescale));
                 // this stops us having to set a scale for _timeOffset before we see the first video time
                 if (_timeOffset.value == 0) {
                     _timeOffset = offset;
@@ -315,50 +312,63 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             }
             _lastVideo.flags = 0;
             _lastAudio.flags = 0;
-        }
-        
-        // Update progress view
-
-        CMTime previousTimeScale = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
-        
-        CMTime last = bVideo ? _lastVideo : _lastAudio;
-        if (last.flags & kCMTimeFlags_Valid) {
-            if (_timeOffset.flags & kCMTimeFlags_Valid) {
-                previousTimeScale = CMTimeSubtract(previousTimeScale, _timeOffset);
-            }
-            CMTime offset = CMTimeSubtract(previousTimeScale, last);
-            // this stops us having to set a scale for _timeOffset before we see the first video time
-            if (_progressTime.value == 0) {
-                _progressTime = offset;
-            } else {
-                _progressTime = CMTimeAdd(_progressTime, offset);
-            }
-        }
-        
-        CGFloat seconds = ((double)_progressTime.value)/_progressTime.timescale;
-        
-        if (seconds > 0 && !isnan(seconds)) {
-            if (delegate && [delegate respondsToSelector:@selector(cameraEngine:progressStatusUpdate:)]) {
-                [delegate cameraEngine:self progressStatusUpdate:seconds];
-            }
-        }
-        
-        NSLog(@"seconds:%f",((double)_progressTime.value)/_progressTime.timescale);
-        if (seconds >= 10) {
-            // Stop it
-            [self pauseCapture];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[[UIAlertView alloc] initWithTitle:@"Message"
-                                            message:@"You've reached the video limit (10 seconds)."
-                                           delegate:nil
-                                  cancelButtonTitle:nil
-                                  otherButtonTitles:@"Ok", nil] show];
-                
-                if (delegate && [delegate respondsToSelector:@selector(cameraEngine:recordingStatusChange:)]) {
-                    [delegate cameraEngine:self recordingStatusChange:self.isPaused];
+        } else {
+            
+            /* *** */
+            
+            // Update progress view
+            CMTime previousTimeScale = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
+            CMTime last = bVideo ? _lastVideo : _lastAudio;
+            
+            if (last.flags & kCMTimeFlags_Valid) {
+                if (_timeOffset.flags & kCMTimeFlags_Valid) {
+                    previousTimeScale = CMTimeSubtract(previousTimeScale, _timeOffset);
                 }
-            });
-            return;
+                CMTime offset = CMTimeSubtract(previousTimeScale, last);
+                // this stops us having to set a scale for _timeOffset before we see the first video time
+                if (_progressTime.value == 0) {
+                    _progressTime = offset;
+                } else {
+                    _progressTime = CMTimeAdd(_progressTime, offset);
+                }
+            }
+            
+            CGFloat seconds = ((double)_progressTime.value)/_progressTime.timescale;
+            
+            if (seconds >= 10) {
+                _isLimitReached = YES;
+                // Stop it
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    if (delegate && [delegate respondsToSelector:@selector(cameraEngine:stopRecording:)]) {
+                        [delegate cameraEngine:self stopRecording:self.isPaused];
+                    }
+                    
+                    [[[UIAlertView alloc] initWithTitle:@"Message"
+                                                message:@"You've reached the video limit (10 seconds)."
+                                               delegate:nil
+                                      cancelButtonTitle:nil
+                                      otherButtonTitles:@"Ok", nil] show];
+                });
+                
+                [self pauseCapture];
+                [self stopCapture];
+                
+                return;
+                
+            } else {
+                if (!isnan(seconds)) {
+                    if (delegate && [delegate respondsToSelector:@selector(cameraEngine:progressStatusUpdate:)]) {
+                        [delegate cameraEngine:self progressStatusUpdate:seconds];
+                    }
+                }
+            }
+            
+            if (_isLimitReached) {
+                return;
+            }
+            
+            /* *** */
         }
         
         // retain so that we can release either this or modified one

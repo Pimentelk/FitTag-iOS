@@ -72,6 +72,12 @@
 - (void)cameraEngine:(FTCameraEngine *)cameraEngine recordingStatusChange:(BOOL)isPaused;
 
 /*!
+ Sent to the delegate when the recording state changes
+ @param the state of recording
+ */
+- (void)cameraEngine:(FTCameraEngine *)cameraEngine stopRecording:(BOOL)isPaused;
+
+/*!
  Sent to the delegate when a still image is captured
  @param the image that was captured
  */
