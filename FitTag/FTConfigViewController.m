@@ -63,10 +63,11 @@
         loginViewController.fields = PFLogInFieldsUsernameAndPassword | PFLogInFieldsTwitter | PFLogInFieldsFacebook | PFLogInFieldsSignUpButton | PFLogInFieldsPasswordForgotten | PFLogInFieldsLogInButton;
         
         // Customize the Sign Up View Controller
+        
         signUpViewController = [[FTSignupViewController alloc] init];
         signUpViewController.delegate = self;
         signUpViewController.fields = PFSignUpFieldsDefault;
-        loginViewController.signUpController = signUpViewController;        
+        loginViewController.signUpController = signUpViewController;
         
         [self presentViewController:loginViewController animated:NO completion:NULL];
     }
@@ -147,10 +148,12 @@ shouldBeginLogInWithUsername:(NSString *)username
     
     if (signUpViewController) {
         
+        BOOL informationComplete = YES;
+        
+        /*
         NSString *firstname = EMPTY_STRING;
         NSString *lastname = EMPTY_STRING;
         BOOL isPasswordConfirmed = NO;
-        BOOL informationComplete = YES;
         
         if (signUpViewController.firstname) {
             NSLog(@"firstname is valid signUpViewController.firstname");
@@ -166,6 +169,7 @@ shouldBeginLogInWithUsername:(NSString *)username
             NSLog(@"isPasswordConfirmed is valid signUpViewController.isPasswordConfirmed");
             isPasswordConfirmed = signUpViewController.isPasswordConfirmed;
         }
+        */
         
         for (id key in info) {
             NSString *field = [info objectForKey:key];
@@ -187,6 +191,7 @@ shouldBeginLogInWithUsername:(NSString *)username
             return NO;
         }
         
+        /*
         // If password confirm does not match
         if (!isPasswordConfirmed) {
             NSLog(@"If password confirm does not match");
@@ -209,6 +214,8 @@ shouldBeginLogInWithUsername:(NSString *)username
                               otherButtonTitles:nil] show];
             return NO;
         }
+        */
+        
         return YES;
     }
     return NO;
@@ -223,6 +230,7 @@ shouldBeginLogInWithUsername:(NSString *)username
         
         if (signUpViewController) {
             
+            /*
             if (signUpViewController.firstname) {
                 NSLog(@"signUpViewController.firstname");
                 [user setValue:signUpViewController.firstname forKey:kFTUserFirstnameKey];
@@ -238,6 +246,7 @@ shouldBeginLogInWithUsername:(NSString *)username
                 [user setValue:[NSString stringWithFormat:@"@%@%@",signUpViewController.firstname,signUpViewController.lastname]
                         forKey:kFTUserDisplayNameKey];
             }
+            */
             
             [user setValue:DEFAULT_BIO_TEXT_A forKey:kFTUserBioKey];
             
