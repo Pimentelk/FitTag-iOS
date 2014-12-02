@@ -51,7 +51,6 @@
     return self;
 }
 
-
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -70,6 +69,11 @@
     lastRefresh = [[NSUserDefaults standardUserDefaults] objectForKey:kFTUserDefaultsActivityFeedViewControllerLastRefreshKey];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self loadObjects];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     id tracker = [[GAI sharedInstance] defaultTracker];
@@ -77,7 +81,7 @@
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
 }
 
-- (UIStatusBarStyle)preferredStatusBarStyle{
+- (UIStatusBarStyle)preferredStatusBarStyle {
     NSLog(@"%@::preferredStatusBarStyle",VIEWCONTROLLER_ACTIVITY);
     return UIStatusBarStyleLightContent;
 }
@@ -138,7 +142,7 @@
             [dismissProfileButton setTintColor:[UIColor whiteColor]];
             
             FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-            [profileViewController setUser:[PFUser currentUser]];
+            [profileViewController setUser:[activity objectForKey:kFTActivityFromUserKey]];
             [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
             [self.navigationController pushViewController:profileViewController animated:YES];
         }
@@ -260,13 +264,6 @@
     }
     
     [cell setActivity:object];
-    
-    if ([lastRefresh compare:[object createdAt]] == NSOrderedAscending) {
-        [cell setIsNew:YES];
-    } else {
-        [cell setIsNew:NO];
-    }
-    
     [cell hideSeparator:(indexPath.row == self.objects.count - 1)];
     
     return cell;
