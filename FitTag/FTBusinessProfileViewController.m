@@ -119,8 +119,8 @@
     UICollectionReusableView *reusableview = nil;
     if (kind == UICollectionElementKindSectionHeader) {
         FTBusinessProfileHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-                                                                                 withReuseIdentifier:REUSEABLE_IDENTIFIER_HEADER
-                                                                                        forIndexPath:indexPath];
+                                                                                     withReuseIdentifier:REUSEABLE_IDENTIFIER_HEADER
+                                                                                            forIndexPath:indexPath];
         
         [headerView setDelegate: self];
         [headerView setBusiness:self.business];

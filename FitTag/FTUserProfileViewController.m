@@ -88,6 +88,8 @@
     } else {
         [self.navigationItem setTitle:NAVIGATION_TITLE_PROFILE];
     }
+    
+    [self.collectionView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
