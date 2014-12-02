@@ -8,11 +8,14 @@
 
 #import "FTFeedViewController.h"
 #import "ImageCustomNavigationBar.h"
+#import "FTHandleViewController.h"
 #import "FTFollowFriendsViewController.h"
 #import "FTInterestsViewController.h"
 #import "FTInterestViewFlowLayout.h"
 #import "AppDelegate.h"
 #import "FTFlowLayout.h"
+//#import "FTNetworkViewController.h"
+//#import "Reachability.h"
 
 #define IMAGE_WIDTH 253.0f
 #define IMAGE_HEIGHT 173.0f
@@ -33,7 +36,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-        
+    
+    /*
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reachabilityStatusChanged:)
+                                                 name:kReachabilityChangedNotification
+                                               object:nil];
+    */
+    
     // Toolbar & Navigationbar Setup
     [self.navigationItem setTitle:NAVIGATION_TITLE_FEED];
     
@@ -57,6 +67,12 @@
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_MAP];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
+    
+    if (![[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]) {
+        FTHandleViewController *handleViewController = [[FTHandleViewController alloc] init];
+        [self.navigationController presentViewController:handleViewController animated:YES completion:nil];
+        return;
+    }
     
     if ([PFUser currentUser]) {
         [self isFirstTimeUser:[PFUser currentUser]];
@@ -87,13 +103,19 @@
 }
 
 #pragma mark - ()
-
+/*
+- (void)reachabilityStatusChanged:(NSNotification *)notification {
+    if ([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == NotReachable) {
+        FTNetworkViewController *networkViewController = [[FTNetworkViewController alloc] init];
+        [self.navigationController presentViewController:networkViewController animated:NO completion:nil];
+    }
+}
+*/
 - (void)shouldRunTestCode:(BOOL)run {
     if (run) {
         NSLog(@"***");
         for (NSString* family in [UIFont familyNames]) {
-            NSLog(@"%@", family);
-            
+            NSLog(@"%@", family);            
             for (NSString* name in [UIFont fontNamesForFamilyName: family]) {
                 NSLog(@"  %@", name);
             }
