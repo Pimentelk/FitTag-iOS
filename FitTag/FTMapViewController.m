@@ -172,8 +172,7 @@ enum PinAnnotationTypeTag {
     
     [self.mapView addSubview:filterButtonsContainer];
     [self.mapView bringSubviewToFront:filterButtonsContainer];
-    
-    
+        
     // Scrollview
     CGFloat scrollViewY = self.mapView.frame.size.height - SCROLLVIEW_HEIGHT - self.navigationController.toolbar.frame.size.height;
     CGFloat scrollViewWidth = self.mapView.frame.size.width;
@@ -256,13 +255,14 @@ enum PinAnnotationTypeTag {
     }];
     
     if (isTaggersSelected) {
+        NSString *lowercaseStringWithoutSymbols = [[searchBar.text stringByReplacingOccurrencesOfString:@"@" withString:@""] lowercaseString];
         [followFriendsViewController setFollowUserQueryType:FTFollowUserQueryTypeTagger];
-        [followFriendsViewController setSearchString:searchBar.text];
+        [followFriendsViewController setSearchString:lowercaseStringWithoutSymbols];
         [followFriendsViewController querySearchForUser];
         [self presentViewController:followFriendsNavController animated:YES completion:nil];
     } else {
         [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
-        [searchViewController setSearchString:searchBar.text];
+        [searchViewController setSearchString:[searchBar.text lowercaseString]];
         [self.navigationController pushViewController:searchViewController animated:YES];
     }
 }

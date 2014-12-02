@@ -9,13 +9,12 @@
 #import "FTAmbassadorAnnotationView.h"
 
 @interface FTAmbassadorAnnotationView ()
-
+@property (nonatomic, strong) PFObject *post;
 @property (nonatomic, strong) PFUser *user;
-
 @end
 
 @implementation FTAmbassadorAnnotationView
-
+@synthesize post;
 @synthesize user;
 @synthesize coordinate;
 @synthesize title;
@@ -23,12 +22,13 @@
 
 #pragma mark - Initialization
 
-- (id)initWithObject:(PFUser *)aObject {
+- (id)initWithObject:(PFObject *)aPost {
     self = [super init];
     if (self) {
-        user = aObject;
+        post = aPost;
+        user = [post objectForKey:kFTPostUserKey];
         
-        PFGeoPoint *geoPoint = self.user[kFTUserLocationKey];
+        PFGeoPoint *geoPoint = [self.post objectForKey:kFTPostLocationKey];
         [self setGeoPoint:geoPoint];
     }
     return self;

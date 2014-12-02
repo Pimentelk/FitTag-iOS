@@ -9,12 +9,12 @@
 #import "FTAmbassadorGeoPointAnnotation.h"
 
 @interface FTAmbassadorGeoPointAnnotation ()
-
+@property (nonatomic, strong) PFObject *post;
 @property (nonatomic, strong) PFUser *user;
-
 @end
 
 @implementation FTAmbassadorGeoPointAnnotation
+@synthesize post;
 @synthesize user;
 @synthesize coordinate;
 @synthesize title;
@@ -22,12 +22,13 @@
 
 #pragma mark - Initialization
 
-- (id)initWithObject:(PFUser *)aUser {
+- (id)initWithObject:(PFObject *)aPost {
     self = [super init];
     if (self) {
-        user = aUser;
+        post = aPost;
+        user = [post objectForKey:kFTPostUserKey];
         
-        PFGeoPoint *geoPoint = [self.user objectForKey:kFTUserLocationKey];
+        PFGeoPoint *geoPoint = [self.post objectForKey:kFTPostLocationKey];
         [self setGeoPoint:geoPoint];
     }
     return self;

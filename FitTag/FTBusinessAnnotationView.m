@@ -13,7 +13,7 @@
 
 // Annotation FRAME
 #define SELF_FRAME_WIDTH 30
-#define SELF_FRAME_HEIGHT 42
+#define SELF_FRAME_HEIGHT 30
 #define SELF_FRAME_X 0
 #define SELF_FRAME_Y 0
 
@@ -41,19 +41,10 @@
         PFFile *file = [businessGeoPointAnnotation file];
         [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
             if (!error) {
-                self.image = [UIImage imageNamed:BUSINESS_MAP_ICON];
+                //self.image = [UIImage imageNamed:BUSINESS_MAP_ICON];
                 self.frame = CGRectMake(SELF_FRAME_Y, SELF_FRAME_X, SELF_FRAME_WIDTH, SELF_FRAME_HEIGHT);
                 
-                /*
-                UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:PROFILE_HEXAGON_X
-                                                                              Y:PROFILE_HEXAGON_Y
-                                                                          width:PROFILE_HEXAGON_WIDTH
-                                                                         hegiht:PROFILE_HEXAGON_HEIGHT];
-                */
-                
                 UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:data]];
-                //[imageView setFrame:profileHexagon.frame];
-                //[imageView.layer setMask:profileHexagon.layer.mask];
                 imageView.frame = CGRectMake(PROFILE_X, PROFILE_Y, PROFILE_WIDTH, PROFILE_HEIGHT);
                 imageView.layer.cornerRadius = CORNERRADIUS(PROFILE_WIDTH);
                 imageView.clipsToBounds = YES;
