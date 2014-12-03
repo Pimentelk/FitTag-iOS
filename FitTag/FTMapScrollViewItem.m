@@ -39,7 +39,7 @@
         
         item = aItem;
         
-        self.clipsToBounds = NO;
+        self.clipsToBounds = YES;
         self.userInteractionEnabled = YES;
         
         PFFile *file;
@@ -78,6 +78,7 @@
         itemImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.height, self.frame.size.height)];
         [itemImageView setContentMode: UIViewContentModeScaleAspectFill];
         [itemImageView setBackgroundColor:[UIColor clearColor]];
+        [itemImageView setClipsToBounds:YES];
         [self.containerView addSubview:itemImageView];
         
         titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.height+10, 2, self.frame.size.width - self.frame.size.height, 18)];
