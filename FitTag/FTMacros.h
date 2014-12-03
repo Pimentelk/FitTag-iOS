@@ -183,6 +183,8 @@
 #define IMAGE_USERNAME_RIBBON @"username_ribbon"
 #define IMAGE_PROFILE_EMPTY @"empty_profile"
 #define IMAGE_SIGNUP_BUTTON @"signup_button"
+#define IMAGE_NO_RESULTS [UIImage imageNamed:@"no_results"]
+#define IMAGE_BUSINESS_UNFOLLOW [UIImage imageNamed:@"business_unfollow"]
 
 // TAB NAVIGATION BAR BUTTONS
 #define BUTTON_IMAGE_NOTIFICATIONS_SELECTED @"notifications_selected"
