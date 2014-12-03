@@ -11,10 +11,12 @@
 #import "FTActivityCell.h"
 #import "FTConstants.h"
 #import "FTUserProfileViewController.h"
+#import "FTBusinessProfileViewController.h"
 #import "FTLoadMoreCell.h"
 #import "FTUtility.h"
 #import "FTCamViewController.h"
 #import "FTMapViewController.h"
+#import "FTFollowFriendsViewController.h"
 #import "FTSearchViewController.h"
 
 @interface FTPostDetailsViewController()
@@ -27,7 +29,8 @@
 @property (nonatomic, strong) FTPostDetailsHeaderView *headerView;
 @property (nonatomic, strong) FTPhotoDetailsFooterView *footerView;
 
-@property (nonatomic, strong) FTUserProfileViewController *profileViewController;
+@property (nonatomic, strong) FTBusinessProfileViewController *businessProfileViewController;
+@property (nonatomic, strong) FTUserProfileViewController *userProfileViewController;
 @property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
 
 @property (nonatomic, strong) FTSearchViewController *searchViewController;
@@ -42,7 +45,8 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 @synthesize footerView;
 @synthesize post;
 @synthesize dismissProfileButton;
-@synthesize profileViewController;
+@synthesize userProfileViewController;
+@synthesize businessProfileViewController;
 @synthesize flowLayout;
 @synthesize searchViewController;
 
@@ -109,10 +113,11 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
     
-    profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    userProfileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     
     // Init search view controller
     searchViewController = [[FTSearchViewController alloc] init];
@@ -347,8 +352,69 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [self.navigationController pushViewController:searchViewController animated:YES];
 }
 
-- (void)cell:(FTBaseTextCell *)cellView didTapUserButton:(PFUser *)aUser {
-    [self shouldPresentAccountViewForUser:aUser];
+- (void)cell:(FTBaseTextCell *)cellView didTapUserMention:(NSString *)mention {
+    
+    NSString *lowercaseStringWithoutSymbols = [FTUtility getLowercaseStringWithoutSymbols:mention];
+    
+    //****** Display Name ********//
+    PFQuery *queryStringMatchHandle = [PFQuery queryWithClassName:kFTUserClassKey];
+    [queryStringMatchHandle whereKeyExists:kFTUserDisplayNameKey];
+    [queryStringMatchHandle whereKey:kFTUserDisplayNameKey equalTo:lowercaseStringWithoutSymbols];
+    [queryStringMatchHandle findObjectsInBackgroundWithBlock:^(NSArray *users, NSError *error) {
+        if (!error) {
+            
+            NSLog(@"users:%@",users);
+            NSLog(@"users.count:%lu",(unsigned long)users.count);
+            
+            if (users.count == 1) {
+                
+                PFUser *mentionedUser = [users objectAtIndex:0];
+                NSLog(@"mentionedUser:%@",mentionedUser);
+                
+                if ([mentionedUser objectForKey:kFTUserTypeBusiness]) {
+                    businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+                    [businessProfileViewController setBusiness:mentionedUser];
+                    [businessProfileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
+                    [self.navigationController pushViewController:businessProfileViewController animated:YES];
+                } else {
+                    userProfileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+                    [userProfileViewController setUser:mentionedUser];
+                    [userProfileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
+                    [self.navigationController pushViewController:userProfileViewController animated:YES];
+                }
+                
+            } else {
+                
+                UIBarButtonItem *backIndicatorButtonItem = [[UIBarButtonItem alloc] init];
+                [backIndicatorButtonItem setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+                [backIndicatorButtonItem setStyle:UIBarButtonItemStylePlain];
+                [backIndicatorButtonItem setTarget:self];
+                [backIndicatorButtonItem setAction:@selector(didTapMentionBackButtonAction:)];
+                [backIndicatorButtonItem setTintColor:[UIColor whiteColor]];
+                
+                FTFollowFriendsViewController *followFriendsViewController = [[FTFollowFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+                
+                UINavigationController *followFriendsNavController = [[UINavigationController alloc] init];
+                [followFriendsNavController setViewControllers:@[ followFriendsViewController ] animated:NO];
+                [followFriendsViewController.navigationItem setLeftBarButtonItem:backIndicatorButtonItem];
+                
+                [followFriendsViewController setFollowUserQueryType:FTFollowUserQueryTypeTagger];
+                [followFriendsViewController setSearchString:lowercaseStringWithoutSymbols];
+                [followFriendsViewController querySearchForUser];
+                
+                [self presentViewController:followFriendsNavController animated:YES completion:nil];
+                
+            }
+        }
+    }];
+}
+
+- (void)didTapMentionBackButtonAction:(UIButton *)button {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)didTapBackButtonAction:(id)sender {
+    [self.navigationController popViewControllerAnimated:NO];
 }
 
 #pragma mark - FTPostDetailsHeaderViewDelegate
@@ -431,10 +497,6 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [self.navigationController pushViewController:cameraViewController animated:YES];
 }
 
-- (void)didTapBackButtonAction:(id)sender {
-    [self.navigationController popViewControllerAnimated:NO];
-}
-
 - (void)handleCommentTimeout:(NSTimer *)aTimer {
     [MBProgressHUD hideHUDForView:self.view.superview animated:YES];
     [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"New Comment", nil)
@@ -446,9 +508,9 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 
 - (void)shouldPresentAccountViewForUser:(PFUser *)user {
     // Push account view controller
-    [profileViewController setUser:user];
-    [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
-    [self.navigationController pushViewController:profileViewController animated:YES];
+    [userProfileViewController setUser:user];
+    [userProfileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
+    [self.navigationController pushViewController:userProfileViewController animated:YES];
 }
 
 - (void)userLikedOrUnlikedPhoto:(NSNotification *)note {
