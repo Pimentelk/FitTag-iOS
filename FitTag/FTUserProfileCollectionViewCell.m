@@ -21,7 +21,7 @@
         self.opaque = NO;
         self.clipsToBounds = YES;
 
-        imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.frame.size.width, self.frame.size.height - 2)];
+        imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height - 2)];
         [imageView setBackgroundColor: [UIColor clearColor]];
         imageView.contentMode = UIViewContentModeScaleAspectFill;
         imageView.clipsToBounds = YES;
