@@ -842,6 +842,12 @@
     return params;
 }
 
+#pragma mark Clean Search String
+
++ (NSString *)getLowercaseStringWithoutSymbols:(NSString *)string {    
+    return [[string stringByReplacingOccurrencesOfString:@"@" withString:EMPTY_STRING] lowercaseString];
+}
+
 #pragma mark Shadow Rendering
 
 + (void)drawSideAndBottomDropShadowForRect:(CGRect)rect inContext:(CGContextRef)context {

@@ -36,13 +36,9 @@
 + (void)drawSideAndTopDropShadowForRect:(CGRect)rect inContext:(CGContextRef)context;
 + (void)addBottomDropShadowToNavigationBarForNavigationController:(UINavigationController *)navigationController;
 + (NSDictionary*)parseURLParams:(NSString *)query;
-/*
-+ (UIImageView *)getProfileHexagonWithFrame:(CGRect)rect;
-+ (UIImageView *)getProfileHexagonWithX:(CGFloat)hexX
-                                      Y:(CGFloat)hexY
-                                  width:(CGFloat)hexW
-                                 hegiht:(CGFloat)hexH;
-*/
+
++ (NSString *)getLowercaseStringWithoutSymbols:(NSString *)mention;
+
 + (NSArray *)extractHashtagsFromText:(NSString *)text;
 + (NSArray *)extractMentionsFromText:(NSString *)text;
 
