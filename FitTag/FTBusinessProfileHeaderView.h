@@ -12,6 +12,11 @@
 /*! @name User */
 @property (nonatomic, strong) PFUser *business;
 
+/*! @name isFollowing */
+@property (nonatomic) BOOL isFollowing;
+
+- (void)configureFollowButtons;
+
 /*! @name Delegate */
 @property (nonatomic,weak) id <FTBusinessProfileHeaderViewDelegate> delegate;
 - (void)fetchBusinessProfileData:(PFUser *)aBusiness;
@@ -20,17 +25,18 @@
 @protocol FTBusinessProfileHeaderViewDelegate <NSObject>
 @optional
 
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView didTapGetThereButton:(UIButton *)button;
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView didTapCallButton:(UIButton *)button;
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView didTapVideoButton:(UIButton *)button;
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView didTapEmailButton:(UIButton *)button;
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView didTapFollowButton:(UIButton *)button;
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapGetThereButton:(UIButton *)button;
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapCallButton:(UIButton *)button;
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapVideoButton:(UIButton *)button;
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapEmailButton:(UIButton *)button;
+//- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapFollowButton:(UIButton *)button;
+//- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapUnfollowButton:(UIButton *)button;
 
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView didTapGridButton:(UIButton *)button;
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView didTapBusinessButton:(UIButton *)button;
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView didTapTaggedButton:(UIButton *)button;
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView didTapSettingsButton:(id)sender;
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapGridButton:(UIButton *)button;
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapBusinessButton:(UIButton *)button;
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapTaggedButton:(UIButton *)button;
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapSettingsButton:(id)sender;
 
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView didTapFollowersButton:(id)sender;
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView didTapFollowingButton:(id)sender;
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapFollowersButton:(id)sender;
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapFollowingButton:(id)sender;
 @end

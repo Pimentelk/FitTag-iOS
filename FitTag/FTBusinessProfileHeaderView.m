@@ -43,6 +43,9 @@
 @property (nonatomic, strong) UIButton *businessButton;
 @property (nonatomic, strong) UIButton *taggedInButton;
 
+@property (nonatomic, strong) UIButton *unfollowButton;
+@property (nonatomic, strong) UIButton *followButton;
+
 @property (nonatomic, strong) PFImageView *coverPhotoImageView;
 @end
 
@@ -62,6 +65,9 @@
 @synthesize userDisplay;
 @synthesize delegate;
 @synthesize coverPhotoImageView;
+@synthesize unfollowButton;
+@synthesize followButton;
+@synthesize isFollowing;
 
 - (id)initWithFrame:(CGRect)frame {
     
@@ -173,10 +179,18 @@
         [emailButton setFrame:CGRectMake(videoButton.frame.size.width + videoButton.frame.origin.x, 0, 67, self.businessMenuBackground.frame.size.height)];
         [businessMenuBackground addSubview:emailButton];
         
-        UIButton *followButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        unfollowButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [unfollowButton setBackgroundImage:IMAGE_BUSINESS_UNFOLLOW forState:UIControlStateNormal];
+        [unfollowButton addTarget:self action:@selector(didTapUnfollowButtonAction:) forControlEvents:UIControlEventTouchDown];
+        [unfollowButton setFrame:CGRectMake(emailButton.frame.size.width + emailButton.frame.origin.x, 0, 53, self.businessMenuBackground.frame.size.height)];
+        [unfollowButton setHidden:YES];
+        [businessMenuBackground addSubview:unfollowButton];
+        
+        followButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [followButton setBackgroundImage:[UIImage imageNamed:FOLLOW_IMAGE] forState:UIControlStateNormal];
         [followButton addTarget:self action:@selector(didTapFollowButtonAction:) forControlEvents:UIControlEventTouchDown];
         [followButton setFrame:CGRectMake(emailButton.frame.size.width + emailButton.frame.origin.x, 0, 53, self.businessMenuBackground.frame.size.height)];
+        [followButton setHidden:YES];
         [businessMenuBackground addSubview:followButton];
         
         [self.containerView addSubview:businessMenuBackground];
@@ -244,8 +258,8 @@
     if (![gridViewButton isSelected]) {
         [self resetSelectedProfileFilterButtons];
         [gridViewButton setSelected:YES];
-        if(delegate && [delegate respondsToSelector:@selector(businessProfileCollectionHeaderView:didTapGridButton:)]){
-            [delegate businessProfileCollectionHeaderView:self didTapGridButton:button];
+        if(delegate && [delegate respondsToSelector:@selector(businessProfileHeaderView:didTapGridButton:)]){
+            [delegate businessProfileHeaderView:self didTapGridButton:button];
         }
     }
 }
@@ -255,8 +269,8 @@
     if (![businessButton isSelected]) {
         [self resetSelectedProfileFilterButtons];
         [businessButton setSelected:YES];
-        if(delegate && [delegate respondsToSelector:@selector(businessProfileCollectionHeaderView:didTapBusinessButton:)]){
-            [delegate businessProfileCollectionHeaderView:self didTapBusinessButton:button];
+        if(delegate && [delegate respondsToSelector:@selector(businessProfileHeaderView:didTapBusinessButton:)]){
+            [delegate businessProfileHeaderView:self didTapBusinessButton:button];
         }
     }
 }
@@ -266,62 +280,72 @@
     if (![taggedInButton isSelected]) {
         [self resetSelectedProfileFilterButtons];
         [taggedInButton setSelected:YES];
-        if(delegate && [delegate respondsToSelector:@selector(businessProfileCollectionHeaderView:didTapTaggedButton:)]){
-            [delegate businessProfileCollectionHeaderView:self didTapTaggedButton:button];
+        if(delegate && [delegate respondsToSelector:@selector(businessProfileHeaderView:didTapTaggedButton:)]){
+            [delegate businessProfileHeaderView:self didTapTaggedButton:button];
         }
     }
 }
 
 - (void)didTapSettingsButtonAction:(id)sender {
     NSLog(@"didTapSettingsButtonAction");
-    if(delegate && [delegate respondsToSelector:@selector(businessProfileCollectionHeaderView:didTapSettingsButton:)]){
-        [delegate businessProfileCollectionHeaderView:self didTapSettingsButton:sender];
+    if(delegate && [delegate respondsToSelector:@selector(businessProfileHeaderView:didTapSettingsButton:)]){
+        [delegate businessProfileHeaderView:self didTapSettingsButton:sender];
     }
 }
 
 - (void)didTapGetThereButtonAction:(UIButton *)button {
-    if(delegate && [delegate respondsToSelector:@selector(businessProfileCollectionHeaderView:didTapGetThereButton:)]){
-        [delegate businessProfileCollectionHeaderView:self didTapGetThereButton:button];
+    if(delegate && [delegate respondsToSelector:@selector(businessProfileHeaderView:didTapGetThereButton:)]){
+        [delegate businessProfileHeaderView:self didTapGetThereButton:button];
     }
 }
 
 - (void)didTapCallButtonAction:(UIButton *)button {
-    if(delegate && [delegate respondsToSelector:@selector(businessProfileCollectionHeaderView:didTapCallButton:)]){
-        [delegate businessProfileCollectionHeaderView:self didTapCallButton:button];
+    if(delegate && [delegate respondsToSelector:@selector(businessProfileHeaderView:didTapCallButton:)]){
+        [delegate businessProfileHeaderView:self didTapCallButton:button];
     }
 }
 
 - (void)didTapVideoButtonAction:(UIButton *)button {
-    if(delegate && [delegate respondsToSelector:@selector(businessProfileCollectionHeaderView:didTapVideoButton:)]){
-        [delegate businessProfileCollectionHeaderView:self didTapVideoButton:button];
+    if(delegate && [delegate respondsToSelector:@selector(businessProfileHeaderView:didTapVideoButton:)]){
+        [delegate businessProfileHeaderView:self didTapVideoButton:button];
     }
 }
 
 - (void)didTapEmailButtonAction:(UIButton *)button {
-    if(delegate && [delegate respondsToSelector:@selector(businessProfileCollectionHeaderView:didTapEmailButton:)]){
-        [delegate businessProfileCollectionHeaderView:self didTapEmailButton:button];
+    if(delegate && [delegate respondsToSelector:@selector(businessProfileHeaderView:didTapEmailButton:)]){
+        [delegate businessProfileHeaderView:self didTapEmailButton:button];
+    }
+}
+
+/*
+- (void)didTapUnfollowButtonAction:(UIButton *)button {
+    NSLog(@"didTapFollowButtonAction:");
+    if(delegate && [delegate respondsToSelector:@selector(businessProfileHeaderView:didTapUnfollowButton:)]){
+        [delegate businessProfileHeaderView:self didTapUnfollowButton:button];
     }
 }
 
 - (void)didTapFollowButtonAction:(UIButton *)button {
-    if(delegate && [delegate respondsToSelector:@selector(businessProfileCollectionHeaderView:didTapFollowButton:)]){
-        [delegate businessProfileCollectionHeaderView:self didTapFollowButton:button];
+    NSLog(@"didTapFollowButtonAction:");
+    if(delegate && [delegate respondsToSelector:@selector(businessProfileHeaderView:didTapFollowButton:)]){
+        [delegate businessProfileHeaderView:self didTapFollowButton:button];
     }
 }
+*/
 
 #pragma mark - ()
 
 - (void)didTapFollowerAction:(id)sender {
     //NSLog(@"- (void)didTapFollowerAction:(id)sender;");
-    if(delegate && [delegate respondsToSelector:@selector(businessProfileCollectionHeaderView:didTapFollowersButton:)]){
-        [delegate businessProfileCollectionHeaderView:self didTapFollowersButton:sender];
+    if(delegate && [delegate respondsToSelector:@selector(businessProfileHeaderView:didTapFollowersButton:)]){
+        [delegate businessProfileHeaderView:self didTapFollowersButton:sender];
     }
 }
 
 - (void)didTapFollowingAction:(id)sender {
     //NSLog(@"- (void)didTapFollowingAction:(id)sender;");
-    if(delegate && [delegate respondsToSelector:@selector(businessProfileCollectionHeaderView:didTapFollowingButton:)]){
-        [delegate businessProfileCollectionHeaderView:self didTapFollowingButton:sender];
+    if(delegate && [delegate respondsToSelector:@selector(businessProfileHeaderView:didTapFollowingButton:)]){
+        [delegate businessProfileHeaderView:self didTapFollowingButton:sender];
     }
 }
 
@@ -332,6 +356,7 @@
 }
 
 - (void)fetchBusinessProfileData:(PFUser *)aBusiness {
+    NSLog(@"fetchBusinessProfileData");
     
     if (!aBusiness) {
         [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
@@ -411,10 +436,6 @@
     }];
     
     if (![[self.business objectId] isEqualToString:[[PFUser currentUser] objectId]]) {
-        UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-        [loadingActivityIndicatorView startAnimating];
-        //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:loadingActivityIndicatorView];
-        
         // check if the currentUser is following this user
         PFQuery *queryIsFollowing = [PFQuery queryWithClassName:kFTActivityClassKey];
         [queryIsFollowing whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
@@ -427,47 +448,55 @@
                 //self.navigationItem.rightBarButtonItem = nil;
             } else {
                 if (number == 0) {
-                    
+                    isFollowing = NO;
                 } else {
-                    
+                    isFollowing = YES;
                 }
+                [self configureFollowButtons];
             }
         }];
-    }
-    
-    [profileBiography setText: [self.business objectForKey:kFTUserBioKey]];
+    }    
+    [profileBiography setText:[self.business objectForKey:kFTUserBioKey]];
 }
 
-- (void)followButtonAction:(id)sender {
+- (void)configureFollowButtons {
+    if (isFollowing) { // following
+        NSLog(@"configureFollowButtons: User is following this business.");
+        [followButton setHidden:YES];
+        [unfollowButton setHidden:NO];
+    } else { // not following
+        NSLog(@"configureFollowButtons: User is not following this business.");
+        [followButton setHidden:NO];
+        [unfollowButton setHidden:YES];
+    }
+}
+
+- (void)didTapFollowButtonAction:(UIButton *)button {
     UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [loadingActivityIndicatorView startAnimating];
     
     [FTUtility followUserEventually:self.business block:^(BOOL succeeded, NSError *error) {
-        if (error) {
-            
-        }
-        
         if (succeeded) {
-            NSLog(@"followButtonAction::succeeded");
             [self updateFollowingCount];
+            
+            isFollowing = YES;
+            [self configureFollowButtons];
         } else {
             NSLog(@"followButtonAction::error");
         }
     }];
 }
 
-- (void)unfollowButtonAction:(id)sender {
+- (void)didTapUnfollowButtonAction:(UIButton *)button {
     UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [loadingActivityIndicatorView startAnimating];
     
     [FTUtility unfollowUserEventually:self.business block:^(NSError *error) {
-        if (error) {
-            
-        }
-        
         if (!error) {
-            NSLog(@"unfollowButtonAction::succeeded");
             [self updateFollowingCount];
+            
+            isFollowing = NO;
+            [self configureFollowButtons];
         } else {
             NSLog(@"unfollowButtonAction::error");
         }
