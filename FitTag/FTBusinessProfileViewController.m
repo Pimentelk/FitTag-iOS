@@ -163,7 +163,8 @@
     }
 }
 
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
+                  cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     // Set up cell identifier that matches the Storyboard cell name
     static NSString *identifier = REUSEABLE_IDENTIFIER_DATA;
     FTUserProfileCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
@@ -200,9 +201,9 @@
     [self.navigationController popViewControllerAnimated:NO];
 }
 
-#pragma mark - FTBusinessProfileCollectionHeaderViewDelegate
+#pragma mark - FTbusinessProfileHeaderViewDelegate
 
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
                        didTapGetThereButton:(UIButton *)button {
     
     FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
@@ -212,7 +213,7 @@
     [self.navigationController pushViewController:mapViewController animated:YES];
 }
 
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
                            didTapCallButton:(UIButton *)button {
     
     NSString *phNo = @"+8638525694";
@@ -230,7 +231,7 @@
     }
 }
 
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
                           didTapVideoButton:(UIButton *)button {
     
     if ([business objectForKey:kFTUserPromoVideo]) {
@@ -346,7 +347,7 @@
 }
 
 
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
                           didTapEmailButton:(UIButton *)button {
     if ([MFMailComposeViewController canSendMail]) {
         
@@ -377,55 +378,13 @@
     }
 }
 
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
-                         didTapFollowButton:(UIButton *)button {
-    /*
-    UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    [loadingActivityIndicatorView startAnimating];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:loadingActivityIndicatorView];
-    
-    [self configureUnfollowButton];
-    */
-    
-    // check if the currentUser is following this user
-    if (![[self.business objectId] isEqualToString:[[PFUser currentUser] objectId]]) {
-        PFQuery *queryIsFollowing = [PFQuery queryWithClassName:kFTActivityClassKey];
-        [queryIsFollowing whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
-        [queryIsFollowing whereKey:kFTActivityToUserKey equalTo:self.business];
-        [queryIsFollowing whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
-        [queryIsFollowing setCachePolicy:kPFCachePolicyCacheThenNetwork];
-        [queryIsFollowing countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-            if (error && [error code] != kPFErrorCacheMiss) {
-                NSLog(@"Couldn't determine follow relationship: %@", error);
-                //self.navigationItem.rightBarButtonItem = nil;
-            } else {
-                if (number == 0) {
-                    [FTUtility followUserEventually:self.business block:^(BOOL succeeded, NSError *error) {
-                        if (!error) {
-                            
-                        }
-                    }];
-                } else {
-                    [FTUtility unfollowUserEventually:self.business block:^(NSError *error) {
-                        if (!error) {
-                            
-                        }
-                    }];
-                }
-            }
-        }];
-    } else {
-        NSLog(@"Can not follow yourself.");
-    }
-}
-
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
                            didTapGridButton:(UIButton *)button {
     cellTab = GRID_SMALL;
     [self queryForTable:self.business];
 }
 
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
                        didTapBusinessButton:(UIButton *)button {
     
     cellTab = kFTUserTypeBusiness; // kFTUserTypeBusiness | SMALLGRID | FULLGRID | TAGGED
@@ -453,7 +412,7 @@
     }];
 }
 
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
                          didTapTaggedButton:(UIButton *)button {
     
     cellTab = GRID_TAGGED;
@@ -486,18 +445,18 @@
     }];
 }
 
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
                        didTapSettingsButton:(id)sender {
     
 }
 
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
                       didTapFollowersButton:(id)sender {
     [viewFriendsViewController queryForFollowers];
     [self.navigationController pushViewController:viewFriendsViewController animated:YES];
 }
 
-- (void)businessProfileCollectionHeaderView:(FTBusinessProfileHeaderView *)businessProfileCollectionHeaderView
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
                       didTapFollowingButton:(id)sender {
     [viewFriendsViewController queryForFollowing];
     [self.navigationController pushViewController:viewFriendsViewController animated:YES];
