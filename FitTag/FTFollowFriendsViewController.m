@@ -130,8 +130,15 @@
         PFQuery *query = [PFQuery orQueryWithSubqueries:queries];
         [query findObjectsInBackgroundWithBlock:^(NSArray *taggers, NSError *error) {
             if (!error) {
-                self.objects = taggers;
-                [self.tableView reloadData];
+                if (taggers.count > 0) {
+                    self.objects = taggers;
+                    [self.tableView reloadData];
+                } else {
+                    //IMAGE_NO_RESULTS
+                    UIImageView *imageView = [[UIImageView alloc] initWithImage:IMAGE_NO_RESULTS];
+                    [imageView setFrame:CGRectMake((self.tableView.frame.size.width - 130) / 2, (self.tableView.frame.size.width - 156) / 2, 130, 156)];
+                    [self.tableView addSubview:imageView];
+                }
             }
         }];
     }
@@ -262,7 +269,18 @@
 
 - (void)followCell:(FTFollowCell *)inviteCell didTapProfileImage:(UIButton *)button user:(PFUser *)aUser {
     //NSLog(@"%@::followCell:didTapProfileImage:user",VIEWCONTROLLER_INVITE);
+    
+    // initialize
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
+    [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backIndicator setStyle:UIBarButtonItemStylePlain];
+    [backIndicator setTarget:self];
+    [backIndicator setAction:@selector(didTapBackButtonAction:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    
+    [profileViewController.navigationItem setLeftBarButtonItem:backIndicator];
     [profileViewController setUser:aUser];
+
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
 
@@ -280,6 +298,12 @@
 - (void)inviteTableHeaderView:(FTInviteTableHeaderView *)inviteTableHeaderView
          didTapLocationButton:(UIButton *)button {
     [self queryForUserType:FTFollowUserQueryTypeNear];
+}
+
+#pragma mark - ()
+
+- (void)didTapBackButtonAction:(UIButton *)button {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end
