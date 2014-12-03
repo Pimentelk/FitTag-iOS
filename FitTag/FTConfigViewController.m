@@ -148,6 +148,8 @@ shouldBeginLogInWithUsername:(NSString *)username
     
     if (signUpViewController) {
         
+        [signUpController performSelector:@selector(didTapHideKeyboardAction) withObject:nil];
+        
         BOOL informationComplete = YES;
         
         /*
@@ -181,12 +183,19 @@ shouldBeginLogInWithUsername:(NSString *)username
         
         // If user information is not complete email | username | password are missing
         if (!informationComplete) {
-            NSLog(@"user information is not complete");
-            [[[UIAlertView alloc] initWithTitle:NSLocalizedString(MESSAGE_TITTLE_MISSING_INFO, nil)
-                                        message:NSLocalizedString(MESSAGE_MISSING_INFORMATION, nil)
-                                       delegate:nil
-                              cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                              otherButtonTitles:nil] show];
+            /*
+            dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+                dispatch_async(dispatch_get_main_queue(), ^(void){
+                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(MESSAGE_TITTLE_MISSING_INFO, nil)
+                                                message:NSLocalizedString(MESSAGE_MISSING_INFORMATION, nil)
+                                               delegate:nil
+                                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                      otherButtonTitles:nil] show];
+                });
+            });
+            */
+            
+            [FTUtility showHudMessage:MESSAGE_TITTLE_MISSING_INFO WithDuration:3];
             
             return NO;
         }
