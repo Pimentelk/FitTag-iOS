@@ -105,7 +105,9 @@ static TTTTimeIntervalFormatter *timeFormatter;
             */
             if ([hotWords[hotWord] isEqualToString:HOTWORD_HANDLE]) {
                 
-                
+                if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(cell:didTapUserMention:)]) {
+                    [weakSelf.delegate cell:weakSelf didTapUserMention:string];
+                }
                 
             } else if ([hotWords[hotWord] isEqualToString:HOTWORD_HASHTAG]) {
                 
@@ -114,7 +116,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
                 }
                 
             } else if ([hotWords[hotWord] isEqualToString:HOTWORD_LINK]) {
-                
+                                
                                 
             }
         }];

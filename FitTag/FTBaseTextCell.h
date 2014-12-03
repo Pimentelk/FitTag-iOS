@@ -91,5 +91,11 @@
  */
 - (void)cell:(FTBaseTextCell *)cellView didTapUserButton:(PFUser *)aUser;
 
+/*!
+ Sent to the delegate when a user mention is tapped
+ @param aUser the PFUser of the user that was tapped
+ */
+- (void)cell:(FTBaseTextCell *)cellView didTapUserMention:(NSString *)aUser;
+
 @end
 
