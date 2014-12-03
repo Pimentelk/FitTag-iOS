@@ -16,4 +16,6 @@
 @property (nonatomic,strong) UIImage *profilePhoto;
 //@property (nonatomic) BOOL isPasswordConfirmed;
 //@property NSString *about;
+
+- (void)didTapHideKeyboardAction;
 @end

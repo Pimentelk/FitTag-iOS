@@ -64,6 +64,7 @@
     UIColor *attrColor = [UIColor grayColor];
     
     // Set logo
+    [self.signUpView setBackgroundColor:[UIColor whiteColor]];
     [self.signUpView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:FITTAG_LOGO]]];
     
     // Dismiss Button
@@ -117,7 +118,7 @@
     //[self.signUpView addSubview:self.firstnameTextField];
     */
     
-    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapHideKeyboardAction:)];
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapHideKeyboardAction)];
     [self.view addGestureRecognizer:gestureRecognizer];
     
     /*
@@ -276,48 +277,6 @@
     }];
 }
 
-/*
-- (UIImageView *)setImage:(UIImage *)image{
-    
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-    imageView.frame = CGRectMake(10.0f, 80.0f, 71.0f, 83.0f);
-    imageView.backgroundColor = [UIColor clearColor];
-    
-    CGRect rect = imageView.frame;
-    
-    CAShapeLayer *hexagonMask = [CAShapeLayer layer];
-    CAShapeLayer *hexagonBorder = [CAShapeLayer layer];
-    hexagonBorder.frame = imageView.layer.bounds;
-    UIBezierPath *hexagonPath = [UIBezierPath bezierPath];
-    
-    CGFloat sideWidth = 2 * ( 0.5 * rect.size.width / 2 );
-    CGFloat lcolumn = rect.size.width - sideWidth;
-    CGFloat height = rect.size.height;
-    CGFloat ty = (rect.size.height - height) / 2;
-    CGFloat tmy = rect.size.height / 4;
-    CGFloat bmy = rect.size.height - tmy;
-    CGFloat by = rect.size.height;
-    CGFloat rightmost = rect.size.width;
-    
-    [hexagonPath moveToPoint:CGPointMake(lcolumn, ty)];
-    [hexagonPath addLineToPoint:CGPointMake(rightmost, tmy)];
-    [hexagonPath addLineToPoint:CGPointMake(rightmost, bmy)];
-    [hexagonPath addLineToPoint:CGPointMake(lcolumn, by)];
-    
-    [hexagonPath addLineToPoint:CGPointMake(0, bmy)];
-    [hexagonPath addLineToPoint:CGPointMake(0, tmy)];
-    [hexagonPath addLineToPoint:CGPointMake(lcolumn, ty)];
-    
-    hexagonMask.path = hexagonPath.CGPath;
-    
-    imageView.layer.mask = hexagonMask;
-    [imageView.layer addSublayer:hexagonBorder];
-    [imageView setImage:image];
-    
-    return imageView;
-}
-*/
-
 - (void)didTapSignupButtonAction:(id)sender {
     //[self.firstnameTextField resignFirstResponder];
     //[self.lastnameTextField resignFirstResponder];
@@ -338,7 +297,7 @@
     [self presentViewController:navController animated:YES completion:nil];
 }
 
-- (void)didTapHideKeyboardAction:(id)sender{
+- (void)didTapHideKeyboardAction {
     //[self.firstnameTextField resignFirstResponder];
     //[self.lastnameTextField resignFirstResponder];
     //[self.confirmPasswordTextField resignFirstResponder];
