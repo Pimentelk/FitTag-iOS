@@ -166,14 +166,19 @@
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation {
     
-    return [FBAppCall handleOpenURL:url
-                  sourceApplication:sourceApplication
-                    fallbackHandler:^(FBAppCall *call) {
-                        
-                        NSLog(@"Unhandled deep link: %@", url);
-                        
-                        [FBAppCall handleOpenURL:url sourceApplication:sourceApplication withSession:[PFFacebookUtils session]];
-                    }];
+    BOOL result = NO;
+    
+    result |= [FBAppCall handleOpenURL:url
+                     sourceApplication:sourceApplication
+                       fallbackHandler:^(FBAppCall *call) {
+                           NSLog(@"Unhandled deep link: %@", url);
+                       }];
+    
+    result |= [FBAppCall handleOpenURL:url
+                     sourceApplication:sourceApplication
+                           withSession:[PFFacebookUtils session]];
+    
+    return result;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -300,7 +305,6 @@
                                                                  image:[[UIImage imageNamed:BUTTON_IMAGE_FEED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                                                          selectedImage:[[UIImage imageNamed:BUTTON_IMAGE_FEED_SELECTED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
 
-    
     // Notifications ViewController
     UITabBarItem *activityFeedTabBarItem = [[UITabBarItem alloc] initWithTitle:nil
                                                                          image:[[UIImage imageNamed:BUTTON_IMAGE_NOTIFICATIONS] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
@@ -321,7 +325,6 @@
                                                                         image:[[UIImage imageNamed:BUTTON_IMAGE_USER_PROFILE] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                                                                 selectedImage:[[UIImage imageNamed:BUTTON_IMAGE_USER_PROFILE_SELECTED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
 
-    
     [feedNavigationController setTabBarItem:feedTabBarItem];
     [activityFeedNavigationController setTabBarItem:activityFeedTabBarItem];
     [rewardsFeedNavigationController setTabBarItem:rewardsFeedTabBarItem];
@@ -418,7 +421,9 @@
     // If the app was launched in response to a push notification, we'll handle the payload here
     NSDictionary *remoteNotificationPayload = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotificationPayload) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:remoteNotificationPayload];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification
+                                                            object:nil
+                                                          userInfo:remoteNotificationPayload];
         
         if (![PFUser currentUser]) {
             return;
@@ -461,7 +466,6 @@
 }
 
 - (void)shouldNavigateToPost:(PFObject *)targetPost {
-    
     // if we have a local copy of this post, this won't result in a network fetch
     [targetPost fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         if (!error) {
@@ -490,7 +494,6 @@
         [self.navController dismissViewControllerAnimated:YES completion:nil];
         return YES;
     }
-    
     return NO;
 }
 
