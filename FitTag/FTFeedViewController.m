@@ -53,7 +53,7 @@
     self.blankTimelineView = [[UIView alloc] initWithFrame:self.tableView.bounds];
     
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.frame = CGRectMake( IMAGE_X, IMAGE_Y, IMAGE_WIDTH, IMAGE_HEIGHT);
+    button.frame = CGRectMake(IMAGE_X, IMAGE_Y, IMAGE_WIDTH, IMAGE_HEIGHT);
     [button setBackgroundImage:[UIImage imageNamed:IMAGE_TIMELINE_BLANK] forState:UIControlStateNormal];
     [button addTarget:self action:@selector(followFriendsButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.blankTimelineView addSubview:button];
@@ -210,10 +210,12 @@
                 [user setObject:[array componentsJoinedByString:@" "] forKey:kFTUserFirstnameKey];
             }
             
+            /*
             if ([TWuser objectForKey:@"name"]) {
                 [user setValue:[TWuser objectForKey:@"name"]
                         forKey:kFTUserDisplayNameKey];
             }
+            */
             
             if ([TWuser objectForKey:@"id"]) {
                 
@@ -260,7 +262,7 @@
                 // Get the data from facebook and put it into the user object
                 [user setValue:[FBuser objectForKey:FBUserFirstNameKey] forKey:kFTUserFirstnameKey];
                 [user setValue:[FBuser objectForKey:FBUserLastNameKey] forKey:kFTUserLastnameKey];
-                [user setValue:[FBuser objectForKey:FBUserNameKey] forKey:kFTUserDisplayNameKey];
+                //[user setValue:[FBuser objectForKey:FBUserNameKey] forKey:kFTUserDisplayNameKey];
                 [user setValue:[FBuser objectForKey:FBUserEmailKey] forKey:kFTUserEmailKey];
                 [user setValue:[FBuser objectForKey:FBUserIDKey] forKey:kFTUserFacebookIDKey];
                 //[user setValue:DEFAULT_BIO_TEXT_B forKey:kFTUserBioKey];
