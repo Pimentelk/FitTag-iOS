@@ -53,7 +53,7 @@
                 
         self.imageView.frame = CGRectMake(0,0,self.frame.size.width,self.frame.size.width);
         self.imageView.backgroundColor = [UIColor clearColor];
-        self.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        self.imageView.contentMode = CONTENTMODE;
         
         UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapPhotoButtonAction:)];
         singleTap.numberOfTapsRequired = 1;
