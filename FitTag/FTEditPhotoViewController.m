@@ -72,9 +72,9 @@
     self.view = self.scrollView;
     
     UIImageView *photoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
-    [photoImageView setBackgroundColor:[UIColor blackColor]];
+    [photoImageView setBackgroundColor:[UIColor whiteColor]];
     [photoImageView setImage:self.image];
-    [photoImageView setContentMode:UIViewContentModeScaleAspectFit];
+    [photoImageView setContentMode:CONTENTMODE];
     
     [self.scrollView addSubview:photoImageView];
  
@@ -210,7 +210,9 @@
 
 - (BOOL)shouldUploadImage:(UIImage *)anImage {
     
-    UIImage *resizedImage = [anImage resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(560.0f, 560.0f) interpolationQuality:kCGInterpolationHigh];
+    UIImage *resizedImage = [anImage resizedImageWithContentMode:CONTENTMODE
+                                                          bounds:CGSizeMake(640, 640)
+                                            interpolationQuality:kCGInterpolationHigh];
     UIImage *thumbnailImage = [anImage thumbnailImage:86.0f transparentBorder:0.0f cornerRadius:10.0f interpolationQuality:kCGInterpolationDefault];
     
     // JPEG to decrease file size and enable faster uploads & downloads
