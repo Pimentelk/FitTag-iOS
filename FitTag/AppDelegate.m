@@ -238,15 +238,18 @@
     return self.networkStatus != NotReachable;
 }
 
+/*
 - (void)presentLoginViewControllerAnimated:(BOOL)animated {
     NSLog(@"%@::presentLoginViewControllerAnimated:",APPDELEGATE_RESPONDER);
-    
 }
+*/
 
+/*
 - (void)presentLoginViewController {
     //NSLog(@"%@::presentLoginViewController:",APPDELEGATE_RESPONDER);
     //[self presentLoginViewControllerAnimated:NO];
 }
+*/
 
 - (void)presentTabBarController {
     
@@ -297,7 +300,7 @@
     FTNavigationController *mapNavigationController             = [[FTNavigationController alloc] initWithRootViewController:self.mapViewController];
     FTNavigationController *rewardsFeedNavigationController     = [[FTNavigationController alloc] initWithRootViewController:self.rewardsViewController];
     FTNavigationController *userProfileNavigationController     = [[FTNavigationController alloc] initWithRootViewController:self.userProfileViewController];
-
+    
     [FTUtility addBottomDropShadowToNavigationBarForNavigationController:emptyNavigationController];
     [FTUtility addBottomDropShadowToNavigationBarForNavigationController:feedNavigationController];
     [FTUtility addBottomDropShadowToNavigationBarForNavigationController:activityFeedNavigationController];
@@ -375,7 +378,7 @@
     // clear out cached data, view controllers, etc
     [self.navController popToRootViewControllerAnimated:NO];
     
-    [self presentLoginViewController];
+    //[self presentLoginViewController];
     
     self.feedViewController         = nil;
     self.activityViewController     = nil;

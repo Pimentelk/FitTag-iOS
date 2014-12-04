@@ -17,8 +17,8 @@
 @property (nonatomic, readonly) int networkStatus;
 
 - (BOOL)isParseReachable;
-- (void)presentLoginViewController;
-- (void)presentLoginViewControllerAnimated:(BOOL)animated;
+//- (void)presentLoginViewController;
+//- (void)presentLoginViewControllerAnimated:(BOOL)animated;
 - (void)presentTabBarController;
 
 - (void)logOut;
