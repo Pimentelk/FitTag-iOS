@@ -136,9 +136,9 @@
     
     if ([self.postType isEqualToString:@"IMAGE"]) {
         UIImageView *photoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
-        [photoImageView setBackgroundColor:[UIColor blackColor]];
+        [photoImageView setBackgroundColor:[UIColor whiteColor]];
         [photoImageView setImage:self.image];
-        [photoImageView setContentMode:UIViewContentModeScaleAspectFit];
+        [photoImageView setContentMode:CONTENTMODE];
         
         [self.scrollView addSubview:postImageView];
         scrollViewHeight = postImageView.frame.origin.y + postImageView.frame.size.height;
@@ -148,8 +148,8 @@
     
     if ([self.postType isEqualToString:@"VIDEO"]) {
         videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, self.view.frame.size.width)];
-        [videoImageView setBackgroundColor:[UIColor blackColor]];
-        [videoImageView setContentMode:UIViewContentModeScaleAspectFit];
+        [videoImageView setBackgroundColor:[UIColor whiteColor]];
+        [videoImageView setContentMode:CONTENTMODEVIDEO];
         
         [self.scrollView addSubview:videoImageView];
         scrollViewHeight = videoImageView.frame.origin.y + videoImageView.frame.size.height;
@@ -160,7 +160,7 @@
     if ([self.postType isEqualToString:@"MULTI"]) {
         //NSLog(@"loadView - postType multi");
         UIScrollView *carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, scrollView.frame.size.width, self.view.frame.size.width)];
-        [carousel setBackgroundColor:[UIColor blackColor]];
+        [carousel setBackgroundColor:[UIColor whiteColor]];
         
         //add the scrollview to the view
         carousel.pagingEnabled = YES;
@@ -176,10 +176,10 @@
             CGFloat xOrigin = i * self.view.frame.size.width;
             UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, self.view.frame.size.width,
                                                                                    self.view.frame.size.width)];
-            [imageView setBackgroundColor:[UIColor blackColor]];
+            [imageView setBackgroundColor:[UIColor whiteColor]];
             [imageView setImage:image];
             [imageView setClipsToBounds:YES];
-            [imageView setContentMode:UIViewContentModeScaleAspectFill];
+            [imageView setContentMode:CONTENTMODE];
             [carousel addSubview:imageView];
             i++;
         }
@@ -250,14 +250,14 @@
         // Videoplayer background image
         videoPlaceHolderView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
         [videoPlaceHolderView setBackgroundColor:[UIColor clearColor]];
-        [videoPlaceHolderView setContentMode:UIViewContentModeScaleAspectFill];
+        [videoPlaceHolderView setContentMode:CONTENTMODE];
         
         [videoImageView addSubview:videoPlaceHolderView];
         
         // setup the video player
         moviePlayer = [[MPMoviePlayerController alloc] init];
         [moviePlayer setControlStyle:MPMovieControlStyleNone];
-        [moviePlayer setScalingMode:MPMovieScalingModeAspectFill];
+        [moviePlayer setScalingMode:SCALINGMODE];
         [moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
         [moviePlayer setShouldAutoplay:NO];
         [moviePlayer.view setFrame:CGRectMake(0, 0, 320, 320)];
@@ -527,7 +527,10 @@
         //NSLog(@"Request a background execution task to allow us to finish uploading the photo/'s even if the app is backgrounded");
         // Request a background execution task to allow us to finish uploading the photo/'s even if the app is backgrounded
         for(UIImage *image in anArray){
-            UIImage *resizedImage = [image resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(560.0f, 560.0f) interpolationQuality:kCGInterpolationHigh];
+            UIImage *resizedImage = [image resizedImageWithContentMode:CONTENTMODE
+                                                                bounds:CGSizeMake(640, 640)
+                                                  interpolationQuality:kCGInterpolationHigh];
+            
             UIImage *thumbnailImage = [image thumbnailImage:86.0f transparentBorder:0.0f cornerRadius:10.0f interpolationQuality:kCGInterpolationDefault];
             //NSLog(@"JPEG to decrease file size and enable faster uploads & downloads");
             // JPEG to decrease file size and enable faster uploads & downloads
@@ -567,7 +570,10 @@
 
 - (BOOL)shouldUploadImage:(UIImage *)anImage {
     
-    UIImage *resizedImage = [anImage resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(560.0f, 560.0f) interpolationQuality:kCGInterpolationHigh];
+    UIImage *resizedImage = [anImage resizedImageWithContentMode:CONTENTMODE
+                                                          bounds:CGSizeMake(640, 640)
+                                            interpolationQuality:kCGInterpolationHigh];
+    
     UIImage *thumbnailImage = [anImage thumbnailImage:86.0f transparentBorder:0.0f cornerRadius:10.0f interpolationQuality:kCGInterpolationDefault];
     
     // JPEG to decrease file size and enable faster uploads & downloads
@@ -645,7 +651,10 @@
                 CMTime time = CMTimeMake(1, 65);
                 CGImageRef refImg = [generateImg copyCGImageAtTime:time actualTime:NULL error:&error];
                 UIImage *anImage = [[UIImage alloc] initWithCGImage:refImg];
-                UIImage *resizedImage = [anImage resizedImageWithContentMode:UIViewContentModeScaleAspectFill bounds:CGSizeMake(320.0f, 320.0f) interpolationQuality:kCGInterpolationHigh];
+                UIImage *resizedImage = [anImage resizedImageWithContentMode:CONTENTMODEVIDEO
+                                                                      bounds:CGSizeMake(640, 640)
+                                                        interpolationQuality:kCGInterpolationHigh];
+                
                 NSData *imageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
                 
                 // Set placeholder image
