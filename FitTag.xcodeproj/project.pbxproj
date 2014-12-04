@@ -30,7 +30,7 @@
 		2D3721441A290EF900260AD8 /* FTLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D3721431A290EF900260AD8 /* FTLocationManager.m */; };
 		2D429A0B1977ED6000F8A9A0 /* FTBusinessProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A0A1977ED6000F8A9A0 /* FTBusinessProfileViewController.m */; };
 		2D429A111977EE8F00F8A9A0 /* FTActivityFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A101977EE8F00F8A9A0 /* FTActivityFeedViewController.m */; };
-		2D429A141977EE9E00F8A9A0 /* FTRewardsCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A131977EE9E00F8A9A0 /* FTRewardsCollectionViewController.m */; };
+		2D429A141977EE9E00F8A9A0 /* FTRewardsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A131977EE9E00F8A9A0 /* FTRewardsViewController.m */; };
 		2D429A17197AD47000F8A9A0 /* FTConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A16197AD47000F8A9A0 /* FTConstants.m */; };
 		2D429A1B197AF37000F8A9A0 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A1A197AF37000F8A9A0 /* Reachability.m */; };
 		2D429A20197B2F4C00F8A9A0 /* FTTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D429A1F197B2F4C00F8A9A0 /* FTTabBarController.m */; };
@@ -185,8 +185,8 @@
 		2D429A0A1977ED6000F8A9A0 /* FTBusinessProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTBusinessProfileViewController.m; sourceTree = "<group>"; };
 		2D429A0F1977EE8F00F8A9A0 /* FTActivityFeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTActivityFeedViewController.h; sourceTree = "<group>"; };
 		2D429A101977EE8F00F8A9A0 /* FTActivityFeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTActivityFeedViewController.m; sourceTree = "<group>"; };
-		2D429A121977EE9E00F8A9A0 /* FTRewardsCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTRewardsCollectionViewController.h; sourceTree = "<group>"; };
-		2D429A131977EE9E00F8A9A0 /* FTRewardsCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTRewardsCollectionViewController.m; sourceTree = "<group>"; };
+		2D429A121977EE9E00F8A9A0 /* FTRewardsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTRewardsViewController.h; sourceTree = "<group>"; };
+		2D429A131977EE9E00F8A9A0 /* FTRewardsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTRewardsViewController.m; sourceTree = "<group>"; };
 		2D429A15197AD47000F8A9A0 /* FTConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTConstants.h; sourceTree = "<group>"; };
 		2D429A16197AD47000F8A9A0 /* FTConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTConstants.m; sourceTree = "<group>"; };
 		2D429A19197AF37000F8A9A0 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
@@ -774,8 +774,8 @@
 		2DD2B65F1983FE1500600A42 /* Rewards */ = {
 			isa = PBXGroup;
 			children = (
-				2D429A121977EE9E00F8A9A0 /* FTRewardsCollectionViewController.h */,
-				2D429A131977EE9E00F8A9A0 /* FTRewardsCollectionViewController.m */,
+				2D429A121977EE9E00F8A9A0 /* FTRewardsViewController.h */,
+				2D429A131977EE9E00F8A9A0 /* FTRewardsViewController.m */,
 				2DBE021219D37AF900CD278C /* FTRewardsDetailView.h */,
 				2DBE021319D37AF900CD278C /* FTRewardsDetailView.m */,
 			);
@@ -1186,7 +1186,7 @@
 				2D007B5F19B3CA46006E1484 /* FTVideoCell.m in Sources */,
 				2DBC6EA1195CBCE2008B5AD3 /* FTInterestsViewController.m in Sources */,
 				2DD2B69E19841C3100600A42 /* FTFindFriendsCell.m in Sources */,
-				2D429A141977EE9E00F8A9A0 /* FTRewardsCollectionViewController.m in Sources */,
+				2D429A141977EE9E00F8A9A0 /* FTRewardsViewController.m in Sources */,
 				2DBEEE5719AB4F1E00AAD238 /* FTPostDetailsFooterView.m in Sources */,
 				2DBE023919D6FB7F00CD278C /* ELCAssetTablePicker.m in Sources */,
 				2D37211D1A2519F200260AD8 /* FTExternalFriendsView.m in Sources */,
