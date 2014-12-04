@@ -43,10 +43,7 @@
     [super viewDidLoad];    
     //NSLog(@"%@::viewDidLoad:",VIEWCONTROLLER_NAVIGATION);
     self.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], NSForegroundColorAttributeName,nil];
-    self.navigationBar.barTintColor = [UIColor colorWithRed:234.0f/255.0f
-                                                      green:37.0f/255.0f
-                                                       blue:37.0f/255.0f
-                                                      alpha:1.0f];
+    self.navigationBar.barTintColor = FT_RED;
 }
 
 #pragma mark - ()
