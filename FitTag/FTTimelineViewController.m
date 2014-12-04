@@ -78,7 +78,7 @@
     
     moviePlayer = [[MPMoviePlayerController alloc] init];
     [moviePlayer setControlStyle:MPMovieControlStyleNone];
-    [moviePlayer setScalingMode:MPMovieScalingModeAspectFill];
+    [moviePlayer setScalingMode:SCALINGMODE];
     [moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
     [moviePlayer setShouldAutoplay:NO];
     [moviePlayer.view setFrame:CGRectMake(0,0,320,320)];
@@ -587,16 +587,13 @@
 }
 
 #pragma mark - FTGalleryCellViewDelegate
-/*
-- (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapUserButton:(UIButton *)button user:(PFUser *)user {
-    // Push account view controller
-    [profileViewController setUser:user];
-    [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
-    [self.navigationController pushViewController:profileViewController animated:YES];
-}
-*/
-- (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapLikeGalleryButton:(UIButton *)button counter:(UIButton *)counter gallery:(PFObject *)gallery {
-    NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLikeGalleryButton:counter:gallery:");
+
+- (void)galleryCellView:(FTGalleryCell *)galleryCellView
+didTapLikeGalleryButton:(UIButton *)button
+                counter:(UIButton *)counter
+                gallery:(PFObject *)gallery {
+    
+    //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLikeGalleryButton:counter:gallery:");
     
     //NSLog(@"FTPhotoTimelineViewController::Updating photoCellView:(FTPhotoCell *) %@ didTapLikePhotoButton:(UIButton *) %@ counter:(UIButton *) %@ photo:(PFObject *) %@",photoCellView,button,counter,photo);
     
@@ -673,29 +670,15 @@
     //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
     // Map Home View
     FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
-    PFGeoPoint *geoPoint = [gallery objectForKey:kFTPostLocationKey];
-    if (geoPoint) {
-        CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-            [mapViewController setInitialLocation: location];
+    if ([gallery objectForKey:kFTPostLocationKey]) {
+        [mapViewController setInitialLocationObject:gallery];
     }
-    
     [mapViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:mapViewController animated:YES];
 }
 
 #pragma mark - FTVideoCellViewDelegate
-/*
-- (void)videoCellView:(FTVideoCell *)videoCellView
-     didTapUserButton:(UIButton *)button
-                 user:(PFUser *)user {
-    
-    //NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapUserButton:user:");
-    // Push account view controller
-    [profileViewController setUser:user];
-    [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
-    [self.navigationController pushViewController:profileViewController animated:YES];
-}
-*/
+
 - (void)videoCellView:(FTVideoCell *)videoCellView didTapCommentOnVideoButton:(UIButton *)button
                 video:(PFObject *)video {
     //NSLog(@"FTPhotoTimelineViewController::videoCellView:didTapCommentOnVideoButton:video:");
@@ -764,11 +747,10 @@ didTapLikeVideoButton:(UIButton *)button
     
     //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
     // Map Home View
+    
     FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
-    PFGeoPoint *geoPoint = [video objectForKey:kFTPostLocationKey];
-    if (geoPoint) {
-        CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-        [mapViewController setInitialLocation: location];
+    if ([video objectForKey:kFTPostLocationKey]) {
+        [mapViewController setInitialLocationObject:video];
     }
     [mapViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:mapViewController animated:YES];
@@ -801,17 +783,6 @@ didTapVideoPlayButton:(UIButton *)button
 }
 
 #pragma mark - FTPhotoCellViewDelegate
-/*
-- (void)photoCellView:(FTPhotoCell *)photoCellView
-     didTapUserButton:(UIButton *)button
-                 user:(PFUser *)user {
-    //NSLog(@"FTPhotoTimelineViewController::photoCellView:didTapUserButton:user:");
-    // Push account view controller
-    [profileViewController setUser:user];
-    [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
-    [self.navigationController pushViewController:profileViewController animated:YES];
-}
-*/
 
 - (void)photoCellView:(FTPhotoCell *)photoCellView
 didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
@@ -880,10 +851,8 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
     //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
     // Map Home View
     FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
-    PFGeoPoint *geoPoint = [photo objectForKey:kFTPostLocationKey];
-    if (geoPoint) {
-        CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-        [mapViewController setInitialLocation: location];
+    if ([photo objectForKey:kFTPostLocationKey]) {
+        [mapViewController setInitialLocationObject:photo];
     }
     [mapViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:mapViewController animated:YES];
@@ -1081,24 +1050,6 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-/*
-- (void)didTapOnPhotoAction:(UIButton *)sender {
-    PFObject *photo = [self.objects objectAtIndex:sender.tag];
-    if (photo) {
-        FTPhotoDetailsViewController *photoDetailsVC = [[FTPhotoDetailsViewController alloc] initWithPhoto:photo];
-        [self.navigationController pushViewController:photoDetailsVC animated:YES];
-    }
-}
-
-- (void)didTapOnVideoAction:(UIButton *)sender {
-    PFObject *video = [self.objects objectAtIndex:sender.tag];
-    if (video) {
-        FTPostDetailsViewController *galleryDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:video AndType:kFTPostTypeVideo];
-        [self.navigationController pushViewController:galleryDetailsVC animated:YES];
-    }
-}
-*/
-
 - (void)reportPostInappropriate:(PFObject *)post {
     if ([MFMailComposeViewController canSendMail]) {
         
@@ -1118,6 +1069,7 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
                           otherButtonTitles: nil] show];
     }
 }
+
 #pragma mark - MFMailComposeViewControllerDelegate
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller
