@@ -29,5 +29,6 @@
 @property (nonatomic, strong) MKMapView *mapView;
 
 - (void)setInitialLocation:(CLLocation *)aLocation;
+- (void)setInitialLocationObject:(PFObject *)object;
 
 @end

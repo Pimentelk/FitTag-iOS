@@ -79,7 +79,6 @@ enum PinAnnotationTypeTag {
     UILabel *taggersLabel;
     FTSearchQueryType searchQueryType;
     BOOL isTaggersSelected;
-    UIColor *redColor;
     int position;
 }
 
@@ -104,11 +103,6 @@ enum PinAnnotationTypeTag {
 
 - (void)viewDidLoad{
     [super viewDidLoad];
-    
-    redColor = [UIColor colorWithRed:FT_RED_COLOR_RED
-                               green:FT_RED_COLOR_GREEN
-                                blue:FT_RED_COLOR_BLUE
-                               alpha:1.0f];
     
     mapItems = [[NSMutableArray alloc] init];
     
@@ -173,7 +167,9 @@ enum PinAnnotationTypeTag {
     [self.mapView bringSubviewToFront:filterButtonsContainer];
         
     // Scrollview
-    CGFloat scrollViewY = self.mapView.frame.size.height - SCROLLVIEW_HEIGHT - self.navigationController.toolbar.frame.size.height;
+    CGFloat toolbarHeight = (self.navigationController.toolbar.frame.size.height > 0) ? self.navigationController.toolbar.frame.size.height : 44;
+    CGFloat scrollViewY = self.mapView.frame.size.height - SCROLLVIEW_HEIGHT - toolbarHeight;
+    NSLog(@"scrollViewY:%f",scrollViewY);
     CGFloat scrollViewWidth = self.mapView.frame.size.width;
     
     scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, scrollViewY, scrollViewWidth, SCROLLVIEW_HEIGHT)];
@@ -212,7 +208,7 @@ enum PinAnnotationTypeTag {
     [followFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
     
     // Default filter type
-    [fitTagsLabel setBackgroundColor:redColor];
+    [fitTagsLabel setBackgroundColor:FT_RED];
     [fitTagsLabel setTextColor:[UIColor whiteColor]];
     [taggersLabel setBackgroundColor:[UIColor whiteColor]];
     [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
@@ -334,7 +330,7 @@ enum PinAnnotationTypeTag {
         
         if (overlay == self.targetOverlay) {
             annotationView.fillColor = [UIColor colorWithRed:1.0f green:0.0f blue:0.0f alpha:0.3f];
-            annotationView.strokeColor = [UIColor redColor];
+            annotationView.strokeColor = FT_RED;
             annotationView.lineWidth = 1.0f;
         } else {
             annotationView.fillColor = [UIColor colorWithWhite:0.3f alpha:0.3f];
@@ -348,8 +344,19 @@ enum PinAnnotationTypeTag {
 
 #pragma mark - SearchViewController
 
+- (void)setInitialLocationObject:(PFObject *)object {
+    if ([object objectForKey:kFTPostLocationKey]) {
+        geoPoint = [object objectForKey:kFTPostLocationKey];
+        CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
+        if (location) {
+            self.location = location;
+            [self configurePostOverlay:object];
+        }
+    }
+}
+
 - (void)setInitialLocation:(CLLocation *)aLocation {
-    NSLog(@"%@::setInitialLocation: %@",VIEWCONTROLLER_MAP,aLocation);
+    //NSLog(@"%@::setInitialLocation: %@",VIEWCONTROLLER_MAP,aLocation);
     if (!self.location) {
         self.location = aLocation;
         [self configureOverlay];
@@ -365,7 +372,7 @@ enum PinAnnotationTypeTag {
 - (void)didTapTaggersLabelAction:(id)sender {
     NSLog(@"%@::didTapTaggersLabelAction:",VIEWCONTROLLER_MAP);
     isTaggersSelected = YES;
-    [taggersLabel setBackgroundColor:redColor];
+    [taggersLabel setBackgroundColor:FT_RED];
     [taggersLabel setTextColor:[UIColor whiteColor]];
     
     [fitTagsLabel setBackgroundColor:[UIColor whiteColor]];
@@ -375,7 +382,7 @@ enum PinAnnotationTypeTag {
 - (void)didTapFitTagsLabelAction:(id)sender {
     NSLog(@"%@::didTapFitTagsLabelAction:",VIEWCONTROLLER_MAP);
     isTaggersSelected = NO;
-    [fitTagsLabel setBackgroundColor:redColor];
+    [fitTagsLabel setBackgroundColor:FT_RED];
     [fitTagsLabel setTextColor:[UIColor whiteColor]];
     
     [taggersLabel setBackgroundColor:[UIColor whiteColor]];
@@ -390,17 +397,34 @@ enum PinAnnotationTypeTag {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+- (void)configurePostOverlay:(PFObject *)object {
+    [self.mapView removeAnnotations:self.mapView.annotations];
+    [self.mapView removeOverlays:self.mapView.overlays];
+    [self.view addSubview: self.mapView];
+    
+    // center our map view around this geopoint
+    MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(self.location.coordinate.latitude,
+                                                                                  self.location.coordinate.longitude),
+                                                       MKCoordinateSpanMake(0.0225f, 0.0225f));
+    
+    // Animate zoom into geopoint center
+    [self.mapView setRegion:region animated:NO];
+    
+    FTAmbassadorGeoPointAnnotation *annotation = [[FTAmbassadorGeoPointAnnotation alloc] initWithObject:object];
+    [self.mapView addAnnotation:annotation];
+}
+
 - (void)configureOverlay {
     NSLog(@"%@::configureOverlay:",VIEWCONTROLLER_MAP);
     [self.mapView removeAnnotations:self.mapView.annotations];
     [self.mapView removeOverlays:self.mapView.overlays];
+    [self.view addSubview: self.mapView];
     
     // center our map view around this geopoint
     MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(geoPoint.latitude, geoPoint.longitude), MKCoordinateSpanMake(0.0225f, 0.0225f));
 
     // Animate zoom into geopoint center
     [self.mapView setRegion:region animated:NO];
-    [self.view addSubview: self.mapView];
     [self updateLocations];
 }
 
@@ -466,7 +490,7 @@ enum PinAnnotationTypeTag {
                     [self.mapView addSubview:scrollView];
                     [self.mapView bringSubviewToFront:scrollView];
                     
-                    [scrollView setContentSize: CGSizeMake(mapItems.count * self.view.frame.size.width, SCROLLVIEWITEM_HEIGHT)];
+                    [scrollView setContentSize:CGSizeMake(mapItems.count * self.view.frame.size.width, SCROLLVIEWITEM_HEIGHT)];
                 }
             }];
         }
@@ -534,7 +558,6 @@ enum PinAnnotationTypeTag {
     [profileViewController setBusiness:aUser];
     [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
-    
 }
 
 #pragma mark - UITextFieldDelegate
