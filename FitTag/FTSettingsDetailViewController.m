@@ -759,7 +759,9 @@
 - (void)camViewController:(FTCamViewController *)camViewController coverPhoto:(UIImage *)photo {
     [coverPhotoImageView setImage:photo];
     
-    UIImage *resizedImage = [photo resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(640, 320) interpolationQuality:kCGInterpolationHigh];
+    UIImage *resizedImage = [photo resizedImageWithContentMode:UIViewContentModeScaleAspectFit
+                                                        bounds:CGSizeMake(640, 640)
+                                          interpolationQuality:kCGInterpolationHigh];
     NSData *coverPhotoImageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
     
     PFUser *user = [PFUser currentUser];
@@ -782,7 +784,9 @@
 - (void)camViewController:(FTCamViewController *)camViewController profilePicture:(UIImage *)photo {
     [userProfileImageView setImage:photo];
     
-    UIImage *resizedImage = [photo resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(560.0f, 560.0f) interpolationQuality:kCGInterpolationHigh];
+    UIImage *resizedImage = [photo resizedImageWithContentMode:UIViewContentModeScaleAspectFit
+                                                        bounds:CGSizeMake(640, 640)
+                                          interpolationQuality:kCGInterpolationHigh];
     NSData *profileImageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
     
     PFUser *user = [PFUser currentUser];
