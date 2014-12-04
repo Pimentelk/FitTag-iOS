@@ -512,7 +512,7 @@
 			name = Detail;
 			sourceTree = "<group>";
 		};
-		2D3721231A27688200260AD8 /* Post */ = {
+		2D3721231A27688200260AD8 /* Edit Camera Post */ = {
 			isa = PBXGroup;
 			children = (
 				2D4DF05519E0491C00E2E71E /* FTPostDetailsHeaderView.h */,
@@ -520,7 +520,7 @@
 				2DBEEE5519AB4F1E00AAD238 /* FTPostDetailsFooterView.h */,
 				2DBEEE5619AB4F1E00AAD238 /* FTPostDetailsFooterView.m */,
 			);
-			name = Post;
+			name = "Edit Camera Post";
 			sourceTree = "<group>";
 		};
 		2D3721241A27688F00260AD8 /* Photo */ = {
@@ -822,7 +822,7 @@
 			children = (
 				2D3721251A27689C00260AD8 /* Reward */,
 				2D3721241A27688F00260AD8 /* Photo */,
-				2D3721231A27688200260AD8 /* Post */,
+				2D3721231A27688200260AD8 /* Edit Camera Post */,
 			);
 			name = DetailsViews;
 			sourceTree = "<group>";
