@@ -109,6 +109,11 @@
 #define VIEWCONTROLLER_FEED @"FTFeedViewController"
 #define VIEWCONTROLLER_FOLLOW @"FTFollowFriendsViewController"
 
+// CONTENT MODE
+#define CONTENTMODE UIViewContentModeScaleAspectFit
+#define CONTENTMODEVIDEO UIViewContentModeScaleAspectFill
+#define SCALINGMODE MPMovieScalingModeAspectFill
+
 // ACTION BUTTONS
 #define ACTION_HEART @"heart_white"
 #define ACTION_HEART_SELECTED @"heart_selected"
