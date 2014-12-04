@@ -168,7 +168,7 @@
     if (!displayName) {
         PFQuery *query = [PFQuery queryWithClassName:self.parseClassName];
         [query whereKey:kFTActivityToUserKey equalTo:[PFUser currentUser]];
-        //[query whereKey:kFTActivityFromUserKey notEqualTo:[PFUser currentUser]];
+        [query whereKey:kFTActivityFromUserKey notEqualTo:[PFUser currentUser]];
         [query whereKeyExists:kFTActivityFromUserKey];
         [query includeKey:kFTActivityFromUserKey];
         [query includeKey:kFTActivityPostKey];
@@ -186,12 +186,13 @@
     }
     
     PFQuery *queryMentions = [PFQuery queryWithClassName:self.parseClassName];
-    [queryMentions whereKeyExists:kFTActivityMentionKey];
     [queryMentions whereKey:kFTActivityMentionKey equalTo:displayName];
+    [queryMentions whereKey:kFTActivityFromUserKey notEqualTo:[PFUser currentUser]];
+    [queryMentions whereKeyExists:kFTActivityMentionKey];
     
     PFQuery *queryActivity = [PFQuery queryWithClassName:self.parseClassName];
     [queryActivity whereKey:kFTActivityToUserKey equalTo:[PFUser currentUser]];
-    //[query whereKey:kFTActivityFromUserKey notEqualTo:[PFUser currentUser]];
+    [queryActivity whereKey:kFTActivityFromUserKey notEqualTo:[PFUser currentUser]];
     [queryActivity whereKeyExists:kFTActivityFromUserKey];
     
     PFQuery *query = [PFQuery orQueryWithSubqueries:@[ queryMentions, queryActivity ]];
@@ -329,6 +330,8 @@
         return NSLocalizedString(@"joined #FitTag", nil);
     } else if ([activityType isEqualToString:kFTActivityTypeMention]) {
         return NSLocalizedString(@"mentioned you", nil);
+    } else if ([activityType isEqualToString:kFTActivityTypeOffer]) {
+        return NSLocalizedString(@"posted a new reward", nil);
     } else {
         return nil;
     }
