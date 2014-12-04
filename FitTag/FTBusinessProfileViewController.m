@@ -240,7 +240,7 @@
         NSLog(@"videoURL:%@",videoURL);
         
         mpViewController = [[MPMoviePlayerViewController alloc] initWithContentURL:videoURL];
-        [mpViewController.moviePlayer setScalingMode:MPMovieScalingModeAspectFit];
+        [mpViewController.moviePlayer setScalingMode:SCALINGMODE];
         [mpViewController.moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
         [mpViewController.moviePlayer setShouldAutoplay:NO];
         [mpViewController.moviePlayer prepareToPlay];
