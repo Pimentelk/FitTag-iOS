@@ -45,13 +45,8 @@
     
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     
-    
     self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], NSForegroundColorAttributeName,nil];
-    
-    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:234.0f/255.0f
-                                                                           green:37.0f/255.0f
-                                                                            blue:37.0f/255.0f
-                                                                           alpha:1.0f];
+    self.navigationController.navigationBar.barTintColor = FT_RED;
     
     // Set Background
     [self.collectionView setBackgroundColor:[UIColor whiteColor]];
@@ -64,8 +59,8 @@
             forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
                    withReuseIdentifier:HEADERVIEW];
     
-    [self.collectionView setDelegate: self];
-    [self.collectionView setDataSource: self];
+    [self.collectionView setDelegate:self];
+    [self.collectionView setDataSource:self];
     
     // initialize FTViewFriendsViewController
     UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
@@ -111,13 +106,11 @@
 - (void)viewWillDisappear:(BOOL)animated{
     //NSLog(@"%@::viewWillDisappear:",VIEWCONTROLLER_USER);
     [super viewWillDisappear:animated];
-    
     // Get the classname of the next view controller
     NSUInteger numberOfViewControllersOnStack = [self.navigationController.viewControllers count];
     UIViewController *parentViewController = self.navigationController.viewControllers[numberOfViewControllersOnStack-1];
     Class parentVCClass = [parentViewController class];
     NSString *className = NSStringFromClass(parentVCClass);
-    
     if([className isEqual:VIEWCONTROLLER_CAM]){
         [self.navigationController setToolbarHidden:YES];
     }
@@ -125,7 +118,6 @@
 
 - (void)queryForTable:(PFUser *)aUser {
     //NSLog(@"%@::queryForTable:",VIEWCONTROLLER_USER);
-
     // Show HUD view
     //[MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
     PFQuery *postsFromUserQuery = [PFQuery queryWithClassName:kFTPostClassKey];
@@ -150,7 +142,6 @@
            viewForSupplementaryElementOfKind:(NSString *)kind
                                  atIndexPath:(NSIndexPath *)indexPath {
     //NSLog(@"%@::collectionView:viewForSupplementaryElementOfKind:atIndexPath:",VIEWCONTROLLER_USER);
-    
     UICollectionReusableView *reusableview = nil;
     if (kind == UICollectionElementKindSectionHeader) {
         FTUserProfileHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
@@ -169,9 +160,8 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"indexpath: %ld",(long)indexPath.row);
+    //NSLog(@"indexpath: %ld",(long)indexPath.row);
     if ([cellTab isEqualToString:kFTUserTypeBusiness]) {
-        
         UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
         [flowLayout setItemSize:CGSizeMake(105.5,105)];
         [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
@@ -179,32 +169,28 @@
         [flowLayout setMinimumLineSpacing:0];
         [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
         [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
-        
         PFUser *business = self.cells[indexPath.row];
-        NSLog(@"FTUserProfileCollectionViewController:: business: %@",business);
+        //NSLog(@"FTUserProfileCollectionViewController:: business: %@",business);
         if (business) {
             FTBusinessProfileViewController *businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
             [businessProfileViewController setBusiness:business];
             [self.navigationController pushViewController:businessProfileViewController animated:YES];
         }
-        
     } else {
-        
         FTPostDetailsViewController *postDetailView = [[FTPostDetailsViewController alloc] initWithPost:self.cells[indexPath.row] AndType:nil];
         [self.navigationController pushViewController:postDetailView animated:YES];
     }
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"%@::collectionView:cellForItemAtIndexPath:",VIEWCONTROLLER_USER);
+    //NSLog(@"%@::collectionView:cellForItemAtIndexPath:",VIEWCONTROLLER_USER);
     // Set up cell identifier that matches the Storyboard cell name
     static NSString *identifier = DATACELL;
     FTUserProfileCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
-    
     if ([cell isKindOfClass:[FTUserProfileCollectionViewCell class]]) {
         cell.backgroundColor = [UIColor clearColor];
         if ([cellTab isEqualToString:kFTUserTypeBusiness]) {
-            NSLog(@"self.cells: %@", self.cells[indexPath.row]);
+            //NSLog(@"self.cells: %@", self.cells[indexPath.row]);
             PFUser *business = self.cells[indexPath.row];
             [cell setUser:business];
         } else {
@@ -212,7 +198,6 @@
             [cell setPost:object];
         }
     }
-    
     return cell;
 }
 
@@ -226,7 +211,7 @@
 #pragma mark - Navigation Bar
 
 - (void)didTapLoadCameraButtonAction:(id)sender {
-    NSLog(@"%@::didTapLoadCameraButtonAction:",VIEWCONTROLLER_USER);
+    //NSLog(@"%@::didTapLoadCameraButtonAction:",VIEWCONTROLLER_USER);
     FTCamViewController *camViewController = [[FTCamViewController alloc] init];
     [self.navigationController pushViewController:camViewController animated:YES];
 }
