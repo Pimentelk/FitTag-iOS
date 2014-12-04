@@ -37,7 +37,7 @@
     [super viewWillAppear:animated];
     
     if (![PFUser currentUser]) {
-        [(AppDelegate *)[[UIApplication sharedApplication] delegate] presentLoginViewControllerAnimated:NO];
+        //[(AppDelegate *)[[UIApplication sharedApplication] delegate] presentLoginViewControllerAnimated:NO];
         return;
     }
     
@@ -82,12 +82,10 @@
 }
 
 - (void)presentTabBarController:(PFUser *)user {
-    
     if (!user) {
         [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
         return;
-    }
-    
+    }    
     [[UIApplication sharedApplication].delegate performSelector:@selector(presentTabBarController)];
     [self dismissViewControllerAnimated:NO completion:nil];
 }
@@ -271,7 +269,7 @@ shouldBeginLogInWithUsername:(NSString *)username
                 
                 UIImage *signupProfilePhoto = signUpViewController.profilePhoto;
                 UIImage *resizedImage = [signupProfilePhoto resizedImageWithContentMode:UIViewContentModeScaleAspectFit
-                                                                                 bounds:CGSizeMake(560.0f, 560.0f)
+                                                                                 bounds:CGSizeMake(640,640)
                                                                    interpolationQuality:kCGInterpolationHigh];
                 
                 UIImage *thumbImage = [signupProfilePhoto thumbnailImage:86.0f
