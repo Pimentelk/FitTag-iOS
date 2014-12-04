@@ -143,7 +143,7 @@
                     CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
                     
                     // Current users distance to the item
-                    [self.distanceLabel setText:[NSString stringWithFormat:@"%.02f",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
+                    [self.distanceLabel setText:[NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
                 }
             }
         }];
