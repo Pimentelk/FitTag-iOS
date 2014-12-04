@@ -9,6 +9,10 @@
 #import "FTPostDetailsFooterView.h"
 #import "FTUtility.h"
 
+#define BUTTON_Y 70
+#define BUTTON_W 71
+#define BUTTON_H 80
+
 @interface FTPostDetailsFooterView ()
 @property (nonatomic, strong) UIView *mainView;
 @end
@@ -30,14 +34,14 @@
         // Initialization code
         self.backgroundColor = [UIColor clearColor];
         
-        mainView = [[UIView alloc] initWithFrame:CGRectMake( 0.0f, 0.0f, 320.0f, 200.0f)];
-        mainView.backgroundColor = [UIColor colorWithRed:234.0f/255.0f green:234.0f/255.0f blue:234.0f/255.0f alpha:1.0f];
+        mainView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 200)];
+        mainView.backgroundColor = FT_GRAY;
         [self addSubview:mainView];
         
-        UIImageView *commentBox = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 200.0f)];
+        UIImageView *commentBox = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 200)];
         [mainView addSubview:commentBox];
         
-        commentField = [[UITextField alloc] initWithFrame:CGRectMake( 0.0f, 0.0f, 320.0f, 40.0f)];
+        commentField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 320, 60)];
         commentField.font = [UIFont systemFontOfSize:12.0f];
         commentField.returnKeyType = UIReturnKeyDefault;
         commentField.textColor = [UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f];
@@ -52,6 +56,7 @@
         
         [mainView addSubview:commentField];
         
+        /*
         hashtagTextField = [[UITextField alloc] initWithFrame:CGRectMake(0.0f, 44.0f, 320.0f, 30.0f)];
         hashtagTextField.font = [UIFont systemFontOfSize:12.0f];
         hashtagTextField.returnKeyType = UIReturnKeyDefault;
@@ -81,9 +86,10 @@
                          forKeyPath:@"_placeholderLabel.textColor"];
         
         [mainView addSubview:locationTextField];
+        */
         
         facebookButton = [UIButton buttonWithType: UIButtonTypeCustom];
-        facebookButton.frame = CGRectMake(20.0f, 111.0f, 71.0f, 80.0f);
+        facebookButton.frame = CGRectMake(20.0f, BUTTON_Y, BUTTON_W, BUTTON_H);
         [facebookButton setBackgroundImage:[UIImage imageNamed:IMAGE_SOCIAL_FACEBOOKOFF] forState:UIControlStateNormal];
         [facebookButton setBackgroundImage:[UIImage imageNamed:IMAGE_SOCIAL_FACEBOOK] forState:UIControlStateSelected];
         [facebookButton addTarget:self action:@selector(didTapFacebookShareButtonAction:) forControlEvents:UIControlEventTouchUpInside];
@@ -91,7 +97,7 @@
         [mainView addSubview:facebookButton];
          
         twitterButton = [UIButton buttonWithType: UIButtonTypeCustom];
-        twitterButton.frame = CGRectMake(110.0f, 111.0f, 71.0f, 80.0f);
+        twitterButton.frame = CGRectMake(110.0f, BUTTON_Y, BUTTON_W, BUTTON_H);
         [twitterButton setBackgroundImage:[UIImage imageNamed:IMAGE_SOCIAL_TWITTEROFF] forState:UIControlStateNormal];
         [twitterButton setBackgroundImage:[UIImage imageNamed:IMAGE_SOCIAL_TWITTER] forState:UIControlStateSelected];
         [twitterButton addTarget:self action:@selector(didTapTwitterShareButtonAction:) forControlEvents:UIControlEventTouchUpInside];
@@ -99,7 +105,7 @@
         [mainView addSubview:twitterButton];
         
         submitButton = [UIButton buttonWithType: UIButtonTypeCustom];
-        submitButton.frame = CGRectMake(230.0f, 111.0f, 71.0f, 80.0f);
+        submitButton.frame = CGRectMake(230.0f, BUTTON_Y, BUTTON_W, BUTTON_H);
         [submitButton setBackgroundImage:[UIImage imageNamed:@"signup_button"] forState:UIControlStateNormal];
         [submitButton addTarget:self action:@selector(didTapSubmitPostButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         
@@ -112,7 +118,7 @@
 #pragma mark - FTDetailsFooterView
 
 + (CGRect)rectForView {
-    return CGRectMake( 0, 0, [UIScreen mainScreen].bounds.size.width, 200);
+    return CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 200);
 }
 
 #pragma mark - ()
