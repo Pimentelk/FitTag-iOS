@@ -109,7 +109,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     
     // Profile view layout
     flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(105.5,105)];
+    [flowLayout setItemSize:CGSizeMake(105.5, 105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
@@ -363,8 +363,8 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [queryStringMatchHandle findObjectsInBackgroundWithBlock:^(NSArray *users, NSError *error) {
         if (!error) {
             
-            NSLog(@"users:%@",users);
-            NSLog(@"users.count:%lu",(unsigned long)users.count);
+            //NSLog(@"users:%@",users);
+            //NSLog(@"users.count:%lu",(unsigned long)users.count);
             
             if (users.count == 1) {
                 
@@ -419,28 +419,30 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 
 #pragma mark - FTPostDetailsHeaderViewDelegate
 
-- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView didTapCommentButton:(UIButton *)button {
+- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView
+          didTapCommentButton:(UIButton *)button {
     [footerView.commentField becomeFirstResponder];
 }
 
-- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView didTapUserButton:(UIButton *)button user:(PFUser *)user {
+- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView
+             didTapUserButton:(UIButton *)button user:(PFUser *)user {
     [self shouldPresentAccountViewForUser:user];
 }
 
-- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView didTapImageInGalleryAction:(UIButton *)button user:(PFUser *)user {
+- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView
+   didTapImageInGalleryAction:(UIButton *)button user:(PFUser *)user {
     [self shouldPresentAccountViewForUser:user];
 }
 
-- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView didTapLocation:(UIButton *)button post:(PFObject *)aPost {
+- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView
+               didTapLocation:(UIButton *)button
+                         post:(PFObject *)aPost {
     NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
     // Map Home View
     FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
-    PFGeoPoint *geoPoint = [aPost objectForKey:kFTPostLocationKey];
-    if (geoPoint) {
-        CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-        [mapViewController setInitialLocation: location];
+    if ([aPost objectForKey:kFTPostLocationKey]) {
+        [mapViewController setInitialLocationObject:aPost];
     }
-    
     [mapViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:mapViewController animated:YES];
 }
