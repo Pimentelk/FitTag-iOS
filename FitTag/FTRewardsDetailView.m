@@ -62,33 +62,38 @@
 -(void)viewDidLoad {
     [super viewDidLoad];
     
+    // Title
     [self.navigationItem setTitle:NAVIGATION_TITLE_REWARDS];
     
-    // Override the back idnicator
-    
-    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]
-                                                                      style:UIBarButtonItemStylePlain
-                                                                     target:self action:@selector(didTapBackButtonAction:)];
+    // back button
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
+    [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backIndicator setStyle:UIBarButtonItemStylePlain];
+    [backIndicator setTarget:self];
+    [backIndicator setAction:@selector(didTapBackButtonAction:)];
     [backIndicator setTintColor:[UIColor whiteColor]];
+    
     [self.navigationItem setLeftBarButtonItem:backIndicator];
     
     // remove this offer button
-    
-    UIBarButtonItem *removeReward = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_TRASH]
-                                                                     style:UIBarButtonItemStylePlain
-                                                                    target:self action:@selector(didTapRemoveRewardButtonAction:)];
+    UIBarButtonItem *removeReward = [[UIBarButtonItem alloc] init];
+    [removeReward setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_TRASH]];
+    [removeReward setStyle:UIBarButtonItemStylePlain];
+    [removeReward setTarget:self];
+    [removeReward setAction:@selector(didTapRemoveRewardButtonAction:)];
     [removeReward setTintColor:[UIColor whiteColor]];
+    
     [self.navigationItem setRightBarButtonItem:removeReward];
     
     // Set table header
     
-    self.headerView = [[FTRewardsDetailHeaderView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, REWARD_HEADER_HEIGHT) reward:reward];
+    self.headerView = [[FTRewardsDetailHeaderView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, REWARD_HEADER_HEIGHT) reward:reward];
     self.headerView.delegate = self;
     self.tableView.tableHeaderView = self.headerView;
     
     // Set table footer
     
-    self.footerView = [[FTRewardsDetailFooterView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, REWARD_FOOTER_HEIGHT)];
+    self.footerView = [[FTRewardsDetailFooterView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, REWARD_FOOTER_HEIGHT)];
     self.footerView.delegate = self;
     self.tableView.tableFooterView = self.footerView;
     
@@ -175,8 +180,8 @@
                                         if (!error) {
                                             
                                             PFObject *activity = [PFObject objectWithClassName:kFTActivityClassKey];
-                                            [activity setObject:kFTActivityTypeReward forKey:kFTActivityTypeKey];
-                                            [activity setObject:reward forKey:kFTActivityRewardsKey];
+                                            [activity setObject:kFTActivityTypeRedeem forKey:kFTActivityTypeKey];
+                                            [activity setObject:reward forKey:kFTActivityRewardKey];
                                             [activity setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
                                             [activity setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
                                             
@@ -267,7 +272,33 @@
 }
 
 - (void)didTapRemoveRewardButtonAction:(id)sender {
-    // Block reward
+    
+    if (!self.reward) {
+        [[[UIAlertView alloc] initWithTitle:@"Delete Error"
+                                   message:@"Could not delete this reward."
+                                  delegate:self
+                         cancelButtonTitle:@"OK" 
+                         otherButtonTitles:nil] show];
+        return;
+    }
+    
+    // create and save photo caption
+    PFObject *delete = [PFObject objectWithClassName:kFTActivityClassKey];
+    [delete setObject:kFTActivityTypeDelete forKey:kFTActivityTypeKey];
+    [delete setObject:reward forKey:kFTActivityRewardKey];
+    [delete setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
+    [delete setObject:[reward objectForKey:kFTRewardUserKey] forKey:kFTActivityToUserKey];
+    
+    PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];
+    [ACL setPublicReadAccess:YES];
+    delete.ACL = ACL;
+    
+    [delete saveEventually:^(BOOL succeeded, NSError *error) {
+        if (!error) {
+            [FTUtility showHudMessage:@"Successfully Deleted" WithDuration:3];
+            [self didTapBackButtonAction:nil];
+        }
+    }];
 }
 
 #pragma mark - FTRewardsDetailFooterViewDelegate

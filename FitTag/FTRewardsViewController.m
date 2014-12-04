@@ -20,7 +20,7 @@
 #define REUSE_IDENTIFIER_HEADERVIEW @"HeaderView"
 
 @interface FTRewardsCollectionViewController () <UICollectionViewDataSource, UICollectionViewDelegate>
-@property (nonatomic, strong) NSArray *rewards;
+@property (nonatomic, strong) NSMutableArray *rewards;
 @end
 
 @implementation FTRewardsCollectionViewController
@@ -33,18 +33,16 @@
     [self.navigationItem setTitle:NAVIGATION_TITLE_REWARDS];
 
     // Set Background
-    [self.collectionView setBackgroundColor:[UIColor colorWithRed:FT_DARKGRAY_COLOR_RED
-                                                            green:FT_DARKGRAY_COLOR_GREEN
-                                                             blue:FT_DARKGRAY_COLOR_BLUE
-                                                            alpha:1]];
+    [self.collectionView setBackgroundColor:FT_GRAY];
+    
+    [self.collectionView registerClass:[FTRewardsCollectionHeaderView class]
+            forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+                   withReuseIdentifier:REUSE_IDENTIFIER_HEADERVIEW];
     
     // Data view
     [self.collectionView registerClass:[FTRewardsCollectionViewCell class]
             forCellWithReuseIdentifier:REUSE_IDENTIFIER_DATACELL];
     
-    [self.collectionView registerClass:[FTRewardsCollectionHeaderView class]
-            forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-                   withReuseIdentifier:REUSE_IDENTIFIER_HEADERVIEW];
     
     [self.collectionView setDelegate:self];
     [self.collectionView setDataSource:self];
@@ -64,49 +62,81 @@
 - (void)queryForTable:(NSString *)status {
     NSLog(@"%@::queryForTable",VIEWCONTROLLER_REWARDS);
     // Show HUD view
-    [MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
+    //[MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
     
-    if (![status isEqual:kFTRewardTypeUsed]) {
-        
-        PFQuery *followingActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
-        [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
-        [followingActivitiesQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
-        followingActivitiesQuery.cachePolicy = kPFCachePolicyNetworkOnly;
-        
-        PFQuery *query = [PFQuery queryWithClassName:kFTRewardsClassKey];
-        [query whereKey:kFTRewardUserKey matchesKey:kFTActivityToUserKey inQuery:followingActivitiesQuery];
-        [query whereKey:kFTRewardStatusKey equalTo:status];
-        [query includeKey:kFTRewardUserKey];
-        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-            if (!error) {
-                self.rewards = objects;
-                [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
-                [self.collectionView reloadData];
-            } else {
-                NSLog(@"Error: %@ %@", error, [error userInfo]);
-            }
-        }];
-        
-    } else {
-    
+    if ([status isEqual:kFTRewardTypeUsed]) {
+        NSLog(@"Used...");
         PFQuery *usedQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
         [usedQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeRedeem];
         [usedQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
         [usedQuery includeKey:kFTActivityRewardKey];
         [usedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if (!error) {
-                NSMutableArray *tmpRewards = [NSMutableArray array];
+                NSMutableArray *tmpRewards = [[NSMutableArray alloc] init];
                 for (PFObject *object in objects) {
-                    [tmpRewards addObject:[object objectForKey:kFTActivityRewardKey]];
+                    if ([object objectForKey:kFTActivityRewardKey]) {
+                       [tmpRewards addObject:[object objectForKey:kFTActivityRewardKey]];
+                    }
                 }
-                self.rewards = tmpRewards;
-                [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
+                
+                if (tmpRewards.count > 0) {
+                    self.rewards = tmpRewards;
+                } else {
+                    [self.rewards removeAllObjects];
+                }
+                
                 [self.collectionView reloadData];
-            } else {
+            }
+            
+            if (error) {
                 NSLog(@"Error: %@ %@", error, [error userInfo]);
             }
         }];
+        return;
     }
+    
+    PFQuery *deletedRewardQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [deletedRewardQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeDelete];
+    [deletedRewardQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
+    [deletedRewardQuery includeKey:kFTActivityRewardKey];
+    [deletedRewardQuery findObjectsInBackgroundWithBlock:^(NSArray *activities, NSError *error) {
+        if (!error) {
+            
+            NSMutableArray *deletedRewards = [[NSMutableArray alloc] init];
+            for (PFObject *activity in activities) {
+                if ([activity objectForKey:kFTActivityRewardKey]) {
+                    PFObject *reward = [activity objectForKey:kFTActivityRewardKey];
+                    [deletedRewards addObject:reward.objectId];
+                }
+            }
+            NSLog(@"deletedRewards:%@",deletedRewards);
+            
+            if (![status isEqual:kFTRewardTypeUsed]) {
+                
+                PFQuery *followingActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
+                [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
+                [followingActivitiesQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
+                followingActivitiesQuery.cachePolicy = kPFCachePolicyNetworkOnly;
+                
+                PFQuery *query = [PFQuery queryWithClassName:kFTRewardClassKey];
+                [query whereKey:kFTRewardUserKey matchesKey:kFTActivityToUserKey inQuery:followingActivitiesQuery];
+                [query whereKey:@"objectId" notContainedIn:deletedRewards];
+                [query whereKey:kFTRewardStatusKey equalTo:status];
+                [query includeKey:kFTRewardUserKey];
+                [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                    if (!error) {
+                        [self.rewards removeAllObjects];
+                        [self.rewards addObjectsFromArray:objects];
+                        [self.collectionView reloadData];
+                    }
+                    
+                    if (error) {
+                        NSLog(@"Error: %@ %@", error, [error userInfo]);
+                    }
+                }];
+            }
+        }
+    }];
 }
 
 #pragma mark - UICollectionView
