@@ -17,10 +17,9 @@
 //#import "FTNetworkViewController.h"
 //#import "Reachability.h"
 
-#define IMAGE_WIDTH 253.0f
-#define IMAGE_HEIGHT 173.0f
-#define IMAGE_X 33.0f
-#define IMAGE_Y 96.0f
+#define IMAGE_WIDTH 147
+#define IMAGE_HEIGHT 203
+#define IMAGE_Y 100
 
 #define ANIMATION_DURATION 0.200f
 
@@ -53,9 +52,9 @@
     self.blankTimelineView = [[UIView alloc] initWithFrame:self.tableView.bounds];
     
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.frame = CGRectMake(IMAGE_X, IMAGE_Y, IMAGE_WIDTH, IMAGE_HEIGHT);
+    button.frame = CGRectMake((self.view.frame.size.width - IMAGE_WIDTH)/2, IMAGE_Y, IMAGE_WIDTH, IMAGE_HEIGHT);
     [button setBackgroundImage:[UIImage imageNamed:IMAGE_TIMELINE_BLANK] forState:UIControlStateNormal];
-    [button addTarget:self action:@selector(followFriendsButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [button addTarget:self action:@selector(didTapFollowFriendsButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.blankTimelineView addSubview:button];
     
     [self shouldRunTestCode:NO];
@@ -123,7 +122,7 @@
     }
 }
 
-- (void)followFriendsButtonAction:(id)sender {
+- (void)didTapFollowFriendsButtonAction:(id)sender {
     FTFollowFriendsViewController *followFriendsViewController = [[FTFollowFriendsViewController alloc] init];
     [self.navigationController pushViewController:followFriendsViewController animated:YES];
 }
