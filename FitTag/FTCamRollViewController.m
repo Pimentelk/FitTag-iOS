@@ -10,9 +10,9 @@
 #import "FTCamRollViewController.h"
 #import "ImageCustomNavigationBar.h"
 #import "FTEditPhotoViewController.h"
+#import "FTEditPostViewController.h"
 #import "FTOverlayView.h"
 #import "FTToolBar.h"
-#import "FTEditPostViewController.h"
 
 @interface FTCamRollViewController () {
     ELCImagePickerController *elcPicker;
@@ -150,7 +150,7 @@
                 [images addObject:image];
                 
                 UIImageView *imageview = [[UIImageView alloc] initWithImage:image];
-                [imageview setContentMode:UIViewContentModeScaleAspectFit];
+                [imageview setContentMode:CONTENTMODE];
                 imageview.frame = workingFrame;
                 
                 [self.tableView.view addSubview:imageview];
@@ -169,7 +169,7 @@
                 [images addObject:image];
                 
                 UIImageView *imageview = [[UIImageView alloc] initWithImage:image];
-                [imageview setContentMode:UIViewContentModeScaleAspectFit];
+                [imageview setContentMode:CONTENTMODE];
                 imageview.frame = workingFrame;
                 
                 [self.tableView.view addSubview:imageview];
@@ -192,10 +192,16 @@
         [self didSelectProfilePictureAction:[images objectAtIndex:0]];
     } else if (self.isCoverPhoto) {
         [self didSelectCoverPhotoAction:[images objectAtIndex:0]];
-    } else {
-        FTEditPostViewController *editPostViewController = [[FTEditPostViewController alloc] initWithArray:self.chosenImages];
-        editPostViewController.delegate = self;
-        [self.navigationController pushViewController:editPostViewController animated:NO];
+    } else {        
+        if (self.chosenImages.count > 1) {
+            FTEditPostViewController *editPostViewController = [[FTEditPostViewController alloc] initWithArray:self.chosenImages];
+            editPostViewController.delegate = self;
+            [self.navigationController pushViewController:editPostViewController animated:NO];
+        } else {
+            UIImage *image = [self.chosenImages objectAtIndex:0];
+            FTEditPhotoViewController *editPhotoViewController = [[FTEditPhotoViewController alloc] initWithImage:image];
+            [self.navigationController pushViewController:editPhotoViewController animated:NO];
+        }
     }
 }
 
