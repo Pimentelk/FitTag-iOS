@@ -20,7 +20,7 @@
 #define REUSE_IDENTIFIER_HEADERVIEW @"HeaderView"
 
 @interface FTRewardsCollectionViewController () <UICollectionViewDataSource, UICollectionViewDelegate>
-@property (nonatomic, strong) NSMutableArray *rewards;
+@property (nonatomic, strong) NSArray *rewards;
 @end
 
 @implementation FTRewardsCollectionViewController
@@ -82,7 +82,7 @@
                 if (tmpRewards.count > 0) {
                     self.rewards = tmpRewards;
                 } else {
-                    [self.rewards removeAllObjects];
+                    self.rewards = nil;
                 }
                 
                 [self.collectionView reloadData];
@@ -125,8 +125,7 @@
                 [query includeKey:kFTRewardUserKey];
                 [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                     if (!error) {
-                        [self.rewards removeAllObjects];
-                        [self.rewards addObjectsFromArray:objects];
+                        self.rewards = objects;
                         [self.collectionView reloadData];
                     }
                     
