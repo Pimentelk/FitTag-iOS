@@ -23,7 +23,7 @@
 @property (nonatomic, strong) UILabel *locationLabel;
 @property (nonatomic, strong) TTTTimeIntervalFormatter *timeIntervalFormatter;
 @property (nonatomic, assign) CGFloat lastContentOffset;
-//@property (nonatomic, strong) FTGallerySwiperView *swiperView;
+@property (nonatomic, strong) FTGallerySwiperView *swiperView;
 @end
 
 @implementation FTGalleryCell
@@ -43,7 +43,7 @@
 @synthesize moreButton;
 //@synthesize usernameRibbon;
 @synthesize carousel;
-//@synthesize swiperView;
+@synthesize swiperView;
 
 #pragma mark - NSObject
 
@@ -60,18 +60,18 @@
         
         self.backgroundColor = [UIColor clearColor];
         
-        self.imageView.frame = CGRectMake(0,0,self.frame.size.width,320);
+        self.imageView.frame = CGRectMake(0, 0, self.frame.size.width, 320);
         self.imageView.backgroundColor = [UIColor clearColor];
-        self.imageView.contentMode = UIViewContentModeScaleAspectFill;
+        self.imageView.contentMode = CONTENTMODE;
         
         self.galleryButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.galleryButton.frame = CGRectMake(0,0,self.frame.size.width,320);
+        self.galleryButton.frame = CGRectMake(0, 0, self.frame.size.width, 320);
         self.galleryButton.backgroundColor = [UIColor clearColor];
         
         [self.contentView addSubview:self.galleryButton];
         
         UIView *galleryCellButtonsContainer = [[UIView alloc] init];
-        galleryCellButtonsContainer.frame = CGRectMake(0,self.galleryButton.frame.size.height,self.frame.size.width,30);
+        galleryCellButtonsContainer.frame = CGRectMake(0, self.galleryButton.frame.size.height, self.frame.size.width, 30);
         galleryCellButtonsContainer.backgroundColor = FT_GRAY;
         [self.contentView addSubview:galleryCellButtonsContainer];
         
@@ -80,7 +80,7 @@
         buttons = otherButtons;
         
         //location label
-        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(5,BUTTONS_TOP_PADDING,120,20)];
+        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, BUTTONS_TOP_PADDING, 120, 20)];
         [locationLabel setText:EMPTY_STRING];
         [locationLabel setBackgroundColor:[UIColor clearColor]];
         [locationLabel setTextColor:[UIColor blackColor]];
@@ -105,10 +105,10 @@
             [galleryCellButtonsContainer addSubview:self.likeButton];
             
             likeCounter = [UIButton buttonWithType:UIButtonTypeCustom];
-            [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x, BUTTONS_TOP_PADDING, 37.0f, 19.0f)];
+            [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x, BUTTONS_TOP_PADDING, 37, 19)];
             [likeCounter setBackgroundColor:[UIColor clearColor]];
             [likeCounter setTitle:@"0" forState:UIControlStateNormal];
-            [likeCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+            [likeCounter setTitleEdgeInsets:UIEdgeInsetsMake(1, 1, -1, -1)];
             [likeCounter.titleLabel setFont:BENDERSOLID(16)];
             [likeCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
             [likeCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
@@ -123,7 +123,7 @@
             
             // comments button
             commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [self.commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x, BUTTONS_TOP_PADDING, 21.0f, 18.0f)];
+            [self.commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x, BUTTONS_TOP_PADDING, 21, 18)];
             [self.commentButton setBackgroundColor:[UIColor clearColor]];
             [self.commentButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [self.commentButton setBackgroundImage:[UIImage imageNamed:@"comment_bubble"] forState:UIControlStateNormal];
@@ -138,7 +138,7 @@
             [commentCounter setFrame:CGRectMake(self.commentButton.frame.origin.x + self.commentButton.frame.size.width, BUTTONS_TOP_PADDING, 37, 19)];
             [commentCounter setBackgroundColor:[UIColor clearColor]];
             [commentCounter setTitle:EMPTY_STRING forState:UIControlStateNormal];
-            [commentCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+            [commentCounter setTitleEdgeInsets:UIEdgeInsetsMake(1, 1, -1, -1)];
             [commentCounter.titleLabel setFont:BENDERSOLID(16)];
             [commentCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
             [commentCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
@@ -155,22 +155,16 @@
         [moreButton setBackgroundColor:[UIColor clearColor]];
         [moreButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
         [galleryCellButtonsContainer addSubview:moreButton];
-        /*
-        swiperView = [[FTGallerySwiperView alloc] initWithFrame:CGRectMake(usernameRibbon.frame.origin.x + EXTRA_PADDING,
-                                                                           usernameRibbon.frame.origin.y + usernameRibbon.frame.size.height,
-                                                                           usernameRibbon.frame.size.width - REMOVE_EXTRA_PADDING,
-                                                                           usernameRibbon.frame.size.height)];
-        */
-        carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0,0,320,320)];
+        
+        swiperView = [[FTGallerySwiperView alloc] initWithFrame:CGRectMake(10, 5, 60, 20)];
+        
+        carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 320)];
         [carousel setDelegate:self];
         [carousel setUserInteractionEnabled:YES];
         [carousel setDelaysContentTouches:YES];
         [carousel setExclusiveTouch:YES];
         [carousel setCanCancelContentTouches:YES];
-        [carousel setBackgroundColor:[UIColor colorWithRed:FT_GRAY_COLOR_RED
-                                                     green:FT_GRAY_COLOR_GREEN
-                                                      blue:FT_GRAY_COLOR_BLUE
-                                                     alpha:1.0f]];
+        [carousel setBackgroundColor:FT_GRAY];
         [carousel setPagingEnabled: YES];
         [carousel setAlwaysBounceVertical:NO];
         
@@ -184,8 +178,8 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.imageView.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
-    self.galleryButton.frame = CGRectMake( 0.0f, 0.0f, 320.0f, 320.0f);
+    self.imageView.frame = CGRectMake(0, 0, 320, 320);
+    self.galleryButton.frame = CGRectMake(0, 0, 320, 320);
 }
 
 #pragma mark - FTGalleryCellView
@@ -193,7 +187,7 @@
 - (void)setGallery:(PFObject *)aGallery {
     gallery = aGallery;
     
-    //[self.swiperView setAlpha:0];
+    [self.swiperView setAlpha:0];
     
     // Clear the carousel
     for (UIView *carouseSubView in carousel.subviews) {
@@ -212,15 +206,15 @@
                         UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapImageInGalleryAction:)];
                         singleTap.numberOfTapsRequired = 1;
                         
-                        CGFloat xOrigin = i * 320;
+                        CGFloat xOrigin = i * self.frame.size.width;
                         
-                        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, 320.0f, 320.0f)];
+                        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, self.frame.size.width, 320)];
                         [imageView setBackgroundColor:[UIColor clearColor]];
                         
                         UIImage *image = [UIImage imageWithData:data];
                         [imageView setImage:image];
                         [imageView setClipsToBounds:YES];
-                        [imageView setContentMode:UIViewContentModeScaleAspectFill];
+                        [imageView setContentMode:CONTENTMODE];
                         [imageView setUserInteractionEnabled:YES];
                         [imageView addGestureRecognizer:singleTap];
                         
@@ -229,14 +223,13 @@
                 }];
                 i++;
             }
-            /*
+            
             if (objects.count > 1) {
                 [self.swiperView setNumberOfDashes:i];
                 [self.contentView addSubview:self.swiperView];
                 [self.swiperView setAlpha:1];
             }
-            */
-            [carousel setContentSize: CGSizeMake(320.0f * objects.count, 320.0f)];
+            [carousel setContentSize: CGSizeMake(self.frame.size.width * objects.count, 320)];
        } 
     }];
      
@@ -282,9 +275,10 @@
                         [locationLabel setText:postLocation];
                         [locationLabel setUserInteractionEnabled:YES];
                         
-                        UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
-                        locationTapRecognizer.numberOfTapsRequired = 1;
-                        [locationLabel addGestureRecognizer:locationTapRecognizer];
+                        UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                                        action:@selector(didTapLocationAction:)];
+                        tapRecognizer.numberOfTapsRequired = 1;
+                        [locationLabel addGestureRecognizer:tapRecognizer];
                     }
                 }
             } else {
@@ -321,7 +315,7 @@
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if (scrollView.contentOffset.x < 0 || scrollView.contentOffset.x > (scrollView.contentSize.width - 320))
+    if (scrollView.contentOffset.x < 0 || scrollView.contentOffset.x > (scrollView.contentSize.width - self.frame.size.width))
         [self killScroll];
     
     static NSInteger previousPage = 0;
@@ -330,9 +324,9 @@
     NSInteger page = lround(fractionalPage);
     if (previousPage != page) {
         if (previousPage < page) {
-            //[self.swiperView onGallerySwipedLeft: page];
+            [self.swiperView onGallerySwipedLeft:page];
         } else if (previousPage > page) {
-            //[self.swiperView onGallerySwipedRight: page];
+            [self.swiperView onGallerySwipedRight:page];
         }
         previousPage = page;
     }
