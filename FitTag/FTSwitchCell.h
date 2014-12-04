@@ -14,10 +14,15 @@ typedef enum {
     FTSwitchTypeLike = 1 << 3,
     FTSwitchTypeFollow = 1 << 4,
     FTSwitchTypeMention = 1 << 5,
+    FTSwitchTypeReward = 1 << 6,
+    FTSwitchTypeBusiness = 1 << 7
 } FTSwitchType;
 
 @protocol FTSwitchCellDelegate;
 @interface FTSwitchCell : UITableViewCell
+
+/*! @key param */
+@property (nonatomic, assign) NSString *key;
 
 /*! type param */
 @property (nonatomic, assign) FTSwitchType type;
@@ -59,5 +64,15 @@ typedef enum {
  Sent to the delegate when the follow switch changes
  */
 - (void)switchCell:(FTSwitchCell *)switchCell didChangeFollowSwitch:(UISwitch *)lever;
+
+/*!
+ Sent to the delegate when the reward switch changes
+ */
+- (void)switchCell:(FTSwitchCell *)switchCell didChangeRewardSwitch:(UISwitch *)lever;
+
+/*!
+ Sent to the delegate when the reward switch changes
+ */
+- (void)switchCell:(FTSwitchCell *)switchCell didChangeBusinessSwitch:(UISwitch *)lever key:(NSString *)key;
 
 @end

@@ -36,6 +36,8 @@
     [settingSwitch removeTarget:self action:@selector(didChangeLikeSwitchAction:) forControlEvents:UIControlEventValueChanged];
     [settingSwitch removeTarget:self action:@selector(didChangeFollowSwitchAction:) forControlEvents:UIControlEventValueChanged];
     [settingSwitch removeTarget:self action:@selector(didChangeMentionSwitchAction:) forControlEvents:UIControlEventValueChanged];
+    [settingSwitch removeTarget:self action:@selector(didChangeRewardSwitchAction:) forControlEvents:UIControlEventValueChanged];
+    [settingSwitch removeTarget:self action:@selector(didChangeBusinessSwitchAction:) forControlEvents:UIControlEventValueChanged];
     
     // Set target
     switch (type) {
@@ -93,6 +95,25 @@
             [settingSwitch addTarget:self action:@selector(didChangeMentionSwitchAction:) forControlEvents:UIControlEventValueChanged];
         }
             break;
+        case FTSwitchTypeReward: {
+            if(![[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushRewardsKey]) {
+                [settingSwitch setOn:NO animated:YES];
+            } else {
+                [settingSwitch setOn:YES animated:YES];
+            }
+            [settingSwitch addTarget:self action:@selector(didChangeRewardSwitchAction:) forControlEvents:UIControlEventValueChanged];
+        }
+            break;
+        case FTSwitchTypeBusiness: {            
+            NSMutableDictionary *businessDefaults = [[[NSUserDefaults standardUserDefaults] dictionaryForKey:kFTUserDefaultsSettingsViewControllerPushBusinessesKey] mutableCopy];
+            if ([businessDefaults objectForKey:self.key] && [[businessDefaults objectForKey:self.key] isEqualToString:@"YES"]) {
+                [settingSwitch setOn:YES animated:YES];
+            } else {
+                [settingSwitch setOn:NO animated:YES];
+            }            
+            [settingSwitch addTarget:self action:@selector(didChangeBusinessSwitchAction:) forControlEvents:UIControlEventValueChanged];
+        }
+            break;
         case FTSwitchTypeNone: {
             
         }
@@ -140,6 +161,20 @@
     NSLog(@"didChangeMentionSwitchAction");
     if (delegate && [delegate respondsToSelector:@selector(switchCell:didChangeMentionSwitch:)]) {
         [delegate switchCell:self didChangeMentionSwitch:lever];
+    }
+}
+
+- (void)didChangeRewardSwitchAction:(UISwitch *)lever {
+    NSLog(@"didChangeRewardSwitchAction");
+    if (delegate && [delegate respondsToSelector:@selector(switchCell:didChangeRewardSwitch:)]) {
+        [delegate switchCell:self didChangeRewardSwitch:lever];
+    }
+}
+
+- (void)didChangeBusinessSwitchAction:(UISwitch *)lever {
+    NSLog(@"didChangeBusinessSwitchAction");
+    if (delegate && [delegate respondsToSelector:@selector(switchCell:didChangeBusinessSwitch:key:)]) {
+        [delegate switchCell:self didChangeBusinessSwitch:lever key:self.key];
     }
 }
 
