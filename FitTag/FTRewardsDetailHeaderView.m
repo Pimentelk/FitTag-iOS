@@ -80,7 +80,7 @@
         mention.font = BENDERSOLID(13);
         [self.containerView addSubview:mention];
         
-        [[reward objectForKey:kFTRewardsUserKey] fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+        [[reward objectForKey:kFTRewardUserKey] fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
             if (!error) {
                 
                 NSLog(@"object: %@",object);
@@ -105,7 +105,7 @@
         }];
         
         
-        PFFile *file = [reward objectForKey:kFTRewardsImageKey];
+        PFFile *file = [reward objectForKey:kFTRewardImageKey];
         [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
             if (!error) {
                 rewardPhoto = [[UIImageView alloc] initWithImage:[UIImage imageWithData:data]];
