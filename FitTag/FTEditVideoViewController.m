@@ -73,9 +73,9 @@
     self.scrollView.backgroundColor = [UIColor whiteColor];
     self.view = self.scrollView;
     
-    videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
+    videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
     [videoImageView setBackgroundColor:[UIColor clearColor]];
-    [videoImageView setContentMode:UIViewContentModeScaleAspectFit];
+    [videoImageView setContentMode:CONTENTMODEVIDEO];
     
     [self.scrollView addSubview:videoImageView];
     
@@ -134,7 +134,7 @@
     //NSLog(@"FTEditVideoViewController::Setup video...");
     self.moviePlayer = [[MPMoviePlayerController alloc] init];
     [self.moviePlayer setControlStyle:MPMovieControlStyleNone];
-    [self.moviePlayer setScalingMode:MPMovieScalingModeAspectFill];
+    [self.moviePlayer setScalingMode:SCALINGMODE];
     [self.moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
     [self.moviePlayer setShouldAutoplay:NO];
     [self.moviePlayer.view setFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
@@ -178,14 +178,17 @@
     CMTime time = CMTimeMake(1, 65);
     CGImageRef refImg = [generateImg copyCGImageAtTime:time actualTime:NULL error:&error];
     UIImage *anImage = [[UIImage alloc] initWithCGImage:refImg];
-    UIImage *resizedImage = [anImage resizedImageWithContentMode:UIViewContentModeScaleAspectFill bounds:CGSizeMake(320.0f, 320.0f) interpolationQuality:kCGInterpolationHigh];
+    UIImage *resizedImage = [anImage resizedImageWithContentMode:CONTENTMODEVIDEO
+                                                          bounds:CGSizeMake(640, 640)
+                                            interpolationQuality:kCGInterpolationHigh];
+    
     NSData *imageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
     self.imageFile = [PFFile fileWithName:@"photo.jpeg" data:imageData];
     
     // Videoplayer background image
-    videoPlaceHolderView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
+    videoPlaceHolderView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
     [videoPlaceHolderView setBackgroundColor:[UIColor clearColor]];
-    [videoPlaceHolderView setContentMode:UIViewContentModeScaleAspectFill];
+    [videoPlaceHolderView setContentMode:CONTENTMODEVIDEO];
     [videoPlaceHolderView setImage:[UIImage imageWithData:imageData]];
     
     [self.scrollView addSubview:videoPlaceHolderView];
