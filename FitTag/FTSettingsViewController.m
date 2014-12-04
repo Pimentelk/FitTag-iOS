@@ -95,7 +95,7 @@
     // Table view footer
     
     UIButton *signout = [UIButton buttonWithType:UIButtonTypeCustom];
-    [signout setFrame:CGRectMake( SETTINGS_BUTTON_X, SETTINGS_BUTTON_Y, self.tableView.frame.size.width, SETTINGS_BUTTON_HEIGHT )];
+    [signout setFrame:CGRectMake(SETTINGS_BUTTON_X, SETTINGS_BUTTON_Y, self.tableView.frame.size.width, SETTINGS_BUTTON_HEIGHT)];
     [signout setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:SETTINGS_BUTTON]]];
     [signout addTarget:self action:@selector(didTapSignoutButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -191,11 +191,15 @@
         [[UIApplication sharedApplication] openURL:url];
     } else if([setting isEqualToString:REWARD_SETTIGNS]) {
         
+        [self.navigationController pushViewController:self.settingsDetailViewController animated:YES];
+        [self.settingsDetailViewController setDetailItem:setting];
+        /*
         [[[UIAlertView alloc] initWithTitle:@"Screen Not Finished"
                                     message:@"This rewards settings screen is not enabled."
                                    delegate:nil
                           cancelButtonTitle:@"ok"
                           otherButtonTitles:nil] show];
+        */
         
     } else {
         [self.navigationController pushViewController:self.settingsDetailViewController animated:YES];

@@ -450,29 +450,72 @@
 - (void)configureRewardSettings {
     //NSLog(@"%@::configureRewardSettings",VIEWCONTROLLER_SETTINGS_DETAIL);
     
-    // Reward Settings
-    UILabel *rewardLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 100, 300, 32)];
-    rewardLabel.textAlignment =  NSTextAlignmentLeft;
-    rewardLabel.textColor = [UIColor colorWithRed:FT_RED_COLOR_RED
-                                            green:FT_RED_COLOR_GREEN
-                                             blue:FT_RED_COLOR_BLUE alpha:1.0f];
+    PFQuery *businessUsersQuery = [PFQuery queryWithClassName:kFTUserClassKey];
+    [businessUsersQuery whereKey:kFTUserTypeKey equalTo:kFTUserTypeBusiness];
     
-    rewardLabel.backgroundColor = [UIColor clearColor];
-    rewardLabel.font = BENDERSOLID(16);
-    rewardLabel.text = @"Rewards";
-    [self.view addSubview:rewardLabel];
-    
-    UISwitch *rewardSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 80, 100, 0, 0)];
-    [rewardSwitch setOn:NO animated:YES];
-    [rewardSwitch addTarget:self action:@selector(didTapRewardsSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:rewardSwitch];
+    PFQuery *followingActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [followingActivitiesQuery whereKey:kFTActivityToUserKey matchesQuery:businessUsersQuery];
+    [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
+    [followingActivitiesQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
+    [followingActivitiesQuery setCachePolicy:kPFCachePolicyNetworkOnly];
+    [followingActivitiesQuery includeKey:kFTActivityToUserKey];
+    [followingActivitiesQuery findObjectsInBackgroundWithBlock:^(NSArray *activities, NSError *error) {
+        if (!error) {
+            NSLog(@"activities:%@",activities);
+            
+            CGFloat navigationViewEnd = self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y;
+            
+            NSMutableArray *businessnameLabels = [[NSMutableArray alloc] init];
+            
+            UITableView *tableView = [[UITableView alloc] init];
+            [tableView setFrame:CGRectMake(0, navigationViewEnd + TOP_PADDING, self.view.frame.size.width, ROW_HEIGHT * (activities.count + 1))];
+            [tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
+            
+            // Reward Setting
+            UILabel *rewardLabel = [[UILabel alloc] initWithFrame:CGRectMake(LEFT_PADDING, 0, 240, ROW_HEIGHT)];
+            rewardLabel.textAlignment =  NSTextAlignmentLeft;
+            rewardLabel.textColor = [UIColor blackColor];
+            rewardLabel.backgroundColor = [UIColor clearColor];
+            rewardLabel.font = BENDERSOLID(18);
+            rewardLabel.text = @"Reward Push Notifications";
+            rewardLabel.tag = 6;
+            [businessnameLabels addObject:rewardLabel];
+            
+            int i = 0;
+            for (PFObject *activity in activities) {
+                PFUser *business = [activity objectForKey:kFTActivityToUserKey];
+                
+                UILabel *businessnameLabel = [[UILabel alloc] initWithFrame:CGRectMake(LEFT_PADDING, 0, 240, ROW_HEIGHT)];
+                [businessnameLabel setTextAlignment: NSTextAlignmentLeft];
+                [businessnameLabel setUserInteractionEnabled: YES];
+                [businessnameLabel setFont:BENDERSOLID(18)];
+                [businessnameLabel setTextColor:[UIColor blackColor]];
+                [businessnameLabel setText:[business objectForKey:kFTUserCompanyNameKey]];
+                [businessnameLabel setTag:7];
+                [businessnameLabels addObject:businessnameLabel];
+                i++;
+            }
+            
+            [tableView setBackgroundColor:[UIColor whiteColor]];
+            [tableView setScrollEnabled:NO];
+            [tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLineEtched];
+            [tableView setSeparatorInset:UIEdgeInsetsZero];
+            [tableView setRowHeight:ROW_HEIGHT];
+            [tableView setDataSource:self];
+            [tableView setDelegate:self];
+            
+            self.objects = [[NSArray alloc] initWithArray:businessnameLabels];
+            [tableView reloadData];
+            [self.view addSubview:tableView];
+        }
+    }];
 }
 
 - (void)configureBlog {
     
     // Navigation buttons container
     
-    webViewNavigationBar = [[UIView alloc] initWithFrame:CGRectMake(0,0,100,32)];
+    webViewNavigationBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 32)];
     [webViewNavigationBar setBackgroundColor:[UIColor clearColor]];
     
     // Tittle View Buttons
@@ -513,14 +556,18 @@
 
 #pragma mark - UITableView
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    FTSwitchCell *cell = [[FTSwitchCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:REUSABLE_IDENTIFIER_SOCIAL];
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    FTSwitchCell *cell = [[FTSwitchCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                             reuseIdentifier:REUSABLE_IDENTIFIER_SOCIAL];
     
     UILabel *label = self.objects[indexPath.row];
     [cell setDelegate:self];
     [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
     [cell setUserInteractionEnabled:YES];
     [cell.contentView addSubview:label];
+    
     switch (label.tag) {
         case 0:
             cell.type = FTSwitchTypeFacebook;
@@ -540,6 +587,12 @@
         case 5:
             cell.type = FTSwitchTypeMention;
             break;
+        case 6:
+            cell.type = FTSwitchTypeReward;
+            break;
+        case 7:
+            cell.key = label.text;
+            cell.type = FTSwitchTypeBusiness;
         default:
             break;
     }
@@ -585,6 +638,38 @@
     } else {
         [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kFTUserDefaultsSettingsViewControllerPushMentionsKey];
     }
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)switchCell:(FTSwitchCell *)switchCell didChangeRewardSwitch:(UISwitch *)lever {
+    if ([lever isOn]) {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushRewardsKey];
+    } else {
+        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kFTUserDefaultsSettingsViewControllerPushRewardsKey];
+    }
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)switchCell:(FTSwitchCell *)switchCell didChangeBusinessSwitch:(UISwitch *)lever key:(NSString *)key {
+    
+    NSLog(@"key:%@",key);
+    
+    // Get dictionary stored in user defaults
+    NSMutableDictionary *permissions = [[[NSUserDefaults standardUserDefaults] dictionaryForKey:kFTUserDefaultsSettingsViewControllerPushBusinessesKey] mutableCopy];
+    
+    if (!permissions) {
+        permissions = [[NSMutableDictionary alloc] init];
+    }
+    
+    // Update the dictionary
+    if ([lever isOn]) {
+        [permissions setObject:@"YES" forKey:key];
+    } else {
+        [permissions setObject:@"NO" forKey:key];
+    }
+    
+    // Update standard defaults permissions
+    [[NSUserDefaults standardUserDefaults] setObject:permissions forKey:kFTUserDefaultsSettingsViewControllerPushBusinessesKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
