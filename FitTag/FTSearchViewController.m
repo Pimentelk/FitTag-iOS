@@ -24,23 +24,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    UIColor *grayColor = [UIColor colorWithRed:FT_GRAY_COLOR_RED
-                                         green:FT_GRAY_COLOR_GREEN
-                                          blue:FT_GRAY_COLOR_BLUE
-                                         alpha:1.0f];
-    
-    UIColor *redColor = [UIColor colorWithRed:FT_RED_COLOR_RED
-                                        green:FT_RED_COLOR_GREEN
-                                         blue:FT_RED_COLOR_BLUE
-                                        alpha:1.0f];
-    
     [self.tableView setSeparatorColor:[UIColor clearColor]];
     
     // Set background image
-    [self.tableView setBackgroundColor:grayColor];
+    [self.tableView setBackgroundColor:FT_GRAY];
     
     // Fittag navigationbar color
-    self.navigationController.navigationBar.barTintColor = redColor;
+    self.navigationController.navigationBar.barTintColor = FT_RED;
     self.tableView.delegate = self;
     
     // Set title
@@ -73,8 +63,8 @@
         case FTSearchQueryTypeFitTag: {
             
             // Remove hashtags & mentions
-            NSString *cleanedSearchString = [[searchString stringByReplacingOccurrencesOfString:@"#" withString:@""] lowercaseString];
-                      cleanedSearchString = [[cleanedSearchString stringByReplacingOccurrencesOfString:@"@" withString:@""] lowercaseString];
+            NSString *cleanedSearchString = [[searchString stringByReplacingOccurrencesOfString:@"#" withString:EMPTY_STRING] lowercaseString];
+                      cleanedSearchString = [[cleanedSearchString stringByReplacingOccurrencesOfString:@"@" withString:EMPTY_STRING] lowercaseString];
             
             PFQuery *hashtagQuery = [PFQuery queryWithClassName:kFTPostClassKey];
             [hashtagQuery whereKey:kFTPostHashTagKey equalTo:cleanedSearchString];
