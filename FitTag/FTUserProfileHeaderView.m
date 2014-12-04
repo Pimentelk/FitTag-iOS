@@ -109,7 +109,7 @@
         [followerCountLabel setTextAlignment:NSTextAlignmentCenter];
         [followerCountLabel setBackgroundColor:[UIColor whiteColor]];
         [followerCountLabel setTextColor:[UIColor blackColor]];
-        [followerCountLabel setFont:[UIFont boldSystemFontOfSize:14.0f]];
+        [followerCountLabel setFont:BENDERSOLID(14)];
         [followerCountLabel.layer setBorderColor:[UIColor colorWithRed:234/255.0f green:234/255.0f blue:234/255.0f alpha:1].CGColor];
         [followerCountLabel.layer setBorderWidth:1.0f];
         [followerCountLabel setUserInteractionEnabled:YES];
@@ -128,7 +128,7 @@
         [followingCountLabel setTextAlignment:NSTextAlignmentCenter];
         [followingCountLabel setBackgroundColor:[UIColor whiteColor]];
         [followingCountLabel setTextColor:[UIColor blackColor]];
-        [followingCountLabel setFont:[UIFont boldSystemFontOfSize:14.0f]];
+        [followingCountLabel setFont:BENDERSOLID(14)];
         [followingCountLabel.layer setBorderColor:[UIColor colorWithRed:234/255.0f green:234/255.0f blue:234/255.0f alpha:1].CGColor];
         [followingCountLabel.layer setBorderWidth:1.0f];
         [followingCountLabel setUserInteractionEnabled:YES];
@@ -141,7 +141,7 @@
         userSettingsLabel = [[UILabel alloc] init];
         [userSettingsLabel setFrame:CGRectMake(0, userSettingsLabelY, self.containerView.bounds.size.width, 30)];
         [userSettingsLabel setTextAlignment:NSTextAlignmentCenter];
-        [userSettingsLabel setFont:[UIFont boldSystemFontOfSize:18.0f]];
+        [userSettingsLabel setFont:BENDERSOLID(18)];
         [userSettingsLabel setBackgroundColor:[UIColor whiteColor]];
         [userSettingsLabel setTextColor:[UIColor whiteColor]];
         
@@ -410,8 +410,8 @@
 }
 
 - (void)followButtonAction:(id)sender {
-    UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    [loadingActivityIndicatorView startAnimating];
+    //UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    //[loadingActivityIndicatorView startAnimating];
     [self configureUnfollowButton];
     [FTUtility followUserEventually:self.user block:^(BOOL succeeded, NSError *error) {
         if (error) {
@@ -428,8 +428,8 @@
 }
 
 - (void)unfollowButtonAction:(id)sender {
-    UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    [loadingActivityIndicatorView startAnimating];
+    //UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    //[loadingActivityIndicatorView startAnimating];
     [self configureFollowButton];
     [FTUtility unfollowUserEventually:self.user block:^(NSError *error) {
         if (error) {
