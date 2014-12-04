@@ -30,11 +30,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    UIColor *grayColor = [UIColor colorWithRed:FT_GRAY_COLOR_RED
-                                         green:FT_GRAY_COLOR_GREEN
-                                          blue:FT_GRAY_COLOR_BLUE
-                                         alpha:1.0f];
-    
     locationManager = [[FTLocationManager alloc] init];
     [locationManager requestLocationAuthorization];
     
@@ -42,14 +37,11 @@
     [self.tableView setSeparatorColor:[UIColor clearColor]];
     
     // Set background image
-    [self.tableView setBackgroundColor:grayColor];
+    [self.tableView setBackgroundColor:FT_GRAY];
     [self.tableView setDelegate:self];
     
     // Fittag navigationbar color
-    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:FT_RED_COLOR_RED
-                                                                           green:FT_RED_COLOR_GREEN
-                                                                            blue:FT_RED_COLOR_BLUE
-                                                                           alpha:1.0f];
+    self.navigationController.navigationBar.barTintColor = FT_RED;
     
     flowLayout = [[UICollectionViewFlowLayout alloc] init];
     [flowLayout setItemSize:CGSizeMake(105.5,105)];
@@ -68,15 +60,11 @@
     [headerView setLocationSelected];
     
     if (followUserQueryType & FTFollowUserQueryTypeTagger) {
-        
         [self.tableView.tableHeaderView setHidden:YES];
         [self querySearchForUser];
-        
     } else {
-        
         [self.tableView setTableHeaderView:headerView];
         [self.tableView.tableHeaderView setHidden:NO];
-        
         [self queryForUserType:FTFollowUserQueryTypeDefault];
     }
 }
