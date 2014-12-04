@@ -22,6 +22,8 @@ NSString *const iOSAppStoreURLFormat;
 extern NSString *const kFTUserDefaultsSettingsViewControllerPushLikesKey;
 extern NSString *const kFTUserDefaultsSettingsViewControllerPushCommentsKey;
 extern NSString *const kFTUserDefaultsSettingsViewControllerPushMentionsKey;
+extern NSString *const kFTUserDefaultsSettingsViewControllerPushRewardsKey;
+extern NSString *const kFTUserDefaultsSettingsViewControllerPushBusinessesKey;
 extern NSString *const kFTUserDefaultsSettingsViewControllerPushFollowsKey;
 extern NSString *const kFTUserDefaultsActivityFeedViewControllerLastRefreshKey;
 extern NSString *const kFTUserDefaultsCacheFacebookFriendsKey;
@@ -40,10 +42,7 @@ extern NSString *const FTTabBarControllerDidFinishImageFileUploadNotification;
 extern NSString *const FTPhotoDetailsViewControllerUserDeletedPhotoNotification;
 extern NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification;
 extern NSString *const FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification;
-
-//extern NSString *const FTRewardsCollectionViewControllerUserDidReceiveRewardNotification;
-//extern NSString *const FTRewardsCollectionViewControllerUserDidRedeemRewardNotification;
-//extern NSString *const FTRewardsCollectionViewControllerUserDidDeleteRewardNotification;
+extern NSString *const FTRewardsCollectionViewControllerUserReceiveRewardNotification;
 
 #pragma mark - User Info Keys
 extern NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey;
@@ -70,15 +69,18 @@ extern NSString *const kFTActivityPostKey;
 extern NSString *const kFTActivityHashtagKey;
 extern NSString *const kFTActivityMentionKey;
 extern NSString *const kFTActivityWordKey;
-extern NSString *const kFTActivityRewardsKey;
+extern NSString *const kFTActivityRewardKey;
 
 // Type values
 extern NSString *const kFTActivityTypeLike;
 extern NSString *const kFTActivityTypeFollow;
 extern NSString *const kFTActivityTypeComment;
 extern NSString *const kFTActivityTypeJoined;
-extern NSString *const kFTActivityTypeReward;
+extern NSString *const kFTActivityTypeRedeem;
+extern NSString *const kFTActivityTypeDelete;
+extern NSString *const kFTActivityTypeBlock;
 extern NSString *const kFTActivityTypeMention;
+extern NSString *const kFTActivityTypeOffer;
 
 #pragma mark - PFObject Post Class
 extern NSString *const kFTPostClassKey;
@@ -111,22 +113,22 @@ extern NSString *const kFTInterestKey;
 #pragma mark - PFObject Rewards Class
 
 // Class key
-extern NSString *const kFTRewardsClassKey;
+extern NSString *const kFTRewardClassKey;
 
 // Field keys
-extern NSString *const kFTRewardsNameKey;
-extern NSString *const kFTRewardsDescriptionKey;
-extern NSString *const kFTRewardsTypeKey;
-extern NSString *const kFTRewardsUserKey;
-extern NSString *const kFTRewardsExpiredKey;
-extern NSString *const kFTRewardsImageKey;
-extern NSString *const kFTRewardsStatusKey;
+extern NSString *const kFTRewardNameKey;
+extern NSString *const kFTRewardDescriptionKey;
+extern NSString *const kFTRewardTypeKey;
+extern NSString *const kFTRewardUserKey;
+extern NSString *const kFTRewardExpiredKey;
+extern NSString *const kFTRewardImageKey;
+extern NSString *const kFTRewardStatusKey;
 
 // Type values
-extern NSString *const kFTRewardsTypeActive;
-extern NSString *const kFTRewardsTypeInactive;
-extern NSString *const kFTRewardsTypeUsed;
-extern NSString *const kFTRewardsTypeExpired;
+extern NSString *const kFTRewardTypeActive;
+extern NSString *const kFTRewardTypeInactive;
+extern NSString *const kFTRewardTypeUsed;
+extern NSString *const kFTRewardTypeExpired;
 
 #pragma mark - PFObject User Class
 
@@ -196,6 +198,7 @@ extern NSString *const kFTPushPayloadActivityLikeKey;
 extern NSString *const kFTPushPayloadActivityCommentKey;
 extern NSString *const kFTPushPayloadActivityFollowKey;
 extern NSString *const kFTPushPayloadActivityMentionKey;
+extern NSString *const kFTPushPayloadActivityRewardKey;
 
 extern NSString *const kFTPushPayloadFromUserObjectIdKey;
 extern NSString *const kFTPushPayloadToUserObjectIdKey;

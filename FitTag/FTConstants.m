@@ -17,6 +17,8 @@ NSString *const kFTUserDefaultsSettingsViewControllerPushLikesKey          = @"c
 NSString *const kFTUserDefaultsSettingsViewControllerPushCommentsKey       = @"com.fittag.userDefaults.settingsDetailViewController.pushComments";
 NSString *const kFTUserDefaultsSettingsViewControllerPushMentionsKey       = @"com.fittag.userDefaults.settingsDetailViewController.pushMentions";
 NSString *const kFTUserDefaultsSettingsViewControllerPushFollowsKey        = @"com.fittag.userDefaults.settingsDetailViewController.pushFollows";
+NSString *const kFTUserDefaultsSettingsViewControllerPushRewardsKey        = @"com.fittag.userDefaults.settingsDetailViewController.pushRewards";
+NSString *const kFTUserDefaultsSettingsViewControllerPushBusinessesKey     = @"com.fittag.userDefaults.settingsDetailViewController.pushBusinesses";
 NSString *const kFTUserDefaultsActivityFeedViewControllerLastRefreshKey    = @"com.fittag.userDefaults.activityFeedViewController.lastRefresh";
 NSString *const kFTUserDefaultsCacheFacebookFriendsKey                     = @"com.fittag.userDefaults.cache.facebookFriends";
 
@@ -25,7 +27,6 @@ NSString *const kFTUserDefaultsCacheFacebookFriendsKey                     = @"c
 NSString *const kFTLaunchURLHostTakePicture = @"camera";
 
 #pragma mark - NSNotification
-
 NSString *const FTAppDelegateApplicationDidReceiveRemoteNotification                = @"com.fittag.appDelegate.applicationDidReceiveRemoteNotification";
 NSString *const FTUtilityUserFollowingChangedNotification                           = @"com.fittag.utility.userFollowingChanged";
 NSString *const FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification          = @"com.fittag.utility.userLikedUnlikedPhotoCallbackFinished";
@@ -36,9 +37,7 @@ NSString *const FTTabBarControllerDidFinishImageFileUploadNotification          
 NSString *const FTPhotoDetailsViewControllerUserDeletedPhotoNotification            = @"com.fittag.photoDetailsViewController.userDeletedPhoto";
 NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification       = @"com.fittag.photoDetailsViewController.userLikedUnlikedPhotoInDetailsViewNotification";
 NSString *const FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification        = @"com.fittag.photoDetailsViewController.userCommentedOnPhotoInDetailsViewNotification";
-//NSString *const FTRewardsCollectionViewControllerUserDidReceiveRewardNotification   = @"com.fittag.rewardsCollectionViewController.userDidReceiveRewardNotification";
-//NSString *const FTRewardsCollectionViewControllerUserDidRedeemRewardNotification    = @"com.fittag.rewardsCollectionViewController.userDidRedeemRewardNotification";
-//NSString *const FTRewardsCollectionViewControllerUserDidDeleteRewardNotification    = @"com.fittag.rewardsCollectionViewController.userDidDeleteRewardNotification";
+NSString *const FTRewardsCollectionViewControllerUserReceiveRewardNotification      = @"com.fittag.rewardsCollectionViewController.userDidRedeemRewardNotification";
 
 #pragma mark - User Info Keys
 NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey = @"liked";
@@ -65,15 +64,18 @@ NSString *const kFTActivityPostKey        = @"post";
 NSString *const kFTActivityHashtagKey     = @"hashtag";
 NSString *const kFTActivityMentionKey     = @"mention";
 NSString *const kFTActivityWordKey        = @"keyWords";
-NSString *const kFTActivityRewardsKey     = @"rewards";
+NSString *const kFTActivityRewardKey      = @"reward";
 
 // Type values
 NSString *const kFTActivityTypeLike       = @"like";
 NSString *const kFTActivityTypeFollow     = @"follow";
 NSString *const kFTActivityTypeComment    = @"comment";
 NSString *const kFTActivityTypeJoined     = @"joined";
-NSString *const kFTActivityTypeReward     = @"reward";
+NSString *const kFTActivityTypeRedeem     = @"redeem";
+NSString *const kFTActivityTypeDelete     = @"delete";
+NSString *const kFTActivityTypeBlock      = @"block";
 NSString *const kFTActivityTypeMention    = @"mention";
+NSString *const kFTActivityTypeOffer      = @"offer";
 
 #pragma mark - User Class
 
@@ -123,22 +125,22 @@ NSString *const kFTInterestKey                                 = @"interest";
 #pragma mark - PFObject Rewards Class
 
 // Class key
-NSString *const kFTRewardsClassKey          = @"Rewards";
+NSString *const kFTRewardClassKey          = @"Reward";
 
 // Field keys
-NSString *const kFTRewardsNameKey           = @"name";
-NSString *const kFTRewardsDescriptionKey    = @"description";
-NSString *const kFTRewardsTypeKey           = @"type";
-NSString *const kFTRewardsUserKey           = @"user";
-NSString *const kFTRewardsExpiredKey        = @"expiredAt";
-NSString *const kFTRewardsImageKey          = @"image";
-NSString *const kFTRewardsStatusKey         = @"status";
+NSString *const kFTRewardNameKey           = @"name";
+NSString *const kFTRewardDescriptionKey    = @"description";
+NSString *const kFTRewardTypeKey           = @"type";
+NSString *const kFTRewardUserKey           = @"user";
+NSString *const kFTRewardExpiredKey        = @"expiredAt";
+NSString *const kFTRewardImageKey          = @"image";
+NSString *const kFTRewardStatusKey         = @"status";
 
 // Type keys
-NSString *const kFTRewardsTypeActive        = @"ACTIVE";
-NSString *const kFTRewardsTypeInactive      = @"INACTIVE";
-NSString *const kFTRewardsTypeUsed          = @"USED";
-NSString *const kFTRewardsTypeExpired       = @"EXPIRED";
+NSString *const kFTRewardTypeActive        = @"ACTIVE";
+NSString *const kFTRewardTypeInactive      = @"INACTIVE";
+NSString *const kFTRewardTypeUsed          = @"USED";
+NSString *const kFTRewardTypeExpired       = @"EXPIRED";
 
 #pragma mark - PFObject Post Class
 
@@ -191,7 +193,7 @@ NSString *const kFTPushPayloadActivityLikeKey     = @"l";
 NSString *const kFTPushPayloadActivityCommentKey  = @"c";
 NSString *const kFTPushPayloadActivityFollowKey   = @"f";
 NSString *const kFTPushPayloadActivityMentionKey  = @"m";
-//NSString *const kFTPushPayloadActivityRewardKey   = @"r";
+NSString *const kFTPushPayloadActivityRewardKey   = @"r";
 
 NSString *const kFTPushPayloadFromUserObjectIdKey = @"fu";
 NSString *const kFTPushPayloadToUserObjectIdKey   = @"tu";
