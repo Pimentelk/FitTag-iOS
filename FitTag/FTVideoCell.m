@@ -53,7 +53,7 @@
         singleTap.numberOfTapsRequired = 1;
         
         self.videoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.videoButton.frame = CGRectMake(0,0,self.frame.size.width,320);
+        self.videoButton.frame = CGRectMake(0, 0, self.frame.size.width, 320);
         self.videoButton.backgroundColor = [UIColor clearColor];
         self.videoButton.clipsToBounds = YES;
         
@@ -95,7 +95,7 @@
             [videoCellButtonsContainer addSubview:self.likeButton];
             
             likeCounter = [UIButton buttonWithType:UIButtonTypeCustom];
-            [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x, BUTTONS_TOP_PADDING, 37.0f, 19.0f)];
+            [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x, BUTTONS_TOP_PADDING, 37, 19)];
             [likeCounter setBackgroundColor:[UIColor clearColor]];
             [likeCounter setTitle:@"0" forState:UIControlStateNormal];
             [likeCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
