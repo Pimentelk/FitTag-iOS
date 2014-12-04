@@ -37,7 +37,7 @@
 - (instancetype)initWithAnnotation:(id<MKAnnotation>)aAnnotation
                    reuseIdentifier:(NSString *)reuseIdentifier {
     
-    NSLog(@"%@::initWithAnnotation:reuseIdentifier:",VIEWCONTROLLER_BUSINESS_ANNOTATION);
+    //NSLog(@"%@::initWithAnnotation:reuseIdentifier:",VIEWCONTROLLER_BUSINESS_ANNOTATION);
     self = [super initWithAnnotation:aAnnotation reuseIdentifier:reuseIdentifier];
     if (self) {
         
@@ -84,7 +84,7 @@
 
 // Called when the annotation is dragged and dropped. We update the geoPoint with the new coordinates.
 - (void)setCoordinate:(CLLocationCoordinate2D)newCoordinate {
-    NSLog(@"%@::setCoordinate:",VIEWCONTROLLER_BUSINESS_ANNOTATION);
+    //NSLog(@"%@::setCoordinate:",VIEWCONTROLLER_BUSINESS_ANNOTATION);
     PFGeoPoint *geoPoint = [PFGeoPoint geoPointWithLatitude:newCoordinate.latitude
                                                   longitude:newCoordinate.longitude];
     [self setGeoPoint:geoPoint];
@@ -99,7 +99,7 @@
 }
 
 - (void)setGeoPoint:(PFGeoPoint *)geoPoint {
-    NSLog(@"%@::setGeoPoint:",VIEWCONTROLLER_BUSINESS_ANNOTATION);
+    //NSLog(@"%@::setGeoPoint:",VIEWCONTROLLER_BUSINESS_ANNOTATION);
     coordinate = CLLocationCoordinate2DMake(geoPoint.latitude, geoPoint.longitude);
     title = self.user[kFTUserDisplayNameKey];
 }

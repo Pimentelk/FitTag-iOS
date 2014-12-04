@@ -28,7 +28,6 @@
                    reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
     if (self) {        
-        NSLog(@"tapGesture set");
         UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapAmbassadorAnnotationAction:)];
         [self addGestureRecognizer:tapGesture];
     }
