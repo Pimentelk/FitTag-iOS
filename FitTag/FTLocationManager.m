@@ -24,7 +24,7 @@
 }
 
 - (CLLocationManager *)locationManager {
-    NSLog(@"FTLocationManager::locationManager");
+    //NSLog(@"FTLocationManager::locationManager");
     if (locationManager != nil) {
         return locationManager;
     }
@@ -45,7 +45,7 @@
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-    NSLog(@"FTLocationManager::locationManager:didUpdateLocations:");
+    //NSLog(@"FTLocationManager::locationManager:didUpdateLocations:");
     [locationManager stopUpdatingLocation];
     if ([PFUser currentUser]) {
         CLLocation *location = [locations lastObject];
@@ -60,7 +60,7 @@
         [[PFUser currentUser] setValue:geoPoint forKey:kFTUserLocationKey];
         [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
-                NSLog(@"%@::locationManager:didUpdateLocations: - User location updated successfully.",VIEWCONTROLLER_MAP);
+                //NSLog(@"%@::locationManager:didUpdateLocations: - User location updated successfully.",VIEWCONTROLLER_MAP);
             }
         }];
     }
