@@ -15,7 +15,7 @@
 #import "FTFeedViewController.h"
 #import "FTUserProfileViewController.h"
 #import "FTMapViewController.h"
-#import "FTRewardsCollectionViewController.h"
+#import "FTRewardsViewController.h"
 #import "FTNavigationController.h"
 #import "FTPostDetailsViewController.h"
 
@@ -117,11 +117,16 @@
     //NSLog(@"%@::application:didReceiveRemoteNotification:",APPDELEGATE_RESPONDER);
     //NSLog(@"userInfo:%@",userInfo);
     
+    if ([userInfo objectForKey:kFTPushPayloadActivityRewardKey] && [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushRewardsKey]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
+        NSLog(@"userInfo:%@",userInfo);
+    }
+    
     if ([userInfo objectForKey:kFTPushPayloadActivityLikeKey] && [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushLikesKey]) {
         [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
     }
     
-    if ([userInfo objectForKey:kFTPushPayloadActivityCommentKey] && [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushFollowsKey]) {
+    if ([userInfo objectForKey:kFTPushPayloadActivityCommentKey] && [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushCommentsKey]) {
         [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
     }
     
@@ -276,7 +281,7 @@
     
     // Rewards View Controller
     UICollectionViewFlowLayout *layoutFlow = [[UICollectionViewFlowLayout alloc] init];
-    [layoutFlow setItemSize:CGSizeMake(158,185)];
+    [layoutFlow setItemSize:CGSizeMake(160,185)];
     [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
     [layoutFlow setMinimumInteritemSpacing:0];
     [layoutFlow setMinimumLineSpacing:0];
