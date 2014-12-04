@@ -141,8 +141,10 @@
         // Set default settings
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushFollowsKey];
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushLikesKey];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushRewardsKey];
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushCommentsKey];
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushMentionsKey];
+        [[NSUserDefaults standardUserDefaults] setNilValueForKey:kFTUserDefaultsSettingsViewControllerPushBusinessesKey];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
         FTInterestViewFlowLayout *interestLayoutFlow = [[FTInterestViewFlowLayout alloc] init];
