@@ -164,6 +164,15 @@
     [self.logInView.passwordForgottenButton setFrame:CGRectMake([self getCenterX: 93.0f],135.0f + CGRectGetHeight(self.loginHex.bounds),93.0f,11.0f)];
     [self.logInView.usernameField setFrame:CGRectMake((self.view.frame.size.width)/4.0f - 5.0f,180.0f,190.0f,50.0f)];
     [self.logInView.passwordField setFrame:CGRectMake((self.view.frame.size.width)/4.0f - 5.0f,240.0f,190.0f,50.0f)];
+    
+    NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+    
+    UILabel *appVersionLabel = [[UILabel alloc] initWithFrame:CGRectMake(7, 15, 40, 20)];
+    appVersionLabel.text = [NSString stringWithFormat:@"v2.0.0 b%@",appVersion];
+    appVersionLabel.font = BENDERSOLID(14);
+    appVersionLabel.textColor = [UIColor whiteColor];
+    
+    [self.logInView addSubview:appVersionLabel];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
