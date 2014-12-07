@@ -130,7 +130,7 @@
             [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
             [flowLayout setMinimumInteritemSpacing:0];
             [flowLayout setMinimumLineSpacing:0];
-            [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+            [flowLayout setSectionInset:UIEdgeInsetsMake(0, 0, 0, 0)];
             [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
             
             // Override the back idnicator
@@ -166,6 +166,7 @@
     NSString *displayName = [[PFUser currentUser] objectForKey:kFTUserDisplayNameKey];
     
     if (!displayName) {
+        NSLog(@"no displayname..");
         PFQuery *query = [PFQuery queryWithClassName:self.parseClassName];
         [query whereKey:kFTActivityToUserKey equalTo:[PFUser currentUser]];
         [query whereKey:kFTActivityFromUserKey notEqualTo:[PFUser currentUser]];
@@ -185,15 +186,19 @@
         return query;
     }
     
+    //NSLog(@"displayname..");
     PFQuery *queryMentions = [PFQuery queryWithClassName:self.parseClassName];
     [queryMentions whereKey:kFTActivityMentionKey equalTo:displayName];
+    [queryMentions whereKey:kFTActivityToUserKey equalTo:[PFUser currentUser]];
     [queryMentions whereKey:kFTActivityFromUserKey notEqualTo:[PFUser currentUser]];
     [queryMentions whereKeyExists:kFTActivityMentionKey];
+    [queryMentions setCachePolicy:kPFCachePolicyNetworkOnly];
     
     PFQuery *queryActivity = [PFQuery queryWithClassName:self.parseClassName];
     [queryActivity whereKey:kFTActivityToUserKey equalTo:[PFUser currentUser]];
     [queryActivity whereKey:kFTActivityFromUserKey notEqualTo:[PFUser currentUser]];
     [queryActivity whereKeyExists:kFTActivityFromUserKey];
+    [queryMentions setCachePolicy:kPFCachePolicyNetworkOnly];
     
     PFQuery *query = [PFQuery orQueryWithSubqueries:@[ queryMentions, queryActivity ]];
     [query includeKey:kFTActivityFromUserKey];
