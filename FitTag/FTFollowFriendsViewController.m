@@ -196,8 +196,7 @@
                     }
                     
                     NSArray *interests = [[PFUser currentUser] objectForKey:kFTUserInterestsKey];
-                    
-                    
+                                        
                     PFQuery *followUsersByInterestQuery = [PFQuery queryWithClassName:kFTUserClassKey];
                     [followUsersByInterestQuery whereKey:kFTUserObjectIdKey notEqualTo:[PFUser currentUser].objectId];
                     [followUsersByInterestQuery whereKey:kFTUserInterestsKey containedIn:interests];
