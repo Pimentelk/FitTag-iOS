@@ -88,13 +88,16 @@
         return;
     }
     
-    NSCharacterSet *alphaNumericSet = [NSCharacterSet alphanumericCharacterSet];
-    if ([[handleTextField.text stringByTrimmingCharactersInSet:alphaNumericSet] isEqualToString:EMPTY_STRING]) {
-        [user setObject:[handleTextField.text lowercaseString] forKey:kFTUserDisplayNameKey];
-    } else {
+    NSCharacterSet *alphaNumericUnderscoreSet = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_"];
+    alphaNumericUnderscoreSet = [alphaNumericUnderscoreSet invertedSet];
+    
+    NSRange range = [handleTextField.text rangeOfCharacterFromSet:alphaNumericUnderscoreSet];
+    if (range.location != NSNotFound) {
         [FTUtility showHudMessage:HUD_MESSAGE_HANDLE_INVALID WithDuration:2];
         return;
     }
+    
+    [user setObject:[handleTextField.text lowercaseString] forKey:kFTUserDisplayNameKey];
     
     if (handleTextField.text.length > 0 && handleTextField.text.length <= 15) {
         [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
