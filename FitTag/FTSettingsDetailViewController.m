@@ -33,6 +33,7 @@
     UIButton *twitterImageButton;
     UIButton *takePhotoButton;
     UIButton *selectPhotoButton;
+    UIScrollView *scrollView;
 }
 @property (nonatomic, strong) UIImageView *userProfileImageView;
 @property (nonatomic, strong) UIImageView *coverPhotoImageView;
@@ -89,7 +90,7 @@
         
         // Toolbar & Navigationbar Setup
         
-        if(webViewNavigationBar){
+        if (webViewNavigationBar) {
             [webViewNavigationBar setHidden:YES];
             [webViewNavigationBar removeFromSuperview];
             webViewNavigationBar = nil;
@@ -137,16 +138,12 @@
     
     // Set Background
     
-    [self.view setBackgroundColor:[UIColor colorWithRed:FT_GRAY_COLOR_RED
-                                                  green:FT_GRAY_COLOR_GREEN
-                                                   blue:FT_GRAY_COLOR_BLUE alpha:1.0f]];
+    [self.view setBackgroundColor:FT_GRAY];
     
     // Override the back idnicator
     
     [self.navigationController setNavigationBarHidden:NO animated:NO];
-    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:FT_RED_COLOR_RED
-                                                                             green:FT_RED_COLOR_GREEN
-                                                                              blue:FT_RED_COLOR_BLUE alpha:1.0f]];
+    [self.navigationController.navigationBar setBarTintColor:FT_RED];
     
     // Back button
     
@@ -160,7 +157,8 @@
     
     // Done button
     
-    doneButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(didTapDoneButtonAction:)];
+    doneButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self
+                                                                   action:@selector(didTapDoneButtonAction:)];
     [doneButtonItem setStyle:UIBarButtonItemStylePlain];
     [doneButtonItem setTintColor:[UIColor whiteColor]];
     [self.navigationItem setRightBarButtonItem:doneButtonItem];
@@ -298,13 +296,15 @@
 - (void)configureBiography {
     //NSLog(@"%@::configureBiography",VIEWCONTROLLER_SETTINGS_DETAIL);
     
+    scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    
     UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(didGestureHideKeyboardAction)];
     [swipeGesture setDirection:UISwipeGestureRecognizerDirectionDown];
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didGestureHideKeyboardAction)];
     [tapGesture setNumberOfTapsRequired:1];
     
-    [self.view setGestureRecognizers:@[ swipeGesture, tapGesture ]];
+    [scrollView setGestureRecognizers:@[ swipeGesture, tapGesture ]];
     
     CGFloat textViewX = 10;
     CGFloat textViewHeight = 30;
@@ -317,7 +317,7 @@
     if ([self.user objectForKey:kFTUserFirstnameKey]) {
         [userFirstname setText:[self.user objectForKey:kFTUserFirstnameKey]];
     }
-    [self.view addSubview:userFirstname];
+    [scrollView addSubview:userFirstname];
     
     userLastname = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, userFirstname.frame.size.height+userFirstname.frame.origin.y+TOP_PADDING,
                                                                  textViewWidth, textViewHeight)];
@@ -327,7 +327,7 @@
     if ([self.user objectForKey:kFTUserLastnameKey]) {
         [userLastname setText:[self.user objectForKey:kFTUserLastnameKey]];
     }
-    [self.view addSubview:userLastname];
+    [scrollView addSubview:userLastname];
     
     userHandle = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, userLastname.frame.size.height+userLastname.frame.origin.y+TOP_PADDING, textViewWidth, textViewHeight)];
     [userHandle setPlaceholder:@"USER HANDLE"];
@@ -338,7 +338,7 @@
     }
     [userHandle setAutocorrectionType:UITextAutocorrectionTypeNo];
     [userHandle setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-    [self.view addSubview:userHandle];
+    [scrollView addSubview:userHandle];
     
     userWebsite = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, userHandle.frame.size.height+userHandle.frame.origin.y+TOP_PADDING, textViewWidth, textViewHeight)];
     [userWebsite setPlaceholder:@"WEBSITE"];
@@ -347,7 +347,7 @@
     if ([self.user objectForKey:kFTUserWebsiteKey]) {
         [userWebsite setText:[self.user objectForKey:kFTUserWebsiteKey]];
     }
-    [self.view addSubview:userWebsite];
+    [scrollView addSubview:userWebsite];
     
     // User bio text view
     userBiography = [[UITextView alloc] initWithFrame:CGRectMake(textViewX, userWebsite.frame.size.height+userWebsite.frame.origin.y+TOP_PADDING, textViewWidth, 150)];
@@ -359,7 +359,9 @@
     if ([self.user objectForKey:kFTUserBioKey]) {
         [userBiography setText:[self.user objectForKey:kFTUserBioKey]];
     }
-    [self.view addSubview:userBiography];
+    [scrollView addSubview:userBiography];
+    
+    [self.view addSubview:scrollView];
 }
 
 - (void)configureShareSettings {
@@ -554,7 +556,27 @@
     [self.view addSubview:webView];
 }
 
-#pragma mark - UITableView
+#pragma mark - UITextViewDelegate
+
+- (void)textViewDidBeginEditing:(UITextView *)textView {
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDelegate:self];
+    [UIView setAnimationDuration:0.3];
+    [UIView setAnimationBeginsFromCurrentState:YES];
+    scrollView.frame = CGRectMake(scrollView.frame.origin.x, (scrollView.frame.origin.y - 140.0), scrollView.frame.size.width, scrollView.frame.size.height);
+    [UIView commitAnimations];
+}
+
+- (void)textViewDidEndEditing:(UITextView *)textView {
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDelegate:self];
+    [UIView setAnimationDuration:0.3];
+    [UIView setAnimationBeginsFromCurrentState:YES];
+    scrollView.frame = CGRectMake(scrollView.frame.origin.x, (scrollView.frame.origin.y + 140.0), scrollView.frame.size.width, scrollView.frame.size.height);
+    [UIView commitAnimations];
+}
+
+#pragma mark - UITableViewDelegate
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -994,8 +1016,8 @@
     
     self.hud = [MBProgressHUD showHUDAddedTo:keyWindow animated:YES];
     self.hud.mode = MBProgressHUDModeText;
-    self.hud.margin = 10.f;
-    self.hud.yOffset = 0.f;
+    self.hud.margin = 10;
+    self.hud.yOffset = 0;
     self.hud.removeFromSuperViewOnHide = YES;
     self.hud.userInteractionEnabled = NO;
     self.hud.labelText = message;
