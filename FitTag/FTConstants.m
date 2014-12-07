@@ -11,6 +11,10 @@
 #pragma mark - AppStoreURLFormat
 NSString *const iOS7AppStoreURLFormat = @"itms-apps://itunes.apple.com/app/id%d";
 NSString *const iOSAppStoreURLFormat = @"itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=%d";
+//https://maps.googleapis.com/maps/api/place/autocomplete/json?input=Food%20Sh&sensor=false&radius=500&location=0,0&key=
+//https://maps.googleapis.com/maps/api/place/search/json?location=%f,%f&radius=%@&types=%@&sensor=true&key=%@
+NSString *const googleMapsAPIPlaceAutocompleteURL = @"https://maps.googleapis.com/maps/api/place/autocomplete/json?input=%@&sensor=%@&radius=%d&location=%f,%f&key=%@";
+NSString *const googleMapsAPIPlaceSearchURL = @"https://maps.googleapis.com/maps/api/place/search/json?location=%f,%f&radius=%@&types=%@&sensor=true&key=%@";
 
 #pragma mark - NSUserDefaults
 NSString *const kFTUserDefaultsSettingsViewControllerPushLikesKey          = @"com.fittag.userDefaults.settingsDetailViewController.pushLikes";
@@ -28,15 +32,20 @@ NSString *const kFTLaunchURLHostTakePicture = @"camera";
 
 #pragma mark - NSNotification
 NSString *const FTAppDelegateApplicationDidReceiveRemoteNotification                = @"com.fittag.appDelegate.applicationDidReceiveRemoteNotification";
+
 NSString *const FTUtilityUserFollowingChangedNotification                           = @"com.fittag.utility.userFollowingChanged";
 NSString *const FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification          = @"com.fittag.utility.userLikedUnlikedPhotoCallbackFinished";
 NSString *const FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification          = @"com.fittag.utility.userLikedUnlikedVideoCallbackFinished";
 NSString *const FTUtilityDidFinishProcessingProfilePictureNotification              = @"com.fittag.utility.didFinishProcessingProfilePictureNotification";
+
 NSString *const FTTabBarControllerDidFinishEditingPhotoNotification                 = @"com.fittag.tabBarController.didFinishEditingPhoto";
 NSString *const FTTabBarControllerDidFinishImageFileUploadNotification              = @"com.fittag.tabBarController.didFinishImageFileUploadNotification";
-NSString *const FTPhotoDetailsViewControllerUserDeletedPhotoNotification            = @"com.fittag.photoDetailsViewController.userDeletedPhoto";
+
+NSString *const FTTimelineViewControllerUserDeletedPostNotification                 = @"com.fittag.timelineViewController.userDeletedPhoto";
+
 NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification       = @"com.fittag.photoDetailsViewController.userLikedUnlikedPhotoInDetailsViewNotification";
 NSString *const FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification        = @"com.fittag.photoDetailsViewController.userCommentedOnPhotoInDetailsViewNotification";
+
 NSString *const FTRewardsCollectionViewControllerUserReceiveRewardNotification      = @"com.fittag.rewardsCollectionViewController.userDidRedeemRewardNotification";
 
 #pragma mark - User Info Keys

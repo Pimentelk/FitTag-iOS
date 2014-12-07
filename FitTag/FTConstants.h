@@ -15,8 +15,11 @@ typedef enum {
 } FTTabBarControllerViewControllerIndex;
 
 #pragma mark - AppStoreURLFormat
-NSString *const iOS7AppStoreURLFormat;
-NSString *const iOSAppStoreURLFormat;
+extern NSString *const iOS7AppStoreURLFormat;
+extern NSString *const iOSAppStoreURLFormat;
+
+extern NSString *const googleMapsAPIPlaceAutocompleteURL;
+extern NSString *const googleMapsAPIPlaceSearchURL;
 
 #pragma mark - NSUserDefaults
 extern NSString *const kFTUserDefaultsSettingsViewControllerPushLikesKey;
@@ -33,15 +36,20 @@ extern NSString *const kFTLaunchURLHostTakePicture;
 
 #pragma mark - NSNotification
 extern NSString *const FTAppDelegateApplicationDidReceiveRemoteNotification;
+
 extern NSString *const FTUtilityUserFollowingChangedNotification;
 extern NSString *const FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification;
 extern NSString *const FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification;
 extern NSString *const FTUtilityDidFinishProcessingProfilePictureNotification;
+
 extern NSString *const FTTabBarControllerDidFinishEditingPhotoNotification;
 extern NSString *const FTTabBarControllerDidFinishImageFileUploadNotification;
-extern NSString *const FTPhotoDetailsViewControllerUserDeletedPhotoNotification;
+
+extern NSString *const FTTimelineViewControllerUserDeletedPostNotification;
+
 extern NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification;
 extern NSString *const FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification;
+
 extern NSString *const FTRewardsCollectionViewControllerUserReceiveRewardNotification;
 
 #pragma mark - User Info Keys
