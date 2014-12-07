@@ -17,6 +17,7 @@
                                                                   FTGalleryCellDelegate,
                                                                   FTPostHeaderViewDelegate,
                                                                   UIActionSheetDelegate,
+                                                                  UIAlertViewDelegate,
                                                                   UIGestureRecognizerDelegate,
                                                                   MFMailComposeViewControllerDelegate>
 

@@ -41,7 +41,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:FTPhotoDetailsViewControllerUserDeletedPhotoNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FTTimelineViewControllerUserDeletedPostNotification object:nil];
 }
 
 - (id)initWithStyle:(UITableViewStyle)style {
@@ -115,7 +115,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidPublishPhoto:) name:FTTabBarControllerDidFinishEditingPhotoNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userFollowingChanged:) name:FTUtilityUserFollowingChangedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidDeletePhoto:) name:FTPhotoDetailsViewControllerUserDeletedPhotoNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidDeletePhoto:) name:FTTimelineViewControllerUserDeletedPostNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLikeOrUnlikePhoto:) name:FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLikeOrUnlikePhoto:) name:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidCommentOnPhoto:) name:FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification object:nil];
@@ -889,6 +889,32 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
         [FTUtility prepareToSharePostOnTwitter:self.currentPostMoreOption];
     } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_REPORT_INAPPROPRIATE]) {
         [self reportPostInappropriate:self.currentPostMoreOption];
+    } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_DELETE_POST]) {
+        [[[UIAlertView alloc] initWithTitle:ACTION_DELETE_POST
+                                    message:@"Are you sure you want to delete this post?"
+                                   delegate:self
+                          cancelButtonTitle:@"no"
+                          otherButtonTitles:@"delete", nil] show];
+    }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if ([[alertView buttonTitleAtIndex:buttonIndex] isEqualToString:@"delete"]) {
+        
+        // Delete all activites related to this photo
+        PFQuery *query = [PFQuery queryWithClassName:kFTActivityClassKey];
+        [query whereKey:kFTActivityPostKey equalTo:self.currentPostMoreOption];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *activities, NSError *error) {
+            if (!error) {
+                for (PFObject *activity in activities) {
+                    [activity deleteEventually];
+                }
+            }
+            
+            // Delete photo
+            [self.currentPostMoreOption deleteEventually];
+        }];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FTTimelineViewControllerUserDeletedPostNotification object:[self.currentPostMoreOption objectId]];
     }
 }
 
@@ -995,13 +1021,30 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
     self.currentPostMoreOption = nil;
     self.currentPostMoreOption = post;
     
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-                                                             delegate:self
-                                                    cancelButtonTitle:@"Cancel"
-                                               destructiveButtonTitle:nil
-                                                    otherButtonTitles:ACTION_SHARE_ON_FACEBOOK,
-                                                                      ACTION_SHARE_ON_TWITTER,
-                                                                      ACTION_REPORT_INAPPROPRIATE, nil];
+    PFUser *currentUser = [PFUser currentUser];
+    PFUser *postUser = [post objectForKey:kFTPostUserKey];
+    
+    UIActionSheet *actionSheet = nil;
+    
+    if ([currentUser.objectId isEqualToString:postUser.objectId]) {
+        actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+                                                  delegate:self
+                                         cancelButtonTitle:@"Cancel"
+                                    destructiveButtonTitle:nil
+                                         otherButtonTitles:ACTION_SHARE_ON_FACEBOOK,
+                                                           ACTION_SHARE_ON_TWITTER,
+                                                           ACTION_REPORT_INAPPROPRIATE,
+                                                           ACTION_DELETE_POST, nil];
+    } else {
+        NSLog(@"!=");
+        actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+                                                  delegate:self
+                                         cancelButtonTitle:@"Cancel"
+                                    destructiveButtonTitle:nil
+                                         otherButtonTitles:ACTION_SHARE_ON_FACEBOOK,
+                                                           ACTION_SHARE_ON_TWITTER,
+                                                           ACTION_REPORT_INAPPROPRIATE, nil];
+    }
     [actionSheet showInView:self.view];
 }
 
@@ -1030,6 +1073,7 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
     dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC);
     dispatch_after(time, dispatch_get_main_queue(), ^(void){
         [self loadObjects];
+        [FTUtility showHudMessage:@"post deleted" WithDuration:2];
     });
 }
 
