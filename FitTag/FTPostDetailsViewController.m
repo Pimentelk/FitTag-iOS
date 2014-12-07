@@ -594,7 +594,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
         // Delete photo
         [self.post deleteEventually];
     }];
-    [[NSNotificationCenter defaultCenter] postNotificationName:FTPhotoDetailsViewControllerUserDeletedPhotoNotification object:[self.post objectId]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FTTimelineViewControllerUserDeletedPostNotification object:[self.post objectId]];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
