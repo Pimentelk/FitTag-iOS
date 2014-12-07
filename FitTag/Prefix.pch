@@ -18,6 +18,7 @@
     #import <Parse/Parse.h>
     #import <MediaPlayer/MediaPlayer.h>
     #import "FTConstants.h"
+    #import "FTGAIConstants.h"
     #import "FTUtility.h"
     #import "FTCache.h"
     #import "GAI.h"
