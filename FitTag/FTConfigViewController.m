@@ -75,7 +75,8 @@
 
 #pragma mark - ()
 
-- (void)refreshCurrentUserCallbackWithResult:(PFObject *)refreshedObject error:(NSError *)error {
+- (void)refreshCurrentUserCallbackWithResult:(PFObject *)refreshedObject
+                                       error:(NSError *)error {
     if (!error) {
         //NSLog(@"refreshObject: %@",refreshedObject);
     }
@@ -92,10 +93,17 @@
 
 #pragma mark - PFLogInViewControllerDelegate
 
-- (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
+- (void)logInViewController:(PFLogInViewController *)logInController
+               didLogInUser:(PFUser *)user {
     NSLog(@"%@::logInViewController:didLogInUser:",VIEWCONTROLLER_CONFIG);
     if ([PFUser currentUser] && user) {
         [self presentTabBarController:user];
+        
+        id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+        [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+                                                              action:kFTTrackEventActionTypeUserLogIn
+                                                               label:kFTTrackEventLabelTypeLogInSuccess
+                                                               value:nil] build]];
     }
 }
 
@@ -106,6 +114,13 @@ shouldBeginLogInWithUsername:(NSString *)username
     
     NSLog(@"logInViewController shouldBeginLogInWithUsername");
     if (username && password && username.length && password.length) {
+        
+        id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+        [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+                                                              action:kFTTrackEventActionTypeUserLogIn
+                                                               label:kFTTrackEventLabelTypeLogInShould
+                                                               value:nil] build]];
+        
         return YES;
     }
     
@@ -121,20 +136,42 @@ shouldBeginLogInWithUsername:(NSString *)username
 // Sent to the delegate when the log in attempt fails.
 - (void)logInViewController:(PFLogInViewController *)logInController
     didFailToLogInWithError:(NSError *)error {
-    NSLog(@"%@::logInViewController:loInController:didFailToLogInWithError:",VIEWCONTROLLER_CONFIG);
-    NSLog(@"Failed to log in%@%@",ERROR_MESSAGE,error);
+    //NSLog(@"%@::logInViewController:loInController:didFailToLogInWithError:",VIEWCONTROLLER_CONFIG);
+    //NSLog(@"Failed to log in%@%@",ERROR_MESSAGE,error);
     
-    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid Credentials", nil)
-                                message:NSLocalizedString(@"The operation couldn't be completed. Invalid username or password, please try again.", nil)
+    /*
+    switch (error.code) {
+        case 200:
+            
+            break;
+            
+        default:
+            break;
+    }
+    */
+    
+    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"LogIn Error", nil)
+                                message:NSLocalizedString(@"The operation couldn't be completed. Invalid username or password, please try again. If the problem continues contact support.", nil)
                                delegate:nil
                       cancelButtonTitle:NSLocalizedString(@"OK", nil)
                       otherButtonTitles:nil] show];
+    
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeError
+                                                          action:kFTTrackEventActionTypeUserLogIn
+                                                           label:[NSString stringWithFormat:@"Error.code:%ld",(long)error.code]
+                                                           value:nil] build]];
 }
 
 // Sent to the delegate when the log in screen is dismissed.
 - (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController {
-    NSLog(@"%@::logInViewControllerDidCancelLogIn:",VIEWCONTROLLER_CONFIG);
-    NSLog(@"User dismissed the logInViewController");
+    //NSLog(@"%@::logInViewControllerDidCancelLogIn:",VIEWCONTROLLER_CONFIG);
+    //NSLog(@"User dismissed the logInViewController");
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+                                                          action:kFTTrackEventActionTypeUserLogIn
+                                                           label:kFTTrackEventLabelTypeLogInCancel
+                                                           value:nil] build]];
 }
 
 #pragma mark - PFSignUpViewControllerDelegate
@@ -145,8 +182,6 @@ shouldBeginLogInWithUsername:(NSString *)username
     NSLog(@"%@::signUpViewController:shouldBeginSignUp:",VIEWCONTROLLER_CONFIG);
     
     if (signUpViewController) {
-        
-        [signUpController performSelector:@selector(didTapHideKeyboardAction) withObject:nil];
         
         BOOL informationComplete = YES;
         
@@ -223,6 +258,12 @@ shouldBeginLogInWithUsername:(NSString *)username
         }
         */
         
+        id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+        [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+                                                              action:kFTTrackEventActionTypeUserSignUp
+                                                               label:kFTTrackEventLabelTypeSignUpBegin
+                                                               value:nil] build]];
+        
         return YES;
     }
     return NO;
@@ -236,6 +277,13 @@ shouldBeginLogInWithUsername:(NSString *)username
         NSLog(USER_DID_LOGIN);
         
         if (signUpViewController) {
+            
+            // User signedup event
+            id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+            [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+                                                                  action:kFTTrackEventActionTypeUserSignUp
+                                                                   label:kFTTrackEventLabelTypeSignUpSuccess
+                                                                   value:nil] build]];
             
             /*
             if (signUpViewController.firstname) {
@@ -264,6 +312,7 @@ shouldBeginLogInWithUsername:(NSString *)username
             }
             */
             
+            /*
             if (signUpViewController.profilePhoto) {
                 NSLog(@"signUpViewController.profilePhoto");
                 
@@ -288,6 +337,7 @@ shouldBeginLogInWithUsername:(NSString *)username
                     [user setObject:smallPicFile forKey:kFTUserProfilePicSmallKey];
                 }
             }
+            */
             
             [user setValue:kFTUserTypeUser forKey:kFTUserTypeKey];
             
@@ -311,14 +361,27 @@ shouldBeginLogInWithUsername:(NSString *)username
 }
 
 // Sent to the delegate when the sign up attempt fails.
-- (void)signUpViewController:(PFSignUpViewController *)signUpController didFailToSignUpWithError:(NSError *)error {
-    NSLog(@"%@::signUpViewController:didFailToSignUpWithError:",VIEWCONTROLLER_CONFIG);
-    NSLog(@"%@%@",ERROR_MESSAGE,error);
+- (void)signUpViewController:(PFSignUpViewController *)signUpController
+    didFailToSignUpWithError:(NSError *)error {
+    
+    //NSLog(@"%@::signUpViewController:didFailToSignUpWithError:",VIEWCONTROLLER_CONFIG);
+    //NSLog(@"%@%@",ERROR_MESSAGE,error);
+    
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeError
+                                                          action:kFTTrackEventActionTypeUserSignUp
+                                                           label:[NSString stringWithFormat:@"Error.code:%ld",(long)error.code]
+                                                           value:nil] build]];
 }
 
 // Sent to the delegate when the sign up screen is dismissed.
 - (void)signUpViewControllerDidCancelSignUp:(PFSignUpViewController *)signUpController {
     NSLog(@"%@::signUpViewControllerDidCancelSignUp:",VIEWCONTROLLER_CONFIG);
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+                                                          action:kFTTrackEventActionTypeButtonPress
+                                                           label:kFTTrackEventLabelTypeSignUpCancel
+                                                           value:nil] build]];
 }
 
 @end

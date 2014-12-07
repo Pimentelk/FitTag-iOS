@@ -162,11 +162,16 @@
 
 #pragma mark - ()
 
-- (void)didTapCancelButtonAction:(UIButton *)button {
+- (void)didTapCancelButtonAction:(UIButton *)button {    
     [self.signUpView.dismissButton sendActionsForControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)didTapSignupButtonAction:(id)sender {
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+                                                          action:kFTTrackEventActionTypeButtonPress
+                                                           label:kFTTrackEventLabelTypeSignUpSubmit
+                                                           value:nil] build]];
     [self.signUpView.passwordField resignFirstResponder];
     [self.signUpView.emailField resignFirstResponder];
     [self.signUpView.usernameField resignFirstResponder];

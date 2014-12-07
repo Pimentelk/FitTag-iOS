@@ -43,6 +43,7 @@
     // Set buttons appearance
     [self.logInView.dismissButton setImage:nil forState:UIControlStateNormal];
     [self.logInView.dismissButton setImage:nil forState:UIControlStateHighlighted];
+    [self.logInView.dismissButton setImage:nil forState:UIControlStateSelected];
     
     // Set login button
     
@@ -50,6 +51,7 @@
     [self.logInView.facebookButton setImage:nil forState:UIControlStateHighlighted];
     [self.logInView.facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook_button"] forState:UIControlStateHighlighted];
     [self.logInView.facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook_button"] forState:UIControlStateNormal];
+    [self.logInView.facebookButton addTarget:self action:@selector(didTapFacebookButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.logInView.facebookButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
     [self.logInView.facebookButton setTitle:EMPTY_STRING forState:UIControlStateHighlighted];
     
@@ -57,11 +59,13 @@
     [self.logInView.twitterButton setImage:nil forState:UIControlStateHighlighted];
     [self.logInView.twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter_button"] forState:UIControlStateNormal];
     [self.logInView.twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter_button"] forState:UIControlStateHighlighted];
+    [self.logInView.twitterButton addTarget:self action:@selector(didTapTwitterButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.logInView.twitterButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
     [self.logInView.twitterButton setTitle:EMPTY_STRING forState:UIControlStateHighlighted];
     
     [self.logInView.signUpButton setBackgroundImage:[UIImage imageNamed:@"signup_button"] forState:UIControlStateNormal];
     [self.logInView.signUpButton setBackgroundImage:[UIImage imageNamed:@"signup_button"] forState:UIControlStateHighlighted];
+    [self.logInView.signUpButton addTarget:self action:@selector(didTapSignupButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.logInView.signUpButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
     [self.logInView.signUpButton setTitle:EMPTY_STRING forState:UIControlStateHighlighted];
     
@@ -72,6 +76,7 @@
     // Add password forgot button
     [self.logInView.passwordForgottenButton setBackgroundImage:[UIImage imageNamed:@"forgot_password"] forState:UIControlStateNormal];
     [self.logInView.passwordForgottenButton setBackgroundImage:[UIImage imageNamed:@"forgot_password"] forState:UIControlStateHighlighted];
+    [self.logInView.passwordForgottenButton addTarget:self action:@selector(didTapForgotPasswordButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.logInView.passwordForgottenButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
     [self.logInView.passwordForgottenButton setTitle:EMPTY_STRING forState:UIControlStateHighlighted];
     
@@ -156,6 +161,7 @@
     
     [self.logInView.logInButton setBackgroundImage:[UIImage imageNamed:@"login_button"] forState:UIControlStateHighlighted];
     [self.logInView.logInButton setBackgroundImage:[UIImage imageNamed:@"login_button"] forState:UIControlStateNormal];
+    [self.logInView.logInButton addTarget:self action:@selector(didTapLogInButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.logInView.logInButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
     [self.logInView.logInButton setTitle:EMPTY_STRING forState:UIControlStateHighlighted];
     
@@ -167,10 +173,11 @@
     
     NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     
-    UILabel *appVersionLabel = [[UILabel alloc] initWithFrame:CGRectMake(7, 15, 40, 20)];
-    appVersionLabel.text = [NSString stringWithFormat:@"v2.0.0 b%@",appVersion];
-    appVersionLabel.font = BENDERSOLID(14);
-    appVersionLabel.textColor = [UIColor whiteColor];
+    UILabel *appVersionLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width-130, 15, 120, 20)];
+    [appVersionLabel setTextAlignment:NSTextAlignmentRight];
+    [appVersionLabel setText:[NSString stringWithFormat:@"v2.0.0 b%@",appVersion]];
+    [appVersionLabel setFont:[UIFont fontWithName:@"Gill Sans" size:11]];
+    [appVersionLabel setTextColor:[UIColor whiteColor]];
     
     [self.logInView addSubview:appVersionLabel];
 }
@@ -197,6 +204,48 @@
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
     [self.logInView scrollToView:textField];
+}
+
+#pragma mark - GAI Event Tracking
+
+- (void)didTapLogInButtonAction:(UIButton *)button {
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+                                                          action:kFTTrackEventActionTypeButtonPress
+                                                           label:kFTTrackEventLabelTypeLogIn
+                                                           value:nil] build]];
+}
+
+- (void)didTapForgotPasswordButtonAction:(UIButton *)button {
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+                                                          action:kFTTrackEventActionTypeButtonPress
+                                                           label:kFTTrackEventLabelTypeForgotPassword
+                                                           value:nil] build]];
+}
+
+- (void)didTapSignupButtonAction:(UIButton *)button {
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+                                                          action:kFTTrackEventActionTypeButtonPress
+                                                           label:kFTTrackEventLabelTypeSignUp
+                                                           value:nil] build]];
+}
+
+- (void)didTapFacebookButtonAction:(UIButton *)button {
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+                                                          action:kFTTrackEventActionTypeButtonPress
+                                                           label:kFTTrackEventLabelTypeFacebook
+                                                           value:nil] build]];
+}
+
+- (void)didTapTwitterButtonAction:(UIButton *)button {
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+                                                          action:kFTTrackEventActionTypeButtonPress
+                                                           label:kFTTrackEventLabelTypeTwitter
+                                                           value:nil] build]];
 }
 
 @end
