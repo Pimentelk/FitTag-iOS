@@ -36,6 +36,7 @@
 #define ACTION_SHARE_ON_FACEBOOK @"Share on Facebook"
 #define ACTION_SHARE_ON_TWITTER @"Share to Twitter"
 #define ACTION_REPORT_INAPPROPRIATE @"Report as Inappropriate"
+#define ACTION_DELETE_POST @"Delete This Post"
 
 // Video CGRECTMAKE
 //#define VIDEOCGRECTFRAME CGRectMake(VIDEOCGRECTFRAMECENTER(146),VIDEOCGRECTFRAMECENTER(144),146,144)
@@ -110,7 +111,7 @@
 #define VIEWCONTROLLER_FOLLOW @"FTFollowFriendsViewController"
 
 // CONTENT MODE
-#define CONTENTMODE UIViewContentModeScaleAspectFit
+#define CONTENTMODE UIViewContentModeScaleAspectFill
 #define CONTENTMODEVIDEO UIViewContentModeScaleAspectFill
 #define SCALINGMODE MPMovieScalingModeAspectFill
 
@@ -177,7 +178,7 @@
 #define LOCATION_USERS_WITHIN_MILES 10
 
 // PROFILE
-#define PROFILE_HEADER_VIEW_HEIGHT 290
+#define PROFILE_HEADER_VIEW_HEIGHT 295
 
 // IMAGES
 #define IMAGE_PLAY_BUTTON [UIImage imageNamed:@"play_button"]
@@ -308,13 +309,16 @@
 #define TWITTER_PROFILE_HTTPS @"profile_image_url_https"
 
 #define PARSE_HOST @"api.parse.com"
+
 #define FACEBOOK_GRAPH_PICTURES_URL @"https://graph.facebook.com/%@/picture?type=large&width=600&height=600"
+
 #define TWITTER_API_USERS @"https://api.twitter.com/1.1/users/show.json?screen_name=%@"
 
 /****************** KEYS *********************/
 
 // GOOGLE
 #define GOOGLE_ANALYTICS_TRACKING_ID @"UA-55852213-1"
+#define GOOGLE_PLACES_API_KEY @"AIzaSyDLrDeCCYwFjiu_rW8ni72bWwurwChhZQU"
 
 // PARSE
 #define PARSE_APPLICATION_ID @"9Cii0KKJr09vtACtVRSccu1BHGFJYR6c6XYkafb1"
