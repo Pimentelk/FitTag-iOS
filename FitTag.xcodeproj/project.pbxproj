@@ -140,6 +140,8 @@
 		2DDBF14819F145A8009037E2 /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DDBF14719F145A8009037E2 /* libGoogleAnalyticsServices.a */; };
 		2DDBF14A19F1460D009037E2 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DDBF14919F1460D009037E2 /* CoreData.framework */; };
 		2DDBF15119F23E75009037E2 /* FTNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DDBF15019F23E75009037E2 /* FTNavigationController.m */; };
+		2DE24D611A33AE1D00F551E0 /* FTGAIConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DE24D601A33AE1D00F551E0 /* FTGAIConstants.m */; };
+		2DE24D651A33F76800F551E0 /* FTGooglePlace.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DE24D641A33F76800F551E0 /* FTGooglePlace.m */; };
 		2DE7C77F19ECD07100F72188 /* FTGallerySwiperView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DE7C77E19ECD07100F72188 /* FTGallerySwiperView.m */; };
 /* End PBXBuildFile section */
 
@@ -396,6 +398,10 @@
 		2DDBF14E19F14CE6009037E2 /* GAIEcommercePromotion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAIEcommercePromotion.h; sourceTree = "<group>"; };
 		2DDBF14F19F23E75009037E2 /* FTNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTNavigationController.h; sourceTree = "<group>"; };
 		2DDBF15019F23E75009037E2 /* FTNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTNavigationController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		2DE24D5F1A33AE1D00F551E0 /* FTGAIConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FTGAIConstants.h; path = ../FTGAIConstants.h; sourceTree = "<group>"; };
+		2DE24D601A33AE1D00F551E0 /* FTGAIConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FTGAIConstants.m; path = ../FTGAIConstants.m; sourceTree = "<group>"; };
+		2DE24D631A33F76800F551E0 /* FTGooglePlace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGooglePlace.h; sourceTree = "<group>"; };
+		2DE24D641A33F76800F551E0 /* FTGooglePlace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGooglePlace.m; sourceTree = "<group>"; };
 		2DE7C77D19ECD07100F72188 /* FTGallerySwiperView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGallerySwiperView.h; sourceTree = "<group>"; };
 		2DE7C77E19ECD07100F72188 /* FTGallerySwiperView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGallerySwiperView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -904,6 +910,7 @@
 		2DD691401949AF5B00B59E75 = {
 			isa = PBXGroup;
 			children = (
+				2DE24D621A33F70700F551E0 /* GooglePlaces */,
 				2DAABBF51A11DB62007F1E44 /* Encoder */,
 				2D054DCC1A0867B300A2886F /* STTweetLabel */,
 				2DDBF14019F1451D009037E2 /* GooglyAnalytics */,
@@ -964,16 +971,18 @@
 			children = (
 				2DD6915B1949AF5B00B59E75 /* AppDelegate.h */,
 				2DD6915C1949AF5B00B59E75 /* AppDelegate.m */,
-				2DD6DB241A29598D0002CBCD /* FTNetworkViewController.h */,
-				2DD6DB251A29598D0002CBCD /* FTNetworkViewController.m */,
 				2D0A53A91971A65F0091FFCA /* Categories */,
 				2D429A1D197B2D2600F8A9A0 /* Controllers */,
 				2DABDA07195DE0F500379891 /* Custom Bars */,
 				2DD2B6561983FD2C00600A42 /* FTCache.h */,
 				2DD2B6571983FD2C00600A42 /* FTCache.m */,
+				2DE24D5F1A33AE1D00F551E0 /* FTGAIConstants.h */,
+				2DE24D601A33AE1D00F551E0 /* FTGAIConstants.m */,
 				2D429A15197AD47000F8A9A0 /* FTConstants.h */,
 				2D429A16197AD47000F8A9A0 /* FTConstants.m */,
 				2D7968B019F8C20C00DA2DD0 /* FTMacros.h */,
+				2DD6DB241A29598D0002CBCD /* FTNetworkViewController.h */,
+				2DD6DB251A29598D0002CBCD /* FTNetworkViewController.m */,
 				2DD2B6531983FD0E00600A42 /* FTUtility.h */,
 				2DD2B6541983FD0E00600A42 /* FTUtility.m */,
 				2DD691641949AF5B00B59E75 /* Images.xcassets */,
@@ -1054,6 +1063,15 @@
 				2DDBF14E19F14CE6009037E2 /* GAIEcommercePromotion.h */,
 			);
 			name = GooglyAnalytics;
+			sourceTree = "<group>";
+		};
+		2DE24D621A33F70700F551E0 /* GooglePlaces */ = {
+			isa = PBXGroup;
+			children = (
+				2DE24D631A33F76800F551E0 /* FTGooglePlace.h */,
+				2DE24D641A33F76800F551E0 /* FTGooglePlace.m */,
+			);
+			name = GooglePlaces;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1148,6 +1166,7 @@
 				2DBE021419D37AF900CD278C /* FTRewardsDetailView.m in Sources */,
 				2DD2B67D19840FB500600A42 /* FTActivityCell.m in Sources */,
 				2DD691981949B24300B59E75 /* FTConfigViewController.m in Sources */,
+				2DE24D611A33AE1D00F551E0 /* FTGAIConstants.m in Sources */,
 				2DD6919B1949B71B00B59E75 /* FTLoginViewController.m in Sources */,
 				2D054E0A1A0E914F00A2886F /* FTViewFriendsViewController.m in Sources */,
 				2DD2B691198417D500600A42 /* FTLoadMoreCell.m in Sources */,
@@ -1195,6 +1214,7 @@
 				2DACD97B196578DA00833C14 /* FTInspirationViewController.m in Sources */,
 				2D4DF06019E0ED6C00E2E71E /* FTUserProfileViewController.m in Sources */,
 				2D4DF06319E0F2F500E2E71E /* FTUserProfileHeaderView.m in Sources */,
+				2DE24D651A33F76800F551E0 /* FTGooglePlace.m in Sources */,
 				2D9949761996A9B0000E321E /* FTCameraToolBar.m in Sources */,
 				2DD2B694198418C300600A42 /* FTPhotoCell.m in Sources */,
 				2DCD9F0819F4AB73006DCD8E /* FTSettingsCell.m in Sources */,
