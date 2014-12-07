@@ -54,6 +54,7 @@
         self.imageView.frame = CGRectMake(0,0,self.frame.size.width,self.frame.size.width);
         self.imageView.backgroundColor = [UIColor clearColor];
         self.imageView.contentMode = CONTENTMODE;
+        self.imageView.clipsToBounds = YES;
         
         UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapPhotoButtonAction:)];
         singleTap.numberOfTapsRequired = 1;
@@ -61,6 +62,7 @@
         self.photoButton = [UIButton buttonWithType:UIButtonTypeCustom];
         self.photoButton.frame = CGRectMake(0,0,self.frame.size.width,self.frame.size.width);
         self.photoButton.backgroundColor = [UIColor clearColor];
+        self.photoButton.clipsToBounds = YES;
         [self.photoButton addGestureRecognizer:singleTap];
         
         [self.contentView addSubview:self.photoButton];
