@@ -331,11 +331,12 @@
     if (followingDictionary) {
         [followingCountLabel setText:[NSString stringWithFormat:@"%lu FOLLOWING", (unsigned long)[[followingDictionary allValues] count]]];
     }
-    
+        
     PFQuery *queryFollowingCount = [PFQuery queryWithClassName:kFTActivityClassKey];
     [queryFollowingCount whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
     [queryFollowingCount whereKey:kFTActivityFromUserKey equalTo:self.user];
     [queryFollowingCount setCachePolicy:kPFCachePolicyCacheElseNetwork];
+    [queryFollowingCount whereKeyExists:kFTActivityToUserKey];
     [queryFollowingCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
             [followingCountLabel setText:[NSString stringWithFormat:@"%d FOLLOWING", number]];
