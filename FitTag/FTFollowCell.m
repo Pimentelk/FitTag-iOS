@@ -1,5 +1,5 @@
 //
-//  UITableViewCell+FTInviteCell.m
+//  FTFollowCell.m
 //  FitTag
 //
 //  Created by Kevin Pimentel on 10/28/14.
@@ -10,8 +10,8 @@
 
 #define LABEL_PADDING_TOP 15.0f
 #define LABEL_PADDING 5.0f
-#define PROFILE_IMAGE_WIDTH 56.0f
-#define PROFILE_IMAGE_HEIGHT 56.0f
+#define FOLLOW_IMAGE_WIDTH 56.0f
+#define FOLLOW_IMAGE_HEIGHT 56.0f
 #define LABEL_HEIGHT 15.0f
 #define FOLLOW_BUTTON_WIDTH 64.0f
 #define PROFILE_IMAGE_X 10.0f
@@ -46,7 +46,7 @@
         [tapGestureRecognizer setNumberOfTapsRequired:1];
         
         // ImageView Placeholder
-        self.profileImageView = [[UIImageView alloc] initWithFrame:CGRectMake(PROFILE_IMAGE_X, 4, PROFILE_IMAGE_WIDTH, PROFILE_IMAGE_HEIGHT)];
+        self.profileImageView = [[UIImageView alloc] initWithFrame:CGRectMake(PROFILE_IMAGE_X, 4, FOLLOW_IMAGE_WIDTH, FOLLOW_IMAGE_HEIGHT)];
         self.profileImageView.backgroundColor = [UIColor redColor];
         self.profileImageView.userInteractionEnabled = YES;
         self.profileImageView.layer.cornerRadius = CORNERRADIUS(profileImageView.frame.size.width);
@@ -129,6 +129,17 @@
     self.titleLabel.text = [NSString stringWithFormat:@"%@ %@",firstname,lastname];
     self.handleLabel.text = [NSString stringWithFormat:@"%@",[self.user objectForKey:kFTUserDisplayNameKey]];
     
+    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapCellAction:)];
+    [tapGestureRecognizer setNumberOfTapsRequired:1];
+    
+    [self.contentView setUserInteractionEnabled:YES];
+    [self.contentView addGestureRecognizer:tapGestureRecognizer];
+    
+    if ([[PFUser currentUser].objectId isEqual:[self.user objectId]]) {
+        [followUserButton setHidden:YES];
+        return;
+    }
+    
     // check if the currentUser is following this user
     PFQuery *queryIsFollowing = [PFQuery queryWithClassName:kFTActivityClassKey];
     [queryIsFollowing whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
@@ -147,12 +158,6 @@
             [self.followUserButton setEnabled:YES];
         }
     }];
-    
-    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapCellAction:)];
-    [tapGestureRecognizer setNumberOfTapsRequired:1];
-    
-    [self.contentView setUserInteractionEnabled:YES];
-    [self.contentView addGestureRecognizer:tapGestureRecognizer];
 }
 
 #pragma mark - FTFollowCellDelegate
