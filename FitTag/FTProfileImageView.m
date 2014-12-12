@@ -41,9 +41,9 @@
     [super layoutSubviews];
     [self bringSubviewToFront:self.borderImageview];
     
-    self.profileImageView.frame = CGRectMake( 0.0f, 0.0f, self.frame.size.width, self.frame.size.height);
-    self.borderImageview.frame = CGRectMake( 0.0f, 0.0f, self.frame.size.width, self.frame.size.height);
-    self.profileButton.frame = CGRectMake( 0.0f, 0.0f, self.frame.size.width, self.frame.size.height);
+    self.profileImageView.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+    self.borderImageview.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+    self.profileButton.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
     
     self.profileImageView.layer.cornerRadius = CORNERRADIUS(self.frame.size.width);
     self.profileImageView.clipsToBounds = YES;
