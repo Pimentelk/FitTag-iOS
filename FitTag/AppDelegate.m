@@ -38,14 +38,31 @@
 @property (nonatomic, strong) MBProgressHUD *hud;
 @property (nonatomic, strong) NSTimer *autoFollowTimer;
 
+@property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
+
+@property CGRect bounds;
+
 - (BOOL)shouldProceedToMainInterface:(PFUser *)user;
 @end
 
 @implementation AppDelegate
+@synthesize flowLayout;
+@synthesize bounds;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     //NSLog(@"%@::application:didFinishLaunchingWithOptions:",APPDELEGATE_RESPONDER);
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    
+    bounds = [[[[UIApplication sharedApplication] delegate] window] bounds];
+    
+    // Profile View flow layout
+    flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [flowLayout setItemSize:CGSizeMake(bounds.size.width/3,105)];
+    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [flowLayout setMinimumInteritemSpacing:0];
+    [flowLayout setMinimumLineSpacing:0];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(bounds.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
     
     // Google Analytics
     [GAI sharedInstance].trackUncaughtExceptions = YES;
@@ -268,23 +285,12 @@
     // Map ViewController - Home
     self.mapViewController = [[FTMapViewController alloc] init];
     
-    CGRect bounds = [[[[UIApplication sharedApplication] delegate] window] bounds];
-    
-    // Profile View Controller
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(105.5,105)];
-    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [flowLayout setMinimumInteritemSpacing:0];
-    [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(bounds.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
-    
     self.userProfileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     [self.userProfileViewController setUser:[PFUser currentUser]];
     
     // Rewards View Controller
     UICollectionViewFlowLayout *layoutFlow = [[UICollectionViewFlowLayout alloc] init];
-    [layoutFlow setItemSize:CGSizeMake(160,185)];
+    [layoutFlow setItemSize:CGSizeMake(bounds.size.width/2,185)];
     [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
     [layoutFlow setMinimumInteritemSpacing:0];
     [layoutFlow setMinimumLineSpacing:0];
@@ -454,15 +460,15 @@
                     UINavigationController *feedNavigationController = self.tabBarController.viewControllers[FTFeedTabBarItemIndex];
                     self.tabBarController.selectedViewController = feedNavigationController;
                     
-                    CGRect boudns = [[[[UIApplication sharedApplication] delegate] window] bounds];
+                    bounds = [[[[UIApplication sharedApplication] delegate] window] bounds];
                     
-                    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-                    [flowLayout setItemSize:CGSizeMake(105.5,105)];
+                    flowLayout = [[UICollectionViewFlowLayout alloc] init];
+                    [flowLayout setItemSize:CGSizeMake(bounds.size.width/3,105)];
                     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
                     [flowLayout setMinimumInteritemSpacing:0];
                     [flowLayout setMinimumLineSpacing:0];
                     [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-                    [flowLayout setHeaderReferenceSize:CGSizeMake(boudns.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
+                    [flowLayout setHeaderReferenceSize:CGSizeMake(bounds.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
                     
                     FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
                     [profileViewController setUser:[PFUser currentUser]];
