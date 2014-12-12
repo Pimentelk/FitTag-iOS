@@ -22,6 +22,8 @@
 @property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
 @property (nonatomic, strong) PFObject *currentPostMoreOption;
 @property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
+@property CGRect originalFrame;
+@property CGFloat previousScrollViewYOffset;
 @end
 
 @implementation FTTimelineViewController
@@ -64,7 +66,7 @@
         // Improve scrolling performance by reusing UITableView section headers
         self.reusableSectionHeaderViews = [NSMutableSet setWithCapacity:3];
         
-        self.shouldReloadOnAppear = YES;
+        self.shouldReloadOnAppear = NO;
     }
     return self;
 }
@@ -75,6 +77,8 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     [super viewDidLoad];
+    
+    self.originalFrame = self.navigationController.navigationBar.frame;
     
     moviePlayer = [[MPMoviePlayerController alloc] init];
     [moviePlayer setControlStyle:MPMovieControlStyleNone];
@@ -113,17 +117,40 @@
     [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
     [dismissProfileButton setTintColor:[UIColor whiteColor]];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidPublishPhoto:) name:FTTabBarControllerDidFinishEditingPhotoNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userFollowingChanged:) name:FTUtilityUserFollowingChangedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidDeletePhoto:) name:FTTimelineViewControllerUserDeletedPostNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLikeOrUnlikePhoto:) name:FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLikeOrUnlikePhoto:) name:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidCommentOnPhoto:) name:FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(userDidPublishPhoto:)
+                                                 name:FTTabBarControllerDidFinishEditingPhotoNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(userFollowingChanged:)
+                                                 name:FTUtilityUserFollowingChangedNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(userDidDeletePhoto:)
+                                                 name:FTTimelineViewControllerUserDeletedPostNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(userDidLikeOrUnlikePost:)
+                                                 name:FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(userDidLikeOrUnlikePhoto:)
+                                                 name:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(userDidCommentOnPhoto:)
+                                                 name:FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification
+                                               object:nil];
 
     // Go to selected user profile
     
     flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(105.5,105)];
+    [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
@@ -135,18 +162,31 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
     if (self.shouldReloadOnAppear) {
         self.shouldReloadOnAppear = YES;
         [self loadObjects];
     }
-    [self.tableView reloadData];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     if (moviePlayer) {
         [moviePlayer stop];
+    }
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
+    CGRect tmpFram = self.originalFrame;
+    tmpFram.origin.y = 20;
+    self.navigationController.navigationBar.frame = tmpFram;
+    
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        NSString *className = NSStringFromClass([view class]);
+        if (![className isEqualToString:@"_UINavigationBarBackground"] && ![className isEqualToString:@"_UINavigationBarBackIndicatorView"]) {
+            view.alpha = 1;
+        }
     }
 }
 
@@ -256,7 +296,9 @@
     return postHeaderView;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath object:(PFObject *)object {
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath
+                        object:(PFObject *)object {
     
     static NSString *videoCellIdentifier = @"VideoCell";
     static NSString *photoCellIdentifier = @"PhotoCell";
@@ -291,7 +333,6 @@
             [galleryCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:gallery]];
             [galleryCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:gallery] description] forState:UIControlStateNormal];
             [galleryCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:gallery] description] forState:UIControlStateNormal];
-            //[galleryCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:gallery] description] forState:UIControlStateNormal];
         } else {
             @synchronized(self) {
                 // check if we can update the cache
@@ -330,22 +371,10 @@
                                 return;
                             }
                             
-                            [[object objectForKey:kFTPostUserKey] fetchIfNeededInBackgroundWithBlock:^(PFObject *user, NSError *error) {
-                                if (!error) {
-                                    [[FTCache sharedCache] setAttributesForPost:gallery
-                                                                         likers:likers
-                                                                     commenters:commenters
-                                                             likedByCurrentUser:isLikedByCurrentUser
-                                                                    displayName:[user objectForKey:kFTUserDisplayNameKey]];
-                                    
-                                    [galleryCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:gallery]];
-                                    [galleryCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:gallery] description] forState:UIControlStateNormal];
-                                    [galleryCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:gallery] description] forState:UIControlStateNormal];
-                                    //[galleryCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:gallery] description] forState:UIControlStateNormal];
-                                } else {
-                                    NSLog(@"ERROR##: %@",error);
-                                }
-                            }];
+                            [[FTCache sharedCache] setAttributesForPost:gallery likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+                            [galleryCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:gallery]];
+                            [galleryCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:gallery] description] forState:UIControlStateNormal];
+                            [galleryCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:gallery] description] forState:UIControlStateNormal];
                         }
                     }];
                 }
@@ -355,7 +384,7 @@
         
         galleryCell.galleryButton.tag = indexPath.section;
         galleryCell.imageView.image = [UIImage imageNamed:PLACEHOLDER_LIGHTGRAY];
-        /*
+        
         if (object) {
             galleryCell.imageView.file = [object objectForKey:kFTPostImageKey];
             
@@ -364,8 +393,6 @@
                 [galleryCell.imageView loadInBackground];
             }
         }
-        */
-        
         return galleryCell;
     }
     
@@ -431,22 +458,10 @@
                                 return;
                             }
                             
-                            [[object objectForKey:kFTPostUserKey] fetchIfNeededInBackgroundWithBlock:^(PFObject *user, NSError *error) {
-                                if (!error) {
-                                    [[FTCache sharedCache] setAttributesForPost:video
-                                                                         likers:likers
-                                                                     commenters:commenters
-                                                             likedByCurrentUser:isLikedByCurrentUser
-                                                                    displayName:[user objectForKey:kFTUserDisplayNameKey]];
-                                    
-                                    [videoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:video]];
-                                    [videoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:video] description] forState:UIControlStateNormal];
-                                    [videoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:video] description] forState:UIControlStateNormal];
-                                    //[videoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:video] description] forState:UIControlStateNormal];
-                                } else {
-                                    NSLog(@"ERROR##: %@",error);
-                                }
-                            }];
+                            [[FTCache sharedCache] setAttributesForPost:video likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+                            [videoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:video]];
+                            [videoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:video] description] forState:UIControlStateNormal];
+                            [videoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:video] description] forState:UIControlStateNormal];
                         }
                     }];
                 }
@@ -531,22 +546,10 @@
                                 return;
                             }
                             
-                            [[object objectForKey:kFTPostUserKey] fetchIfNeededInBackgroundWithBlock:^(PFObject *user, NSError *error) {
-                                if (!error) {
-                                    [[FTCache sharedCache] setAttributesForPost:photo
-                                                                         likers:likers
-                                                                     commenters:commenters
-                                                             likedByCurrentUser:isLikedByCurrentUser
-                                                                    displayName:[user objectForKey:kFTUserDisplayNameKey]];
-                                    
-                                    [photoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:photo]];
-                                    [photoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:photo] description] forState:UIControlStateNormal];
-                                    [photoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:photo] description] forState:UIControlStateNormal];
-                                    //[photoCell.usernameRibbon setTitle:[[[FTCache sharedCache] displayNameForPost:photo] description] forState:UIControlStateNormal];
-                                } else {
-                                    NSLog(@"ERROR##: %@",error);
-                                }
-                            }];
+                            [[FTCache sharedCache] setAttributesForPost:photo likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
+                            [photoCell setLikeStatus:[[FTCache sharedCache] isPostLikedByCurrentUser:photo]];
+                            [photoCell.likeCounter setTitle:[[[FTCache sharedCache] likeCountForPost:photo] description] forState:UIControlStateNormal];
+                            [photoCell.commentCounter setTitle:[[[FTCache sharedCache] commentCountForPost:photo] description] forState:UIControlStateNormal];
                         }
                     }];
                 }
@@ -656,7 +659,8 @@ didTapLikeGalleryButton:(UIButton *)button
 }
 
 - (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapImageInGalleryAction:(UIButton *)button
-                gallery:(PFObject *)gallery {
+                gallery:(PFObject *)gallery
+{
     
     //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapImageInGalleryAction:gallery:");
     FTPostDetailsViewController *galleryDetailsVC = [[FTPostDetailsViewController alloc] initWithPost:gallery AndType:kFTPostTypeGallery];
@@ -920,12 +924,78 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
 
 #pragma mark - UIScrollViewDelegate
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    CGRect frame = self.navigationController.navigationBar.frame;
+    CGFloat size = frame.size.height - 21;
+    CGFloat framePercentageHidden = ((20 - frame.origin.y) / (frame.size.height - 1));
+    CGFloat scrollOffset = scrollView.contentOffset.y;
+    CGFloat scrollDiff = scrollOffset - self.previousScrollViewYOffset;
+    CGFloat scrollHeight = scrollView.frame.size.height;
+    CGFloat scrollContentSizeHeight = scrollView.contentSize.height + scrollView.contentInset.bottom;
+    
+    if (scrollOffset <= -scrollView.contentInset.top) {
+        frame.origin.y = 20;
+    } else if ((scrollOffset + scrollHeight) >= scrollContentSizeHeight) {
+        frame.origin.y = -size;
+    } else {
+        frame.origin.y = MIN(20, MAX(-size, frame.origin.y - scrollDiff));
+    }
+    
+    scrollView.contentInset = UIEdgeInsetsMake(frame.origin.y+44, 0, 0, 0);
+    
+    [self.navigationController.navigationBar setFrame:frame];
+    [self updateBarButtonItems:(1 - framePercentageHidden)];
+    self.previousScrollViewYOffset = scrollOffset;
+    
     if (scrollView.contentSize.height - scrollView.contentOffset.y < (self.view.bounds.size.height)) {
         if (![self isLoading]) {
             [self loadNextPage];
         }
     }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    [self stoppedScrolling];
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView
+                  willDecelerate:(BOOL)decelerate
+{
+    if (!decelerate) {
+        [self stoppedScrolling];
+    }
+}
+
+- (void)stoppedScrolling
+{
+    CGRect frame = self.navigationController.navigationBar.frame;
+    if (frame.origin.y < 20) {
+        [self animateNavBarTo:-(frame.size.height - 21)];
+    }
+}
+
+- (void)updateBarButtonItems:(CGFloat)alpha
+{
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        NSString *className = NSStringFromClass([view class]);
+        
+        if (![className isEqualToString:@"_UINavigationBarBackground"] && ![className isEqualToString:@"_UINavigationBarBackIndicatorView"]) {
+            view.alpha = alpha;
+        }
+    }
+}
+
+- (void)animateNavBarTo:(CGFloat)y
+{
+    [UIView animateWithDuration:0.2 animations:^{
+        CGRect frame = self.navigationController.navigationBar.frame;
+        CGFloat alpha = (frame.origin.y >= y ? 0 : 1);
+        frame.origin.y = y;
+        [self.navigationController.navigationBar setFrame:frame];
+        [self updateBarButtonItems:alpha];
+    }];
 }
 
 #pragma mark - UIHeaderViewDelegate
@@ -1058,6 +1128,10 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
     return nil;
 }
 
+- (void)userDidLikeOrUnlikePost:(NSNotification *)note {
+    [self loadObjects];
+}
+
 - (void)userDidLikeOrUnlikePhoto:(NSNotification *)note {
     [self.tableView beginUpdates];
     [self.tableView endUpdates];
@@ -1087,7 +1161,8 @@ didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter
 
 - (void)userFollowingChanged:(NSNotification *)note {
     //NSLog(@"User following changed.");
-    self.shouldReloadOnAppear = YES;
+    //self.shouldReloadOnAppear = YES;
+    [self loadObjects];
 }
 
 - (void)didTapPopProfileButtonAction:(id)sender {
