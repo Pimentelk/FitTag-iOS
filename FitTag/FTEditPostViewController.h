@@ -11,7 +11,7 @@
 
 @protocol FTEditPostViewControllerDelegate;
 
-@interface FTEditPostViewController : UIViewController <UITextFieldDelegate,UIScrollViewDelegate,FTPostDetailsFooterViewDelegate,CLLocationManagerDelegate>
+@interface FTEditPostViewController : UIViewController <UITextViewDelegate,UITextFieldDelegate,UIScrollViewDelegate,FTPostDetailsFooterViewDelegate,CLLocationManagerDelegate>
 
 @property (nonatomic,weak) id <FTEditPostViewControllerDelegate> delegate;
 - (id)initWithArray:(NSArray *)aArray;

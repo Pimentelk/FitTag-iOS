@@ -25,7 +25,7 @@
 
 @property (nonatomic, strong) FTPostDetailsFooterView *postDetailsFooterView;
 
-@property (nonatomic, strong) UITextField *commentTextField;
+@property (nonatomic, strong) UITextView *commentTextView;
 @property (nonatomic, strong) UITextField *hashtagTextField;
 
 @property (nonatomic, assign) NSInteger scrollViewHeight;
@@ -60,7 +60,7 @@
 @synthesize postBackgroundTaskId;
 @synthesize postImageView;
 @synthesize postDetailsFooterView;
-@synthesize commentTextField;
+@synthesize commentTextView;
 @synthesize hashtagTextField;
 @synthesize scrollViewHeight;
 @synthesize videoPlaceHolderView;
@@ -196,9 +196,9 @@
     
     
     self.postDetailsFooterView = [[FTPostDetailsFooterView alloc] initWithFrame:footerRect];
-    self.commentTextField = postDetailsFooterView.commentField;
+    self.commentTextView = postDetailsFooterView.commentField;
     self.hashtagTextField = postDetailsFooterView.hashtagTextField;
-    self.commentTextField.delegate = self;
+    self.commentTextView.delegate = self;
     self.hashtagTextField.delegate = self;
     self.postDetailsFooterView.delegate = self;
     
@@ -317,14 +317,14 @@
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)"
                                                                            options:0 error:&error];
     
-    NSArray *matches = [regex matchesInString:self.commentTextField.text
+    NSArray *matches = [regex matchesInString:self.commentTextView.text
                                       options:0
-                                        range:NSMakeRange(0,self.commentTextField.text.length)];
+                                        range:NSMakeRange(0,self.commentTextView.text.length)];
     
     NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
     for (NSTextCheckingResult *match in matches) {
         NSRange wordRange = [match rangeAtIndex:1];
-        NSString *word = [self.commentTextField.text substringWithRange:wordRange];
+        NSString *word = [self.commentTextView.text substringWithRange:wordRange];
         //NSLog(@"Found tag %@", word);
         [matchedResults addObject:word];
     }
@@ -336,14 +336,14 @@
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@(\\w+)"
                                                                            options:0 error:&error];
     
-    NSArray *matches = [regex matchesInString:self.commentTextField.text
+    NSArray *matches = [regex matchesInString:self.commentTextView.text
                                       options:0
-                                        range:NSMakeRange(0,self.commentTextField.text.length)];
+                                        range:NSMakeRange(0,self.commentTextView.text.length)];
     
     NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
     for (NSTextCheckingResult *match in matches) {
         NSRange wordRange = [match rangeAtIndex:1];
-        NSString *word = [self.commentTextField.text substringWithRange:wordRange];
+        NSString *word = [self.commentTextView.text substringWithRange:wordRange];
         //NSLog(@"Found mention %@", word);
         [matchedResults addObject:word];
     }
@@ -411,6 +411,20 @@
             [gallery setObject:hashtags forKey:kFTPostHashTagKey];
             [gallery setObject:posts forKey:@"posts"];
             
+            NSString *description = EMPTY_STRING;
+            
+            // userInfo might contain any caption which might have been posted by the uploader
+            if (userInfo) {
+                NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
+                
+                if (commentText && commentText.length > 0) {
+                    // create and save photo caption
+                    NSLog(@"gallery caption");
+                    [gallery setObject:commentText forKey:kFTPostCaptionKey];
+                    description = commentText;
+                }
+            }
+            
             if (self.geoPoint) {
                 [gallery setObject:self.geoPoint forKey:kFTPostLocationKey];
             }
@@ -419,47 +433,9 @@
             [gallery saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (succeeded) {
                     
-                    [[FTCache sharedCache] setAttributesForPost:gallery
-                                                         likers:[NSArray array]
-                                                     commenters:[NSArray array]
-                                             likedByCurrentUser:NO
-                                                    displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
-                    
+                    [[FTCache sharedCache] setAttributesForPost:gallery likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
                     [self incrementUserPostCount];
                     //NSLog(@"userInfo might contain any caption which might have been posted by the uploader");
-                    
-                    NSString *description = EMPTY_STRING;
-                    
-                    // userInfo might contain any caption which might have been posted by the uploader
-                    if (userInfo) {
-                        NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
-                        
-                        if (commentText && commentText.length > 0) {
-                            //NSLog(@"create and save photo caption");
-                            // create and save photo caption
-                            PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
-                            [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
-                            [comment setObject:gallery forKey:kFTActivityPostKey];
-                            [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
-                            [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
-                            [comment setObject:hashtags forKey:kFTActivityHashtagKey];
-                            [comment setObject:mentions forKey:kFTActivityMentionKey];
-                            [comment setObject:commentText forKey:kFTActivityContentKey];
-                            
-                            PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];
-                            [ACL setPublicReadAccess:YES];
-                            comment.ACL = ACL;
-                            
-                            [comment saveEventually];
-                            [[FTCache sharedCache] incrementCommentCountForPost:gallery];
-                            
-                            description = commentText;
-                        }
-                        
-                    } else {
-                        NSLog(@"error:%@",error);
-                        //[post saveEventually];
-                    }
                     
                     NSLog(@"gallery:%@",gallery.objectId);
                     NSString *link = [NSString stringWithFormat:@"http://fittag.com/viewer.php?pid=%@",gallery.objectId];
@@ -847,7 +823,7 @@
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    [self.commentTextField resignFirstResponder];
+    [self.commentTextView resignFirstResponder];
     [self.hashtagTextField resignFirstResponder];
 }
 
@@ -870,7 +846,7 @@
     if ([PFUser currentUser]) {
         
         NSDictionary *userInfo = [NSDictionary dictionary];
-        NSString *trimmedComment = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString *trimmedComment = [self.commentTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         
         if (trimmedComment.length != 0) {
             userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment, kFTEditVideoViewControllerUserInfoCommentKey, nil];
@@ -955,11 +931,7 @@
             [post saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (succeeded) {
                     
-                    [[FTCache sharedCache] setAttributesForPost:post
-                                                         likers:[NSArray array]
-                                                     commenters:[NSArray array]
-                                             likedByCurrentUser:NO
-                                                    displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
+                    [[FTCache sharedCache] setAttributesForPost:post likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
                     [self incrementUserPostCount];
                     
                     // userInfo might contain any caption which might have been posted by the uploader
