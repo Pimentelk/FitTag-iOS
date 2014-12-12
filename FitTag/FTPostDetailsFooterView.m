@@ -9,6 +9,7 @@
 #import "FTPostDetailsFooterView.h"
 #import "FTUtility.h"
 
+//#define BUTTON_Y 105
 #define BUTTON_Y 70
 #define BUTTON_W 71
 #define BUTTON_H 80
@@ -23,7 +24,7 @@
 @synthesize mainView;
 @synthesize hideDropShadow;
 @synthesize hashtagTextField;
-@synthesize locationTextField;
+//@synthesize locationTextField;
 @synthesize submitButton;
 @synthesize facebookButton;
 @synthesize twitterButton;
@@ -34,26 +35,27 @@
         // Initialization code
         self.backgroundColor = [UIColor clearColor];
         
-        mainView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 200)];
+        mainView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 200)];
         mainView.backgroundColor = FT_GRAY;
         [self addSubview:mainView];
         
-        UIImageView *commentBox = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 200)];
+        UIImageView *commentBox = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 200)];
         [mainView addSubview:commentBox];
         
-        commentField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 320, 60)];
+        commentField = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 60)];
         commentField.font = [UIFont systemFontOfSize:12.0f];
         commentField.returnKeyType = UIReturnKeyDefault;
         commentField.textColor = [UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f];
-        commentField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+        //commentField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         commentField.backgroundColor = [UIColor whiteColor];
-        commentField.placeholder = @" WRITE A CAPTION...";
+        //commentField.placeholder = @" WRITE A CAPTION...";
+        /*
         [commentField setValue:[UIColor colorWithRed:154.0f/255.0f
                                                green:146.0f/255.0f
                                                 blue:138.0f/255.0f
                                                alpha:1.0f]
                     forKeyPath:@"_placeholderLabel.textColor"];
-        
+        */
         [mainView addSubview:commentField];
         
         /*
@@ -72,14 +74,18 @@
         
         [mainView addSubview:hashtagTextField];
         
-        locationTextField = [[UITextField alloc] initWithFrame:CGRectMake(0.0f, 78.0f, 320.0f, 25.0f)];
+        
+        CGFloat locationTextFieldY = commentField.frame.size.height + commentField.frame.origin.y + 10;
+        locationTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, locationTextFieldY, self.frame.size.width, 25)];
         locationTextField.font = [UIFont systemFontOfSize:12.0f];
         locationTextField.returnKeyType = UIReturnKeyDefault;
-        locationTextField.textColor = [UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f];
+        locationTextField.textColor = [UIColor colorWithRed:73.0f/255.0f
+                                                      green:55.0f/255.0f
+                                                       blue:35.0f/255.0f alpha:1.0f];
         locationTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         locationTextField.backgroundColor = [UIColor whiteColor];
         locationTextField.placeholder = EMPTY_STRING;
-        locationTextField.userInteractionEnabled = NO;
+        locationTextField.userInteractionEnabled = YES;
         [locationTextField setValue:[UIColor colorWithRed:154.0f/255.0f
                                                     green:146.0f/255.0f
                                                      blue:138.0f/255.0f alpha:1.0f]

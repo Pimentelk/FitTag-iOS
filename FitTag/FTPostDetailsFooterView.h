@@ -11,11 +11,11 @@
 @interface FTPostDetailsFooterView : UIView
 @property (nonatomic, strong) UIButton *facebookButton;
 @property (nonatomic, strong) UIButton *twitterButton;
-@property (nonatomic, strong) UITextField *commentField;
+@property (nonatomic, strong) UITextView *commentField;
 @property (nonatomic, strong) UITextField *hashtagTextField;
 @property (nonatomic, strong) UITextField *locationTextField;
 @property (nonatomic, strong) UIButton *submitButton;
-@property (nonatomic, weak) id <FTPostDetailsFooterViewDelegate> delegate;
+@property (nonatomic, weak) id<FTPostDetailsFooterViewDelegate> delegate;
 @property (nonatomic) BOOL hideDropShadow;
 + (CGRect)rectForView;
 @end
