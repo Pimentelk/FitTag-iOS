@@ -316,7 +316,7 @@
 - (void)rewardsDetailHeaderView:(FTRewardsDetailHeaderView *)rewardsDetailHeaderView didTapBusinessButton:(UIButton *)button business:(PFUser *)business {
     
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(105.5,105)];
+    [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
