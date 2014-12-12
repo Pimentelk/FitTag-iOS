@@ -27,11 +27,13 @@
 }
 @property (nonatomic, strong) NSArray *cells;
 @property (nonatomic, strong) FTViewFriendsViewController *viewFriendsViewController;
+@property (nonatomic, strong) FTUserProfileHeaderView *headerView;
 @end
 
 @implementation FTUserProfileViewController
 @synthesize user;
 @synthesize viewFriendsViewController;
+@synthesize headerView;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -40,6 +42,8 @@
         [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
         return;
     }
+    
+    headerView = nil;
     
     cellTab = GRID_SMALL;
     
@@ -81,7 +85,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    //NSLog(@"%@::viewWillAppear:",VIEWCONTROLLER_USER);
+    NSLog(@"%@::viewWillAppear:",VIEWCONTROLLER_USER);
     [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:YES];
     
@@ -92,11 +96,25 @@
         [self.navigationItem setTitle:NAVIGATION_TITLE_PROFILE];
     }
     
-    [self.collectionView reloadData];
+    #pragma GCC diagnostic ignored "-Wundeclared-selector"
+    if (headerView) {
+        
+        if ([headerView respondsToSelector:@selector(updateCoverPhoto)]) {
+            [headerView performSelector:@selector(updateCoverPhoto)];
+        }
+        
+        if ([headerView respondsToSelector:@selector(updateFollowerCount)]) {
+            [headerView performSelector:@selector(updateFollowerCount)];
+        }
+        
+        if ([headerView respondsToSelector:@selector(updateFollowingCount)]) {
+            [headerView performSelector:@selector(updateFollowingCount)];
+        }
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    //NSLog(@"%@::viewDidAppear:",VIEWCONTROLLER_USER);
+    NSLog(@"%@::viewDidAppear:",VIEWCONTROLLER_USER);
     [super viewDidAppear:animated];
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_USER];
@@ -104,7 +122,7 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
-    //NSLog(@"%@::viewWillDisappear:",VIEWCONTROLLER_USER);
+    NSLog(@"%@::viewWillDisappear:",VIEWCONTROLLER_USER);
     [super viewWillDisappear:animated];
     // Get the classname of the next view controller
     NSUInteger numberOfViewControllersOnStack = [self.navigationController.viewControllers count];
@@ -144,9 +162,9 @@
     //NSLog(@"%@::collectionView:viewForSupplementaryElementOfKind:atIndexPath:",VIEWCONTROLLER_USER);
     UICollectionReusableView *reusableview = nil;
     if (kind == UICollectionElementKindSectionHeader) {
-        FTUserProfileHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-                                                                                       withReuseIdentifier:HEADERVIEW
-                                                                                              forIndexPath:indexPath];
+        headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+                                                        withReuseIdentifier:HEADERVIEW
+                                                               forIndexPath:indexPath];
         [headerView setDelegate: self];
         [headerView setUser: self.user];
         [headerView fetchUserProfileData: self.user];
@@ -163,7 +181,7 @@
     //NSLog(@"indexpath: %ld",(long)indexPath.row);
     if ([cellTab isEqualToString:kFTUserTypeBusiness]) {
         UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-        [flowLayout setItemSize:CGSizeMake(105.5,105)];
+        [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
         [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
         [flowLayout setMinimumInteritemSpacing:0];
         [flowLayout setMinimumLineSpacing:0];
