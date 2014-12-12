@@ -9,30 +9,32 @@
 #import "FTGAIConstants.h"
 
 #pragma mark - GAI Event Catagory
-NSString *const kFTTrackEventCatagoryTypeUIAction           = @"ui_action";
-NSString *const kFTTrackEventCatagoryTypeError              = @"error";
+
+NSString *const kFTTrackEventCatagoryTypeInterface           = @"User Interface";
+NSString *const kFTTrackEventCatagoryTypeError               = @"Error";
 
 
 #pragma mark - GAI Event Action
-NSString *const kFTTrackEventActionTypeButtonPress          = @"button_press";
-NSString *const kFTTrackEventActionTypeUserSignUp           = @"user_signup";
-NSString *const kFTTrackEventActionTypeUserLogIn            = @"user_login";
+
+NSString *const kFTTrackEventActionTypeButtonPress          = @"Pressed Button";
+NSString *const kFTTrackEventActionTypeUserSignUp           = @"Signed Up";
+NSString *const kFTTrackEventActionTypeUserLogIn            = @"Logged In";
 
 
 #pragma mark - GAI Event Label
-NSString *const kFTTrackEventLabelTypeTwitter               = @"twitter_button";
-NSString *const kFTTrackEventLabelTypeFacebook              = @"facebook_button";
 
-NSString *const kFTTrackEventLabelTypeSignUp                = @"signup_button";
-NSString *const kFTTrackEventLabelTypeSignUpBegin           = @"signup_begin";
-NSString *const kFTTrackEventLabelTypeSignUpSuccess         = @"signup_success";
-NSString *const kFTTrackEventLabelTypeSignUpShould          = @"signup_should";
-NSString *const kFTTrackEventLabelTypeSignUpCancel          = @"signup_cancel";
-NSString *const kFTTrackEventLabelTypeSignUpSubmit          = @"signup_submit";
+// Button Labels
+NSString *const kFTTrackEventLabelTypeTwitter               = @"Twitter";
+NSString *const kFTTrackEventLabelTypeFacebook              = @"Facebook";
+NSString *const kFTTrackEventLabelTypeSignUp                = @"Sign Up";
+NSString *const kFTTrackEventLabelTypeLogIn                 = @"Login";
+NSString *const kFTTrackEventLabelTypeForgotPassword        = @"Forgot Password";
 
-NSString *const kFTTrackEventLabelTypeLogIn                 = @"login_button";
-NSString *const kFTTrackEventLabelTypeLogInCancel           = @"login_cancel";
-NSString *const kFTTrackEventLabelTypeLogInShould           = @"login_should";
-NSString *const kFTTrackEventLabelTypeLogInSuccess          = @"login_success";
+// Method Labels
+NSString *const kFTTrackEventLabelTypeBegin                 = @"Begin";
+NSString *const kFTTrackEventLabelTypeSuccess               = @"Success";
+NSString *const kFTTrackEventLabelTypeShould                = @"Should";
+NSString *const kFTTrackEventLabelTypeCancel                = @"Cancel";
+NSString *const kFTTrackEventLabelTypeSubmit                = @"Submit";
 
-NSString *const kFTTrackEventLabelTypeForgotPassword        = @"fotgot_password_button";
+
