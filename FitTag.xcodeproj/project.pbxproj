@@ -108,6 +108,7 @@
 		2DD2B69B19841BC700600A42 /* FTSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B69A19841BC700600A42 /* FTSettingsViewController.m */; };
 		2DD2B69E19841C3100600A42 /* FTFindFriendsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B69D19841C3100600A42 /* FTFindFriendsCell.m */; };
 		2DD2B6A419841E0900600A42 /* FTImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD2B6A319841E0900600A42 /* FTImageView.m */; };
+		2DD4324D1A377BB200EF99E7 /* FTCropImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD4324C1A377BB200EF99E7 /* FTCropImageViewController.m */; };
 		2DD491DF19EF65BA00A50F5B /* FTBusinessGeoPointAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD491DE19EF65BA00A50F5B /* FTBusinessGeoPointAnnotation.m */; };
 		2DD491E419EF769500A50F5B /* FTAmbassadorAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD491E119EF769500A50F5B /* FTAmbassadorAnnotationView.m */; };
 		2DD491E519EF769500A50F5B /* FTBusinessAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DD491E319EF769500A50F5B /* FTBusinessAnnotationView.m */; };
@@ -141,7 +142,7 @@
 		2DDBF14A19F1460D009037E2 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DDBF14919F1460D009037E2 /* CoreData.framework */; };
 		2DDBF15119F23E75009037E2 /* FTNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DDBF15019F23E75009037E2 /* FTNavigationController.m */; };
 		2DE24D611A33AE1D00F551E0 /* FTGAIConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DE24D601A33AE1D00F551E0 /* FTGAIConstants.m */; };
-		2DE24D651A33F76800F551E0 /* FTGooglePlace.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DE24D641A33F76800F551E0 /* FTGooglePlace.m */; };
+		2DE24DAD1A34B7AE00F551E0 /* FTCheckInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DE24DAC1A34B7AE00F551E0 /* FTCheckInViewController.m */; };
 		2DE7C77F19ECD07100F72188 /* FTGallerySwiperView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DE7C77E19ECD07100F72188 /* FTGallerySwiperView.m */; };
 /* End PBXBuildFile section */
 
@@ -337,6 +338,8 @@
 		2DD2B69D19841C3100600A42 /* FTFindFriendsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTFindFriendsCell.m; sourceTree = "<group>"; };
 		2DD2B6A219841E0900600A42 /* FTImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTImageView.h; sourceTree = "<group>"; };
 		2DD2B6A319841E0900600A42 /* FTImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTImageView.m; sourceTree = "<group>"; };
+		2DD4324B1A377BB200EF99E7 /* FTCropImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCropImageViewController.h; sourceTree = "<group>"; };
+		2DD4324C1A377BB200EF99E7 /* FTCropImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCropImageViewController.m; sourceTree = "<group>"; };
 		2DD491DD19EF65BA00A50F5B /* FTBusinessGeoPointAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTBusinessGeoPointAnnotation.h; sourceTree = "<group>"; };
 		2DD491DE19EF65BA00A50F5B /* FTBusinessGeoPointAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTBusinessGeoPointAnnotation.m; sourceTree = "<group>"; };
 		2DD491E019EF769400A50F5B /* FTAmbassadorAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAmbassadorAnnotationView.h; sourceTree = "<group>"; };
@@ -400,8 +403,8 @@
 		2DDBF15019F23E75009037E2 /* FTNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTNavigationController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		2DE24D5F1A33AE1D00F551E0 /* FTGAIConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FTGAIConstants.h; path = ../FTGAIConstants.h; sourceTree = "<group>"; };
 		2DE24D601A33AE1D00F551E0 /* FTGAIConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FTGAIConstants.m; path = ../FTGAIConstants.m; sourceTree = "<group>"; };
-		2DE24D631A33F76800F551E0 /* FTGooglePlace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGooglePlace.h; sourceTree = "<group>"; };
-		2DE24D641A33F76800F551E0 /* FTGooglePlace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGooglePlace.m; sourceTree = "<group>"; };
+		2DE24DAB1A34B7AE00F551E0 /* FTCheckInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCheckInViewController.h; sourceTree = "<group>"; };
+		2DE24DAC1A34B7AE00F551E0 /* FTCheckInViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCheckInViewController.m; sourceTree = "<group>"; };
 		2DE7C77D19ECD07100F72188 /* FTGallerySwiperView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGallerySwiperView.h; sourceTree = "<group>"; };
 		2DE7C77E19ECD07100F72188 /* FTGallerySwiperView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGallerySwiperView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -660,6 +663,7 @@
 		2DBC6E57195C77FF008B5AD3 /* Camera */ = {
 			isa = PBXGroup;
 			children = (
+				2DD4324A1A377B4D00EF99E7 /* Image Cropper */,
 				2DD2B66B198402BB00600A42 /* FTEditPhotoViewController.h */,
 				2DD2B66C198402BB00600A42 /* FTEditPhotoViewController.m */,
 				2DAF5B9F19B2A28E00E5E10B /* FTEditVideoViewController.h */,
@@ -907,18 +911,27 @@
 			name = Friends;
 			sourceTree = "<group>";
 		};
+		2DD4324A1A377B4D00EF99E7 /* Image Cropper */ = {
+			isa = PBXGroup;
+			children = (
+				2DD4324B1A377BB200EF99E7 /* FTCropImageViewController.h */,
+				2DD4324C1A377BB200EF99E7 /* FTCropImageViewController.m */,
+			);
+			name = "Image Cropper";
+			path = ..;
+			sourceTree = "<group>";
+		};
 		2DD691401949AF5B00B59E75 = {
 			isa = PBXGroup;
 			children = (
-				2DE24D621A33F70700F551E0 /* GooglePlaces */,
-				2DAABBF51A11DB62007F1E44 /* Encoder */,
-				2D054DCC1A0867B300A2886F /* STTweetLabel */,
-				2DDBF14019F1451D009037E2 /* GooglyAnalytics */,
 				2DBE021E19D6FB7F00CD278C /* ELCImagePicker */,
+				2DAABBF51A11DB62007F1E44 /* Encoder */,
 				2DD691521949AF5B00B59E75 /* FitTag */,
-				2DD6914B1949AF5B00B59E75 /* Frameworks */,
-				2DD6914A1949AF5B00B59E75 /* Products */,
 				2DD691711949AF5B00B59E75 /* FitTagTests */,
+				2DD6914B1949AF5B00B59E75 /* Frameworks */,
+				2DDBF14019F1451D009037E2 /* GooglyAnalytics */,
+				2DD6914A1949AF5B00B59E75 /* Products */,
+				2D054DCC1A0867B300A2886F /* STTweetLabel */,
 			);
 			sourceTree = "<group>";
 		};
@@ -989,6 +1002,8 @@
 				2D410F49197357E900CE2940 /* Layouts */,
 				2DD691531949AF5B00B59E75 /* Supporting Files */,
 				2DD2B66E1984033900600A42 /* Views */,
+				2DE24DAB1A34B7AE00F551E0 /* FTCheckInViewController.h */,
+				2DE24DAC1A34B7AE00F551E0 /* FTCheckInViewController.m */,
 			);
 			path = FitTag;
 			sourceTree = "<group>";
@@ -1063,15 +1078,6 @@
 				2DDBF14E19F14CE6009037E2 /* GAIEcommercePromotion.h */,
 			);
 			name = GooglyAnalytics;
-			sourceTree = "<group>";
-		};
-		2DE24D621A33F70700F551E0 /* GooglePlaces */ = {
-			isa = PBXGroup;
-			children = (
-				2DE24D631A33F76800F551E0 /* FTGooglePlace.h */,
-				2DE24D641A33F76800F551E0 /* FTGooglePlace.m */,
-			);
-			name = GooglePlaces;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1197,6 +1203,7 @@
 				2DACD97819656F8900833C14 /* FTInterestViewFlowLayout.m in Sources */,
 				2D4DF06619E0FEB700E2E71E /* FTUserProfileCollectionViewCell.m in Sources */,
 				2DAABBF41A11DB5B007F1E44 /* FTVideoEncoder.m in Sources */,
+				2DD4324D1A377BB200EF99E7 /* FTCropImageViewController.m in Sources */,
 				2DAA63DE1957A51F003B1DDF /* UIView+FormScroll.m in Sources */,
 				2DD491E519EF769500A50F5B /* FTBusinessAnnotationView.m in Sources */,
 				2DD2B669198400D800600A42 /* UIImage+RoundedCornerAdditions.m in Sources */,
@@ -1214,11 +1221,11 @@
 				2DACD97B196578DA00833C14 /* FTInspirationViewController.m in Sources */,
 				2D4DF06019E0ED6C00E2E71E /* FTUserProfileViewController.m in Sources */,
 				2D4DF06319E0F2F500E2E71E /* FTUserProfileHeaderView.m in Sources */,
-				2DE24D651A33F76800F551E0 /* FTGooglePlace.m in Sources */,
 				2D9949761996A9B0000E321E /* FTCameraToolBar.m in Sources */,
 				2DD2B694198418C300600A42 /* FTPhotoCell.m in Sources */,
 				2DCD9F0819F4AB73006DCD8E /* FTSettingsCell.m in Sources */,
 				2DD691591949AF5B00B59E75 /* main.m in Sources */,
+				2DE24DAD1A34B7AE00F551E0 /* FTCheckInViewController.m in Sources */,
 				2DDBF15119F23E75009037E2 /* FTNavigationController.m in Sources */,
 				2DBE023719D6FB7F00CD278C /* ELCAsset.m in Sources */,
 				2DD491DF19EF65BA00A50F5B /* FTBusinessGeoPointAnnotation.m in Sources */,
