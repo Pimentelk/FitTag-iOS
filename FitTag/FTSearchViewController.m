@@ -33,9 +33,6 @@
     self.navigationController.navigationBar.barTintColor = FT_RED;
     self.tableView.delegate = self;
     
-    // Set title
-    //[self.navigationItem setTitle:NAVIGATION_TITLE_SEARCH];
-    
     // Searchbar
     searchBar = [[UISearchBar alloc] init];
     searchBar.delegate = self;
@@ -45,6 +42,11 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    if (searchString.length > 0) {
+        searchBar.text = searchString;
+        [self loadObjects];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -68,6 +70,7 @@
             
             PFQuery *hashtagQuery = [PFQuery queryWithClassName:kFTPostClassKey];
             [hashtagQuery whereKey:kFTPostHashTagKey equalTo:cleanedSearchString];
+            [hashtagQuery orderByDescending:@"createdAt"];
             [hashtagQuery includeKey:kFTPostUserKey];
             return hashtagQuery;
         }
@@ -85,8 +88,11 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchbar {
     [searchbar resignFirstResponder];
-    searchString = searchbar.text;
-    [self loadObjects];
+    
+    if (searchString.length > 0) {
+        searchBar.text = searchString;
+        [self loadObjects];
+    }
 }
 
 #pragma mark - UIScrollViewDelegate
