@@ -110,6 +110,7 @@
     //[self.logInView bringSubviewToFront:self.logInView.usernameField];
     [self.logInView.usernameField setTextAlignment:NSTextAlignmentLeft]; // align placeholder text left
     [self.logInView.usernameField setTextColor:[UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0]];
+    [self.logInView.usernameField setDelegate:self];
     
     // Set password placeholder text color
     if ([self.logInView.passwordField respondsToSelector:@selector(setAttributedPlaceholder:)]) {
@@ -123,7 +124,7 @@
     //[self.logInView bringSubviewToFront:self.logInView.passwordField];
     [self.logInView.passwordField setTextAlignment:NSTextAlignmentLeft]; // align placeholder text left
     [self.logInView.passwordField setTextColor:[UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0]];
-    
+    [self.logInView.passwordField setDelegate:self];
     
     // Clear social external text
     [self.logInView.externalLogInLabel setText:nil];
@@ -206,11 +207,21 @@
     [self.logInView scrollToView:textField];
 }
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    // Prevent crashing undo bug – see note below.
+    if(range.length + range.location > textField.text.length) {
+        return NO;
+    }
+    
+    NSUInteger newLength = [textField.text length] + [string length] - range.length;
+    return (newLength > 30) ? NO : YES;
+}
+
 #pragma mark - GAI Event Tracking
 
 - (void)didTapLogInButtonAction:(UIButton *)button {
     id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
                                                           action:kFTTrackEventActionTypeButtonPress
                                                            label:kFTTrackEventLabelTypeLogIn
                                                            value:nil] build]];
@@ -218,7 +229,7 @@
 
 - (void)didTapForgotPasswordButtonAction:(UIButton *)button {
     id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
                                                           action:kFTTrackEventActionTypeButtonPress
                                                            label:kFTTrackEventLabelTypeForgotPassword
                                                            value:nil] build]];
@@ -226,7 +237,7 @@
 
 - (void)didTapSignupButtonAction:(UIButton *)button {
     id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
                                                           action:kFTTrackEventActionTypeButtonPress
                                                            label:kFTTrackEventLabelTypeSignUp
                                                            value:nil] build]];
@@ -234,7 +245,7 @@
 
 - (void)didTapFacebookButtonAction:(UIButton *)button {
     id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
                                                           action:kFTTrackEventActionTypeButtonPress
                                                            label:kFTTrackEventLabelTypeFacebook
                                                            value:nil] build]];
@@ -242,7 +253,7 @@
 
 - (void)didTapTwitterButtonAction:(UIButton *)button {
     id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
                                                           action:kFTTrackEventActionTypeButtonPress
                                                            label:kFTTrackEventLabelTypeTwitter
                                                            value:nil] build]];
