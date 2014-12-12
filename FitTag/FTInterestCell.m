@@ -22,15 +22,15 @@
     if (self) {
         isSelected = NO;
         
-        UIView *lineViewGray = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, frame.size.width, 1)];
+        UIView *lineViewGray = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, 1)];
         lineViewGray.backgroundColor = [UIColor lightGrayColor];
         [self addSubview:lineViewGray];
         
-        UIView *lineViewWhite = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 1.0f, frame.size.width, 1)];
+        UIView *lineViewWhite = [[UIView alloc] initWithFrame:CGRectMake(0, 1, frame.size.width, 1)];
         lineViewWhite.backgroundColor = [UIColor whiteColor];
         [self addSubview:lineViewWhite];
         
-        self.interestLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 160.0f, 42.0f)];
+        self.interestLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 160, 42)];
         self.interestLabel.textAlignment = NSTextAlignmentCenter;
         self.interestLabel.textColor = [UIColor grayColor];
         self.interestLabel.backgroundColor = [UIColor clearColor];
