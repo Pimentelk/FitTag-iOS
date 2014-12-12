@@ -11,6 +11,8 @@
 //#import "UIView+FormScroll.h"
 #import "ImageCustomNavigationBar.h"
 
+#define TAKE_PHOTO_BUTTON 80
+
 #define ADD_PHOTO @"add_photo"
 #define FITTAG_LOGO @"fittag_logo"
 #define SEPARATORS @"separators"
@@ -29,6 +31,7 @@
 @interface FTSignupViewController ()
 @property (nonatomic,strong) UIImageView *separators;
 @property (nonatomic,strong) UILabel *defaultLabel;
+@property (nonatomic, strong) TTTAttributedLabel *termsLabel;
 //@property (nonatomic,strong) UITextField *firstnameTextField;
 //@property (nonatomic,strong) UITextField *lastnameTextField;
 //@property (nonatomic,strong) UITextView *aboutTextView;
@@ -37,13 +40,14 @@
 @property (nonatomic,strong) UIButton *facebookButton;
 @property (nonatomic,strong) UIButton *twitterButton;
 //@property (nonatomic,strong) UITextField *confirmPasswordTextField;
-@property (nonatomic,strong) UIImageView *termsText;
+//@property (nonatomic,strong) UIImageView *termsText;
 @property (nonatomic,strong) UITextField *activeField;
 @property (nonatomic,strong) UILabel *aLabel;
 @end
 
 @implementation FTSignupViewController
 @synthesize separators;
+@synthesize termsLabel;
 @synthesize defaultLabel;
 //@synthesize firstnameTextField;
 //@synthesize lastnameTextField;
@@ -51,10 +55,11 @@
 @synthesize signupWithText;
 @synthesize profileImageButton;
 //@synthesize confirmPasswordTextField;
-@synthesize termsText;
+//@synthesize termsText;
 @synthesize aLabel;
 @synthesize facebookButton;
 @synthesize twitterButton;
+@synthesize profilePhoto;
 
 #pragma mark - UIViewController
 
@@ -70,22 +75,54 @@
     // Set logo
     [self.signUpView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:FITTAG_LOGO]]];
     
-    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                           action:@selector(didTapHideKeyboardAction)];
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapHideKeyboardAction)];
+    UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(didTapHideKeyboardAction)];
+    swipeGesture.direction = UISwipeGestureRecognizerDirectionDown;
+    [self.view setGestureRecognizers:@[swipeGesture, tapGesture]];
     
-    UISwipeGestureRecognizer *swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self
-                                                                                                 action:@selector(didTapHideKeyboardAction)];
-    swipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionDown;
+    if (profileImageButton) {
+        [profileImageButton removeFromSuperview];
+        profileImageButton = nil;
+    }
     
-    [self.view setGestureRecognizers:@[ swipeGestureRecognizer, tapGestureRecognizer ]];
+    CGFloat padding = (self.signUpView.logo.frame.size.height + 10);
+    NSLog(@"logoTop:%f",padding);
+    
+    profileImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    //[profileImageButton setFrame:CGRectMake((frameSize.width - TAKE_PHOTO_BUTTON) / 2, (((origin - TAKE_PHOTO_BUTTON) / 2) - padding), TAKE_PHOTO_BUTTON, TAKE_PHOTO_BUTTON)];
+    
+    
+    [profileImageButton setBackgroundColor:FT_GRAY];
+    [profileImageButton addTarget:self action:@selector(didTapLoadCameraButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [profileImageButton setClipsToBounds:YES];
+    [profileImageButton.layer setCornerRadius:CORNERRADIUS(TAKE_PHOTO_BUTTON)];
+    [profileImageButton setImage:[UIImage imageNamed:IMAGE_PROFILE_EMPTY] forState:UIControlStateNormal];
+    [self.signUpView addSubview:profileImageButton];
+    
+    // Terms
+    
+    termsLabel = [[TTTAttributedLabel alloc] init];
+    [termsLabel setDelegate:self];
+    [termsLabel setUserInteractionEnabled:YES];
+    [termsLabel setBackgroundColor:[UIColor clearColor]];
+    [termsLabel setTextAlignment:NSTextAlignmentCenter];
+    [termsLabel setNumberOfLines:0];
+    [termsLabel setFont:BENDERSOLID(12)];
+    [termsLabel setTextColor:[UIColor whiteColor]];
+    [self.signUpView addSubview:termsLabel];
 }
 
 
 - (void)viewDidLayoutSubviews{
     [super viewDidLayoutSubviews];
     
+    CGRect profileImageButtonRect = CGRectMake(0, 0, TAKE_PHOTO_BUTTON, TAKE_PHOTO_BUTTON);
+    [profileImageButton setFrame:profileImageButtonRect];
+    
+    [self.signUpView.logo setCenter:CGPointMake(160, 80)];
+    
     CGRect usernameFieldRect = self.signUpView.usernameField.frame;
-    usernameFieldRect.origin.y = (self.signUpView.frame.size.height - (usernameFieldRect.size.height * 3) - 20) / 2;
+    usernameFieldRect.origin.y = (self.signUpView.frame.size.height - (usernameFieldRect.size.height) - 20) / 2;
     
     [self.signUpView.usernameField setFrame:usernameFieldRect];
     [self.signUpView.usernameField setTextAlignment:NSTextAlignmentLeft];
@@ -93,6 +130,7 @@
     [self.signUpView.usernameField setPlaceholder:PLACEHOLDER_USERNAME];
     [self.signUpView.usernameField setBorderStyle:UITextBorderStyleRoundedRect];
     [self.signUpView.usernameField setBackgroundColor:[UIColor whiteColor]];
+    [self.signUpView.usernameField setDelegate:self];
     
     CGRect passwordFieldRect = self.signUpView.passwordField.frame;
     passwordFieldRect.origin.y = usernameFieldRect.size.height + usernameFieldRect.origin.y + 10;
@@ -103,6 +141,7 @@
     [self.signUpView.passwordField setPlaceholder:PLACEHOLDER_PASSWORD];
     [self.signUpView.passwordField setBorderStyle:UITextBorderStyleRoundedRect];
     [self.signUpView.passwordField setBackgroundColor:[UIColor whiteColor]];
+    [self.signUpView.passwordField setDelegate:self];
     
     CGRect emailFieldRect = self.signUpView.emailField.frame;
     emailFieldRect.origin.y = passwordFieldRect.size.height + passwordFieldRect.origin.y + 10;
@@ -113,6 +152,7 @@
     [self.signUpView.emailField setPlaceholder:PLACEHOLDER_EMAIL];
     [self.signUpView.emailField setBorderStyle:UITextBorderStyleRoundedRect];
     [self.signUpView.emailField setBackgroundColor:[UIColor whiteColor]];
+    [self.signUpView.emailField setDelegate:self];
     
     CGRect signupButtonFrame = self.signUpView.signUpButton.frame;
     signupButtonFrame.origin.y = emailFieldRect.size.height + emailFieldRect.origin.y + 10;
@@ -120,7 +160,7 @@
     [self.signUpView.signUpButton setFrame:signupButtonFrame];
     
     CGRect cancelButtonFrame = self.signUpView.signUpButton.frame;
-    cancelButtonFrame.origin.y = signupButtonFrame.origin.y + signupButtonFrame.size.height + 10;
+    cancelButtonFrame.origin.y = signupButtonFrame.origin.y + signupButtonFrame.size.height + 30;
     
     UIButton *cancelButton = [[UIButton alloc] initWithFrame:cancelButtonFrame];
     [cancelButton addTarget:self action:@selector(didTapCancelButtonAction:) forControlEvents:UIControlEventTouchUpInside];
@@ -136,6 +176,31 @@
     [self.signUpView setContentSize:CGSizeMake(self.view.frame.size.width, 600)];
     [self.signUpView setBounces:YES];
     [self.signUpView setDelegate:self];
+    
+    // Profile button position
+    
+    CGFloat logoEnds = self.signUpView.logo.frame.size.height + self.signUpView.logo.center.y;
+    CGFloat profileImageButtonY = (((usernameFieldRect.origin.y - logoEnds) - TAKE_PHOTO_BUTTON) / 2) + logoEnds + self.signUpView.logo.frame.size.height;
+    
+    CGFloat imageButtonX = self.signUpView.logo.center.x;
+    
+    [self.profileImageButton setCenter:CGPointMake(imageButtonX, profileImageButtonY)];
+    
+    // Terms and condition
+    
+    CGRect termsFrame = self.signUpView.signUpButton.frame;
+    termsFrame.origin.y += termsFrame.size.height + 5;
+    [termsLabel setFrame:termsFrame];
+    
+    NSString *termsText = @"By clicking next you agree to the terms and conditions";
+    [termsLabel setText:termsText];
+    
+    NSRange highlight = [termsText rangeOfString:@"terms and conditions"];
+    [termsLabel addLinkToURL:[NSURL URLWithString:@"http://fittag.com/terms.php"] withRange:highlight];
+    
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapURLAction:)];
+    tapGesture.numberOfTapsRequired = 1;
+    [termsLabel addGestureRecognizer:tapGesture];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -144,6 +209,14 @@
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_SIGNUP];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
+}
+
+#pragma mark - TTTAttributedLabelDelegate
+
+- (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithURL:(NSURL *)url {
+    NSLog(@"attributedLabel");
+    
+    [[UIApplication sharedApplication] openURL:url];
 }
 
 #pragma mark - UITextViewDelegate
@@ -160,7 +233,24 @@
     self.defaultLabel.hidden = ([textView.text length] > 0);
 }
 
+#pragma mark - UITextFieldDelegate
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    // Prevent crashing undo bug – see note below.
+    if(range.length + range.location > textField.text.length) {
+        return NO;
+    }
+    
+    NSUInteger newLength = [textField.text length] + [string length] - range.length;
+    return (newLength > 30) ? NO : YES;
+}
+
 #pragma mark - ()
+
+- (void)didTapURLAction:(id)sender {
+    NSURL *url = [NSURL URLWithString:@"http://fittag.com/terms.php"];
+    [[UIApplication sharedApplication] openURL:url];
+}
 
 - (void)didTapCancelButtonAction:(UIButton *)button {    
     [self.signUpView.dismissButton sendActionsForControlEvents:UIControlEventTouchUpInside];
@@ -168,9 +258,9 @@
 
 - (void)didTapSignupButtonAction:(id)sender {
     id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
                                                           action:kFTTrackEventActionTypeButtonPress
-                                                           label:kFTTrackEventLabelTypeSignUpSubmit
+                                                           label:kFTTrackEventLabelTypeSubmit
                                                            value:nil] build]];
     [self.signUpView.passwordField resignFirstResponder];
     [self.signUpView.emailField resignFirstResponder];
@@ -191,39 +281,22 @@
     return (self.view.frame.size.width)/2.0f - elementWith/2.0f;
 }
 
-/*
- - (void)didTapLoadCameraButtonAction:(id)sender {
- FTCamViewController *camViewController = [[FTCamViewController alloc] init];
- camViewController.delegate = self;
- camViewController.isProfilePciture = YES;
- 
- UINavigationController *navController = [[UINavigationController alloc] init];
- [navController setViewControllers:@[ camViewController ] animated:NO];
- [self presentViewController:navController animated:YES completion:nil];
- }
- */
+- (void)didTapLoadCameraButtonAction:(id)sender {
+    FTCamViewController *camViewController = [[FTCamViewController alloc] init];
+    camViewController.delegate = self;
+    camViewController.isProfilePciture = YES;
+    
+    UINavigationController *navController = [[UINavigationController alloc] init];
+    [navController setViewControllers:@[camViewController] animated:NO];
+    [self presentViewController:navController animated:YES completion:nil];
+}
 
-/*
 #pragma mark - FTEditPhotoViewController
 
 - (void)camViewController:(FTCamViewController *)camViewController profilePicture:(UIImage *)photo {
     //NSLog(@"%@::camViewController:photo:",VIEWCONTROLLER_SIGNUP);
     self.profilePhoto = photo;
-    
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:photo];
-    [imageView setFrame:CGRectMake(10, 80, 80, 80)];
-    [imageView setUserInteractionEnabled:YES];
-    [imageView setClipsToBounds:YES];
-    [imageView.layer setCornerRadius:CORNERRADIUS(80)];
-    
-    UITapGestureRecognizer *singleTap =  [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLoadCameraButtonAction:)];
-    [singleTap setNumberOfTapsRequired:1];
-    [imageView addGestureRecognizer:singleTap];
-    
-    
-    [self.profileImageButton removeFromSuperview];
-    [self.signUpView addSubview:imageView];
+    [self.profileImageButton setImage:photo forState:UIControlStateNormal];
 }
-*/
 
 @end

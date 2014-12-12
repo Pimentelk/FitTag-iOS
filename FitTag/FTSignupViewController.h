@@ -8,11 +8,12 @@
 
 #import "FTEditPhotoViewController.h"
 #import "FTCamViewController.h"
+#import "TTTAttributedLabel.h"
 
-@interface FTSignupViewController : PFSignUpViewController <UITextViewDelegate, UITextFieldDelegate,FTCamViewControllerDelegate>
+@interface FTSignupViewController : PFSignUpViewController <UITextViewDelegate, UITextFieldDelegate,FTCamViewControllerDelegate,TTTAttributedLabelDelegate>
 //@property (nonatomic,strong) NSString *firstname;
 //@property (nonatomic,strong) NSString *lastname;
-//@property (nonatomic,strong) UIImage *profilePhoto;
+@property (nonatomic,strong) UIImage *profilePhoto;
 //@property (nonatomic) BOOL isPasswordConfirmed;
 //@property NSString *about;
 @end
