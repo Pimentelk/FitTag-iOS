@@ -18,6 +18,7 @@
 @property (nonatomic, strong) FTUserProfileViewController *profileViewController;
 @property (nonatomic, strong) FTInviteTableHeaderView *headerView;
 @property (nonatomic, strong) FTLocationManager *locationManager;
+@property (nonatomic, strong) UIBarButtonItem *backIndicator;
 @end
 
 @implementation FTFollowFriendsViewController
@@ -26,6 +27,7 @@
 @synthesize followUserQueryType;
 @synthesize headerView;
 @synthesize locationManager;
+@synthesize backIndicator;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -43,15 +45,21 @@
     // Fittag navigationbar color
     self.navigationController.navigationBar.barTintColor = FT_RED;
     
+    // backbutton
+    backIndicator = [[UIBarButtonItem alloc] init];
+    [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backIndicator setStyle:UIBarButtonItemStylePlain];
+    [backIndicator setTarget:self];
+    [backIndicator setAction:@selector(didTapBackButtonAction:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    
     flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(105.5,105)];
+    [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
     [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
-    
-    profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     
     // Table headerview
     headerView = [[FTInviteTableHeaderView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 40)];
@@ -256,18 +264,13 @@
 
 - (void)followCell:(FTFollowCell *)inviteCell didTapProfileImage:(UIButton *)button user:(PFUser *)aUser {
     //NSLog(@"%@::followCell:didTapProfileImage:user",VIEWCONTROLLER_INVITE);
+    if (profileViewController) {
+        profileViewController = nil;
+    }
     
-    // initialize
-    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
-    [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
-    [backIndicator setStyle:UIBarButtonItemStylePlain];
-    [backIndicator setTarget:self];
-    [backIndicator setAction:@selector(didTapBackButtonAction:)];
-    [backIndicator setTintColor:[UIColor whiteColor]];
-    
+    profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     [profileViewController.navigationItem setLeftBarButtonItem:backIndicator];
     [profileViewController setUser:aUser];
-
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
 
