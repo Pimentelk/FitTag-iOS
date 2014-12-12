@@ -487,10 +487,12 @@ enum PinAnnotationTypeTag {
                         i++;
                     }
                     
-                    [self.mapView addSubview:scrollView];
-                    [self.mapView bringSubviewToFront:scrollView];
-                    
-                    [scrollView setContentSize:CGSizeMake(mapItems.count * self.view.frame.size.width, SCROLLVIEWITEM_HEIGHT)];
+                    if (mapItems.count > 0) {
+                        [self.mapView addSubview:scrollView];
+                        [self.mapView bringSubviewToFront:scrollView];
+                        
+                        [scrollView setContentSize:CGSizeMake(mapItems.count * self.view.frame.size.width, SCROLLVIEWITEM_HEIGHT)];                        
+                    }
                 }
             }];
         }
@@ -539,7 +541,7 @@ enum PinAnnotationTypeTag {
 
 - (void)mapScrollViewItem:(FTMapScrollViewItem *)mapScrollViewItem didTapUserItem:(UIButton *)button user:(PFUser *)aUser {
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(105.5,105)];
+    [flowLayout setItemSize:CGSizeMake(self.mapView.frame.size.width/3,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
