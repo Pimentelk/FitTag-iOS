@@ -17,6 +17,7 @@
 #define REUSABLE_IDENTIFIER_FOOTER @"FooterView"
 
 @interface FTInspirationViewController()
+@property (nonatomic, strong) NSMutableArray *selectedUsers;
 @property (nonatomic, strong) UILabel *continueMessage;
 @property (nonatomic, strong) UIButton *continueButton;
 @property (nonatomic, strong) CLLocationManager *locationManager;
@@ -33,6 +34,7 @@
 @synthesize geoPoint;
 @synthesize locationUpdated;
 @synthesize inviteFriendsViewController;
+@synthesize selectedUsers;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -50,6 +52,8 @@
         [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
         return;
     }
+    
+    selectedUsers = [[NSMutableArray alloc] init];
     
     // View layout
     [self.view setBackgroundColor:[UIColor lightGrayColor]];
@@ -100,7 +104,6 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    
     [super viewWillAppear:animated];
     
     // Label
@@ -206,7 +209,7 @@
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView
            viewForSupplementaryElementOfKind:(NSString *)kind
-                                 atIndexPath:(NSIndexPath *)indexPath{
+                                 atIndexPath:(NSIndexPath *)indexPath {
     
     UICollectionReusableView *reusableview = nil;
     
@@ -249,7 +252,9 @@
     return self.usersToRecommend.count;
 }
 
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
+                  cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    
     FTInspirationCellCollectionView *cell = (FTInspirationCellCollectionView *)[collectionView dequeueReusableCellWithReuseIdentifier:REUSABLE_IDENTIFIER_MEMBER
                                                                                                                          forIndexPath:indexPath];
     PFUser *userToRecommend = self.usersToRecommend[indexPath.row];
@@ -272,10 +277,16 @@
     PFFile *file = [userToRecommend objectForKey:kFTUserProfilePicSmallKey];
     if (file) {
         cell.imageView.file = file;
-        // PFQTVC will take care of asynchronously downloading files, but will only load them when the tableview is not moving. If the data is there, let's load it right away.
+        // PFQTVC will take care of asynchronously downloading files, but will only
+        // load them when the tableview is not moving. If the data is there, let's load it right away.
         if ([cell.imageView.file isDataAvailable]) {
             [cell.imageView loadInBackground];
         }
+    }
+    
+    if ([self.selectedUsers containsObject:userToRecommend.objectId]) {
+        cell.isSelectedToggle = YES;
+        cell.image = [UIImage imageNamed:@"user_selected"];
     }
     
     return cell;
@@ -300,6 +311,7 @@
         
         cell.isSelectedToggle = YES;
         cell.image = [UIImage imageNamed:@"user_selected"];
+        [self.selectedUsers addObject:userToRecommend.objectId];
     } else {
         [self didTapUserUnfollowAction:userToRecommend];
         
@@ -312,7 +324,7 @@
 }
 
 - (NSMutableArray *)intersect:(NSArray *)selected
-                    withUser:(NSArray *)interests {
+                     withUser:(NSArray *)interests {
     NSMutableArray *sharedInterests = [[NSMutableArray alloc] init];
     for (NSObject *interest in selected) {
         if([interests containsObject:interest] && ![sharedInterests containsObject:interest])
