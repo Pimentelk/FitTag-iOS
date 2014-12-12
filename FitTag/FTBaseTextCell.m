@@ -62,10 +62,6 @@ static TTTTimeIntervalFormatter *timeFormatter;
         self.avatarImageView = [[FTProfileImageView alloc] initWithFrame:CGRectMake(avatarX, avatarY, avatarDim, avatarDim)];
         [self.avatarImageView setBackgroundColor:[UIColor clearColor]];
         [self.avatarImageView setOpaque:YES];
-        
-        //UIImageView *profileHexagon = [FTUtility getProfileHexagonWithFrame:avatarImageView.frame];
-        //self.avatarImageView.frame = profileHexagon.frame;
-        //self.avatarImageView.layer.mask = profileHexagon.layer.mask;
         self.avatarImageView.layer.cornerRadius = CORNERRADIUS(avatarDim);
         self.avatarImageView.clipsToBounds = YES;
         
@@ -87,13 +83,13 @@ static TTTTimeIntervalFormatter *timeFormatter;
         
         //self.contentLabel = [[UILabel alloc] init];
         self.contentLabel = [[STTweetLabel alloc] init];
-        [self.contentLabel setFont:[UIFont systemFontOfSize:13.0f]];
+        [self.contentLabel setFont:[UIFont systemFontOfSize:13]];
         [self.contentLabel setTextColor:[UIColor colorWithRed:73./255. green:55./255. blue:35./255. alpha:1.000]];
         [self.contentLabel setNumberOfLines:0];
         [self.contentLabel setLineBreakMode:NSLineBreakByWordWrapping];
         [self.contentLabel setBackgroundColor:[UIColor clearColor]];
         [self.contentLabel setShadowColor:[UIColor colorWithWhite:1.0f alpha:0.70f]];
-        [self.contentLabel setShadowOffset:CGSizeMake( 0.0f, 1.0f)];
+        [self.contentLabel setShadowOffset:CGSizeMake(0,1)];
         [mainView addSubview:self.contentLabel];
         
         __unsafe_unretained typeof(self) weakSelf = self;
@@ -103,6 +99,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
             /*
             NSString *detectionString = [NSString stringWithFormat:@"%@ [%d,%d]: %@%@", hotWords[hotWord], (int)range.location, (int)range.length, string, (protocol != nil) ? [NSString stringWithFormat:@" *%@*", protocol] : @""];
             */
+            
             if ([hotWords[hotWord] isEqualToString:HOTWORD_HANDLE]) {
                 
                 if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(cell:didTapUserMention:)]) {
@@ -130,7 +127,6 @@ static TTTTimeIntervalFormatter *timeFormatter;
         [mainView addSubview:self.timeLabel];
         
         self.avatarImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        //[self.avatarImageButton setFrame:profileHexagon.frame];
         self.avatarImageButton.frame = avatarImageView.frame;
         self.avatarImageButton.layer.cornerRadius = CORNERRADIUS(avatarImageView.frame.size.width);
         self.avatarImageButton.clipsToBounds = YES;
@@ -275,7 +271,15 @@ static TTTTimeIntervalFormatter *timeFormatter;
     user = aUser;
     
     // Set name button properties and avatar image
-    [self.avatarImageView setFile:[self.user objectForKey:kFTUserProfilePicSmallKey]];
+    if ([self.user objectForKey:kFTUserProfilePicSmallKey]) {
+        [self.avatarImageView setFile:[self.user objectForKey:kFTUserProfilePicSmallKey]];
+    } else {
+        [self.avatarImageView setHidden:YES];
+        [self.avatarImageButton setImage:[UIImage imageNamed:IMAGE_PROFILE_EMPTY] forState:UIControlStateNormal];
+        [self.avatarImageButton setImage:[UIImage imageNamed:IMAGE_PROFILE_EMPTY] forState:UIControlStateHighlighted];
+        [self.avatarImageButton setImage:[UIImage imageNamed:IMAGE_PROFILE_EMPTY] forState:UIControlStateSelected];
+    }
+    
     [self.nameButton setTitle:[self.user objectForKey:kFTUserDisplayNameKey] forState:UIControlStateNormal];
     [self.nameButton setTitle:[self.user objectForKey:kFTUserDisplayNameKey] forState:UIControlStateHighlighted];
     
