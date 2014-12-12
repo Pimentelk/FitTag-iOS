@@ -64,6 +64,7 @@
         imageView.clipsToBounds = YES;
         
         [self addSubview:imageView];
+        [self setClipsToBounds:YES];
     }
     return self;
 }
@@ -79,6 +80,7 @@
     
     [imageView setAlpha:0];
     [imageView setImage:aImage];
+    imageView.clipsToBounds = YES;
     
     [UIView animateWithDuration:0.5 animations:^{
         [imageView setAlpha:1];
