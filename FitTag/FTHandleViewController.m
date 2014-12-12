@@ -90,7 +90,7 @@
     
     NSCharacterSet *alphaNumericUnderscoreSet = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_"];
     alphaNumericUnderscoreSet = [alphaNumericUnderscoreSet invertedSet];
-    
+    handleTextField.text = [handleTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
     NSRange range = [handleTextField.text rangeOfCharacterFromSet:alphaNumericUnderscoreSet];
     if (range.location != NSNotFound) {
         [FTUtility showHudMessage:HUD_MESSAGE_HANDLE_INVALID WithDuration:2];
@@ -98,19 +98,22 @@
     }
     
     [user setObject:[handleTextField.text lowercaseString] forKey:kFTUserDisplayNameKey];
-    
     if (handleTextField.text.length > 0 && handleTextField.text.length <= 15) {
         [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
                 [FTUtility showHudMessage:HUD_MESSAGE_HANDLE_UPDATED WithDuration:2];
                 [self dismissViewControllerAnimated:YES completion:nil];
             }
-            
+            NSLog(@"FTHandleViewController::Error:%@",error.description);
             switch (error.code) {
                 case 142:
                     [FTUtility showHudMessage:HUD_MESSAGE_HANDLE_TAKEN WithDuration:2];
                     break;
-                    
+                case 101:
+                    [self dismissViewControllerAnimated:YES completion:nil];
+                    [FTUtility showHudMessage:@"User not found" WithDuration:2];
+                    [[UIApplication sharedApplication].delegate performSelector:@selector(logOut)];
+                    break;
                 default:
                     break;
             }
