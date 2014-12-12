@@ -30,6 +30,10 @@
 #define AVATAR_X 4
 #define AVATAR_Y 4
 
+// Profile Image
+#define PROFILE_IMAGE_WIDTH 100
+#define PROFILE_IMAGE_HEIGHT PROFILE_IMAGE_WIDTH
+
 #define BUTTONS_TOP_PADDING 5
 
 // UIAlertView
@@ -184,7 +188,7 @@
 #define IMAGE_PLAY_BUTTON [UIImage imageNamed:@"play_button"]
 #define IMAGE_FOLLOW_SELECTED @"follow_selected"
 #define IMAGE_FOLLOW_UNSELECTED @"follow_unselected"
-#define IMAGE_PROFILE_DEFAULT @"posts_active"
+#define IMAGE_PROFILE_DEFAULT @"default_icon"
 #define IMAGE_TIMELINE_BLANK @"HomeTimelineBlank.png"
 #define IMAGE_USERNAME_RIBBON @"username_ribbon"
 #define IMAGE_PROFILE_EMPTY @"empty_profile"
@@ -212,7 +216,7 @@
 #define NAVIGATION_TITLE_USER_PROFILE @"PROFILE"
 #define NAVIGATION_TITLE_REWARDS @"REWARDS"
 #define NAVIGATION_TITLE_NOTIFICATIONS @"NOTIFICATIONS"
-#define NAVIGATION_TITLE_CAM @"What Will You Tag"
+#define NAVIGATION_TITLE_CAM @"What Will You Tag?"
 #define NAVIGATION_TITLE_SETTINGS @"SETTINGS"
 #define NAVIGATION_TITLE_COMMENT @"COMMENT"
 #define NAVIGATION_TITLE_PROFILE @"PROFILE"
