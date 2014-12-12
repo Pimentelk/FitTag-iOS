@@ -8,8 +8,11 @@
 
 #import "FTSwitchCell.h"
 #import "FTCamViewController.h"
+#import "FTCropImageViewController.h"
 
-@interface FTSettingsDetailViewController : UIViewController <UITextViewDelegate,UITableViewDataSource,UITableViewDelegate,FTSwitchCellDelegate,FTCamViewControllerDelegate>
+@interface FTSettingsDetailViewController : UIViewController <UITextViewDelegate,UITableViewDataSource,UITextFieldDelegate,
+                                                              UITableViewDelegate,FTSwitchCellDelegate,
+                                                              FTCamViewControllerDelegate,FTCropImageViewControllerDelegate>
 
 @property (strong, nonatomic) id detailItem;
 @end

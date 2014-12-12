@@ -21,6 +21,8 @@
 #define FACEBOOK_PHOTO @"Facebook Profile Image"
 #define TWITTER_PHOTO @"Twitter Profile Image"
 #define TAKE_PHOTO @"Take Photo"
+#define CROP_PHOTO @"Crop Photo"
+#define CLEAR_PHOTO @"Clear Photo"
 #define SELECT_PHOTO @"Select Photo"
 #define PROFILE_UPDATED @"Profile image updated"
 
@@ -32,8 +34,11 @@
     UIButton *facebookImageButton;
     UIButton *twitterImageButton;
     UIButton *takePhotoButton;
+    UIButton *cropPhotoButton;
+    UIButton *clearPhotoButton;
     UIButton *selectPhotoButton;
     UIScrollView *scrollView;
+    UILabel *missingCoverPhotoLabel;
 }
 @property (nonatomic, strong) UIImageView *userProfileImageView;
 @property (nonatomic, strong) UIImageView *coverPhotoImageView;
@@ -51,6 +56,8 @@
 @property (nonatomic, strong) NSArray *objects;
 @property (nonatomic, strong) UIBarButtonItem *doneButtonItem;
 @property (nonatomic, strong) UIBarButtonItem *backButtonItem;
+
+@property (nonatomic, strong) FTCropImageViewController *cropImageViewController;
 @end
 
 @implementation FTSettingsDetailViewController
@@ -65,6 +72,7 @@
 @synthesize userLastname;
 @synthesize userHandle;
 @synthesize userWebsite;
+@synthesize cropImageViewController;
 
 #pragma mark - Managing the detail item
 
@@ -174,8 +182,10 @@
 - (void)configureProfilePicture {
     //NSLog(@"%@::configureProfilePicture",VIEWCONTROLLER_SETTINGS_DETAIL);
     
-    // Set current profile image
+    // Navigation bar ends
+    navigationBarEnd = self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y;
     
+    // Set current profile image
     userProfileImageView = [[UIImageView alloc] init];
     [userProfileImageView setFrame:CGRectMake(0, navigationBarEnd, self.view.frame.size.width, self.view.frame.size.width)];
     [userProfileImageView setClipsToBounds:YES];
@@ -236,8 +246,13 @@
 - (void)configureCoverPhoto {
    // NSLog(@"%@::configureCoverPhoto",VIEWCONTROLLER_SETTINGS_DETAIL);
     
+    // Navigation bar ends
+    navigationBarEnd = self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y;
+    
+    CGSize viewSize = self.view.frame.size;
+    
     coverPhotoImageView = [[UIImageView alloc] init];
-    [coverPhotoImageView setFrame:CGRectMake(0, navigationBarEnd, self.view.frame.size.width, self.view.frame.size.width / 2)];
+    [coverPhotoImageView setFrame:CGRectMake(0, navigationBarEnd, viewSize.width, viewSize.width / 2)];
     [coverPhotoImageView setClipsToBounds:YES];
     
     PFUser *user = [PFUser currentUser];
@@ -256,7 +271,7 @@
         
     } else {
         
-        UILabel *missingCoverPhotoLabel = [[UILabel alloc] initWithFrame:coverPhotoImageView.frame];
+        missingCoverPhotoLabel = [[UILabel alloc] initWithFrame:coverPhotoImageView.frame];
         [missingCoverPhotoLabel setTextAlignment: NSTextAlignmentCenter];
         [missingCoverPhotoLabel setUserInteractionEnabled:NO];
         [missingCoverPhotoLabel setFont:BENDERSOLID(24)];
@@ -281,8 +296,38 @@
     [takePhotoButton addTarget:self action:@selector(didHighlightButtonAction:) forControlEvents:UIControlEventTouchDown];
     [takePhotoButton addTarget:self action:@selector(clearProfileImageButtons) forControlEvents:UIControlEventTouchDragExit];
     
+    CGRect takePhotoFrame = takePhotoButton.frame;
+    takePhotoFrame.origin.y = takePhotoFrame.size.height + takePhotoFrame.origin.y;
+    
+    cropPhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [cropPhotoButton setFrame:takePhotoFrame];
+    [cropPhotoButton setBackgroundColor:[UIColor whiteColor]];
+    [cropPhotoButton setTitle:CROP_PHOTO forState:UIControlStateNormal];
+    [cropPhotoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [cropPhotoButton addTarget:self action:@selector(didTapCropCoverPhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [cropPhotoButton addTarget:self action:@selector(didHighlightButtonAction:) forControlEvents:UIControlEventTouchDown];
+    [cropPhotoButton addTarget:self action:@selector(clearProfileImageButtons) forControlEvents:UIControlEventTouchDragExit];
+    
+    CGRect cropPhotoFrame = cropPhotoButton.frame;
+    cropPhotoFrame.origin.y = cropPhotoFrame.size.height + cropPhotoFrame.origin.y;
+    
+    clearPhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [clearPhotoButton setFrame:cropPhotoFrame];
+    [clearPhotoButton setBackgroundColor:[UIColor whiteColor]];
+    [clearPhotoButton setTitle:CLEAR_PHOTO forState:UIControlStateNormal];
+    [clearPhotoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [clearPhotoButton addTarget:self action:@selector(didTapClearCoverPhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [clearPhotoButton addTarget:self action:@selector(didHighlightButtonAction:) forControlEvents:UIControlEventTouchDown];
+    [clearPhotoButton addTarget:self action:@selector(clearProfileImageButtons) forControlEvents:UIControlEventTouchDragExit];
+    
     [self.view addSubview:takePhotoButton];
     [self.view bringSubviewToFront:takePhotoButton];
+    
+    [self.view addSubview:cropPhotoButton];
+    [self.view bringSubviewToFront:cropPhotoButton];
+    
+    [self.view addSubview:clearPhotoButton];
+    [self.view bringSubviewToFront:clearPhotoButton];
 }
 
 - (void)didGestureHideKeyboardAction {
@@ -296,7 +341,12 @@
 - (void)configureBiography {
     //NSLog(@"%@::configureBiography",VIEWCONTROLLER_SETTINGS_DETAIL);
     
-    scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    // Navigation bar ends
+    navigationBarEnd = self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y;
+    
+    // Navigation bar ends
+    CGSize frameSize = self.view.frame.size;
+    scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, navigationBarEnd, frameSize.width, frameSize.height)];
     
     UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(didGestureHideKeyboardAction)];
     [swipeGesture setDirection:UISwipeGestureRecognizerDirectionDown];
@@ -310,10 +360,11 @@
     CGFloat textViewHeight = 30;
     CGFloat textViewWidth = self.view.frame.size.width - (textViewX * 2);
     
-    userFirstname = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, navigationBarEnd + TOP_PADDING, textViewWidth, textViewHeight)];
+    userFirstname = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, TOP_PADDING, textViewWidth, textViewHeight)];
     [userFirstname setPlaceholder:@"FIRST NAME"];
     [userFirstname setBackgroundColor:[UIColor whiteColor]];
     [userFirstname setFont:BENDERSOLID(14)];
+    [userFirstname setDelegate:self];
     if ([self.user objectForKey:kFTUserFirstnameKey]) {
         [userFirstname setText:[self.user objectForKey:kFTUserFirstnameKey]];
     }
@@ -324,6 +375,7 @@
     [userLastname setPlaceholder:@"LAST NAME"];
     [userLastname setBackgroundColor:[UIColor whiteColor]];
     [userLastname setFont:BENDERSOLID(14)];
+    [userLastname setDelegate:self];
     if ([self.user objectForKey:kFTUserLastnameKey]) {
         [userLastname setText:[self.user objectForKey:kFTUserLastnameKey]];
     }
@@ -333,6 +385,7 @@
     [userHandle setPlaceholder:@"USER HANDLE"];
     [userHandle setBackgroundColor:[UIColor whiteColor]];
     [userHandle setFont:BENDERSOLID(14)];
+    [userHandle setDelegate:self];
     if ([self.user objectForKey:kFTUserDisplayNameKey]) {
         [userHandle setText:[self.user objectForKey:kFTUserDisplayNameKey]];
     }
@@ -554,6 +607,18 @@
     [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:FITTAG_BLOG_URL]]];
     
     [self.view addSubview:webView];
+}
+
+#pragma mark - UITextFieldDelegate
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    // Prevent crashing undo bug – see note below.
+    if(range.length + range.location > textField.text.length) {
+        return NO;
+    }
+    
+    NSUInteger newLength = [textField.text length] + [string length] - range.length;
+    return (newLength > 30) ? NO : YES;
 }
 
 #pragma mark - UITextViewDelegate
@@ -779,10 +844,16 @@
 #pragma mark - FTCamViewControllerDelegate
 
 - (void)camViewController:(FTCamViewController *)camViewController coverPhoto:(UIImage *)photo {
+    
+    if (missingCoverPhotoLabel) {
+        [missingCoverPhotoLabel removeFromSuperview];
+        missingCoverPhotoLabel = nil;
+    }
+    
     [coverPhotoImageView setImage:photo];
     
     UIImage *resizedImage = [photo resizedImageWithContentMode:UIViewContentModeScaleAspectFit
-                                                        bounds:CGSizeMake(640, 640)
+                                                        bounds:CGSizeMake(640, 320)
                                           interpolationQuality:kCGInterpolationHigh];
     NSData *coverPhotoImageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
     
@@ -829,6 +900,36 @@
     }];
 }
 
+#pragma mark - FTCropImageViewControllerDelegate
+
+- (void)cropImageViewController:(FTCropImageViewController *)cropImageViewController didCropPhotoAction:(UIImage *)photo {
+    
+    if (missingCoverPhotoLabel) {
+        [missingCoverPhotoLabel removeFromSuperview];
+        missingCoverPhotoLabel = nil;
+    }
+    
+    [coverPhotoImageView setImage:photo];
+    
+    NSData *coverPhotoImageData = UIImageJPEGRepresentation(photo, 0.8f);
+    
+    PFUser *user = [PFUser currentUser];
+    [user setValue:[PFFile fileWithName:FILE_COVER_JPEG data:coverPhotoImageData] forKey:kFTUserCoverPhotoKey];
+    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            [self showHudMessage:PROFILE_UPDATED WithDuration:3];
+        }
+        
+        if (error) {
+            [[[UIAlertView alloc] initWithTitle:@"Error"
+                                        message:@"Unable to save your profile picture. Please try again later, if the problem continues contact support."
+                                       delegate:self
+                              cancelButtonTitle:@"ok"
+                              otherButtonTitles:nil] show];
+        }
+    }];
+}
+
 #pragma mark - ()
 
 - (void)clearProfileImageButtons {
@@ -836,18 +937,25 @@
     [twitterImageButton setBackgroundColor:[UIColor whiteColor]];
     [takePhotoButton setBackgroundColor:[UIColor whiteColor]];
     [selectPhotoButton setBackgroundColor:[UIColor whiteColor]];
+    [cropPhotoButton setBackgroundColor:[UIColor whiteColor]];
+    [clearPhotoButton setBackgroundColor:[UIColor whiteColor]];
+    
     [facebookImageButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [twitterImageButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [takePhotoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [cropPhotoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [clearPhotoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [selectPhotoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
 }
 
 - (void)didHighlightButtonAction:(UIButton *)button {
     [self clearProfileImageButtons];
-    UIColor *titleColor = [UIColor colorWithRed:FT_RED_COLOR_RED green:FT_RED_COLOR_GREEN blue:FT_RED_COLOR_BLUE alpha:1.0f];
-    UIColor *backgroundColor = [UIColor colorWithRed:FT_GRAY_COLOR_RED green:FT_GRAY_COLOR_GREEN blue:FT_GRAY_COLOR_BLUE alpha:1.0f];
+    
+    UIColor *titleColor = FT_RED;
+    UIColor *backgroundColor = FT_GRAY;
     [button setBackgroundColor:backgroundColor];
     [button setTitleColor:titleColor forState:UIControlStateNormal];
+    [button setTitleColor:titleColor forState:UIControlStateSelected];
     [button setTitleColor:titleColor forState:UIControlStateHighlighted];
 }
 
@@ -974,7 +1082,7 @@
     }
 }
 
-- (void)didTapTakeCoverPhotoButtonAction:(id)sender {
+- (void)didTapTakeCoverPhotoButtonAction:(UIButton *)sender {
     NSLog(@"didTapTakeCoverPhotoButtonAction");
     [self clearProfileImageButtons];
     
@@ -984,14 +1092,50 @@
     
     UINavigationController *navController = [[UINavigationController alloc] init];
     [navController setViewControllers:@[ camViewController ] animated:NO];
-    [self presentViewController:navController animated:YES completion:^(){
+    [self presentViewController:navController animated:YES completion:nil];
+}
+
+- (void)didTapCropCoverPhotoButtonAction:(UIButton *)sender {
+    [self clearProfileImageButtons];
+    
+    if (cropImageViewController) {
+        cropImageViewController = nil;
+    }
+    
+    cropImageViewController = [[FTCropImageViewController alloc] initWithPhoto:coverPhotoImageView.image];
+    cropImageViewController.delegate = self;
+    
+    UINavigationController *navController = [[UINavigationController alloc] init];
+    [navController setViewControllers:@[ cropImageViewController ] animated:NO];
+    [self presentViewController:navController animated:YES completion:nil];
+}
+
+- (void)didTapClearCoverPhotoButtonAction:(UIButton *)button {
+    [self clearProfileImageButtons];
+    
+    coverPhotoImageView.image = nil;
+    
+    if (!missingCoverPhotoLabel) {
+        missingCoverPhotoLabel = [[UILabel alloc] initWithFrame:coverPhotoImageView.frame];
+        [missingCoverPhotoLabel setTextAlignment:NSTextAlignmentCenter];
+        [missingCoverPhotoLabel setUserInteractionEnabled:NO];
+        [missingCoverPhotoLabel setFont:BENDERSOLID(24)];
+        [missingCoverPhotoLabel setTextColor: [UIColor blackColor]];
+        [missingCoverPhotoLabel setText:@"No Cover Photo Found"];
         
-    }];
+        [coverPhotoImageView addSubview:missingCoverPhotoLabel];
+        [self.view addSubview:coverPhotoImageView];
+    }
 }
 
 - (void)didTapTakePhotoButtonAction:(id)sender {
     NSLog(@"didTapTakePhotoButtonAction");
     [self clearProfileImageButtons];
+    
+    if (missingCoverPhotoLabel) {
+        [missingCoverPhotoLabel removeFromSuperview];
+        missingCoverPhotoLabel = nil;
+    }
     
     FTCamViewController *camViewController = [[FTCamViewController alloc] init];
     camViewController.delegate = self;
