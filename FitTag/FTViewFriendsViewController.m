@@ -17,12 +17,13 @@
 @property (nonatomic, strong) NSArray *objects;
 @property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
 @property (nonatomic, strong) FTUserProfileViewController *profileViewController;
-
+@property (nonatomic, strong) UIBarButtonItem *backIndicator;
 @end
 
 @implementation FTViewFriendsViewController
 @synthesize flowLayout;
 @synthesize profileViewController;
+@synthesize backIndicator;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -31,35 +32,31 @@
         [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
     }
     
-    UIColor *grayColor = [UIColor colorWithRed:FT_GRAY_COLOR_RED
-                                         green:FT_GRAY_COLOR_GREEN
-                                          blue:FT_GRAY_COLOR_BLUE
-                                         alpha:1.0f];
-    
-    
-    //[self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     [self.tableView setSeparatorColor:[UIColor clearColor]];
     
     // Set background image
-    [self.tableView setBackgroundColor:grayColor];
+    [self.tableView setBackgroundColor:FT_GRAY];
     [self.tableView setDelegate:self];
     [self.tableView.tableHeaderView setHidden:NO];
     
     // Fittag navigationbar color
-    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:FT_RED_COLOR_RED
-                                                                           green:FT_RED_COLOR_GREEN
-                                                                            blue:FT_RED_COLOR_BLUE
-                                                                           alpha:1.0f];
+    self.navigationController.navigationBar.barTintColor = FT_RED;
+    
+    // backbutton
+    backIndicator = [[UIBarButtonItem alloc] init];
+    [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backIndicator setStyle:UIBarButtonItemStylePlain];
+    [backIndicator setTarget:self];
+    [backIndicator setAction:@selector(didTapBackButtonAction:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
     
     flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(105.5,105)];
+    [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0.0f,0.0f,0.0f,0.0f)];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
-    
-    profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -168,12 +165,24 @@
 
 - (void)followCell:(FTFollowCell *)inviteCell didTapProfileImage:(UIButton *)button user:(PFUser *)aUser {
     //NSLog(@"%@::followCell:didTapProfileImage:user",VIEWCONTROLLER_INVITE);
+    if (profileViewController) {
+        profileViewController = nil;
+    }
+    
+    profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    [profileViewController.navigationItem setLeftBarButtonItem:backIndicator];
     [profileViewController setUser:aUser];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
 
 - (void)followCell:(FTFollowCell *)inviteCell didTapFollowButton:(UIButton *)button user:(PFUser *)aUser {
     
+}
+
+#pragma mark - ()
+
+- (void)didTapBackButtonAction:(UIBarButtonItem *)button {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end
