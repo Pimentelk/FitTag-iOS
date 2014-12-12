@@ -8,6 +8,7 @@
 
 #import "FTEditPhotoViewController.h"
 #import "UIImage+ResizeAdditions.h"
+//#import "FTCheckInViewController.h"
 
 @interface FTEditPhotoViewController (){
     CLLocationManager *locationManager;
@@ -15,11 +16,13 @@
 @end
 
 @interface FTEditPhotoViewController()
+@property (nonatomic) CGFloat locationLabelOriginalY;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, strong) NSString *videoURL;
-@property (nonatomic, strong) UITextField *commentTextField;
-@property (nonatomic, strong) UITextField *tagTextField;
+@property (nonatomic, strong) UITextView *commentTextView;
+//@property (nonatomic, strong) UITextField *tagTextField;
+//@property (nonatomic, strong) UITextField *locationTextField;
 @property (nonatomic, assign) UIBackgroundTaskIdentifier fileUploadBackgroundTaskId;
 @property (nonatomic, assign) UIBackgroundTaskIdentifier photoPostBackgroundTaskId;
 @property (nonatomic, assign) NSInteger scrollViewHeight;
@@ -34,13 +37,14 @@
 @synthesize postDetailsFooterView;
 @synthesize scrollView;
 @synthesize image;
-@synthesize commentTextField;
+@synthesize commentTextView;
 @synthesize photoFile;
 @synthesize thumbnailFile;
 @synthesize fileUploadBackgroundTaskId;
 @synthesize photoPostBackgroundTaskId;
-@synthesize tagTextField;
+//@synthesize tagTextField;
 @synthesize scrollViewHeight;
+@synthesize locationLabelOriginalY;
 
 #pragma mark - NSObject
 
@@ -71,7 +75,7 @@
     self.scrollView.backgroundColor = [UIColor whiteColor];
     self.view = self.scrollView;
     
-    UIImageView *photoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
+    UIImageView *photoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
     [photoImageView setBackgroundColor:[UIColor whiteColor]];
     [photoImageView setImage:self.image];
     [photoImageView setContentMode:CONTENTMODE];
@@ -82,11 +86,15 @@
     footerRect.origin.y = photoImageView.frame.origin.y + photoImageView.frame.size.height;
     
     self.postDetailsFooterView = [[FTPostDetailsFooterView alloc] initWithFrame:footerRect];
-    self.commentTextField = postDetailsFooterView.commentField;
-    self.tagTextField = postDetailsFooterView.hashtagTextField;
-    self.commentTextField.delegate = self;
-    self.tagTextField.delegate = self;
+    self.commentTextView = postDetailsFooterView.commentField;
+    //self.tagTextField = postDetailsFooterView.hashtagTextField;
+    //self.locationTextField = postDetailsFooterView.locationTextField;
+
+    //self.locationTextField.delegate = self;
+    self.commentTextView.delegate = self;
+    //self.tagTextField.delegate = self;
     self.postDetailsFooterView.delegate = self;
+    
     [self.scrollView addSubview:postDetailsFooterView];
     
     scrollViewHeight = photoImageView.frame.origin.y + photoImageView.frame.size.height + postDetailsFooterView.frame.size.height;
@@ -107,7 +115,7 @@
     // NavigationBar & ToolBar
     [self.navigationController.navigationBar setHidden:NO];
     [self.navigationController.toolbar setHidden:YES];
-    [self.navigationItem setTitle: @"TAG YOUR FIT"];
+    [self.navigationItem setTitle:@"TAG YOUR FIT"];
     [self.navigationItem setHidesBackButton:NO];
     
     // Override the back idnicator
@@ -133,26 +141,55 @@
 }
 
 #pragma mark - UITextFieldDelegate
-
+/*
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {    
     [textField resignFirstResponder];
     return YES;
 }
 
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+    if ([textField isEqual:self.locationTextField]) {
+        FTCheckInViewController *checkInViewController = [[FTCheckInViewController alloc] initWithStyle:UITableViewStylePlain];
+        
+        UINavigationController *navController = [[UINavigationController alloc] init];
+        [navController setViewControllers:@[ checkInViewController ] animated:NO];
+        [navController.navigationBar setTintColor:FT_RED];
+        [navController.navigationBar setBarTintColor:FT_RED];
+        
+        [self presentViewController:navController animated:NO completion:^{
+            NSLog(@"location select complete");
+        }];
+    }
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+    if ([textField isEqual:self.locationTextField]) {
+        
+    }
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    
+    return YES;
+}
+*/
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    [self.commentTextField resignFirstResponder];
-    [self.tagTextField resignFirstResponder];
+    [self.commentTextView resignFirstResponder];
+    //[self.tagTextField resignFirstResponder];
+    //[self.locationTextField resignFirstResponder];
 }
 
 #pragma mark - FTPhotoPostDetailsFooterViewDelegate
 
-- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView didTapFacebookShareButton:(UIButton *)button {
+- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView
+    didTapFacebookShareButton:(UIButton *)button {
     // Facebook button is on
 }
 
-- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView didTapTwitterShareButton:(UIButton *)button {
+- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView
+     didTapTwitterShareButton:(UIButton *)button {
     // Twitter button is on
 }
 
@@ -176,14 +213,14 @@
     }];
 }
 
-- (NSArray *) checkForHashtag {
+- (NSArray *)checkForHashtag {
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)" options:0 error:&error];
-    NSArray *matches = [regex matchesInString:self.commentTextField.text options:0 range:NSMakeRange(0,self.commentTextField.text.length)];
+    NSArray *matches = [regex matchesInString:self.commentTextView.text options:0 range:NSMakeRange(0,self.commentTextView.text.length)];
     NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
     for (NSTextCheckingResult *match in matches) {
         NSRange wordRange = [match rangeAtIndex:1];
-        NSString *word = [self.commentTextField.text substringWithRange:wordRange];
+        NSString *word = [self.commentTextView.text substringWithRange:wordRange];
         //NSLog(@"Found tag %@", word);
         [matchedResults addObject:word];
     }
@@ -193,11 +230,11 @@
 - (NSMutableArray *) checkForMention {
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@(\\w+)" options:0 error:&error];
-    NSArray *matches = [regex matchesInString:self.commentTextField.text options:0 range:NSMakeRange(0,self.commentTextField.text.length)];
+    NSArray *matches = [regex matchesInString:self.commentTextView.text options:0 range:NSMakeRange(0,self.commentTextView.text.length)];
     NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
     for (NSTextCheckingResult *match in matches) {
         NSRange wordRange = [match rangeAtIndex:1];
-        NSString *word = [self.commentTextField.text substringWithRange:wordRange];
+        NSString *word = [self.commentTextView.text substringWithRange:wordRange];
         //NSLog(@"Found mention %@", word);
         [matchedResults addObject:word];
     }
@@ -287,9 +324,9 @@
     if ([PFUser currentUser]) {
     
         NSDictionary *userInfo = [NSDictionary dictionary];
-        NSString *trimmedComment = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString *trimmedComment = [self.commentTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     
-        if (trimmedComment.length != 0) {
+        if (trimmedComment.length > 0) {
             userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment,kFTEditPhotoViewControllerUserInfoCommentKey,nil];
         }
         
@@ -304,8 +341,6 @@
         
         NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[self checkForHashtag]];
         NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[self checkForMention]];
-        //NSLog(@"HashTags: %@",hashtags);
-        //NSLog(@"Mentions: %@",mentions);
         
         // create a photo object
         PFObject *photo = [PFObject objectWithClassName:kFTPostClassKey];
@@ -314,6 +349,23 @@
         [photo setObject:self.thumbnailFile forKey:kFTPostThumbnailKey];
         [photo setObject:kFTPostImageKey forKey:kFTPostTypeKey];
         [photo setObject:hashtags forKey:kFTPostHashTagKey];
+        [photo setObject:mentions forKey:kFTPostMentionKey];
+        
+        NSString *description = EMPTY_STRING;
+        
+        NSLog(@"Posting photo...");
+        
+        // userInfo might contain any caption which might have been posted by the uploader
+        if (userInfo) {
+            NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
+            
+            if (commentText && commentText.length > 0) {
+                // create and save photo caption
+                NSLog(@"photo caption");
+                [photo setObject:commentText forKey:kFTPostCaptionKey];
+                description = commentText;
+            }
+        }
         
         if (self.geoPoint) {
             [photo setObject:self.geoPoint forKey:kFTPostLocationKey];
@@ -333,44 +385,9 @@
         [photo saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
             
-                [[FTCache sharedCache] setAttributesForPost:photo
-                                                     likers:[NSArray array]
-                                                 commenters:[NSArray array]
-                                         likedByCurrentUser:NO
-                                                displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
-            
+                [[FTCache sharedCache] setAttributesForPost:photo likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];            
                 [self incrementUserPostCount];
                 
-                NSString *description = @"Allow your users to share stories on Facebook from your app using the IOS SDK.";
-                
-                // userInfo might contain any caption which might have been posted by the uploader
-                if (userInfo) {
-                    NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
-                
-                    if (commentText && commentText.length != 0) {
-                        // create and save photo caption
-                        PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
-                        [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
-                        [comment setObject:photo forKey:kFTActivityPostKey];
-                        [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
-                        [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
-                        [comment setObject:hashtags forKey:kFTActivityHashtagKey];
-                        [comment setObject:mentions forKey:kFTActivityMentionKey];
-                        [comment setObject:commentText forKey:kFTActivityContentKey];
-                    
-                        PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];
-                        [ACL setPublicReadAccess:YES];
-                        comment.ACL = ACL;
-                    
-                        [comment saveEventually];
-                        [[FTCache sharedCache] incrementCommentCountForPost:photo];
-                        
-                        description = commentText;
-                    }
-                } else {
-                    //[photo saveEventually];
-                }
-            
                 //NSLog(@"photo:%@",photo.objectId);
                 NSString *link = [NSString stringWithFormat:@"http://fittag.com/viewer.php?pid=%@",photo.objectId];
                 
@@ -399,12 +416,11 @@
                 
                 [[NSNotificationCenter defaultCenter] postNotificationName:FTTabBarControllerDidFinishEditingPhotoNotification object:photo];
             } else {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
-                                                                message:nil
-                                                               delegate:nil
-                                                      cancelButtonTitle:nil
-                                                      otherButtonTitles:@"Dismiss", nil];
-                [alert show];
+                [[[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
+                                            message:nil
+                                           delegate:nil
+                                  cancelButtonTitle:nil
+                                  otherButtonTitles:@"Dismiss", nil] show];
             }
             [[UIApplication sharedApplication] endBackgroundTask:self.photoPostBackgroundTaskId];
         }];
@@ -462,7 +478,7 @@
                 //NSLog(@"State: %@",[placemark administrativeArea]);
                 self.postLocation = [NSString stringWithFormat:@" %@, %@", [placemark locality], [placemark administrativeArea]];
                 if (postDetailsFooterView) {
-                    postDetailsFooterView.locationTextField.text = self.postLocation;
+                    //postDetailsFooterView.locationTextField.text = self.postLocation;
                 }
             }
         }];

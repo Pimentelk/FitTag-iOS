@@ -9,7 +9,7 @@
 #import "FTPostDetailsFooterView.h"
 #import <CoreLocation/CoreLocation.h>
 
-@interface FTEditPhotoViewController : UIViewController <UITextFieldDelegate,UIScrollViewDelegate,FTPostDetailsFooterViewDelegate,CLLocationManagerDelegate>
+@interface FTEditPhotoViewController : UIViewController <UITextViewDelegate,UITextFieldDelegate,UIScrollViewDelegate,FTPostDetailsFooterViewDelegate,CLLocationManagerDelegate>
 
 - (id)initWithImage:(UIImage *)aImage;
 
