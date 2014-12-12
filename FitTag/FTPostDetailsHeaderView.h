@@ -53,6 +53,8 @@
 @property (nonatomic, strong) id<FTPostDetailsHeaderViewDelegate> delegate;
 
 + (CGRect)rectForView;
++ (CGFloat)heightForCellWithName:(NSString *)name contentString:(NSString *)content;
++ (NSString *)padString:(NSString *)string withFont:(UIFont *)font toWidth:(CGFloat)width;
 
 - (id)initWithFrame:(CGRect)frame post:(PFObject*)aPost type:(NSString *)aType;
 - (id)initWithFrame:(CGRect)frame post:(PFObject*)aPost type:(NSString *)aType photographer:(PFUser*)aPhotographer likeUsers:(NSArray*)theLikeUsers;
@@ -100,5 +102,23 @@
 
 
 - (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView didTapLocation:(UIButton *)button post:(PFObject *)post;
+
+/*!
+ Sent to the delegate when a hashtag is tapped
+ @param hashTag the HashTag that was tapped
+ */
+- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView didTapHashTag:(NSString *)hashTag;
+
+/*!
+ Sent to the delegate when a user button is tapped
+ @param aUser the PFUser of the user that was tapped
+ */
+- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView didTapUserButton:(PFUser *)aUser;
+
+/*!
+ Sent to the delegate when a user mention is tapped
+ @param aUser the PFUser of the user that was tapped
+ */
+- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView didTapUserMention:(NSString *)mention;
 
 @end

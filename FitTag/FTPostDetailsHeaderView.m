@@ -10,6 +10,7 @@
 #import "FTProfileImageView.h"
 #import "TTTTimeIntervalFormatter.h"
 #import "FTGallerySwiperView.h"
+#import "STTweetLabel.h"
 
 #define EXTRA_PADDING 3
 #define REMOVE_EXTRA_PADDING 4
@@ -30,7 +31,7 @@
 
 #define avatarImageX horiBorderSpacing
 #define avatarImageY vertBorderSpacing
-#define avatarImageDim 35.0f
+#define avatarImageDim 33.0f
 
 #define nameLabelX avatarImageX+avatarImageDim+horiMediumSpacing
 #define nameLabelY avatarImageY+vertSmallSpacing
@@ -62,7 +63,6 @@
 #define numLikePics 7.0f
 
 @interface FTPostDetailsHeaderView ()
-
 // View components
 @property (nonatomic, strong) UIView *nameHeaderView;
 @property (nonatomic, strong) PFImageView *postImageView;
@@ -75,6 +75,8 @@
 // Redeclare for edit
 @property (nonatomic, strong, readwrite) PFUser *photographer;
 @property (nonatomic, strong) UILabel *locationLabel;
+
+@property (nonatomic, strong) STTweetLabel *contentLabel;
 // Private methods
 - (void)createView;
 
@@ -94,7 +96,6 @@ static TTTTimeIntervalFormatter *timeFormatter;
 @synthesize likeButton;
 @synthesize delegate;
 @synthesize currentLikeAvatars;
-//@synthesize usernameRibbon;
 @synthesize likeCounter;
 @synthesize commentCounter;
 @synthesize commentButton;
@@ -104,6 +105,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
 @synthesize avatarImageView;
 @synthesize userButton;
 @synthesize locationLabel;
+@synthesize contentLabel;
 
 #pragma mark - NSObject
 
@@ -163,11 +165,68 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [FTUtility drawSideDropShadowForRect:self.likeBarView.frame inContext:UIGraphicsGetCurrentContext()];
 }
 
-#pragma mark - FTPhotoDetailsHeaderView
-
 + (CGRect)rectForView {
     return CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, viewTotalHeight);
 }
+
+/* Static helper to get the height for a cell if it had the given name and content */
++ (CGFloat)heightForCellWithName:(NSString *)name contentString:(NSString *)content {
+    return [FTPostDetailsHeaderView heightForCellWithName:name contentString:content cellInsetWidth:0];
+}
+
+/* Static helper to get the height for a cell if it had the given name, content and horizontal inset */
++ (CGFloat)heightForCellWithName:(NSString *)name contentString:(NSString *)content cellInsetWidth:(CGFloat)cellInset {
+    CGSize nameSize = CGSizeMake(0, 0);
+    nameSize = [name boundingRectWithSize:nameSize
+                                  options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
+                               attributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:13.0f]}
+                                  context:nil].size;
+    
+    NSString *paddedString = [FTPostDetailsHeaderView padString:content withFont:[UIFont systemFontOfSize:13] toWidth:nameSize.width];
+    CGFloat horizontalTextSpace = [FTPostDetailsHeaderView horizontalTextSpaceForInsetWidth:cellInset];
+    
+    CGSize contentSize = [paddedString boundingRectWithSize:CGSizeMake(horizontalTextSpace, CGFLOAT_MAX)
+                                                    options:NSStringDrawingUsesLineFragmentOrigin // word wrap?
+                                                 attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:13.0f]}
+                                                    context:nil].size;
+    
+    CGFloat singleLineHeight = [@"test" boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)
+                                                     options:NSStringDrawingUsesLineFragmentOrigin
+                                                  attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:13.0f]}
+                                                     context:nil].size.height;
+    
+    // Calculate the added height necessary for multiline text. Ensure value is not below 0.
+    CGFloat multilineHeightAddition = (contentSize.height - singleLineHeight) > 0 ? (contentSize.height - singleLineHeight) : 0;
+    
+    return horiBorderSpacing + avatarImageDim + horiMediumSpacing + multilineHeightAddition;
+}
+
+/* Static helper to pad a string with spaces to a given beginning offset */
++ (NSString *)padString:(NSString *)string withFont:(UIFont *)font toWidth:(CGFloat)width {
+    // Find number of spaces to pad
+    NSMutableString *paddedString = [[NSMutableString alloc] init];
+    while (true) {
+        [paddedString appendString:@" "];
+        CGSize resultSize = [paddedString boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)
+                                                       options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
+                                                    attributes:@{NSFontAttributeName:font}
+                                                       context:nil].size;
+        if (resultSize.width >= width) {
+            break;
+        }
+    }
+    
+    // Add final spaces to be ready for first word
+    [paddedString appendString:[NSString stringWithFormat:@" %@",string]];
+    return paddedString;
+}
+
+/* Static helper to obtain the horizontal space left for name and content after taking the inset and image in consideration */
++ (CGFloat)horizontalTextSpaceForInsetWidth:(CGFloat)insetWidth {
+    return (320-(insetWidth*2)) - (horiBorderSpacing+avatarImageDim+horiBorderSpacing+horiBorderSpacing);
+}
+
+#pragma mark - FTPhotoDetailsHeaderView
 
 - (void)setPost:(PFObject *)aPost {
     post = aPost;
@@ -244,24 +303,24 @@ static TTTTimeIntervalFormatter *timeFormatter;
     //NSLog(@"loadStateDidChange: %@",notification);
     switch (moviePlayer.loadState) {
         case MPMovieLoadStatePlayable: {
-            NSLog(@"moviePlayer... MPMovieLoadStatePlayable");
+            //NSLog(@"moviePlayer... MPMovieLoadStatePlayable");
             [UIView animateWithDuration:1 animations:^{
                 [moviePlayer.view setAlpha:1];
             }];
         }
             break;
         case MPMovieLoadStatePlaythroughOK: {
-            NSLog(@"moviePlayer... MPMovieLoadStatePlaythroughOK");
+            //NSLog(@"moviePlayer... MPMovieLoadStatePlaythroughOK");
             
         }
             break;
         case MPMovieLoadStateStalled: {
-            NSLog(@"moviePlayer... MPMovieLoadStateStalled");
+            //NSLog(@"moviePlayer... MPMovieLoadStateStalled");
             
         }
             break;
         case MPMovieLoadStateUnknown: {
-            NSLog(@"moviePlayer... MPMovieLoadStateUnknown");
+            //NSLog(@"moviePlayer... MPMovieLoadStateUnknown");
             
         }
             break;
@@ -274,20 +333,20 @@ static TTTTimeIntervalFormatter *timeFormatter;
     //NSLog(@"moviePlayerStateChange: %@",notification);
     switch (moviePlayer.playbackState) {
         case MPMoviePlaybackStateStopped: {
-            NSLog(@"moviePlayer... MPMoviePlaybackStateStopped");
+            //NSLog(@"moviePlayer... MPMoviePlaybackStateStopped");
             
         }
             break;
         case MPMoviePlaybackStatePlaying: {
-            NSLog(@"moviePlayer... MPMoviePlaybackStatePlaying");
-            NSLog(@"moviePlayer... MPMovieLoadStatePlayable");
+            //NSLog(@"moviePlayer... MPMoviePlaybackStatePlaying");
+            //NSLog(@"moviePlayer... MPMovieLoadStatePlayable");
             [UIView animateWithDuration:1 animations:^{
                 [moviePlayer.view setAlpha:1];
             }];
         }
             break;
         case MPMoviePlaybackStatePaused: {
-            NSLog(@"moviePlayer... MPMoviePlaybackStatePaused");
+            //NSLog(@"moviePlayer... MPMoviePlaybackStatePaused");
             [UIView animateWithDuration:0.3 animations:^{
                 [moviePlayer.view setAlpha:0];
                 [moviePlayer prepareToPlay];
@@ -295,17 +354,17 @@ static TTTTimeIntervalFormatter *timeFormatter;
         }
             break;
         case MPMoviePlaybackStateInterrupted: {
-            NSLog(@"moviePlayer... MPMoviePlaybackStateInterrupted");
+            //NSLog(@"moviePlayer... MPMoviePlaybackStateInterrupted");
             
         }
             break;
         case MPMoviePlaybackStateSeekingForward: {
-            NSLog(@"moviePlayer... MPMoviePlaybackStateSeekingForward");
+            //NSLog(@"moviePlayer... MPMoviePlaybackStateSeekingForward");
             
         }
             break;
         case MPMoviePlaybackStateSeekingBackward: {
-            NSLog(@"moviePlayer... MPMoviePlaybackStateSeekingBackward");
+            //NSLog(@"moviePlayer... MPMoviePlaybackStateSeekingBackward");
             
         }
             break;
@@ -386,7 +445,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     // Create bottom section for the header view; the likes
     
     UIView *postButtons = [[UIView alloc] init];
-    postButtons.frame = CGRectMake( 0, mainImageHeight + nameHeaderHeight, self.frame.size.width, likeBarHeight);
+    postButtons.frame = CGRectMake(0, mainImageHeight + nameHeaderHeight, self.frame.size.width, likeBarHeight);
     postButtons.backgroundColor = FT_GRAY;
     [self addSubview:postButtons];
     
@@ -451,6 +510,63 @@ static TTTTimeIntervalFormatter *timeFormatter;
     
     [self bringSubviewToFront:postButtons];
     [self reloadLikeBar];
+    
+    if ([self.post objectForKey:kFTPostCaptionKey]) {
+        [self.photographer fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+            if (!error) {
+                
+                self.photographer = (PFUser *)object;
+                
+                NSString *name = [self.photographer objectForKey:kFTUserDisplayNameKey];
+                NSString *contentString = [self.post objectForKey:kFTPostCaptionKey];
+                NSLog(@"contentString:%@",contentString);
+                CGFloat captionHeight = [FTPostDetailsHeaderView heightForCellWithName:name
+                                                                         contentString:contentString];
+                
+                CGRect captionRect = postButtons.frame;
+                captionRect.origin.y += captionRect.size.height;
+                captionRect.size.height = captionHeight;
+                
+                // Background
+                
+                UIView *captionView = [[UIView alloc] initWithFrame:captionRect];
+                [captionView setBackgroundColor:FT_GRAY];
+                [self addSubview:captionView];
+                
+                // UILabel
+                self.contentLabel = [[STTweetLabel alloc] init];
+                [self.contentLabel setFont:[UIFont systemFontOfSize:13]];
+                [self.contentLabel setTextColor:[UIColor colorWithRed:73./255. green:55./255. blue:35./255. alpha:1.000]];
+                [self.contentLabel setNumberOfLines:0];
+                [self.contentLabel setLineBreakMode:NSLineBreakByWordWrapping];
+                [self.contentLabel setBackgroundColor:[UIColor clearColor]];
+                [self.contentLabel setShadowColor:[UIColor colorWithWhite:1.0f alpha:0.70f]];
+                [self.contentLabel setShadowOffset:CGSizeMake(0,1)];
+                [self.contentLabel setText:contentString];
+                [self.contentLabel setFrame:CGRectMake(5, 5, captionView.bounds.size.width-10, captionView.bounds.size.height-10)];
+                [self.contentLabel setUserInteractionEnabled:YES];
+                [captionView addSubview:self.contentLabel];
+                __unsafe_unretained typeof(self) weakSelf = self;
+                
+                [self.contentLabel setDetectionBlock:^(STTweetHotWord hotWord, NSString *string, NSString *protocol, NSRange range) {
+                    NSArray *hotWords = @[ HOTWORD_HANDLE, HOTWORD_HASHTAG, HOTWORD_LINK ];
+                    if ([hotWords[hotWord] isEqualToString:HOTWORD_HANDLE]) {
+                        NSLog(@"didTapUserMention:%@",string);
+                        if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(postDetailsHeaderView:didTapUserMention:)]) {
+                            [weakSelf.delegate postDetailsHeaderView:weakSelf didTapUserMention:string];
+                        }
+                    } else if ([hotWords[hotWord] isEqualToString:HOTWORD_HASHTAG]) {
+                        NSLog(@"didTapHashTag:%@",string);
+                        if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(postDetailsHeaderView:didTapHashTag:)]) {
+                            [weakSelf.delegate postDetailsHeaderView:weakSelf didTapHashTag:string];
+                        }
+                    } else if ([hotWords[hotWord] isEqualToString:HOTWORD_LINK]) {
+                        
+                    }
+                }];
+            }
+        }];
+    }
 }
 
 #pragma mark - config
@@ -521,10 +637,9 @@ static TTTTimeIntervalFormatter *timeFormatter;
             [carousel setCanCancelContentTouches:YES];
             [carousel setBackgroundColor:[UIColor whiteColor]];
             [carousel setDelegate:self];
-            //add the scrollview to the view
-            carousel.pagingEnabled = YES;
+            [carousel setPagingEnabled:YES];
             [carousel setAlwaysBounceVertical:NO];
-            [carousel setContentSize: CGSizeMake(self.frame.size.width * objects.count, 320)];
+            //[carousel setAlpha:0];
             
             swiperView = [[FTGallerySwiperView alloc] initWithFrame:CGRectMake(10, nameHeaderHeight+5, 60, 20)];
             
@@ -532,13 +647,9 @@ static TTTTimeIntervalFormatter *timeFormatter;
             for (PFObject *object in objects) {
                 PFFile *file = [object objectForKey:kFTPostImageKey];
                 [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-                    if (!error) {
-                        
-                        //UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapImageInGalleryAction:)];
-                        //singleTap.numberOfTapsRequired = 1;
-                        
+                    if (!error) {                        
                         CGFloat xOrigin = i * self.frame.size.width;
-                        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, self.frame.size.width, 320)];
+                        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, self.frame.size.width, self.frame.size.width)];
                         [imageView setBackgroundColor:[UIColor whiteColor]];
                         
                         UIImage *image = [UIImage imageWithData:data];
@@ -546,7 +657,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
                         [imageView setClipsToBounds:YES];
                         [imageView setContentMode:CONTENTMODE];
                         [imageView setUserInteractionEnabled:YES];
-                        //[imageView addGestureRecognizer:singleTap];
+                        
                         [carousel addSubview:imageView];
                     }
                 }];
@@ -563,7 +674,17 @@ static TTTTimeIntervalFormatter *timeFormatter;
                 [self.swiperView setNumberOfDashes:i];
                 [self addSubview:self.swiperView];
             }
+            
+            
+            [carousel setContentSize:CGSizeMake(self.frame.size.width * objects.count, self.frame.size.width)];
+            //[self performSelector:@selector(showCarousel) withObject:nil afterDelay:1];
         }
+    }];
+}
+
+- (void)showCarousel {
+    [UIView animateWithDuration:0.2 animations:^{
+        [carousel setAlpha:1];
     }];
 }
 
@@ -677,9 +798,11 @@ static TTTTimeIntervalFormatter *timeFormatter;
 
 - (void)didTapLikePhotoButtonAction:(UIButton *)button {
     NSLog(@"FTPostDetailsHeaderView::didTapLikePhotoButtonAction:");
+    
     BOOL liked = !button.selected;
-    [button removeTarget:self action:@selector(didTapLikePhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self setLikeButtonState:liked];
+    
+    [button removeTarget:self action:@selector(didTapLikePhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     
     NSArray *originalLikeUsersArray = [NSArray arrayWithArray:self.likeUsers];
     NSMutableSet *newLikeUsersSet = [NSMutableSet setWithCapacity:[self.likeUsers count]];
@@ -702,12 +825,21 @@ static TTTTimeIntervalFormatter *timeFormatter;
     
     [self setLikeUsers:[newLikeUsersSet allObjects]];
     
+    [button setEnabled:NO];
     if (liked) {
         [FTUtility likePhotoInBackground:self.post block:^(BOOL succeeded, NSError *error) {
             if (!succeeded) {
                 [button addTarget:self action:@selector(didTapLikePhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
                 [self setLikeUsers:originalLikeUsersArray];
                 [self setLikeButtonState:NO];
+                [button setEnabled:YES];
+            }
+            if (error) {
+                NSLog(@"Like error:%@",error);
+            }
+            
+            if (succeeded) {
+                [button setEnabled:YES];
             }
         }];
     } else {
@@ -716,6 +848,15 @@ static TTTTimeIntervalFormatter *timeFormatter;
                 [button addTarget:self action:@selector(didTapLikePhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
                 [self setLikeUsers:originalLikeUsersArray];
                 [self setLikeButtonState:YES];
+                [button setEnabled:YES];
+            }
+            
+            if (error) {
+                NSLog(@"Like error:%@",error);
+            }
+            
+            if (succeeded) {
+                [button setEnabled:YES];
             }
         }];
     }
