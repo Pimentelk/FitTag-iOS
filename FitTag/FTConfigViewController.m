@@ -100,9 +100,9 @@
         [self presentTabBarController:user];
         
         id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-        [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+        [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
                                                               action:kFTTrackEventActionTypeUserLogIn
-                                                               label:kFTTrackEventLabelTypeLogInSuccess
+                                                               label:kFTTrackEventLabelTypeSuccess
                                                                value:nil] build]];
     }
 }
@@ -116,9 +116,9 @@ shouldBeginLogInWithUsername:(NSString *)username
     if (username && password && username.length && password.length) {
         
         id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-        [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+        [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
                                                               action:kFTTrackEventActionTypeUserLogIn
-                                                               label:kFTTrackEventLabelTypeLogInShould
+                                                               label:kFTTrackEventLabelTypeShould
                                                                value:nil] build]];
         
         return YES;
@@ -168,9 +168,9 @@ shouldBeginLogInWithUsername:(NSString *)username
     //NSLog(@"%@::logInViewControllerDidCancelLogIn:",VIEWCONTROLLER_CONFIG);
     //NSLog(@"User dismissed the logInViewController");
     id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
                                                           action:kFTTrackEventActionTypeUserLogIn
-                                                           label:kFTTrackEventLabelTypeLogInCancel
+                                                           label:kFTTrackEventLabelTypeCancel
                                                            value:nil] build]];
 }
 
@@ -259,9 +259,9 @@ shouldBeginLogInWithUsername:(NSString *)username
         */
         
         id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-        [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+        [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
                                                               action:kFTTrackEventActionTypeUserSignUp
-                                                               label:kFTTrackEventLabelTypeSignUpBegin
+                                                               label:kFTTrackEventLabelTypeBegin
                                                                value:nil] build]];
         
         return YES;
@@ -280,9 +280,9 @@ shouldBeginLogInWithUsername:(NSString *)username
             
             // User signedup event
             id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-            [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+            [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
                                                                   action:kFTTrackEventActionTypeUserSignUp
-                                                                   label:kFTTrackEventLabelTypeSignUpSuccess
+                                                                   label:kFTTrackEventLabelTypeSuccess
                                                                    value:nil] build]];
             
             /*
@@ -312,7 +312,6 @@ shouldBeginLogInWithUsername:(NSString *)username
             }
             */
             
-            /*
             if (signUpViewController.profilePhoto) {
                 NSLog(@"signUpViewController.profilePhoto");
                 
@@ -337,11 +336,9 @@ shouldBeginLogInWithUsername:(NSString *)username
                     [user setObject:smallPicFile forKey:kFTUserProfilePicSmallKey];
                 }
             }
-            */
             
             [user setValue:kFTUserTypeUser forKey:kFTUserTypeKey];
-            
-            NSLog(@"user:%@",user);
+            [user setValue:[user username] forKey:kFTUserDisplayNameKey];
             [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (error) {
                     //[user saveEventually];
@@ -367,20 +364,22 @@ shouldBeginLogInWithUsername:(NSString *)username
     //NSLog(@"%@::signUpViewController:didFailToSignUpWithError:",VIEWCONTROLLER_CONFIG);
     //NSLog(@"%@%@",ERROR_MESSAGE,error);
     
+    NSNumber *value = [[NSNumber alloc] initWithInteger:error.code];
+    
     id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
     [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeError
                                                           action:kFTTrackEventActionTypeUserSignUp
-                                                           label:[NSString stringWithFormat:@"Error.code:%ld",(long)error.code]
-                                                           value:nil] build]];
+                                                           label:@"signUpViewController:didFailToSignUpWithError:"
+                                                           value:value] build]];
 }
 
 // Sent to the delegate when the sign up screen is dismissed.
 - (void)signUpViewControllerDidCancelSignUp:(PFSignUpViewController *)signUpController {
     NSLog(@"%@::signUpViewControllerDidCancelSignUp:",VIEWCONTROLLER_CONFIG);
     id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeUIAction
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
                                                           action:kFTTrackEventActionTypeButtonPress
-                                                           label:kFTTrackEventLabelTypeSignUpCancel
+                                                           label:kFTTrackEventLabelTypeCancel
                                                            value:nil] build]];
 }
 
