@@ -33,8 +33,58 @@
 
 #pragma mark - UIViewController
 
+/*
+-(void)fetchedData:(NSData *)responseData {
+    //parse out the json data
+    NSError *error = nil;
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:responseData
+                                                         options:kNilOptions
+                                                           error:&error];
+    
+    if (error) {
+        NSLog(@"error:%@",error);
+        return;
+    }
+    
+    NSLog(@"json:%@",json);
+ 
+    //The results from Google will be an array obtained from the NSDictionary object with the key "results".
+    NSArray *predictions = [json objectForKey:@"predictions"];
+    
+    for (NSDictionary *prediction in predictions) {
+        if ([prediction objectForKey:@"description"]) {
+            NSLog(@"%@",[prediction objectForKey:@"description"]);
+        }
+    }
+    
+    NSArray *results = [json objectForKey:@"results"];
+    for (NSDictionary *result in results) {
+        if ([result objectForKey:@"name"]) {
+            NSLog(@"%@",[result objectForKey:@"name"]);
+        }
+    }
+    
+    //Write out the data to the console.
+    //NSLog(@"Google Data: %@", places);
+}
+*/
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+    /*
+    //https://maps.googleapis.com/maps/api/place/search/json?location=40.757787,-74.035871&radius=500&types=gym&sensor=true&key=AIzaSyDLrDeCCYwFjiu_rW8ni72bWwurwChhZQU
+    //https://maps.googleapis.com/maps/api/place/queryautocomplete/json?key=AddYourOwnKeyHere&input=pizza+near%20par
+    NSString *googlePlacesURL = [NSString stringWithFormat:googleMapsAPIPlaceSearchURL,40.75778699404458,-74.0358710140337,@"2000",@"gym",GOOGLE_PLACES_API_KEY];
+    //NSString *googlePlacesURL = [NSString stringWithFormat:googleMapsAPIPlaceQueryURL,GOOGLE_PLACES_API_KEY,@"gym+near+hoboken"];
+    NSLog(@"googlePlacesURL:%@",googlePlacesURL);
+    
+    NSURL *googleRequestURL = [NSURL URLWithString:googlePlacesURL];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSData *data = [NSData dataWithContentsOfURL:googleRequestURL];
+        [self performSelectorOnMainThread:@selector(fetchedData:) withObject:data waitUntilDone:YES];
+    });
+    */
     
     /*
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -84,7 +134,7 @@
     [super objectsDidLoad:error];
     
     if (self.objects.count == 0 && ![[self queryForTable] hasCachedResult] & !self.firstLaunch) {
-        self.tableView.scrollEnabled = NO;
+        self.tableView.scrollEnabled = YES;
     
         if (!self.blankTimelineView.superview) {
             self.blankTimelineView.alpha = 0.0f;
@@ -123,7 +173,18 @@
 }
 
 - (void)didTapFollowFriendsButtonAction:(id)sender {
-    FTFollowFriendsViewController *followFriendsViewController = [[FTFollowFriendsViewController alloc] init];
+    // Init search user controller
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
+    [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backIndicator setStyle:UIBarButtonItemStylePlain];
+    [backIndicator setTarget:self];
+    [backIndicator setAction:@selector(didTapBackButtonAction:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    
+    FTFollowFriendsViewController *followFriendsViewController = [[FTFollowFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+    UINavigationController *followFriendsNavController = [[UINavigationController alloc] init];
+    [followFriendsNavController setViewControllers:@[followFriendsViewController] animated:NO];
+    [followFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
     [self.navigationController pushViewController:followFriendsViewController animated:YES];
 }
 
@@ -132,10 +193,12 @@
     // Check if the user has logged in before
     if (![user objectForKey:kFTUserLastLoginKey]) {
         
-        NSLog(@"user: %@",user);
+        //NSLog(@"user: %@",user);
     
         [self didLogInWithFacebook:user];
         [self didLogInWithTwitter:user];
+        
+        NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
         
         // Set default settings
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushFollowsKey];
@@ -143,11 +206,11 @@
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushRewardsKey];
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushCommentsKey];
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kFTUserDefaultsSettingsViewControllerPushMentionsKey];
-        [[NSUserDefaults standardUserDefaults] setNilValueForKey:kFTUserDefaultsSettingsViewControllerPushBusinessesKey];
+        [[NSUserDefaults standardUserDefaults] setValue:dictionary forKey:kFTUserDefaultsSettingsViewControllerPushBusinessesKey];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
         FTInterestViewFlowLayout *interestLayoutFlow = [[FTInterestViewFlowLayout alloc] init];
-        [interestLayoutFlow setItemSize:CGSizeMake(159.5,42)];
+        [interestLayoutFlow setItemSize:CGSizeMake(self.view.frame.size.width/2,42)];
         [interestLayoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
         [interestLayoutFlow setMinimumInteritemSpacing:0];
         [interestLayoutFlow setMinimumLineSpacing:0];
@@ -159,13 +222,27 @@
         interestsViewController.isFirstLaunch = YES;
     
         UINavigationController *navController = [[UINavigationController alloc] init];
-        [navController setViewControllers:@[ interestsViewController ] animated:NO];
+        [navController setViewControllers:@[interestsViewController] animated:NO];
     
         [self presentViewController:navController animated:NO completion:^(){
             [user setValue:[NSDate date] forKey:kFTUserLastLoginKey];
             if (user) {
                 @try {
-                    [user saveEventually];
+                    //NSLog(@"User:%@",user);
+                    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                        if (error) {
+                            NSLog(@"error:%@",error);
+                            switch (error.code) {
+                                case 101:
+                                    [self dismissViewControllerAnimated:YES completion:nil];
+                                    [FTUtility showHudMessage:@"User not found" WithDuration:2];
+                                    [[UIApplication sharedApplication].delegate performSelector:@selector(logOut)];
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }];
                 } @catch (NSException *exception) {
                     NSLog(@"Exception:%@",exception);
                 } @finally {
@@ -219,7 +296,6 @@
             */
             
             if ([TWuser objectForKey:@"id"]) {
-                
                 [user setValue:[NSString stringWithFormat:@"%@",[TWuser objectForKey:@"id"]]
                         forKey:kFTUserTwitterIdKey];
             }
@@ -311,6 +387,10 @@
     
     NSLog(@"%@ %@",ERROR_MESSAGE,USER_NOT_LOGIN_FACEBOOK);
     return NO;
+}
+
+- (void)didTapBackButtonAction:(UIButton *)button {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end
