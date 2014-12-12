@@ -13,8 +13,10 @@ NSString *const iOS7AppStoreURLFormat = @"itms-apps://itunes.apple.com/app/id%d"
 NSString *const iOSAppStoreURLFormat = @"itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=%d";
 //https://maps.googleapis.com/maps/api/place/autocomplete/json?input=Food%20Sh&sensor=false&radius=500&location=0,0&key=
 //https://maps.googleapis.com/maps/api/place/search/json?location=%f,%f&radius=%@&types=%@&sensor=true&key=%@
-NSString *const googleMapsAPIPlaceAutocompleteURL = @"https://maps.googleapis.com/maps/api/place/autocomplete/json?input=%@&sensor=%@&radius=%d&location=%f,%f&key=%@";
+//https://maps.googleapis.com/maps/api/place/queryautocomplete/json?key=AddYourOwnKeyHere&input=pizza+near%20par
+NSString *const googleMapsAPIPlaceAutocompleteURL = @"https://maps.googleapis.com/maps/api/place/autocomplete/json?input=%@&sensor=false&radius=%d&location=%f,%f&key=%@";
 NSString *const googleMapsAPIPlaceSearchURL = @"https://maps.googleapis.com/maps/api/place/search/json?location=%f,%f&radius=%@&types=%@&sensor=true&key=%@";
+NSString *const googleMapsAPIPlaceQueryURL = @"https://maps.googleapis.com/maps/api/place/queryautocomplete/json?key=%@&input=%@";
 
 #pragma mark - NSUserDefaults
 NSString *const kFTUserDefaultsSettingsViewControllerPushLikesKey          = @"com.fittag.userDefaults.settingsDetailViewController.pushLikes";
@@ -171,6 +173,8 @@ NSString *const kFTPostTypeGalleryVideo     = @"galleryVideo";
 NSString *const kFTPostTypeImage            = @"image";
 NSString *const kFTPostTypeVideo            = @"video";
 NSString *const kFTPostHashTagKey           = @"hashTags";
+NSString *const kFTPostMentionKey           = @"mentions";
+NSString *const kFTPostCaptionKey           = @"caption";
 
 #pragma mark - Cached Post Attributes
 

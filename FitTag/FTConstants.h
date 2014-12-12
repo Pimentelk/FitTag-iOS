@@ -20,6 +20,7 @@ extern NSString *const iOSAppStoreURLFormat;
 
 extern NSString *const googleMapsAPIPlaceAutocompleteURL;
 extern NSString *const googleMapsAPIPlaceSearchURL;
+extern NSString *const googleMapsAPIPlaceQueryURL;
 
 #pragma mark - NSUserDefaults
 extern NSString *const kFTUserDefaultsSettingsViewControllerPushLikesKey;
@@ -104,6 +105,8 @@ extern NSString *const kFTPostOpenGraphIDKey;
 extern NSString *const kFTPostLocationKey;
 extern NSString *const kFTPostPostsKey;
 extern NSString *const kFTPostHashTagKey;
+extern NSString *const kFTPostMentionKey;
+extern NSString *const kFTPostCaptionKey;
 
 extern NSString *const kFTPostTypeGallery;
 extern NSString *const kFTPostTypeGalleryImage;
