@@ -46,15 +46,11 @@
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     
     // Set Background
-    [self.tableView setBackgroundColor:[UIColor colorWithRed:FT_GRAY_COLOR_RED
-                                                       green:FT_GRAY_COLOR_GREEN
-                                                        blue:FT_GRAY_COLOR_BLUE alpha:1.0f]];
+    [self.tableView setBackgroundColor:FT_GRAY];
     
     // Override the back idnicator
     [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], NSForegroundColorAttributeName,nil]];
-    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:FT_RED_COLOR_RED
-                                                                             green:FT_RED_COLOR_GREEN
-                                                                              blue:FT_RED_COLOR_BLUE alpha:1.0f]];
+    [self.navigationController.navigationBar setBarTintColor:FT_RED];
     
     // Back button
     UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] init];
@@ -77,7 +73,7 @@
     // Interests flow layout
     
     FTInterestViewFlowLayout *interestFlowLayout = [[FTInterestViewFlowLayout alloc] init];
-    [interestFlowLayout setItemSize:CGSizeMake(159.5,42)];
+    [interestFlowLayout setItemSize:CGSizeMake(self.view.frame.size.width/2,42)];
     [interestFlowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [interestFlowLayout setMinimumInteritemSpacing:0];
     [interestFlowLayout setMinimumLineSpacing:0];
@@ -100,9 +96,7 @@
     [signout addTarget:self action:@selector(didTapSignoutButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     
     UIView *footer = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.tableView.frame.size.width,40)];
-    [footer setBackgroundColor:[UIColor colorWithRed:FT_GRAY_COLOR_RED
-                                               green:FT_GRAY_COLOR_GREEN
-                                                blue:FT_GRAY_COLOR_BLUE alpha:1.0f]];
+    [footer setBackgroundColor:FT_GRAY];
     [footer addSubview:signout];
     self.tableView.tableFooterView = footer;
 }
@@ -147,9 +141,7 @@
     headerView.backgroundColor = [UIColor clearColor];
     UILabel *sectionName = [[UILabel alloc] initWithFrame:CGRectMake(5, -5, 300, 32)];
     sectionName.textAlignment =  NSTextAlignmentLeft;
-    sectionName.textColor = [UIColor colorWithRed:FT_RED_COLOR_RED
-                                           green:FT_RED_COLOR_GREEN
-                                            blue:FT_RED_COLOR_BLUE alpha:1.0f];
+    sectionName.textColor = FT_RED;
     
     sectionName.backgroundColor = [UIColor clearColor];
     sectionName.font = BENDERSOLID(22);
@@ -190,17 +182,8 @@
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:iOS7AppStoreURLFormat,APP_STORE_ID]];
         [[UIApplication sharedApplication] openURL:url];
     } else if([setting isEqualToString:REWARD_SETTIGNS]) {
-        
         [self.navigationController pushViewController:self.settingsDetailViewController animated:YES];
         [self.settingsDetailViewController setDetailItem:setting];
-        /*
-        [[[UIAlertView alloc] initWithTitle:@"Screen Not Finished"
-                                    message:@"This rewards settings screen is not enabled."
-                                   delegate:nil
-                          cancelButtonTitle:@"ok"
-                          otherButtonTitles:nil] show];
-        */
-        
     } else {
         [self.navigationController pushViewController:self.settingsDetailViewController animated:YES];
         [self.settingsDetailViewController setDetailItem:setting];
@@ -245,19 +228,7 @@
 - (void)didTapBackButtonAction:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
-/*
-- (void)showHudMessage:(NSString *)message WithDuration:(NSTimeInterval)duration {
-    //NSLog(@"%@::showHudMessage:WithDuration:",VIEWCONTROLLER_SETTINGS_DETAIL);
-    self.hud = [MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
-    self.hud.mode = MBProgressHUDModeText;
-    self.hud.margin = 10.f;
-    self.hud.yOffset = 150.f;
-    self.hud.removeFromSuperViewOnHide = YES;
-    self.hud.userInteractionEnabled = NO;
-    self.hud.labelText = message;
-    [self.hud hide:YES afterDelay:duration];
-}
-*/
+
 #pragma mark - MFMailComposeViewControllerDelegate
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error {
