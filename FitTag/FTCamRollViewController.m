@@ -27,7 +27,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    NSLog(@"FTCamRollViewController::viewDidLoad");
+    //NSLog(@"FTCamRollViewController::viewDidLoad");
     
     //self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, self.view.frame.size.height)];
     //[self.view addSubview:self.scrollView];
@@ -130,14 +130,11 @@
 -(void)elcImagePickerController:(ELCImagePickerController *)picker
   didFinishPickingMediaWithInfo:(NSArray *)info {
     
-    [self dismissViewControllerAnimated:YES
-                             completion:nil];
-    
     for (UIView *v in [self.tableView.view subviews]) {
         [v removeFromSuperview];
     }
     
-    CGRect workingFrame = CGRectMake(0.0f, 0.0f, 80.0f, 80.0f);
+    CGRect workingFrame = CGRectMake(0, 0, 80, 80);
     workingFrame.origin.x = 0;
     
     NSMutableArray *images = [NSMutableArray arrayWithCapacity:[info count]];
@@ -183,6 +180,13 @@
             NSLog(@"Uknown asset type");
         }
     }
+    
+    if (images.count == 0) {
+        [FTUtility showHudMessage:@"No images selected" WithDuration:2];
+        return;
+    }
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
     
     NSLog(@"Images: %@",images);
     
