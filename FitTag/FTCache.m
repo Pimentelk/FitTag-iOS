@@ -45,16 +45,14 @@
 - (void)setAttributesForPost:(PFObject *)post
                       likers:(NSArray *)likers
                   commenters:(NSArray *)commenters
-          likedByCurrentUser:(BOOL)likedByCurrentUser
-                 displayName:(NSString *)displayName {
+          likedByCurrentUser:(BOOL)likedByCurrentUser {
     
     NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                 [NSNumber numberWithBool:likedByCurrentUser],kFTPostAttributesIsLikedByCurrentUserKey,
                                 @([likers count]),kFTPostAttributesLikeCountKey,
                                 likers,kFTPostAttributesLikersKey,
                                 @([commenters count]),kFTPostAttributesCommentCountKey,
-                                commenters,kFTPostAttributesCommentersKey,
-                                displayName,kFTPostAttributesDisplayNameKey, nil];
+                                commenters,kFTPostAttributesCommentersKey, nil];
     [self setAttributes:attributes forPost:post];
 }
 
@@ -99,6 +97,7 @@
     return [NSArray array];
 }
 
+/*
 - (NSArray *)displayNameForPost:(PFObject *)post{
     NSDictionary *attributes = [self attributesForPost:post];
     if(attributes){
@@ -107,6 +106,7 @@
     
     return [NSArray array];
 }
+*/
 
 - (void)setPostIsLikedByCurrentUser:(PFObject *)post liked:(BOOL)liked {
     NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:[self attributesForPost:post]];

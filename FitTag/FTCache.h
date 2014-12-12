@@ -11,13 +11,17 @@
 + (id)sharedCache;
 
 - (void)clear;
-- (void)setAttributesForPost:(PFObject *)post likers:(NSArray *)likers commenters:(NSArray *)commenters likedByCurrentUser:(BOOL)likedByCurrentUser displayName:(NSString *)displayName;
+- (void)setAttributesForPost:(PFObject *)post
+                      likers:(NSArray *)likers
+                  commenters:(NSArray *)commenters
+          likedByCurrentUser:(BOOL)likedByCurrentUser;
+
 - (NSDictionary *)attributesForPost:(PFObject *)post;
 - (NSNumber *)likeCountForPost:(PFObject *)post;
 - (NSNumber *)commentCountForPost:(PFObject *)post;
 - (NSArray *)likersForPost:(PFObject *)post;
 - (NSArray *)commentersForPost:(PFObject *)post;
-- (NSString *)displayNameForPost:(PFObject *)post;
+//- (NSString *)displayNameForPost:(PFObject *)post;
 - (void)setPostIsLikedByCurrentUser:(PFObject *)post liked:(BOOL)liked;
 - (BOOL)isPostLikedByCurrentUser:(PFObject *)post;
 - (void)incrementLikerCountForPost:(PFObject *)post;
