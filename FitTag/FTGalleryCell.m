@@ -60,12 +60,12 @@
         
         self.backgroundColor = [UIColor clearColor];
         
-        self.imageView.frame = CGRectMake(0, 0, self.frame.size.width, 320);
+        self.imageView.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.width);
         self.imageView.backgroundColor = [UIColor clearColor];
         self.imageView.contentMode = CONTENTMODE;
         
         self.galleryButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.galleryButton.frame = CGRectMake(0, 0, self.frame.size.width, 320);
+        self.galleryButton.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.width);
         self.galleryButton.backgroundColor = [UIColor clearColor];
         
         [self.contentView addSubview:self.galleryButton];
@@ -158,7 +158,7 @@
         
         swiperView = [[FTGallerySwiperView alloc] initWithFrame:CGRectMake(10, 5, 60, 20)];
         
-        carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 320)];
+        carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.width)];
         [carousel setDelegate:self];
         [carousel setUserInteractionEnabled:YES];
         [carousel setDelaysContentTouches:YES];
@@ -178,8 +178,8 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.imageView.frame = CGRectMake(0, 0, 320, 320);
-    self.galleryButton.frame = CGRectMake(0, 0, 320, 320);
+    self.imageView.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.width);
+    self.galleryButton.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.width);
 }
 
 #pragma mark - FTGalleryCellView
@@ -188,6 +188,7 @@
     gallery = aGallery;
     
     [self.swiperView setAlpha:0];
+    [carousel setAlpha:0];
     
     // Clear the carousel
     for (UIView *carouseSubView in carousel.subviews) {
@@ -198,9 +199,9 @@
     [PFObject fetchAllIfNeededInBackground:[gallery objectForKey:kFTPostPostsKey] block:^(NSArray *objects, NSError *error) {
         if (!error) {
             int i = 0;
+            
             for (PFObject *post in objects) {
-                PFFile *file = [post objectForKey:kFTPostImageKey];
-                [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                [[post objectForKey:kFTPostImageKey] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
                     if (!error) {
                         
                         UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapImageInGalleryAction:)];
@@ -208,7 +209,7 @@
                         
                         CGFloat xOrigin = i * self.frame.size.width;
                         
-                        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, self.frame.size.width, 320)];
+                        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, self.frame.size.width, self.frame.size.width)];
                         [imageView setBackgroundColor:[UIColor clearColor]];
                         
                         UIImage *image = [UIImage imageWithData:data];
@@ -217,10 +218,12 @@
                         [imageView setContentMode:CONTENTMODE];
                         [imageView setUserInteractionEnabled:YES];
                         [imageView addGestureRecognizer:singleTap];
-                        
                         [carousel addSubview:imageView];
                     }
                 }];
+                
+                //[[FTCache sharedCache] setAttributesForPost:post likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
+                //[[FTCache sharedCache] setImagesForGallery:gallery];
                 i++;
             }
             
@@ -229,36 +232,30 @@
                 [self.contentView addSubview:self.swiperView];
                 [self.swiperView setAlpha:1];
             }
-            [carousel setContentSize: CGSizeMake(self.frame.size.width * objects.count, 320)];
-       } 
+            
+            [carousel setContentSize: CGSizeMake(self.frame.size.width * objects.count, self.frame.size.width)];
+       }
     }];
-     
+    
     // User profile image
     PFUser *user = [self.gallery objectForKey:kFTPostUserKey];
-    //PFFile *profilePictureSmall = [user objectForKey:kFTUserProfilePicSmallKey];
-    //[self.avatarImageView setFile:profilePictureSmall];
     
     NSString *authorName = [user objectForKey:kFTUserDisplayNameKey];
     [self.userButton setTitle:authorName forState:UIControlStateNormal];
-    
-    //CGFloat constrainWidth = containerView.bounds.size.width;
     
     if (self.buttons & FTGalleryCellButtonsUser){
         [self.userButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTGalleryCellButtonsComment){
-        //constrainWidth = self.commentButton.frame.origin.x;
         [self.commentButton addTarget:self action:@selector(didTapCommentOnGalleryButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTGalleryCellButtonsLike){
-        //constrainWidth = self.likeButton.frame.origin.x;
         [self.likeButton addTarget:self action:@selector(didTapLikeGalleryButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTGalleryCellButtonsMore){
-        //constrainWidth = self.likeButton.frame.origin.x;
         [self.moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
@@ -289,7 +286,14 @@
         [locationLabel setText:EMPTY_STRING];
     }
     
+    [self performSelector:@selector(showCarousel) withObject:nil afterDelay:1];
     [self setNeedsDisplay];
+}
+
+- (void)showCarousel {
+    [UIView animateWithDuration:0.2 animations:^{
+        [carousel setAlpha:1];
+    }];
 }
 
 - (void)setLikeStatus:(BOOL)liked {
