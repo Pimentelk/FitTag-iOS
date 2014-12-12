@@ -14,7 +14,7 @@
 }
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) NSData *videoData;
-@property (nonatomic, strong) UITextField *commentTextField;
+@property (nonatomic, strong) UITextView *commentTextView;
 @property (nonatomic, strong) UITextField *hashtagTextField;
 @property (nonatomic, assign) UIBackgroundTaskIdentifier fileUploadBackgroundTaskId;
 @property (nonatomic, assign) UIBackgroundTaskIdentifier videoPostBackgroundTaskId;
@@ -31,7 +31,7 @@
 
 @implementation FTEditVideoViewController
 @synthesize scrollView;
-@synthesize commentTextField;
+@synthesize commentTextView;
 @synthesize fileUploadBackgroundTaskId;
 @synthesize videoPostBackgroundTaskId;
 @synthesize hashtagTextField;
@@ -84,9 +84,9 @@
     footerRect.origin.y = videoImageView.frame.origin.y + videoImageView.frame.size.height;
     
     postDetailsFooterView = [[FTPostDetailsFooterView alloc] initWithFrame:footerRect];
-    self.commentTextField = postDetailsFooterView.commentField;
+    self.commentTextView = postDetailsFooterView.commentField;
     self.hashtagTextField = postDetailsFooterView.hashtagTextField;
-    self.commentTextField.delegate = self;
+    self.commentTextView.delegate = self;
     self.hashtagTextField.delegate = self;
     postDetailsFooterView.delegate = self;
     [postDetailsFooterView.submitButton setEnabled:NO];
@@ -306,7 +306,7 @@
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    [self.commentTextField resignFirstResponder];
+    [self.commentTextView resignFirstResponder];
     [self.hashtagTextField resignFirstResponder];
 }
 
@@ -355,14 +355,14 @@
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)"
                                                                            options:0 error:&error];
     
-    NSArray *matches = [regex matchesInString:self.commentTextField.text
+    NSArray *matches = [regex matchesInString:self.commentTextView.text
                                       options:0
-                                        range:NSMakeRange(0,self.commentTextField.text.length)];
+                                        range:NSMakeRange(0,self.commentTextView.text.length)];
     
     NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
     for (NSTextCheckingResult *match in matches) {
         NSRange wordRange = [match rangeAtIndex:1];
-        NSString *word = [self.commentTextField.text substringWithRange:wordRange];
+        NSString *word = [self.commentTextView.text substringWithRange:wordRange];
         //NSLog(@"Found tag %@", word);
         [matchedResults addObject:word];
     }
@@ -374,14 +374,14 @@
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@(\\w+)"
                                                                            options:0 error:&error];
     
-    NSArray *matches = [regex matchesInString:self.commentTextField.text
+    NSArray *matches = [regex matchesInString:self.commentTextView.text
                                       options:0
-                                        range:NSMakeRange(0,self.commentTextField.text.length)];
+                                        range:NSMakeRange(0,self.commentTextView.text.length)];
     
     NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
     for (NSTextCheckingResult *match in matches) {
         NSRange wordRange = [match rangeAtIndex:1];
-        NSString *word = [self.commentTextField.text substringWithRange:wordRange];
+        NSString *word = [self.commentTextView.text substringWithRange:wordRange];
         //NSLog(@"Found mention %@", word);
         [matchedResults addObject:word];
     }
@@ -450,7 +450,7 @@
     
     if ([PFUser currentUser]) {
         NSDictionary *userInfo = [NSDictionary dictionary];
-        NSString *trimmedComment = [self.commentTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString *trimmedComment = [self.commentTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         
         if (trimmedComment.length != 0) {
             userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment,kFTEditVideoViewControllerUserInfoCommentKey,nil];
@@ -466,6 +466,21 @@
         [video setObject:self.videoFile forKey:kFTPostTypeVideo];
         [video setObject:kFTPostTypeVideo forKey:kFTPostTypeKey];
         [video setObject:hashtags forKey:kFTPostHashTagKey];
+        [video setObject:mentions forKey:kFTPostMentionKey];
+        
+        NSString *description = EMPTY_STRING;
+        
+        // userInfo might contain any caption which might have been posted by the uploader
+        if (userInfo) {
+            NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
+            
+            if (commentText && commentText.length > 0) {
+                // create and save photo caption
+                NSLog(@"video caption");
+                [video setObject:commentText forKey:kFTPostCaptionKey];
+                description = commentText;
+            }
+        }
         
         if (self.geoPoint) {
             [video setObject:self.geoPoint forKey:kFTPostLocationKey];
@@ -485,41 +500,8 @@
         // Save the video PFObject
         [video saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
-                [[FTCache sharedCache] setAttributesForPost:video
-                                                     likers:[NSArray array]
-                                                 commenters:[NSArray array]
-                                         likedByCurrentUser:NO
-                                                displayName:[[PFUser currentUser] objectForKey:kFTUserDisplayNameKey]];
-                
+                [[FTCache sharedCache] setAttributesForPost:video likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];                
                 [self incrementUserPostCount];
-                
-                NSString *description = @"Allow your users to share stories on Facebook from your app using the IOS SDK.";
-                
-                // userInfo might contain any caption which might have been posted by the uploader
-                if (userInfo) {
-                    NSString *commentText = [userInfo objectForKey:kFTEditVideoViewControllerUserInfoCommentKey];
-                    
-                    if (commentText && commentText.length != 0) {
-                        // create and save photo caption
-                        PFObject *comment = [PFObject objectWithClassName:kFTActivityClassKey];
-                        [comment setObject:kFTActivityTypeComment forKey:kFTActivityTypeKey];
-                        [comment setObject:video forKey:kFTActivityPostKey];
-                        [comment setObject:[PFUser currentUser] forKey:kFTActivityFromUserKey];
-                        [comment setObject:[PFUser currentUser] forKey:kFTActivityToUserKey];
-                        [comment setObject:hashtags forKey:kFTActivityHashtagKey];
-                        [comment setObject:mentions forKey:kFTActivityMentionKey];
-                        [comment setObject:commentText forKey:kFTActivityContentKey];
-                        
-                        PFACL *ACL = [PFACL ACLWithUser:[PFUser currentUser]];
-                        [ACL setPublicReadAccess:YES];
-                        comment.ACL = ACL;
-                        
-                        [comment saveEventually];
-                        [[FTCache sharedCache] incrementCommentCountForPost:video];
-                        
-                        description = commentText;
-                    }
-                }
                 
                 NSLog(@"gallery:%@",video.objectId);
                 NSString *link = [NSString stringWithFormat:@"http://fittag.com/viewer.php?pid=%@",video.objectId];

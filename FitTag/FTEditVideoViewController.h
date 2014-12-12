@@ -9,7 +9,7 @@
 #import "FTPostDetailsFooterView.h"
 #import <CoreLocation/CoreLocation.h>
 
-@interface FTEditVideoViewController : UIViewController <UITextFieldDelegate,UIScrollViewDelegate,FTPostDetailsFooterViewDelegate,CLLocationManagerDelegate,UIAlertViewDelegate>
+@interface FTEditVideoViewController : UIViewController <UITextViewDelegate,UITextFieldDelegate,UIScrollViewDelegate,FTPostDetailsFooterViewDelegate,CLLocationManagerDelegate,UIAlertViewDelegate>
 
 @property (nonatomic,readonly) UIButton *playButton;
 
