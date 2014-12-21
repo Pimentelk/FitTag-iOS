@@ -36,13 +36,10 @@
     if (self) {
         [self.contentView setClipsToBounds:YES];
         [self.imageView setClipsToBounds:YES];
-        [self.contentView setBackgroundColor:[UIColor colorWithRed:FT_GRAY_COLOR_RED
-                                                             green:FT_GRAY_COLOR_GREEN
-                                                              blue:FT_GRAY_COLOR_BLUE alpha:1.0f]];
+        [self.contentView setBackgroundColor:FT_GRAY];
         self.imageView.image = nil;
         
-        UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                               action:@selector(didTapProfileImageAction:)];
+        UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapProfileImageAction:)];
         [tapGestureRecognizer setNumberOfTapsRequired:1];
         
         // ImageView Placeholder
@@ -85,9 +82,7 @@
         [self.followUserButton setBackgroundImage:[UIImage imageNamed:IMAGE_FOLLOW_SELECTED] forState:UIControlStateSelected];
         [self.followUserButton setBackgroundImage:[UIImage imageNamed:IMAGE_FOLLOW_SELECTED] forState:UIControlStateHighlighted];
         [self.followUserButton setFrame:CGRectMake(self.frame.size.width - 60, 17, 30, 30)];
-        [self.followUserButton setSelected:NO];
         [self.followUserButton addTarget:self action:@selector(didTapFollowUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [self.followUserButton setEnabled:NO];
         
         [self.contentView addSubview:self.followUserButton];
     }
@@ -99,6 +94,10 @@
 - (void)setUser:(PFUser *)aUser {
     
     user = aUser;
+    
+    [self.followUserButton setSelected:NO];
+    [self.followUserButton setEnabled:NO];
+    [self.followUserButton setHidden:YES];
     
     // If the user has a profile picture available load it
     if ([self.user objectForKey:kFTUserProfilePicSmallKey]) {
@@ -146,16 +145,27 @@
     [queryIsFollowing whereKey:kFTActivityToUserKey equalTo:self.user];
     [queryIsFollowing whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
     [queryIsFollowing setCachePolicy:kPFCachePolicyCacheThenNetwork];
+    __block BOOL cachedResults = YES;
     [queryIsFollowing countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (error && [error code] != kPFErrorCacheMiss) {
             NSLog(@"Couldn't determine follow relationship: %@", error);
         } else {
-            if (number == 0) { // Not following
+            
+            // Not following
+            if (number == 0) {
                 [self.followUserButton setSelected:NO];
+                [[FTCache sharedCache] setFollowStatus:NO user:self.user];
             } else { // Following user
                 [self.followUserButton setSelected:YES];
+                [[FTCache sharedCache] setFollowStatus:YES user:self.user];
             }
-            [self.followUserButton setEnabled:YES];
+            
+            if (cachedResults) {
+                cachedResults = NO;
+            } else {
+                [self.followUserButton setEnabled:YES];
+                [self.followUserButton setHidden:NO];
+            }
         }
     }];
 }
@@ -163,15 +173,21 @@
 #pragma mark - FTFollowCellDelegate
 
 - (void)didTapFollowUserButtonAction:(UIButton *)button {
-    //NSLog(@"didTapFollowUserButtonAction:");
+    NSLog(@"FTFollow::didTapFollowUserButtonAction:");
     [button setEnabled:NO];
     
     if ([button isSelected]) {
-        [FTUtility unfollowUserEventually:self.user block:^(NSError *error) {
+        [FTUtility unfollowUserEventually:self.user block:^(BOOL succeeded, NSError *error) {
             if (error) {
                 [button setSelected:YES];
             } else {
+                //NSLog(@"unfollowed user..");
                 [button setSelected:NO];
+                [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserFollowingChangedNotification object:nil];
+                
+                if ([[self.user objectForKey:kFTUserTypeKey] isEqualToString:kFTUserTypeBusiness]) {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityBusinessFollowingChangedNotification object:nil];
+                }
             }
             [button setEnabled:YES];
         }];
@@ -180,7 +196,13 @@
             if (error) {
                 [button setSelected:NO];
             } else {
+                //NSLog(@"followed user..");
                 [button setSelected:YES];
+                [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserFollowingChangedNotification object:nil];
+                
+                if ([[self.user objectForKey:kFTUserTypeKey] isEqualToString:kFTUserTypeBusiness]) {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityBusinessFollowingChangedNotification object:nil];
+                }
             }
             [button setEnabled:YES];
         }];
@@ -198,13 +220,6 @@
     //NSLog(@"%@::didTapProfileImageAction:",VIEWCONTROLLER_FOLLOW_CELL);
     if (delegate && [delegate respondsToSelector:@selector(followCell:didTapProfileImage:user:)]) {
         [delegate followCell:self didTapProfileImage:sender user:user];
-    }
-}
-
-- (void)didTapFollowButtonAction:(UIButton *)button {
-    //NSLog(@"%@::didTapFollowButtonAction:",VIEWCONTROLLER_FOLLOW_CELL);
-    if (delegate && [delegate respondsToSelector:@selector(followCell:didTapFollowButton:user:)]) {
-        [delegate followCell:self didTapFollowButton:button user:user];
     }
 }
 

@@ -18,8 +18,6 @@
 @protocol FTFollowCellDelegate <NSObject>
 @optional
 
-- (void) followCell:(FTFollowCell *)inviteCell didTapFollowButton:(UIButton *)button user:(PFUser *)aUser;
-
 - (void) followCell:(FTFollowCell *)inviteCell didTapProfileImage:(UIButton *)button user:(PFUser *)aUser;
 
 @end
