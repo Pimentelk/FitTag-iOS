@@ -48,6 +48,8 @@
 
 // Font
 #define BENDERSOLID(s) [UIFont fontWithName:@"BenderSolid" size:s]
+#define HelveticaNeue(s) [UIFont fontWithName:@"HelveticaNeue" size:s]
+#define SYSTEMFONTBOLD(s) [UIFont boldSystemFontOfSize:s]
 
 // Blog
 #define FITTAG_BLOG_URL @"http://www.fittag.com/blog"
@@ -164,6 +166,12 @@
 #define FITTAG_BLOG @"FitTag Blog"
 
 // FT COLORS
+
+#define FT_TOOLBAR [UIColor colorWithRed:FT_TOOLBAR_COLOR_RED green:FT_TOOLBAR_COLOR_GREEN blue:FT_TOOLBAR_COLOR_BLUE alpha:1]
+#define FT_TOOLBAR_COLOR_RED 209/255.0f
+#define FT_TOOLBAR_COLOR_BLUE 209/255.0f
+#define FT_TOOLBAR_COLOR_GREEN 209/255.0f
+
 #define FT_RED [UIColor colorWithRed:FT_RED_COLOR_RED green:FT_RED_COLOR_GREEN blue:FT_RED_COLOR_BLUE alpha:1]
 #define FT_RED_COLOR_RED 234.0f/255.0f
 #define FT_RED_COLOR_BLUE 37.0f/255.0f
@@ -174,15 +182,42 @@
 #define FT_GRAY_COLOR_BLUE 234/255.0f
 #define FT_GRAY_COLOR_GREEN 234/255.0f
 
+#define FT_DARKGRAY [UIColor colorWithRed:FT_DARKGRAY_COLOR_RED green:FT_DARKGRAY_COLOR_GREEN blue:FT_DARKGRAY_COLOR_BLUE alpha:1]
 #define FT_DARKGRAY_COLOR_RED 154/255.0f
 #define FT_DARKGRAY_COLOR_BLUE 154/255.0f
 #define FT_DARKGRAY_COLOR_GREEN 154/255.0f
+
+#define FT_LINKBLUE [UIColor colorWithRed:FT_LINKBLUE_COLOR_RED green:FT_LINKBLUE_COLOR_GREEN blue:FT_LINKBLUE_COLOR_BLUE alpha:1]
+#define FT_LINKBLUE_COLOR_RED 84/255.0f
+#define FT_LINKBLUE_COLOR_BLUE 255/255.0f
+#define FT_LINKBLUE_COLOR_GREEN 164/255.0f
+
+// Timeline Cells Tool bar items
+
+#define COMMENT_BUBBLE_WHITE [UIImage imageNamed:@"commentbubble_white"]
+#define COMMENT_BUBBLE [UIImage imageNamed:@"commentbubble"]
+#define COUNTER_BOX [UIImage imageNamed:@"counterbox"]
+#define HEART_SELECTED [UIImage imageNamed:@"heart_selected"]
+#define HEART_UNSELECTED [UIImage imageNamed:@"heart_unselected"]
+#define MORE_BUTTON [UIImage imageNamed:@"morebutton"]
+
+#define COUNTER_WIDTH 37
+#define COUNTER_HEIGHT 19
+
+#define BUTTON_WIDTH 21
+#define BUTTON_HEIGHT 18
+
+#define BUTTON_PADDING 10
 
 // LOCATION
 #define LOCATION_USERS_WITHIN_MILES 10
 
 // PROFILE
-#define PROFILE_HEADER_VIEW_HEIGHT 295
+#define PROFILE_HEADER_VIEW_HEIGHT 220
+#define PROFILE_HEADER_VIEW_HEIGHT_BUSINESS 241
+
+// Photo button
+#define TAKE_PHOTO_BUTTON 80
 
 // IMAGES
 #define IMAGE_PLAY_BUTTON [UIImage imageNamed:@"play_button"]
@@ -244,6 +279,15 @@
 #define USER_NOT_LOGIN_TWITTER @"User is not logged in to Twitter"
 #define RETURNING_USER @"This is a returning user."
 #define FIRSTTIME_USER @"This is a firsttime user."
+
+// Login Images
+#define LOGIN_IMAGE_FACEBOOK [UIImage imageNamed:@"facebook"]
+#define LOGIN_IMAGE_OVERLAY [UIImage imageNamed:@"bg-layer"]
+#define LOGIN_IMAGE_LOGIN [UIImage imageNamed:@"login"]
+#define LOGIN_IMAGE_SIGNUP [UIImage imageNamed:@"signup"]
+#define LOGIN_IMAGE_LOGO [UIImage imageNamed:@"logo"]
+#define LOGIN_IMAGE_TWITTER [UIImage imageNamed:@"twitter"]
+
 
 // Post Button Macros
 #define POSTRECT(x,w,h) CGRectMake(x,BUTTONS_TOP_PADDING,w,h)
