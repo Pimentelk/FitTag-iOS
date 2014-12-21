@@ -85,6 +85,13 @@ typedef enum {
 - (void)photoCellView:(FTPhotoCell *)photoCellView didTapLikePhotoButton:(UIButton *)button counter:(UIButton *)counter photo:(PFObject *)photo;
 
 /*!
+ Sent to the delegate when the like counter button is tapped
+ @param button the button for the photo that tracks likes
+ */
+- (void)photoCellView:(FTPhotoCell *)photoCellView didTapLikeCountButton:(UIButton *)button photo:(PFObject *)photo;
+
+
+/*!
  Sent to the delegate when the comment on photo button is tapped
  @param photo the PFObject for the photo that will be commented on
  */
