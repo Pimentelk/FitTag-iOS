@@ -10,7 +10,7 @@
 #import "FTUtility.h"
 
 //#define BUTTON_Y 105
-#define BUTTON_Y 70
+#define BUTTON_Y 90
 #define BUTTON_W 71
 #define BUTTON_H 80
 
@@ -20,7 +20,7 @@
 
 @implementation FTPostDetailsFooterView
 
-@synthesize commentField;
+@synthesize commentView;
 @synthesize mainView;
 @synthesize hideDropShadow;
 @synthesize hashtagTextField;
@@ -28,6 +28,7 @@
 @synthesize submitButton;
 @synthesize facebookButton;
 @synthesize twitterButton;
+@synthesize shareLocationSwitch;
 
 - (id)initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
@@ -35,28 +36,42 @@
         // Initialization code
         self.backgroundColor = [UIColor clearColor];
         
-        mainView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 200)];
+        CGSize frameSize = self.frame.size;
+        
+        mainView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frameSize.width, 190)];
         mainView.backgroundColor = FT_GRAY;
         [self addSubview:mainView];
         
-        UIImageView *commentBox = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 200)];
+        UIImageView *commentBox = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, frameSize.width, 200)];
         [mainView addSubview:commentBox];
         
-        commentField = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 60)];
-        commentField.font = [UIFont systemFontOfSize:12.0f];
-        commentField.returnKeyType = UIReturnKeyDefault;
-        commentField.textColor = [UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f];
-        //commentField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-        commentField.backgroundColor = [UIColor whiteColor];
-        //commentField.placeholder = @" WRITE A CAPTION...";
-        /*
-        [commentField setValue:[UIColor colorWithRed:154.0f/255.0f
-                                               green:146.0f/255.0f
-                                                blue:138.0f/255.0f
-                                               alpha:1.0f]
-                    forKeyPath:@"_placeholderLabel.textColor"];
-        */
-        [mainView addSubview:commentField];
+        commentView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, frameSize.width, 45)];
+        commentView.font = [UIFont systemFontOfSize:12.0f];
+        commentView.returnKeyType = UIReturnKeyDefault;
+        commentView.text = CAPTION_TEXT;
+        commentView.textColor = [UIColor lightGrayColor];
+        commentView.backgroundColor = [UIColor whiteColor];
+        [mainView addSubview:commentView];
+        
+        CGRect commentRect = commentView.frame;
+        commentRect.origin.y += commentRect.size.height;
+        commentRect.size.height = 40;
+        
+        UIView *shareLocationView = [[UIView alloc] initWithFrame:commentRect];
+        [shareLocationView setBackgroundColor:FT_RED];
+        [mainView addSubview:shareLocationView];
+        
+        UILabel *shareLocationLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 0, 220, 40)];
+        [shareLocationLabel setText:@"FitTag your location?"];
+        [shareLocationLabel setTextColor:[UIColor whiteColor]];
+        [shareLocationLabel setBackgroundColor:[UIColor clearColor]];
+        [shareLocationLabel setFont:BENDERSOLID(16)];
+        [shareLocationView addSubview:shareLocationLabel];
+        
+        shareLocationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(commentRect.size.width - 80, 4, 0, 0)];
+        [shareLocationSwitch setOn:YES];
+        [shareLocationView addSubview:shareLocationSwitch];
+        
         
         /*
         hashtagTextField = [[UITextField alloc] initWithFrame:CGRectMake(0.0f, 44.0f, 320.0f, 30.0f)];
