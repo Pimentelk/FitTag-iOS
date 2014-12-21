@@ -8,11 +8,16 @@
 
 #import "FTPostHeaderView.h"
 #import "FTProfileImageView.h"
+#import "TTTTimeIntervalFormatter.h"
+
+#define TIMELABEL_WIDTH 100
 
 @interface FTPostHeaderView()
 @property (nonatomic, strong) UIView *containerView;
 @property (nonatomic, strong) FTProfileImageView *avatarImageView;
 @property (nonatomic, strong) UIButton *userButton;
+@property (nonatomic, strong) TTTTimeIntervalFormatter *timeFormatter;
+@property (nonatomic, strong) UILabel *timeLabel;
 @end
 
 @implementation FTPostHeaderView
@@ -21,18 +26,29 @@
 @synthesize userButton;
 @synthesize containerView;
 @synthesize avatarImageView;
+@synthesize timeFormatter;
+@synthesize timeLabel;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     
-    if (self) {                
+    if (self) {
+        // Initialization code
+        if (!timeFormatter) {
+            timeFormatter = [[TTTTimeIntervalFormatter alloc] init];
+        }
+        
         self.clipsToBounds = NO;
         self.containerView.clipsToBounds = NO;
         self.superview.clipsToBounds = NO;
+        
         [self setBackgroundColor:[UIColor clearColor]];
-
+        
+        CGFloat containerHeight = self.bounds.size.height;
+        CGSize frameSize = self.frame.size;
+        
         // translucent portion
-        self.containerView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.frame.size.width,self.bounds.size.height)];
+        self.containerView = [[UIView alloc] initWithFrame:CGRectMake(0,0,frameSize.width,containerHeight)];
         [self.containerView setBackgroundColor:[UIColor clearColor]];
         [self addSubview:self.containerView];
         
@@ -51,13 +67,23 @@
         self.userButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [self.userButton setBackgroundColor:[UIColor clearColor]];
         [[self.userButton titleLabel] setFont:BENDERSOLID(18)];
-        [self.userButton setTitleColor:[UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
-        [self.userButton setTitleColor:[UIColor colorWithRed:134.0f/255.0f green:100.0f/255.0f blue:65.0f/255.0f alpha:1.0f] forState:UIControlStateHighlighted];
+        [self.userButton setTitleColor:FT_RED forState:UIControlStateNormal];
+        [self.userButton setTitleColor:FT_DARKGRAY forState:UIControlStateHighlighted];
         [[self.userButton titleLabel] setLineBreakMode:NSLineBreakByTruncatingTail];
         [[self.userButton titleLabel] setShadowOffset:CGSizeMake(0,1)];
         [self.userButton setTitleShadowColor:[UIColor colorWithWhite:1 alpha:0.750f] forState:UIControlStateNormal];
         
         [containerView addSubview:self.userButton];
+        
+        self.timeLabel = [[UILabel alloc] init];
+        [self.timeLabel setFont:BENDERSOLID(14)];
+        [self.timeLabel setTextColor:[UIColor lightGrayColor]];
+        [self.timeLabel setBackgroundColor:[UIColor clearColor]];
+        [self.timeLabel setShadowColor:[UIColor colorWithWhite:1.0f alpha:0.70f]];
+        [self.timeLabel setShadowOffset:CGSizeMake(0, 1)];
+        [self.timeLabel setText:EMPTY_STRING];
+        
+        [containerView addSubview:self.timeLabel];
     }
     
     return self;
@@ -83,6 +109,7 @@
     if ([user isDataAvailable]) {
         PFFile *profilePictureSmall = [user objectForKey:kFTUserProfilePicSmallKey];
         [self.avatarImageView setFile:profilePictureSmall];
+        
         NSString *authorName = [user objectForKey:kFTUserDisplayNameKey];
         [self.userButton setTitle:authorName forState:UIControlStateNormal];
     }
@@ -92,7 +119,7 @@
     // we resize the button to fit the user's name to avoid having a huge touch area
     CGFloat constrainWidth = containerView.bounds.size.width;
     CGFloat userButtonPointWidth = self.avatarImageView.frame.size.width + self.avatarImageView.frame.origin.x + 10;
-    CGFloat userButtonPointHeight = (self.frame.size.height - 10) / 2;
+    CGFloat userButtonPointHeight = (self.frame.size.height - 12) / 2;
     CGPoint userButtonPoint = CGPointMake(userButtonPointWidth,userButtonPointHeight);
     constrainWidth -= userButtonPoint.x;
     CGSize constrainSize = CGSizeMake(constrainWidth, containerView.bounds.size.height - userButtonPoint.y*2.0f);
@@ -106,6 +133,23 @@
     [self.userButton setFrame:userButtonFrame];
     
     [self setNeedsDisplay];
+}
+
+- (void)setDate:(NSDate *)date {
+    if (date) {
+        
+        NSString *time = [timeFormatter stringForTimeIntervalFromDate:[NSDate date] toDate:date];
+        NSDictionary *userAttributes = @{NSFontAttributeName: BENDERSOLID(14)};
+        CGSize stringBoundingBox = [time sizeWithAttributes:userAttributes];
+        
+        CGFloat frameWidth = self.frame.size.width;
+        CGFloat padding = 15;
+        
+        [self.timeLabel setFrame:CGRectMake(frameWidth-stringBoundingBox.width-padding, 0, stringBoundingBox.width, self.bounds.size.height)];
+        
+        [self.timeLabel setText:time];
+        [self setNeedsDisplay];
+    }
 }
 
 #pragma mark - ()

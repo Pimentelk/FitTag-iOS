@@ -12,6 +12,9 @@
 /*! @name Delegate */
 @property (nonatomic,weak) id <FTPostHeaderViewDelegate> delegate;
 
+/// The photo associated with this view
+@property (nonatomic,strong) PFObject *post;
+
 /*! @name Creating Post Header View */
 /*!
  Initializes the view with the specified interaction elements.
@@ -19,8 +22,7 @@
  */
 - (id)initWithFrame:(CGRect)frame;
 
-/// The photo associated with this view
-@property (nonatomic,strong) PFObject *post;
+- (void)setDate:(NSDate *)date;
 
 @end
 
