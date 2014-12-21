@@ -36,6 +36,8 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 
 @interface FTCamViewController ()
 
+@property (nonatomic) CGFloat progress;
+
 @property (nonatomic, readonly, assign) FTCamFlashButtonState camFlashButtonState;
 
 @property (nonatomic, strong) FTEditPhotoViewController *editPhotoViewController;
@@ -100,6 +102,7 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 @synthesize camEngine;
 @synthesize previewLayer;
 @synthesize liveView;
+@synthesize progress;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -123,15 +126,18 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    [progressView setProgress:0];
     [self.tabBarController.tabBar setHidden:YES];
     
     dispatch_async([self sessionQueue], ^{
-                
-        camEngine = [FTCameraEngine engine];
-        [camEngine startup];
-        [camEngine setDelegate:self];
-        [camEngine setFlashMode:AVCaptureFlashModeAuto];
+        
+        if (!camEngine) {
+            camEngine = [FTCameraEngine engine];
+            [camEngine startup];
+            [camEngine setDelegate:self];
+            [camEngine setFlashMode:AVCaptureFlashModeAuto];
+        }
+        
+        [camEngine updateProgress];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             previewLayer = [camEngine getPreviewLayer];
@@ -195,8 +201,6 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
      
          [self removeObserver:self forKeyPath:@"deviceAuthorized" context:DeviceAuthorizedContext];
          [self removeObserver:self forKeyPath:@"camEngine.stillImageOutput.capturingStillImage" context:CapturingStillImageContext];
-         [camEngine shutdown];
-         camEngine = nil;
      });
 }
 
@@ -490,9 +494,39 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 }
 
 - (void)didTapBackButtonAction:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    //[self.navigationController popViewControllerAnimated:YES];
+    
+    [camEngine endCapture];
+    
+    if (progress <= 0) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+        return;
+    }
+    
+    [[[UIAlertView alloc] initWithTitle:@"Discard Video?"
+                                message:@"Tap on the discard button to confirm that you want to delete your video."
+                               delegate:self
+                      cancelButtonTitle:@"cancel"
+                      otherButtonTitles:@"discard", nil] show];
 }
 
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    switch (buttonIndex) {
+        case 0: {
+            
+        }
+            break;
+        case 1: {
+            
+            
+            
+            [self dismissViewControllerAnimated:YES completion:nil];
+        }
+            break;
+        default:
+            break;
+    }
+}
 - (void)didTapToggleFlashButtonAction:(UIButton *)sender {
     switch (camFlashButtonState) {
         case FTCamFlashButtonStateAuto:
@@ -576,7 +610,10 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 	return YES;
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context {
     if (context == CapturingStillImageContext) {
 		BOOL isCapturingStillImage = [change[NSKeyValueChangeNewKey] boolValue];
 		
@@ -638,10 +675,10 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
     [camEngine captureStillImage];
 }
 
-- (NSInteger) getTopPaddingNavigationBarHeight:(NSInteger)navBar
-                                 previewHeight:(NSInteger)preview
-                                 elementHeight:(NSInteger)element
-                                   frameHeight:(NSInteger)frame {
+- (NSInteger)getTopPaddingNavigationBarHeight:(NSInteger)navBar
+                                previewHeight:(NSInteger)preview
+                                elementHeight:(NSInteger)element
+                                  frameHeight:(NSInteger)frame {
     return preview + ((((navBar + frame) - preview) - element) / 2);
 }
 
@@ -677,13 +714,15 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 
 #pragma mark - FTCamRollViewControllerDelegate
 
-- (void)camRollViewController:(FTCamRollViewController *)camRollViewController profilePhoto:(UIImage *)photo {
+- (void)camRollViewController:(FTCamRollViewController *)camRollViewController
+                 profilePhoto:(UIImage *)photo {
     //NSLog(@"photo: %@",photo);
     [self didSelectProfilePictureAction:photo];
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)camRollViewController:(FTCamRollViewController *)camRollViewController coverPhoto:(UIImage *)photo {
+- (void)camRollViewController:(FTCamRollViewController *)camRollViewController
+                   coverPhoto:(UIImage *)photo {
     //NSLog(@"photo: %@",photo);
     [self didSelectCoverPhotoAction:photo];
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
@@ -691,12 +730,11 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 
 #pragma mark - FTCameraEngineDelegate
 
-- (void)cameraEngine:(FTCameraEngine *)cameraEngine
-progressStatusUpdate:(CGFloat)update {
+- (void)cameraEngine:(FTCameraEngine *)cameraEngine progressStatusUpdate:(CGFloat)update {
     dispatch_async([self sessionQueue], ^{
         
         CGFloat time = (CGFloat)[cameraEngine maxDuration];
-        CGFloat progress = (CGFloat) (update / time);
+        progress = (CGFloat) (update / time);
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.progressView setProgress:progress animated:NO];
