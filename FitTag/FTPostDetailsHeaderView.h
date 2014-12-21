@@ -70,6 +70,13 @@
 @optional
 
 /*!
+ Sent to the delegate when the like counter button is tapped
+ @param button the button for the photo that tracks likes
+ */
+- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView didTapLikeCountButton:(UIButton *)button post:(PFObject *)aPost;
+
+
+/*!
  Sent to the delegate when the comment button is tapped
  @param button the tapped UIButton
  */
