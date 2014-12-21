@@ -28,7 +28,8 @@
         
         // Initialization code
         UIBarButtonItem *loadCameraButton = [[UIBarButtonItem alloc] init];
-        [loadCameraButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_CAMERA]];
+        //[loadCameraButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_CAMERA]];
+        [loadCameraButton setImage:[UIImage imageNamed:@"camicon"]];
         [loadCameraButton setStyle:UIBarButtonItemStylePlain];
         [loadCameraButton setTarget:self];
         [loadCameraButton setAction:@selector(didTapLoadCameraButtonAction:)];
