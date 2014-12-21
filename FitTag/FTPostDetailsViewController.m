@@ -18,6 +18,7 @@
 #import "FTMapViewController.h"
 #import "FTFollowFriendsViewController.h"
 #import "FTSearchViewController.h"
+#import "FTViewFriendsViewController.h"
 
 @interface FTPostDetailsViewController()
 @property (nonatomic, strong) UITextField *commentTextField;
@@ -32,6 +33,7 @@
 @property (nonatomic, strong) FTBusinessProfileViewController *businessProfileViewController;
 @property (nonatomic, strong) FTUserProfileViewController *userProfileViewController;
 @property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
+@property (nonatomic, strong) UICollectionViewFlowLayout *businessFlowLayout;
 
 @property (nonatomic, strong) FTSearchViewController *searchViewController;
 @end
@@ -48,6 +50,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 @synthesize userProfileViewController;
 @synthesize businessProfileViewController;
 @synthesize flowLayout;
+@synthesize businessFlowLayout;
 @synthesize searchViewController;
 
 #pragma mark - Initialization
@@ -97,7 +100,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [dismissProfileButton setAction:@selector(didTapBackButtonAction:)];
     [dismissProfileButton setTintColor:[UIColor whiteColor]];
     
-    // Override the back idnicator
+    // Override the back idnicator    
     UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
     [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
     [backIndicator setStyle:UIBarButtonItemStylePlain];
@@ -116,69 +119,55 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
     
+    businessFlowLayout = flowLayout;
+    [businessFlowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
+    
     userProfileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-    businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:businessFlowLayout];
     
     // Init search view controller
     searchViewController = [[FTSearchViewController alloc] init];
-    [searchViewController.navigationItem setLeftBarButtonItem:backIndicator];
     
     // Load Camera
-    UIBarButtonItem *loadCamera = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_CAMERA]
-                                                                   style:UIBarButtonItemStylePlain
-                                                                  target:self
-                                                                  action:@selector(loadCamera:)];
-    [loadCamera setTintColor:[UIColor whiteColor]];
-    [self.navigationItem setRightBarButtonItem:loadCamera];
+    /*
+    UIBarButtonItem *loadCameraButton = [[UIBarButtonItem alloc] init];
+    [loadCameraButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_CAMERA]];
+    [loadCameraButton setStyle:UIBarButtonItemStylePlain];
+    [loadCameraButton setTarget:self];
+    [loadCameraButton setAction:@selector(didTapLoadCameraButtonAction:)];
+    */
+    //[self.navigationItem setRightBarButtonItem:loadCameraButton];
 
     // Header view
     self.headerView = [[FTPostDetailsHeaderView alloc] initWithFrame:[FTPostDetailsHeaderView rectForView] post:self.post type:self.type];
-
-    // Check if caption
-    if ([self.post objectForKey:kFTPostCaptionKey]) {
-        
-        PFUser *postUser = [self.post objectForKey:kFTPostUserKey];
-        
-        // Check for data available
-        if ([postUser isDataAvailable]) {
-            CGFloat height = [FTPostDetailsHeaderView heightForCellWithName:[postUser objectForKey:kFTUserDisplayNameKey]
-                                                              contentString:[self.post objectForKey:kFTPostCaptionKey]];
-            CGRect headerRect = self.headerView.frame;
-            headerRect.size.height += height;
-            [self.headerView setFrame:headerRect];
-            
-            //NSLog(@"Available - height: %f",height);
-        } else {
-            [postUser fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-                if (!error) {
-                    CGFloat height = [FTPostDetailsHeaderView heightForCellWithName:[postUser objectForKey:kFTUserDisplayNameKey]
-                                                                      contentString:[self.post objectForKey:kFTPostCaptionKey]];
-
-                    CGRect headerRect = self.headerView.frame;
-                    headerRect.size.height += height;
-                    [self.headerView setFrame:headerRect];
-                    
-                    //NSLog(@"Fetch - height: %f",height);
-                }
-            }];
-        }
+    
+    //CGFloat height = [FTPostDetailsHeaderView heightForCellWithName:nil contentString:[self.post objectForKey:kFTPostCaptionKey]];
+    
+    NSString *caption = [self.post objectForKey:kFTPostCaptionKey];
+    CGRect headerRect = self.headerView.frame;
+    if (caption) {
+        CGFloat height = [FTUtility findHeightForText:caption havingWidth:self.view.frame.size.width AndFont:SYSTEMFONTBOLD(14)];
+        headerRect.size.height += height + 15;
+        [self.headerView setFrame:headerRect];
     }
     
-    self.headerView.delegate = self;
-    self.tableView.tableHeaderView = self.headerView;
+    CGRect footerRect = [FTPhotoDetailsFooterView rectForView];
+    footerRect.origin.y = headerRect.size.height + headerRect.origin.y;
     
     // Footer view
-    footerView = [[FTPhotoDetailsFooterView alloc] initWithFrame:[FTPhotoDetailsFooterView rectForView]];
+    footerView = [[FTPhotoDetailsFooterView alloc] initWithFrame:footerRect];
     commentTextField = footerView.commentField;
     commentSendButton = footerView.commentSendButton;
     commentTextField.delegate = self;
     footerView.delegate = self;
     
+    
+    self.headerView.delegate = self;
+    self.tableView.tableHeaderView = self.headerView;
     self.tableView.tableFooterView = footerView;
     
     // Register to be notified when the keyboard will be shown to scroll the view
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
-                                                 name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLikedOrUnlikedPhoto:)
                                                  name:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification object:self.post];
     
@@ -359,7 +348,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
                 [self.navigationController popViewControllerAnimated:YES];
             }
             
-            [[NSNotificationCenter defaultCenter] postNotificationName:FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification
+            [[NSNotificationCenter defaultCenter] postNotificationName:FTPostDetailsViewControllerUserCommentedOnPhotoNotification
                                                                 object:self.post
                                                               userInfo:@{@"comments": @(self.objects.count + 1)}];
             
@@ -410,7 +399,10 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
                 NSLog(@"mentionedUser:%@",mentionedUser);
                 
                 if ([mentionedUser objectForKey:kFTUserTypeBusiness]) {
-                    businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+                    
+                    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
+                    
+                    businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:businessFlowLayout];
                     [businessProfileViewController setBusiness:mentionedUser];
                     [businessProfileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
                     [self.navigationController pushViewController:businessProfileViewController animated:YES];
@@ -495,7 +487,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
                 NSLog(@"mentionedUser:%@",mentionedUser);
                 
                 if ([mentionedUser objectForKey:kFTUserTypeBusiness]) {
-                    businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+                    businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:businessFlowLayout];
                     [businessProfileViewController setBusiness:mentionedUser];
                     [businessProfileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
                     [self.navigationController pushViewController:businessProfileViewController animated:YES];
@@ -560,17 +552,59 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [self.navigationController pushViewController:mapViewController animated:YES];
 }
 
-- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView didTapMoreButton:(UIButton *)button {
+- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView
+             didTapMoreButton:(UIButton *)button {
     
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-                                                             delegate:self
-                                                    cancelButtonTitle:@"Cancel"
-                                               destructiveButtonTitle:nil
-                                                    otherButtonTitles:ACTION_SHARE_ON_FACEBOOK,
-                                  ACTION_SHARE_ON_TWITTER,
-                                  ACTION_REPORT_INAPPROPRIATE, nil];
+    PFUser *currentUser = [PFUser currentUser];
+    PFUser *postUser = [post objectForKey:kFTPostUserKey];
+    
+    UIActionSheet *actionSheet = nil;
+    
+    if ([currentUser.objectId isEqualToString:postUser.objectId]) {
+        actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+                                                  delegate:self
+                                         cancelButtonTitle:@"Cancel"
+                                    destructiveButtonTitle:nil
+                                         otherButtonTitles:ACTION_SHARE_ON_FACEBOOK,
+                       ACTION_SHARE_ON_TWITTER,
+                       ACTION_REPORT_INAPPROPRIATE,
+                       ACTION_DELETE_POST, nil];
+    } else {
+        NSLog(@"!=");
+        actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+                                                  delegate:self
+                                         cancelButtonTitle:@"Cancel"
+                                    destructiveButtonTitle:nil
+                                         otherButtonTitles:ACTION_SHARE_ON_FACEBOOK,
+                       ACTION_SHARE_ON_TWITTER,
+                       ACTION_REPORT_INAPPROPRIATE, nil];
+    }
     
     [actionSheet showInView:self.view];
+}
+
+- (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView
+        didTapLikeCountButton:(UIButton *)button
+                         post:(PFObject *)aPost {
+    
+    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+    [numberFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"]];
+    NSNumber *likeCount = [numberFormatter numberFromString:button.titleLabel.text];
+    
+    if ([likeCount integerValue] > 0) {
+        UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
+        [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+        [backIndicator setStyle:UIBarButtonItemStylePlain];
+        [backIndicator setTarget:self];
+        [backIndicator setAction:@selector(didTapBackButtonAction:)];
+        [backIndicator setTintColor:[UIColor whiteColor]];
+        
+        FTViewFriendsViewController *viewFriendsViewController = [[FTViewFriendsViewController alloc] init];
+        [viewFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
+        [viewFriendsViewController setUser:[PFUser currentUser]];
+        [viewFriendsViewController queryForLickersOf:aPost];
+        [self.navigationController pushViewController:viewFriendsViewController animated:YES];
+    }
 }
 
 #pragma mark - UIActionSheetDelegate
@@ -595,6 +629,37 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
         [FTUtility prepareToSharePostOnTwitter:post];
     } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_REPORT_INAPPROPRIATE]) {
         [self reportPostInappropriate:post];
+    } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_DELETE_POST]) {
+        [[[UIAlertView alloc] initWithTitle:ACTION_DELETE_POST
+                                    message:@"Are you sure you want to delete this post?"
+                                   delegate:self
+                          cancelButtonTitle:@"no"
+                          otherButtonTitles:@"delete", nil] show];
+    }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if ([[alertView buttonTitleAtIndex:buttonIndex] isEqualToString:@"delete"]) {
+        
+        // Delete all activites related to this photo
+        PFQuery *query = [PFQuery queryWithClassName:kFTActivityClassKey];
+        [query whereKey:kFTActivityPostKey equalTo:post];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *activities, NSError *error) {
+            if (!error) {
+                for (PFObject *activity in activities) {
+                    [activity deleteEventually];
+                }
+            }
+            
+            // Delete post
+            [post deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (!error) {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:FTTimelineViewControllerUserDeletedPostNotification object:[post objectId]];
+                }
+            }];
+        }];
+        
+        [self.navigationController popViewControllerAnimated:YES];
     }
 }
 
@@ -607,7 +672,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 
 #pragma mark - ()
 
-- (void)loadCamera:(id)sender {
+- (void)didTapLoadCameraButtonAction:(id)sender {
     FTCamViewController *cameraViewController = [[FTCamViewController alloc] init];
     [self.navigationController pushViewController:cameraViewController animated:YES];
 }
@@ -622,10 +687,31 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 }
 
 - (void)shouldPresentAccountViewForUser:(PFUser *)user {
-    // Push account view controller
-    [userProfileViewController setUser:user];
-    [userProfileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
-    [self.navigationController pushViewController:userProfileViewController animated:YES];
+    NSString *userType = [user objectForKey:kFTUserTypeKey];
+    
+    if ([userType isEqualToString:kFTUserTypeBusiness]) {
+        
+        NSLog(@"user:%@",user);
+        NSLog(@"userType:%@",userType);
+        
+        UICollectionViewFlowLayout *businessFloyLayout = [[UICollectionViewFlowLayout alloc] init];
+        [businessFloyLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
+        [businessFloyLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+        [businessFloyLayout setMinimumInteritemSpacing:0];
+        [businessFloyLayout setMinimumLineSpacing:0];
+        [businessFloyLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+        [businessFloyLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
+        
+        FTBusinessProfileViewController *businessViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:businessFlowLayout];
+        [businessViewController setBusiness:user];
+        [businessViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
+        [self.navigationController pushViewController:businessViewController animated:YES];
+        
+    } else if ([userType isEqualToString:kFTUserTypeUser]) {
+        [userProfileViewController setUser:user];
+        [userProfileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
+        [self.navigationController pushViewController:userProfileViewController animated:YES];
+    }
 }
 
 - (void)userLikedOrUnlikedPhoto:(NSNotification *)note {
@@ -694,9 +780,13 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
         }
         
         // Delete photo
-        [self.post deleteEventually];
+        [post deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if (!error) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:FTTimelineViewControllerUserDeletedPostNotification object:[self.post objectId]];
+            }
+        }];
     }];
-    [[NSNotificationCenter defaultCenter] postNotificationName:FTTimelineViewControllerUserDeletedPostNotification object:[self.post objectId]];
+    
     [self.navigationController popViewControllerAnimated:YES];
 }
 
