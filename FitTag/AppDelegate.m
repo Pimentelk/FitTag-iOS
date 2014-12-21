@@ -33,6 +33,7 @@
 @property (nonatomic, strong) FTFeedViewController *feedViewController;
 @property (nonatomic, strong) FTRewardsCollectionViewController *rewardsViewController;
 @property (nonatomic, strong) FTUserProfileViewController *userProfileViewController;
+@property (nonatomic, strong) UINavigationController *pushFeedNavigationController;
 
 // Progress HUD (Notification/Loader)
 @property (nonatomic, strong) MBProgressHUD *hud;
@@ -64,25 +65,27 @@
     [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(bounds.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
     
-    // Google Analytics
-    [GAI sharedInstance].trackUncaughtExceptions = YES;
-    [GAI sharedInstance].dispatchInterval = 20;
-    [[GAI sharedInstance].logger setLogLevel:kGAILogLevelNone];
-    [[GAI sharedInstance] trackerWithTrackingId:GOOGLE_ANALYTICS_TRACKING_ID];
-    
     // Parse initialization
     [Parse setApplicationId:PARSE_APPLICATION_ID
                   clientKey:PARSE_CLIENT_KEY];
     
-    // Track app open.
-    [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
-    
-    // Register for remote notifications
-    [self registerForRemoteNotification];
-    
     if (application.applicationIconBadgeNumber != 0) {
         application.applicationIconBadgeNumber = 0;
         [[PFInstallation currentInstallation] saveInBackground];
+    }
+    
+    // Track app open
+    if (application.applicationState != UIApplicationStateBackground) {
+        // Track an app open here if we launch with a push, unless
+        // "content_available" was used to trigger a background push (introduced
+        // in ios 7). In that case, we skip tracking here to avoid double
+        // counting the app open.
+        BOOL preBackgroundPush = ![application respondsToSelector:@selector(backgroundRefreshStatus)];
+        BOOL oldPushHandlerOnly = ![self respondsToSelector:@selector(application:didReceiveRemoteNotification:fetchCompletionHandler:)];
+        BOOL noPushPayload = ![launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+        if (preBackgroundPush || oldPushHandlerOnly || noPushPayload) {
+            [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+        }
     }
     
     PFACL *defaultACL = [PFACL ACL];
@@ -107,12 +110,17 @@
     [PFTwitterUtils initializeWithConsumerKey:TWITTER_CONSUMER_KEY
                                consumerSecret:TWITTER_CONSUMER_SECRET];
     
+    // Google Analytics
+    [GAI sharedInstance].trackUncaughtExceptions = YES;
+    [GAI sharedInstance].dispatchInterval = 20;
+    [[GAI sharedInstance].logger setLogLevel:kGAILogLevelNone];
+    [[GAI sharedInstance] trackerWithTrackingId:GOOGLE_ANALYTICS_TRACKING_ID];
+    
     return YES;
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-    NSLog(@"%@::application:didRegisterForRemoteNotificationsWithDeviceToken:",APPDELEGATE_RESPONDER);
-    //[self registerForRemoteNotification];
+    //NSLog(@"%@::application:didRegisterForRemoteNotificationsWithDeviceToken:",APPDELEGATE_RESPONDER);
     if (application.applicationIconBadgeNumber != 0) {
         application.applicationIconBadgeNumber = 0;
     }
@@ -124,9 +132,9 @@
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-    NSLog(@"%@::application:didFailToRegisterForRemoteNotificationsWithError:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::application:didFailToRegisterForRemoteNotificationsWithError:",APPDELEGATE_RESPONDER);
 	if (error.code != 3010) { // 3010 is for the iPhone Simulator
-        NSLog(@"Application failed to register for push notifications: %@", error);
+        //NSLog(@"Application failed to register for push notifications: %@", error);
 	}
 }
 
@@ -134,28 +142,43 @@
     //NSLog(@"%@::application:didReceiveRemoteNotification:",APPDELEGATE_RESPONDER);
     //NSLog(@"userInfo:%@",userInfo);
     
-    if ([userInfo objectForKey:kFTPushPayloadActivityRewardKey] && [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushRewardsKey]) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
-        NSLog(@"userInfo:%@",userInfo);
-    }
+    NSString *activityType = [userInfo objectForKey:kFTPushPayloadActivityTypeKey];
     
-    if ([userInfo objectForKey:kFTPushPayloadActivityLikeKey] && [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushLikesKey]) {
+    // Activity type Reward
+    if ([activityType isEqualToString:kFTPushPayloadActivityRewardKey] &&
+        [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushRewardsKey]) {
+        
         [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
-    }
-    
-    if ([userInfo objectForKey:kFTPushPayloadActivityCommentKey] && [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushCommentsKey]) {
+        
+    // Activity type Like
+    } else if ([activityType isEqualToString:kFTPushPayloadActivityLikeKey] &&
+               [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushLikesKey]) {
+        
         [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
-    }
-    
-    if ([userInfo objectForKey:kFTPushPayloadActivityFollowKey] && [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushFollowsKey]) {
+        
+    // Activity type Comment
+    } else if ([activityType isEqualToString:kFTPushPayloadActivityCommentKey] &&
+               [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushCommentsKey]) {
+        
         [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
-    }
-    
-    if ([userInfo objectForKey:kFTPushPayloadActivityMentionKey] && [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushMentionsKey]) {
+        
+    // Activity type Follow
+    } else if ([activityType isEqualToString:kFTPushPayloadActivityFollowKey] &&
+        [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushFollowsKey]) {
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserFollowersChangedNotification object:nil];
         [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
+        
+    // Activity type Mention
+    } else if ([activityType isEqualToString:kFTPushPayloadActivityMentionKey] &&
+               [[NSUserDefaults standardUserDefaults] boolForKey:kFTUserDefaultsSettingsViewControllerPushMentionsKey]) {
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:userInfo];
+        
+    // Activity type if no type matched exit (possibly errors on my part when comparing strings)
     }
-    
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+
+    if (application.applicationState != UIApplicationStateActive) {
         // Track app opens due to a push notification being acknowledged while the app wasn't active.
         [PFAnalytics trackAppOpenedWithRemoteNotificationPayload:userInfo];
     }
@@ -193,7 +216,7 @@
     result |= [FBAppCall handleOpenURL:url
                      sourceApplication:sourceApplication
                        fallbackHandler:^(FBAppCall *call) {
-                           NSLog(@"Unhandled deep link: %@", url);
+                           //NSLog(@"Unhandled deep link: %@", url);
                        }];
     
     result |= [FBAppCall handleOpenURL:url
@@ -204,9 +227,7 @@
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    NSLog(@"%@::applicationDidBecomeActive:",APPDELEGATE_RESPONDER);
-    // Handle an interruption during the authorization flow, such as the user clicking the home button.
-    //[FBSession.activeSession handleDidBecomeActive];
+    //NSLog(@"%@::applicationDidBecomeActive:",APPDELEGATE_RESPONDER);
     
     // Clear badge and update installation, required for auto-incrementing badges.
     if (application.applicationIconBadgeNumber != 0) {
@@ -219,7 +240,6 @@
     application.applicationIconBadgeNumber = 0;
     
     [FBAppCall handleDidBecomeActiveWithSession:[PFFacebookUtils session]];
-    //[FBSession.activeSession handleDidBecomeActive];
 }
 
 #pragma mark - UITabBarControllerDelegate
@@ -396,7 +416,7 @@
 #pragma mark - ()
 
 - (void)registerForRemoteNotification {
-    NSLog(@"%@::registerForRemoteNotification:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::registerForRemoteNotification:",APPDELEGATE_RESPONDER);
     if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
         UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
         UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
@@ -408,7 +428,7 @@
 }
 
 - (void)monitorReachability {
-    NSLog(@"%@::monitorReachability:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::monitorReachability:",APPDELEGATE_RESPONDER);
     Reachability *hostReach = [Reachability reachabilityWithHostname:PARSE_HOST];
     
     hostReach.reachableBlock = ^(Reachability *reach) {
@@ -430,23 +450,21 @@
 }
 
 - (void)handlePush:(NSDictionary *)launchOptions {
-    NSLog(@"%@::handlePush:",APPDELEGATE_RESPONDER);
-    
+    //NSLog(@"%@::handlePush:",APPDELEGATE_RESPONDER);
     // If the app was launched in response to a push notification, we'll handle the payload here
     NSDictionary *remoteNotificationPayload = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotificationPayload) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification
-                                                            object:nil
-                                                          userInfo:remoteNotificationPayload];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:remoteNotificationPayload];
         
         if (![PFUser currentUser]) {
             return;
         }
         
-        // If the push notification payload references a photo, we will attempt to push this view controller into view
-        NSString *photoObjectId = [remoteNotificationPayload objectForKey:kFTPushPayloadPhotoObjectIdKey];
-        if (photoObjectId && photoObjectId.length > 0) {
-            [self shouldNavigateToPost:[PFObject objectWithoutDataWithClassName:kFTPostClassKey objectId:photoObjectId]];
+        // If the push notification payload references a post, we will attempt to push this view controller into view
+        NSString *postObjectId = [remoteNotificationPayload objectForKey:kFTPushPayloadPostObjectIdKey];
+        if (postObjectId && postObjectId.length > 0) {
+            [self shouldNavigateToPost:[PFObject objectWithoutDataWithClassName:kFTPostClassKey objectId:postObjectId]];
             return;
         }
         
@@ -455,12 +473,19 @@
         if (fromObjectId && fromObjectId.length > 0) {
             PFQuery *query = [PFUser query];
             query.cachePolicy = kPFCachePolicyCacheElseNetwork;
-            [query getObjectInBackgroundWithId:fromObjectId block:^(PFObject *user, NSError *error) {
+            [query getObjectInBackgroundWithId:fromObjectId block:^(PFObject *object, NSError *error) {
                 if (!error) {
-                    UINavigationController *feedNavigationController = self.tabBarController.viewControllers[FTFeedTabBarItemIndex];
-                    self.tabBarController.selectedViewController = feedNavigationController;
+                    self.pushFeedNavigationController = self.tabBarController.viewControllers[FTFeedTabBarItemIndex];
+                    self.tabBarController.selectedViewController = self.pushFeedNavigationController;
                     
                     bounds = [[[[UIApplication sharedApplication] delegate] window] bounds];
+                    
+                    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] init];
+                    [backButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+                    [backButton setStyle:UIBarButtonItemStylePlain];
+                    [backButton setTarget:self];
+                    [backButton setAction:@selector(didTapBackButtonAction:)];
+                    [backButton setTintColor:[UIColor whiteColor]];
                     
                     flowLayout = [[UICollectionViewFlowLayout alloc] init];
                     [flowLayout setItemSize:CGSizeMake(bounds.size.width/3,105)];
@@ -470,16 +495,26 @@
                     [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
                     [flowLayout setHeaderReferenceSize:CGSizeMake(bounds.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
                     
+                    PFUser *user = (PFUser *)object;
+                    
                     FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-                    [profileViewController setUser:[PFUser currentUser]];
-                    [feedNavigationController pushViewController:profileViewController animated:YES];
+                    [profileViewController.navigationItem setLeftBarButtonItem:backButton];
+                    [profileViewController setUser:user];
+                    
+                    [self.pushFeedNavigationController pushViewController:profileViewController animated:YES];
                 }
             }];
         }
     }
 }
 
+- (void)didTapBackButtonAction:(id)sender {
+    [self.pushFeedNavigationController popViewControllerAnimated:YES];
+}
+
 - (void)shouldNavigateToPost:(PFObject *)targetPost {
+    //NSLog(@"shouldNavigateToPost:");
+    
     // if we have a local copy of this post, this won't result in a network fetch
     [targetPost fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         if (!error) {
@@ -500,7 +535,7 @@
 }
 
 - (BOOL)shouldProceedToMainInterface:(PFUser *)user {
-    NSLog(@"%@::shouldProceedToMainInterface:",APPDELEGATE_RESPONDER);
+    //NSLog(@"%@::shouldProceedToMainInterface:",APPDELEGATE_RESPONDER);
     if ([FTUtility userHasValidFacebookData:[PFUser currentUser]]) {
         [MBProgressHUD hideHUDForView:self.navController.presentedViewController.view animated:YES];
         [self presentTabBarController];
