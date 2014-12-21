@@ -31,6 +31,7 @@
 @property (nonatomic, strong) PFGeoPoint *geoPoint;
 @property (nonatomic, strong) NSString *postLocation;
 @property (nonatomic, strong) FTPostDetailsFooterView *postDetailsFooterView;
+@property (nonatomic, strong) UISwitch *shareLocationSwitch;
 @end
 
 @implementation FTEditPhotoViewController
@@ -44,6 +45,7 @@
 @synthesize photoPostBackgroundTaskId;
 //@synthesize tagTextField;
 @synthesize scrollViewHeight;
+@synthesize shareLocationSwitch;
 @synthesize locationLabelOriginalY;
 
 #pragma mark - NSObject
@@ -86,7 +88,9 @@
     footerRect.origin.y = photoImageView.frame.origin.y + photoImageView.frame.size.height;
     
     self.postDetailsFooterView = [[FTPostDetailsFooterView alloc] initWithFrame:footerRect];
-    self.commentTextView = postDetailsFooterView.commentField;
+    self.commentTextView = postDetailsFooterView.commentView;
+    self.shareLocationSwitch = postDetailsFooterView.shareLocationSwitch;
+    
     //self.tagTextField = postDetailsFooterView.hashtagTextField;
     //self.locationTextField = postDetailsFooterView.locationTextField;
 
@@ -98,7 +102,6 @@
     [self.scrollView addSubview:postDetailsFooterView];
     
     scrollViewHeight = photoImageView.frame.origin.y + photoImageView.frame.size.height + postDetailsFooterView.frame.size.height;
-    
     [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, scrollViewHeight)];
 }
 
@@ -173,6 +176,7 @@
     return YES;
 }
 */
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -326,8 +330,8 @@
         NSDictionary *userInfo = [NSDictionary dictionary];
         NSString *trimmedComment = [self.commentTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     
-        if (trimmedComment.length > 0) {
-            userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment,kFTEditPhotoViewControllerUserInfoCommentKey,nil];
+        if (trimmedComment.length > 0 && ![trimmedComment isEqualToString:CAPTION_TEXT]) {
+            userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment,kFTEditPostViewControllerUserInfoCommentKey,nil];
         }
         
         // Make sure there were no errors creating the image files
@@ -357,7 +361,7 @@
         
         // userInfo might contain any caption which might have been posted by the uploader
         if (userInfo) {
-            NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
+            NSString *commentText = [userInfo objectForKey:kFTEditPostViewControllerUserInfoCommentKey];
             
             if (commentText && commentText.length > 0) {
                 // create and save photo caption
@@ -367,8 +371,10 @@
             }
         }
         
-        if (self.geoPoint) {
-            [photo setObject:self.geoPoint forKey:kFTPostLocationKey];
+        if ([self.shareLocationSwitch isOn]) {
+            if (self.geoPoint) {
+                [photo setObject:self.geoPoint forKey:kFTPostLocationKey];
+            }
         }
         
         // photos are public, but may only be modified by the user who uploaded them
@@ -434,6 +440,31 @@
 
 - (void)cancelButtonAction:(id)sender {
     [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - UITextViewDelegate
+
+- (void)textViewDidEndEditing:(UITextView *)textView {
+    if (textView.text.length == 0) {
+        commentTextView.textColor = [UIColor lightGrayColor];
+        commentTextView.text = CAPTION_TEXT;
+    }
+}
+
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView {
+    if ([commentTextView.text isEqualToString:CAPTION_TEXT]) {
+        commentTextView.text = EMPTY_STRING;
+        commentTextView.textColor = [UIColor blackColor];
+    }
+    return YES;
+}
+
+-(void)textViewDidChange:(UITextView *)textView {
+    if (commentTextView.text.length == 0) {
+        commentTextView.textColor = [UIColor lightGrayColor];
+        commentTextView.text = CAPTION_TEXT;
+        [commentTextView resignFirstResponder];
+    }
 }
 
 #pragma mark - CLLocationManagerDelegate

@@ -8,12 +8,15 @@
 
 #import "FTEditPostViewController.h"
 #import "UIImage+ResizeAdditions.h"
+#import "FTGallerySwiperView.h"
 
 @interface FTEditPostViewController () {
     CLLocationManager *locationManager;
 }
 
+@property (nonatomic, strong) UISwitch *shareLocationSwitch;
 @property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) UIScrollView *carousel;
 @property (nonatomic, strong) NSData *video;
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, strong) NSArray *multi;
@@ -52,6 +55,8 @@
 
 @property (nonatomic, strong) NSString *postType;
 
+@property (nonatomic, strong) FTGallerySwiperView *swiperView;
+
 @end
 
 @implementation FTEditPostViewController
@@ -68,6 +73,9 @@
 @synthesize playButton;
 @synthesize videoImageView;
 @synthesize postType;
+@synthesize swiperView;
+@synthesize carousel;
+@synthesize shareLocationSwitch;
 
 #pragma mark - NSObject
 
@@ -90,6 +98,7 @@
         self.postType = @"MULTI";
         self.photoFiles = [[NSMutableArray alloc] init];
         self.thumbFiles = [[NSMutableArray alloc] init];
+        self.swiperView = [[FTGallerySwiperView alloc] init];
     }
     return self;
 }
@@ -132,10 +141,11 @@
     self.scrollView.backgroundColor = [UIColor whiteColor];
     self.view = self.scrollView;
     
+    CGSize frameSize = self.view.frame.size;
     CGRect footerRect = [FTPostDetailsFooterView rectForView];
     
     if ([self.postType isEqualToString:@"IMAGE"]) {
-        UIImageView *photoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 320.0f)];
+        UIImageView *photoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
         [photoImageView setBackgroundColor:[UIColor whiteColor]];
         [photoImageView setImage:self.image];
         [photoImageView setContentMode:CONTENTMODE];
@@ -147,7 +157,7 @@
     }
     
     if ([self.postType isEqualToString:@"VIDEO"]) {
-        videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, self.view.frame.size.width)];
+        videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, frameSize.width, frameSize.width)];
         [videoImageView setBackgroundColor:[UIColor whiteColor]];
         [videoImageView setContentMode:CONTENTMODEVIDEO];
         
@@ -159,13 +169,17 @@
     
     if ([self.postType isEqualToString:@"MULTI"]) {
         //NSLog(@"loadView - postType multi");
-        UIScrollView *carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, scrollView.frame.size.width, self.view.frame.size.width)];
+        carousel = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, scrollView.frame.size.width, self.view.frame.size.width)];
         [carousel setBackgroundColor:[UIColor whiteColor]];
         
         //add the scrollview to the view
-        carousel.pagingEnabled = YES;
+        [carousel setPagingEnabled:YES];
         [carousel setAlwaysBounceVertical:NO];
+        [carousel setDelegate:self];
         
+        [swiperView setFrame:CGRectMake(0, 0, (16 * self.multi.count), 20)];
+        [swiperView setCenter:CGPointMake(frameSize.width/2, frameSize.width-5)];
+                
         //setup internal views
         NSInteger numberOfViews = self.multi.count;
         
@@ -173,9 +187,8 @@
         
         int i = 0;
         for (UIImage *image in self.multi) {
-            CGFloat xOrigin = i * self.view.frame.size.width;
-            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, self.view.frame.size.width,
-                                                                                   self.view.frame.size.width)];
+            CGFloat xOrigin = i * frameSize.width;
+            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, frameSize.width, frameSize.width)];
             [imageView setBackgroundColor:[UIColor whiteColor]];
             [imageView setImage:image];
             [imageView setClipsToBounds:YES];
@@ -184,26 +197,30 @@
             i++;
         }
         //set the scroll view content size
-        carousel.contentSize = CGSizeMake(self.view.frame.size.width * numberOfViews, self.view.frame.size.width);
+        carousel.contentSize = CGSizeMake(frameSize.width * numberOfViews, frameSize.width);
         
         [self.scrollView addSubview:carousel];
         scrollViewHeight = carousel.frame.origin.y + carousel.frame.size.height;
         
+        [self.swiperView setNumberOfDashes:i];
+        [self.swiperView setAlpha:1];
+        [self.scrollView addSubview:self.swiperView];
+        
         footerRect.origin.y = scrollViewHeight;
     }
     
-    NSLog(@"footerRect.origin.y:%f",footerRect.origin.y);
-    
+    //NSLog(@"footerRect.origin.y:%f",footerRect.origin.y);
     
     self.postDetailsFooterView = [[FTPostDetailsFooterView alloc] initWithFrame:footerRect];
-    self.commentTextView = postDetailsFooterView.commentField;
+    self.commentTextView = postDetailsFooterView.commentView;
     self.hashtagTextField = postDetailsFooterView.hashtagTextField;
+    self.shareLocationSwitch = postDetailsFooterView.shareLocationSwitch;
     self.commentTextView.delegate = self;
     self.hashtagTextField.delegate = self;
     self.postDetailsFooterView.delegate = self;
     
     scrollViewHeight += postDetailsFooterView.frame.size.height;
-    NSLog(@"scrollViewHeight:%ld",(long)scrollViewHeight);
+    //NSLog(@"scrollViewHeight:%ld",(long)scrollViewHeight);
     
     [self.scrollView addSubview:postDetailsFooterView];
     [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, scrollViewHeight)];
@@ -222,7 +239,7 @@
     // NavigationBar & ToolBar
     [self.navigationController.navigationBar setHidden:NO];
     [self.navigationController.toolbar setHidden:YES];
-    [self.navigationItem setTitle: @"TAG YOUR FIT"];
+    [self.navigationItem setTitle:@"TAG YOUR FIT"];
     [self.navigationItem setHidesBackButton:NO];
     
     // Override the back idnicator
@@ -308,6 +325,31 @@
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_EDIT_POST];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
+}
+
+#pragma mark - UITextViewDelegate
+
+- (void)textViewDidEndEditing:(UITextView *)textView {
+    if (textView.text.length == 0) {
+        commentTextView.textColor = [UIColor lightGrayColor];
+        commentTextView.text = CAPTION_TEXT;
+    }
+}
+
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView {
+    if ([commentTextView.text isEqualToString:CAPTION_TEXT]) {
+        commentTextView.text = EMPTY_STRING;
+        commentTextView.textColor = [UIColor blackColor];
+    }
+    return YES;
+}
+
+-(void)textViewDidChange:(UITextView *)textView {
+    if (commentTextView.text.length == 0) {
+        commentTextView.textColor = [UIColor lightGrayColor];
+        commentTextView.text = CAPTION_TEXT;
+        [commentTextView resignFirstResponder];
+    }
 }
 
 #pragma mark - checkForHashTag & Mention
@@ -415,7 +457,7 @@
             
             // userInfo might contain any caption which might have been posted by the uploader
             if (userInfo) {
-                NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
+                NSString *commentText = [userInfo objectForKey:kFTEditPostViewControllerUserInfoCommentKey];
                 
                 if (commentText && commentText.length > 0) {
                     // create and save photo caption
@@ -425,8 +467,10 @@
                 }
             }
             
-            if (self.geoPoint) {
-                [gallery setObject:self.geoPoint forKey:kFTPostLocationKey];
+            if ([self.shareLocationSwitch isOn]) {
+                if (self.geoPoint) {
+                    [gallery setObject:self.geoPoint forKey:kFTPostLocationKey];
+                }
             }
             
             // Save the gallery
@@ -437,7 +481,7 @@
                     [self incrementUserPostCount];
                     //NSLog(@"userInfo might contain any caption which might have been posted by the uploader");
                     
-                    NSLog(@"gallery:%@",gallery.objectId);
+                    //NSLog(@"gallery:%@",gallery.objectId);
                     NSString *link = [NSString stringWithFormat:@"http://fittag.com/viewer.php?pid=%@",gallery.objectId];
                     
                     PFFile *caption = nil;
@@ -470,10 +514,10 @@
             
         } else {
             [[[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
-                                        message:nil
+                                        message:@"There was a problem uploading your photo. Try again or report this problem if it continues."
                                        delegate:nil
-                              cancelButtonTitle:nil
-                              otherButtonTitles:@"Dismiss", nil] show];
+                              cancelButtonTitle:@"ok"
+                              otherButtonTitles:nil] show];
         }
         
         [[UIApplication sharedApplication] endBackgroundTask:self.postBackgroundTaskId];
@@ -822,6 +866,29 @@
 
 #pragma mark - UIScrollViewDelegate
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if (carousel.contentOffset.x < 0 || carousel.contentOffset.x > (carousel.contentSize.width - self.view.frame.size.width))
+        [self killScroll];
+    
+    static NSInteger previousPage = 0;
+    CGFloat pageWidth = carousel.frame.size.width;
+    float fractionalPage = carousel.contentOffset.x / pageWidth;
+    NSInteger page = lround(fractionalPage);
+    if (previousPage != page) {
+        if (previousPage < page) {
+            [self.swiperView onGallerySwipedLeft:page];
+        } else if (previousPage > page) {
+            [self.swiperView onGallerySwipedRight:page];
+        }
+        previousPage = page;
+    }
+}
+
+- (void)killScroll {
+    self.carousel.scrollEnabled = NO;
+    self.carousel.scrollEnabled = YES;
+}
+
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     [self.commentTextView resignFirstResponder];
     [self.hashtagTextField resignFirstResponder];
@@ -848,8 +915,8 @@
         NSDictionary *userInfo = [NSDictionary dictionary];
         NSString *trimmedComment = [self.commentTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         
-        if (trimmedComment.length != 0) {
-            userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment, kFTEditVideoViewControllerUserInfoCommentKey, nil];
+        if (trimmedComment.length != 0 && ![trimmedComment isEqualToString:CAPTION_TEXT]) {
+            userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment, kFTEditPostViewControllerUserInfoCommentKey, nil];
         }
         
         NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[self checkForHashtag]];
@@ -913,8 +980,10 @@
                 [post setObject:kFTPostImageKey forKey:kFTPostTypeKey];
             }
             
-            if (self.geoPoint) {
-                [post setObject:self.geoPoint forKey:kFTPostLocationKey];
+            if ([self.shareLocationSwitch isOn]) {
+                if (self.geoPoint) {
+                    [post setObject:self.geoPoint forKey:kFTPostLocationKey];
+                }
             }
             
             // photos are public, but may only be modified by the user who uploaded them
@@ -936,7 +1005,7 @@
                     
                     // userInfo might contain any caption which might have been posted by the uploader
                     if (userInfo) {
-                        NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
+                        NSString *commentText = [userInfo objectForKey:kFTEditPostViewControllerUserInfoCommentKey];
                         
                         if (commentText && commentText.length != 0) {
                             // create and save photo caption

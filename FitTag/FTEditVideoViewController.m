@@ -27,6 +27,7 @@
 @property (nonatomic, strong) UIImageView *videoImageView;
 @property (nonatomic, strong) UIImageView *videoPlaceHolderView;
 @property (nonatomic, strong) NSString *postLocation;
+@property (nonatomic, strong) UISwitch *shareLocationSwitch;
 @end
 
 @implementation FTEditVideoViewController
@@ -41,6 +42,7 @@
 @synthesize playButton;
 @synthesize videoImageView;
 @synthesize videoPlaceHolderView;
+@synthesize shareLocationSwitch;
 
 #pragma mark - NSObject
 
@@ -84,8 +86,10 @@
     footerRect.origin.y = videoImageView.frame.origin.y + videoImageView.frame.size.height;
     
     postDetailsFooterView = [[FTPostDetailsFooterView alloc] initWithFrame:footerRect];
-    self.commentTextView = postDetailsFooterView.commentField;
+    self.commentTextView = postDetailsFooterView.commentView;
     self.hashtagTextField = postDetailsFooterView.hashtagTextField;
+    self.shareLocationSwitch = postDetailsFooterView.shareLocationSwitch;
+    
     self.commentTextView.delegate = self;
     self.hashtagTextField.delegate = self;
     postDetailsFooterView.delegate = self;
@@ -303,6 +307,31 @@
     return YES;
 }
 
+#pragma mark - UITextViewDelegate
+
+- (void)textViewDidEndEditing:(UITextView *)textView {
+    if (textView.text.length == 0) {
+        commentTextView.textColor = [UIColor lightGrayColor];
+        commentTextView.text = CAPTION_TEXT;
+    }
+}
+
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView {
+    if ([commentTextView.text isEqualToString:CAPTION_TEXT]) {
+        commentTextView.text = EMPTY_STRING;
+        commentTextView.textColor = [UIColor blackColor];
+    }
+    return YES;
+}
+
+-(void)textViewDidChange:(UITextView *)textView {
+    if (commentTextView.text.length == 0) {
+        commentTextView.textColor = [UIColor lightGrayColor];
+        commentTextView.text = CAPTION_TEXT;
+        [commentTextView resignFirstResponder];
+    }
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -389,14 +418,12 @@
 }
 
 - (void)didTapBackButtonAction:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
-    /*
+    //[self.navigationController popViewControllerAnimated:YES];
     [[[UIAlertView alloc] initWithTitle:@"Video Alert"
                                 message:@"Returning to the capture screen will cause your video to be deleted. Are you sure you want to continue?"
                                delegate:self
                       cancelButtonTitle:@"cancel"
                       otherButtonTitles:@"yes", nil] show];
-    */
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -452,8 +479,8 @@
         NSDictionary *userInfo = [NSDictionary dictionary];
         NSString *trimmedComment = [self.commentTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         
-        if (trimmedComment.length != 0) {
-            userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment,kFTEditVideoViewControllerUserInfoCommentKey,nil];
+        if (trimmedComment.length != 0 && ![trimmedComment isEqualToString:CAPTION_TEXT]) {
+            userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment,kFTEditPostViewControllerUserInfoCommentKey,nil];
         }
         
         NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[self checkForHashtag]];
@@ -472,7 +499,7 @@
         
         // userInfo might contain any caption which might have been posted by the uploader
         if (userInfo) {
-            NSString *commentText = [userInfo objectForKey:kFTEditPhotoViewControllerUserInfoCommentKey];
+            NSString *commentText = [userInfo objectForKey:kFTEditPostViewControllerUserInfoCommentKey];
             
             if (commentText && commentText.length > 0) {
                 // create and save photo caption
@@ -482,8 +509,10 @@
             }
         }
         
-        if (self.geoPoint) {
-            [video setObject:self.geoPoint forKey:kFTPostLocationKey];
+        if ([self.shareLocationSwitch isOn]) {
+            if (self.geoPoint) {
+                [video setObject:self.geoPoint forKey:kFTPostLocationKey];
+            }
         }
         
         // photos are public, but may only be modified by the user who uploaded them
@@ -533,10 +562,10 @@
             } else {
                 //NSLog(@"Error: %@",error);
                 [[[UIAlertView alloc] initWithTitle:@"Couldn't post your video"
-                                            message:nil
+                                            message:@"There was a problem uploading your video. Try again or report this problem if it continues."
                                            delegate:nil
-                                  cancelButtonTitle:nil
-                                  otherButtonTitles:@"Dismiss", nil] show];
+                                  cancelButtonTitle:@"ok"
+                                  otherButtonTitles:nil] show];
             }
         }];
         
