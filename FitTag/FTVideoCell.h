@@ -86,6 +86,12 @@ typedef enum {
 - (void)videoCellView:(FTVideoCell *)videoCellView didTapLikeVideoButton:(UIButton *)button counter:(UIButton *)counter video:(PFObject *)video;
 
 /*!
+ Sent to the delegate when the like counter button is tapped
+ @param button the button for the video that tracks likes
+ */
+- (void)videoCellView:(FTVideoCell *)videoCellView didTapLikeCountButton:(UIButton *)button video:(PFObject *)video;
+
+/*!
  Sent to the delegate when the comment on video button is tapped
  @param video the PFObject for the video that will be commented on
  */

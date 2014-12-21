@@ -60,92 +60,114 @@
         [self.videoButton addGestureRecognizer:singleTap];
         [self.contentView addSubview:self.videoButton];
         
-        UIView *videoCellButtonsContainer = [[UIView alloc] init];
-        videoCellButtonsContainer.frame = CGRectMake(0,self.videoButton.frame.size.height,self.frame.size.width,30);
-        videoCellButtonsContainer.backgroundColor = FT_GRAY;
-        [self.contentView addSubview:videoCellButtonsContainer];
+        CGSize frameSize = self.frame.size;
+        
+        UIView *toolbar = [[UIView alloc] init];
+        toolbar.frame = CGRectMake(0, self.videoButton.frame.size.height, frameSize.width, 30);
+        toolbar.backgroundColor = FT_GRAY;
+        
+        [self.contentView addSubview:toolbar];
         
         FTVideoCellButtons otherButtons = FTVideoCellButtonsDefault;
         [FTVideoCell validateButtons:otherButtons];
         buttons = otherButtons;
         
         //location label
-        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(5,BUTTONS_TOP_PADDING,120,20)];
+        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, BUTTONS_TOP_PADDING, 130, 20)];
         [locationLabel setText:EMPTY_STRING];
         [locationLabel setBackgroundColor:[UIColor clearColor]];
-        [locationLabel setTextColor:[UIColor blackColor]];
-        [locationLabel setFont:BENDERSOLID(16)];
+        [locationLabel setTextColor:FT_RED];
+        [locationLabel setFont:BENDERSOLID(13)];
         
-        [videoCellButtonsContainer addSubview:locationLabel];
+        [toolbar addSubview:locationLabel];
         
-        if (self.buttons & FTVideoCellButtonsLike) {
-            // like button
-            likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [self.likeButton setFrame:CGRectMake(locationLabel.frame.size.width + locationLabel.frame.origin.y, BUTTONS_TOP_PADDING, 21, 18)];
-            [self.likeButton setBackgroundColor:[UIColor clearColor]];
-            [self.likeButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
-            [self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_white"] forState:UIControlStateNormal];
-            [self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateSelected];
-            [self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateHighlighted];
-            [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-            [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
-            [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-            [self.likeButton setSelected:NO];
-            
-            [videoCellButtonsContainer addSubview:self.likeButton];
-            
-            likeCounter = [UIButton buttonWithType:UIButtonTypeCustom];
-            [likeCounter setFrame:CGRectMake(likeButton.frame.size.width + likeButton.frame.origin.x, BUTTONS_TOP_PADDING, 37, 19)];
-            [likeCounter setBackgroundColor:[UIColor clearColor]];
-            [likeCounter setTitle:@"0" forState:UIControlStateNormal];
-            [likeCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
-            [likeCounter.titleLabel setFont:BENDERSOLID(16)];
-            [likeCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
-            [likeCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
-            [likeCounter setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-            [likeCounter setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
-            [likeCounter setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-            
-            [videoCellButtonsContainer addSubview:likeCounter];
-        }
+        moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        //[moreButton setBackgroundImage:[UIImage imageNamed:@"more_button"] forState:UIControlStateNormal];
+        [moreButton setBackgroundImage:MORE_BUTTON forState:UIControlStateNormal];
+        [moreButton setFrame:CGRectMake(frameSize.width - 45, BUTTONS_TOP_PADDING, 35, 19)];
+        [moreButton setBackgroundColor:[UIColor clearColor]];
+        [moreButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
+        
+        [toolbar addSubview:moreButton];
         
         if (self.buttons & FTVideoCellButtonsComment) {
             
+            CGFloat commentCounterX = moreButton.frame.origin.x - COUNTER_WIDTH - BUTTON_PADDING;
+            
+            commentCounter = [UIButton buttonWithType:UIButtonTypeCustom];
+            [commentCounter setFrame:CGRectMake(commentCounterX, BUTTONS_TOP_PADDING, COUNTER_WIDTH, COUNTER_HEIGHT)];
+            [commentCounter setBackgroundColor:[UIColor clearColor]];
+            //[commentCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
+            [commentCounter setBackgroundImage:COUNTER_BOX forState:UIControlStateNormal];
+            [commentCounter setTitle:EMPTY_STRING forState:UIControlStateNormal];
+            [commentCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+            [commentCounter.titleLabel setFont:BENDERSOLID(18)];
+            [commentCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
+            [commentCounter setTitleColor:FT_RED forState:UIControlStateNormal];
+            [commentCounter setTitleColor:FT_RED forState:UIControlStateSelected];
+            [commentCounter setTitleColor:FT_RED forState:UIControlStateHighlighted];
+            
+            [toolbar addSubview:commentCounter];
+            
+            CGFloat commentButtonX = commentCounterX - BUTTON_WIDTH;
+            
             // comments button
             commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [self.commentButton setFrame:CGRectMake(likeCounter.frame.size.width + likeCounter.frame.origin.x, BUTTONS_TOP_PADDING, 21.0f, 18.0f)];
+            [self.commentButton setFrame:CGRectMake(commentButtonX, BUTTONS_TOP_PADDING, BUTTON_WIDTH, BUTTON_HEIGHT)];
             [self.commentButton setBackgroundColor:[UIColor clearColor]];
+            //[self.commentButton setBackgroundImage:[UIImage imageNamed:@"comment_bubble"] forState:UIControlStateNormal];
+            [self.commentButton setBackgroundImage:COMMENT_BUBBLE forState:UIControlStateNormal];
             [self.commentButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
-            [self.commentButton setBackgroundImage:[UIImage imageNamed:@"comment_bubble"] forState:UIControlStateNormal];
             [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
             [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
             [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
             [self.commentButton setSelected:NO];
             
-            [videoCellButtonsContainer addSubview:self.commentButton];
-            
-            commentCounter = [UIButton buttonWithType:UIButtonTypeCustom];
-            [commentCounter setFrame:CGRectMake(self.commentButton.frame.origin.x + self.commentButton.frame.size.width, BUTTONS_TOP_PADDING, 37, 19)];
-            [commentCounter setBackgroundColor:[UIColor clearColor]];
-            [commentCounter setTitle:EMPTY_STRING forState:UIControlStateNormal];
-            [commentCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
-            [commentCounter.titleLabel setFont:BENDERSOLID(16)];
-            [commentCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
-            [commentCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
-            [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-            [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
-            [commentCounter setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-            
-            [videoCellButtonsContainer addSubview:commentCounter];
+            [toolbar addSubview:self.commentButton];
         }
         
-        moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [moreButton setBackgroundImage:[UIImage imageNamed:@"more_button"] forState:UIControlStateNormal];
-        [moreButton setFrame:CGRectMake(self.frame.size.width - 45, BUTTONS_TOP_PADDING, 35, 19)];
-        [moreButton setBackgroundColor:[UIColor clearColor]];
-        [moreButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
-        
-        [videoCellButtonsContainer addSubview:moreButton];
+        if (self.buttons & FTVideoCellButtonsLike) {
+            
+            CGFloat likeCounterX = commentButton.frame.origin.x - COUNTER_WIDTH - BUTTON_PADDING;
+            
+            // like counter
+            likeCounter = [UIButton buttonWithType:UIButtonTypeCustom];
+            [likeCounter setFrame:CGRectMake(likeCounterX, BUTTONS_TOP_PADDING, COUNTER_WIDTH, COUNTER_HEIGHT)];
+            [likeCounter setBackgroundColor:[UIColor clearColor]];
+            //[likeCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
+            [likeCounter setBackgroundImage:COUNTER_BOX forState:UIControlStateNormal];
+            [likeCounter setTitle:@"0" forState:UIControlStateNormal];
+            [likeCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
+            [likeCounter.titleLabel setFont:BENDERSOLID(18)];
+            [likeCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
+            [likeCounter setTitleColor:FT_RED forState:UIControlStateNormal];
+            [likeCounter setTitleColor:FT_RED forState:UIControlStateSelected];
+            [likeCounter setTitleColor:FT_RED forState:UIControlStateHighlighted];
+            
+            [toolbar addSubview:likeCounter];
+            
+            CGFloat likeButtonX = likeCounterX - BUTTON_WIDTH;
+            
+            // like button
+            likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            [self.likeButton setFrame:CGRectMake(likeButtonX, BUTTONS_TOP_PADDING, BUTTON_WIDTH, BUTTON_HEIGHT)];
+            [self.likeButton setBackgroundColor:[UIColor clearColor]];
+            [self.likeButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
+            //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_white"] forState:UIControlStateNormal];
+            //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateSelected];
+            //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateHighlighted];
+            
+            [self.likeButton setBackgroundImage:HEART_UNSELECTED forState:UIControlStateNormal];
+            [self.likeButton setBackgroundImage:HEART_SELECTED forState:UIControlStateSelected];
+            [self.likeButton setBackgroundImage:HEART_SELECTED forState:UIControlStateHighlighted];
+            
+            [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+            [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+            [self.likeButton setSelected:NO];
+            
+            [toolbar addSubview:self.likeButton];
+        }
         
         // Play Button
         if (self.buttons & FTVideoCellButtonsPlay) {
@@ -198,6 +220,7 @@
     if (self.buttons & FTVideoCellButtonsUser){
         //constrainWidth = self.likeButton.frame.origin.x;
         [self.likeButton addTarget:self action:@selector(didTapLikeVideoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [self.likeCounter addTarget:self action:@selector(didTapLikeCountButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTVideoCellButtonsUser){
@@ -306,22 +329,10 @@
     if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapVideoPlayButton:video:)]){
         [delegate videoCellView:self didTapVideoPlayButton:sender video:video];
     }
-    /*
-    if (moviePlayer) {
-        [moviePlayer prepareToPlay];
-        [moviePlayer play];
-    } else {
-        [[[UIAlertView alloc] initWithTitle:@"Playback Error"
-                                    message:@"Could not play video at this time. If the problem continues please yell at our developers by visiting settings > feedback"
-                                   delegate:self
-                          cancelButtonTitle:@"ok"
-                          otherButtonTitles:nil] show];
-    }
-    */
 }
 
 - (void)didTapLocationAction:(FTVideoCell *)sender {
-    NSLog(@"FTVideoCell::didTapLocationAction");
+    //NSLog(@"FTVideoCell::didTapLocationAction");
     if (self.video) {
         if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapLocation:video:)]){
             [delegate videoCellView:self didTapLocation:sender video:self.video];
@@ -330,9 +341,16 @@
 }
 
 - (void)didTapVideoButtonAction:(UIButton *)button {
-    NSLog(@"FTVideoCell::didTapVideoButtonAction");
+    //NSLog(@"FTVideoCell::didTapVideoButtonAction");
     if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapVideoButton:)]){
         [delegate videoCellView:self didTapVideoButton:button];
+    }
+}
+
+- (void)didTapLikeCountButtonAction:(UIButton *)button {
+    //NSLog(@"FTVideoCell::didTapVideoButtonAction");
+    if (delegate && [delegate respondsToSelector:@selector(videoCellView:didTapLikeCountButton:video:)]){
+        [delegate videoCellView:self didTapLikeCountButton:button video:video];
     }
 }
 
