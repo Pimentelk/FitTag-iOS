@@ -102,6 +102,12 @@ typedef enum {
 - (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapLikeGalleryButton:(UIButton *)button counter:(UIButton *)counter gallery:(PFObject *)gallery;
 
 /*!
+ Sent to the delegate when the like counter button is tapped
+ @param button the button for the gallery that tracks likes
+ */
+- (void)galleryCellView:(FTGalleryCell *)galleryCellView didTapLikeCountButton:(UIButton *)button gallery:(PFObject *)gallery;
+
+/*!
  Sent to the delegate when the comment on gallery button is tapped
  @param gallery the PFObject for the gallery that will be commented on
  */
