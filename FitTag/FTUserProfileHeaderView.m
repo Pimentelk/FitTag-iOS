@@ -33,7 +33,8 @@
 @property (nonatomic, strong) PFImageView *profilePictureImageView;
 @property (nonatomic, strong) PFImageView *coverPhotoImageView;
 
-@property (nonatomic, strong) UITextView *profileBiography;
+//@property (nonatomic, strong) UITextView *profileBiography;
+@property (nonatomic, strong) STTweetLabel *profileBiography;
 
 @property (nonatomic, strong) UIButton *gridViewButton;
 //@property (nonatomic, strong) UIButton *businessButton;
@@ -55,6 +56,7 @@
 @synthesize userDisplay;
 @synthesize delegate;
 @synthesize coverPhotoImageView;
+@synthesize user;
 
 - (id)initWithFrame:(CGRect)frame {
     
@@ -66,7 +68,8 @@
         self.superview.clipsToBounds = YES;
     
         self.containerView = [[UIView alloc] initWithFrame:frame];
-        [self.containerView setBackgroundColor:[UIColor whiteColor]];
+        [self.containerView setBackgroundColor:FT_GRAY];
+        [self setBackgroundColor:FT_GRAY];
         
         CGSize size = self.containerView.frame.size;
         CGFloat offsetY = 0;
@@ -149,12 +152,14 @@
         // User bio text view
         CGSize settingsLabelSize = followerCountLabel.frame.size;
         CGPoint settingsLabelOrgin = followerCountLabel.frame.origin;
+        CGFloat bioHeight = self.frame.size.height - (settingsLabelOrgin.y + settingsLabelSize.height);
         
-        profileBiography = [[UITextView alloc] initWithFrame:CGRectMake(0, settingsLabelOrgin.y + settingsLabelSize.height, size.width, 75)];
-        [profileBiography setBackgroundColor:[UIColor whiteColor]];
+        //profileBiography = [[UITextView alloc] init];
+        profileBiography = [[STTweetLabel alloc] init];
+        [profileBiography setFrame:CGRectMake(10, settingsLabelOrgin.y + settingsLabelSize.height, size.width-5, bioHeight)];
         [profileBiography setTextColor:[UIColor blackColor]];
         [profileBiography setBackgroundColor:FT_GRAY];
-        [profileBiography setFont:[UIFont boldSystemFontOfSize:14.0f]];
+        [profileBiography setFont:SYSTEMFONTBOLD(14)];
         [profileBiography setText:EMPTY_STRING];
         [profileBiography setUserInteractionEnabled:NO];
         
@@ -221,18 +226,18 @@
 
 - (void)didTapFollowerAction:(id)sender {
     //NSLog(@"- (void)didTapFollowerAction:(id)sender;");
-    if(delegate && [delegate respondsToSelector:@selector(userProfileCollectionHeaderView:didTapFollowersButton:)]){
-        [delegate userProfileCollectionHeaderView:self didTapFollowersButton:sender];
+    if(delegate && [delegate respondsToSelector:@selector(userProfileHeaderView:didTapFollowersButton:)]){
+        [delegate userProfileHeaderView:self didTapFollowersButton:sender];
     }
 }
 
 - (void)didTapFollowingAction:(id)sender {
     //NSLog(@"- (void)didTapFollowingAction:(id)sender;");
-    if(delegate && [delegate respondsToSelector:@selector(userProfileCollectionHeaderView:didTapFollowingButton:)]){
-        [delegate userProfileCollectionHeaderView:self didTapFollowingButton:sender];
+    if(delegate && [delegate respondsToSelector:@selector(userProfileHeaderView:didTapFollowingButton:)]){
+        [delegate userProfileHeaderView:self didTapFollowingButton:sender];
     }
 }
-
+/*
 - (void)didTapGridButtonAction:(UIButton *)button {
     //NSLog(@"%@::didTapGridButtonAction:",VIEWCONTROLLER_USER_HEADER);
     if (![gridViewButton isSelected]) {
@@ -243,37 +248,11 @@
         }
     }
 }
-
-/*
-- (void)didTapBusinessButtonAction:(UIButton *)button {
-    //NSLog(@"%@::didTapBusinessButtonAction:",VIEWCONTROLLER_USER_HEADER);
-    if (![businessButton isSelected]) {
-        [self resetSelectedProfileFilterButtons];
-        [businessButton setSelected:YES];
-        if(delegate && [delegate respondsToSelector:@selector(userProfileCollectionHeaderView:didTapBusinessButton:)]){
-            [delegate userProfileCollectionHeaderView:self didTapBusinessButton:button];
-        }
-    }
-}
 */
-
-/*
-- (void)didTapTaggedButtonAction:(UIButton *)button {
-    //NSLog(@"%@::didTapTaggedButtonAction:",VIEWCONTROLLER_USER_HEADER);
-    if (![taggedInButton isSelected]) {
-        [self resetSelectedProfileFilterButtons];
-        [taggedInButton setSelected:YES];
-        if(delegate && [delegate respondsToSelector:@selector(userProfileCollectionHeaderView:didTapTaggedButton:)]){
-            [delegate userProfileCollectionHeaderView:self didTapTaggedButton:button];
-        }
-    }
-}
-*/
-
 - (void)didTapSettingsButtonAction:(id)sender {
     //NSLog(@"%@::didTapTaggedButtonAction:",VIEWCONTROLLER_USER_HEADER);
-    if(delegate && [delegate respondsToSelector:@selector(userProfileCollectionHeaderView:didTapSettingsButton:)]){
-        [delegate userProfileCollectionHeaderView:self didTapSettingsButton:sender];
+    if(delegate && [delegate respondsToSelector:@selector(userProfileHeaderView:didTapSettingsButton:)]){
+        [delegate userProfileHeaderView:self didTapSettingsButton:sender];
     }
 }
  
@@ -282,201 +261,66 @@
     //[taggedInButton setSelected:NO];
     //[businessButton setSelected:NO];
 }
-/*
+
 - (void)fetchUserProfileData:(PFUser *)aUser {
-    
-    //NSLog(@"- (void)fetchUserProfileData:(PFUser *)aUser: %@",aUser);
+    NSLog(@"::- (void)fetchUserProfileData:(PFUser *)aUser: %@",aUser);
     
     if (!aUser) {
         [NSException raise:NSInvalidArgumentException format:@"user cannot be nil"];
+        return;
     }
     
-    [self updateFollowerCount];
+    user = aUser;
     
+    [self updateFollowerCount];
+    [self updateFollowingCount];
+    [self updateBiography:[self.user objectForKey:kFTUserBioKey]];
+    
+    // Set cover photo
     PFFile *coverPhotoFile = [self.user objectForKey:kFTUserCoverPhotoKey];
     if (coverPhotoFile) {
         [coverPhotoImageView setFile:coverPhotoFile];
         [coverPhotoImageView loadInBackground:^(UIImage *image, NSError *error) {
             if (!error) {
                 UIImageView *coverPhoto = [[UIImageView alloc] initWithImage:image];
-                coverPhoto.frame = self.bounds;
+                coverPhoto.frame = self.coverPhotoImageView.bounds;
                 coverPhoto.alpha = 0.0f;
                 coverPhoto.clipsToBounds = YES;
                 
-                [self.containerView addSubview:coverPhoto];
-                [self.containerView sendSubviewToBack:coverPhoto];
+                [self.profilePictureBackgroundView addSubview:coverPhoto];
                 
-                [UIView animateWithDuration:0.2f animations:^{
+                [UIView animateWithDuration:0.3f animations:^{
                     coverPhoto.alpha = 1.0f;
                 }];
             }
         }];
+    } else {
+        UIImageView *coverImageView = [[UIImageView alloc] initWithFrame:coverPhotoImageView.frame];
+        [coverImageView setImage:nil];
+        [coverImageView setClipsToBounds:YES];
+        [coverImageView setBackgroundColor:FT_GRAY];
+        [self.profilePictureBackgroundView addSubview:coverImageView];
     }
     
+    // Set profile photo
     PFFile *imageFile = [self.user objectForKey:kFTUserProfilePicMediumKey];
     if (imageFile) {
         [profilePictureImageView setFile:imageFile];
         [profilePictureImageView loadInBackground:^(UIImage *image, NSError *error) {
             if (!error) {
-                [UIView animateWithDuration:0.2f animations:^{
+                [UIView animateWithDuration:0.3f animations:^{
                     profilePictureBackgroundView.alpha = 1.0f;
                     profilePictureImageView.alpha = 1.0f;
-                    [self.containerView bringSubviewToFront:profilePictureImageView];
                 }];
             }
         }];
-    }
-    
-    [self updateFollowingCount];
-    
-    // check to see if it is not current users profile
-    if (![[self.user objectId] isEqualToString:[[PFUser currentUser] objectId]]) {
-        //NSLog(@"Viewing someone elses profile.");
-        UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-        [loadingActivityIndicatorView startAnimating];
-        //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:loadingActivityIndicatorView];
-        
-        // check if the currentUser is following this user
-        PFQuery *queryIsFollowing = [PFQuery queryWithClassName:kFTActivityClassKey];
-        [queryIsFollowing whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
-        [queryIsFollowing whereKey:kFTActivityToUserKey equalTo:self.user];
-        [queryIsFollowing whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
-        [queryIsFollowing setCachePolicy:kPFCachePolicyCacheThenNetwork];
-        [queryIsFollowing countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-            if (error && [error code] != kPFErrorCacheMiss) {
-                //NSLog(@"Couldn't determine follow relationship: %@", error);
-                //self.navigationItem.rightBarButtonItem = nil;
-            } else {
-                if (number == 0) {
-                    [self configureFollowButton];
-                } else {
-                    [self configureUnfollowButton];
-                }
-            }
-        }];
     } else {
-        
-        //NSLog(@"Vieweing own profile.");
-        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapSettingsButtonAction:)];
-        tap.numberOfTapsRequired = 1;
-        
-        [userSettingsLabel setBackgroundColor:[UIColor colorWithRed:234/255.0f green:234/255.0f blue:234/255.0f alpha:1]];
-        [userSettingsLabel setTextColor:[UIColor colorWithRed:234/255.0f green:37/255.0f blue:37/255.0f alpha:1]];
-        [userSettingsLabel setText:NAVIGATION_TITLE_SETTINGS];
-        [userSettingsLabel addGestureRecognizer:tap];
-        [userSettingsLabel setUserInteractionEnabled:YES];
+        UIImageView *profileImageView = [[UIImageView alloc] initWithFrame:profilePictureImageView.frame];
+        [profileImageView setImage:[UIImage imageNamed:IMAGE_PROFILE_EMPTY]];
+        [profileImageView setClipsToBounds:YES];
+        [profileImageView.layer setCornerRadius:CORNERRADIUS(profileImageView.frame.size.width)];
+        [self addSubview:profileImageView];
     }
-    
-    // Biography
-    [profileBiography setText:[self.user objectForKey:kFTUserBioKey]];
-}
-
-- (void)configureFollowButton {
-    //NSLog(@"NOT FOLLOWING USER");
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapFollowButtonAction:)];
-    tap.numberOfTapsRequired = 1;
-    
-    [[FTCache sharedCache] setFollowStatus:NO user:self.user];
-    [userSettingsLabel setText:[NSString stringWithFormat:@"FOLLOW %@",[self.user objectForKey: kFTUserDisplayNameKey]]];
-    [userSettingsLabel setBackgroundColor:[UIColor colorWithRed:234/255.0f green:234/255.0f blue:234/255.0f alpha:1]];
-    [userSettingsLabel setTextColor:[UIColor redColor]];
-    [userSettingsLabel addGestureRecognizer:tap];
-    [userSettingsLabel setUserInteractionEnabled:YES];
-}
-
-- (void)configureUnfollowButton {
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapUnfollowButtonAction:)];
-    tap.numberOfTapsRequired = 1;
-    
-    [[FTCache sharedCache] setFollowStatus:YES user:self.user];
-    [userSettingsLabel setText:[NSString stringWithFormat:@"FOLLOWING %@",[self.user objectForKey: kFTUserDisplayNameKey]]];
-    [userSettingsLabel setBackgroundColor:[UIColor redColor]];
-    [userSettingsLabel setTextColor:[UIColor whiteColor]];
-    [userSettingsLabel addGestureRecognizer:tap];
-    [userSettingsLabel setUserInteractionEnabled:YES];
-}
-
-- (void)didTapFollowButtonAction:(id)sender {
-    //UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    //[loadingActivityIndicatorView startAnimating];
-    [self configureUnfollowButton];
-    [FTUtility followUserEventually:self.user block:^(BOOL succeeded, NSError *error) {
-        if (error) {
-            [self configureFollowButton];
-        }
-        
-        if (succeeded) {
-            NSLog(@"followButtonAction::succeeded");
-            [self updateFollowingCount];
-        } else {
-            NSLog(@"followButtonAction::error");
-        }
-    }];
-}
-
-- (void)didTapUnfollowButtonAction:(id)sender {
-    //UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    //[loadingActivityIndicatorView startAnimating];
-    [self configureFollowButton];
-    [FTUtility unfollowUserEventually:self.user block:^(NSError *error) {
-        if (error) {
-            [self configureUnfollowButton];
-        }
-        
-        if (!error) {
-            NSLog(@"unfollowButtonAction::succeeded");
-            [self updateFollowingCount];
-        } else {
-            NSLog(@"unfollowButtonAction::error");
-        }
-    }];
-}
-
-- (void)updateFollowerCount {
-    NSLog(@"updateFollowingCount");
-    PFQuery *queryFollowerCount = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryFollowerCount whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
-    [queryFollowerCount whereKey:kFTActivityToUserKey equalTo:self.user];
-    [queryFollowerCount setCachePolicy:kPFCachePolicyCacheThenNetwork];
-    [queryFollowerCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-        if (!error) {
-            [followerCountLabel setText:[NSString stringWithFormat:@"%d FOLLOWER%@", number, number==1?@"":@"S"]];
-        }
-    }];
-}
-
-- (void)updateFollowingCount {
-    NSLog(@"updateFollowingCount");
-    NSDictionary *followingDictionary = [[PFUser currentUser] objectForKey:@"FOLLOWING"];
-    if (followingDictionary) {
-        [followingCountLabel setText:[NSString stringWithFormat:@"%lu FOLLOWING", (unsigned long)[[followingDictionary allValues] count]]];
-    }
-    
-    PFQuery *queryFollowingCount = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryFollowingCount whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
-    [queryFollowingCount whereKey:kFTActivityFromUserKey equalTo:self.user];
-    [queryFollowingCount setCachePolicy:kPFCachePolicyNetworkOnly];
-    [queryFollowingCount whereKeyExists:kFTActivityToUserKey];
-    [queryFollowingCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-        if (!error) {
-            [followingCountLabel setText:[NSString stringWithFormat:@"%d FOLLOWING", number]];
-        }
-    }];
-}
-*/
-
-
-- (void)fetchUserProfileData:(PFUser *)aUser {
-    //NSLog(@"- (void)fetchUserProfileData:(PFUser *)aUser: %@",aUser);
-    
-    if (!aUser) {
-        [NSException raise:NSInvalidArgumentException format:@"user cannot be nil"];
-    }
-    
-    [self updateFollowerCount];
-    [self updateFollowingCount];
-    [self updateCoverPhoto];
-    [self updateProfilePicture];
     
     // check to see if it is not current users profile
     if (![[self.user objectId] isEqualToString:[[PFUser currentUser] objectId]]) {
@@ -520,8 +364,6 @@
         [userSettingsLabel setAlpha:1.0f];
     }
     
-    // Biography
-    [profileBiography setText:[self.user objectForKey:kFTUserBioKey]];
 }
 
 - (void)configureFollowButton {
@@ -554,15 +396,16 @@
     //[loadingActivityIndicatorView startAnimating];
     [self configureUnfollowButton];
     [FTUtility followUserEventually:self.user block:^(BOOL succeeded, NSError *error) {
-        if (error) {
-            [self configureFollowButton];
-        }
         
         if (succeeded) {
             NSLog(@"followButtonAction::succeeded");
             [self updateFollowingCount];
-        } else {
+            [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserFollowingChangedNotification object:nil];
+        }
+        
+        if (error) {
             NSLog(@"followButtonAction::error");
+            [self configureFollowButton];
         }
     }];
 }
@@ -571,16 +414,17 @@
     //UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     //[loadingActivityIndicatorView startAnimating];
     [self configureFollowButton];
-    [FTUtility unfollowUserEventually:self.user block:^(NSError *error) {
-        if (error) {
-            [self configureUnfollowButton];
-        }
+    [FTUtility unfollowUserEventually:self.user block:^(BOOL succeeded, NSError *error) {
         
-        if (!error) {
+        if (succeeded) {
             NSLog(@"unfollowButtonAction::succeeded");
             [self updateFollowingCount];
-        } else {
+            [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserFollowingChangedNotification object:nil];
+        }
+        
+        if (error) {
             NSLog(@"unfollowButtonAction::error");
+            [self configureUnfollowButton];
         }
     }];
 }
@@ -592,6 +436,7 @@
     [queryFollowerCount setCachePolicy:kPFCachePolicyCacheThenNetwork];
     [queryFollowerCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
+            NSLog(@"number %d",number);
             [followerCountLabel setText:[NSString stringWithFormat:@"%d FOLLOWER%@", number, number==1?@"":@"S"]];
         }
     }];
@@ -610,53 +455,76 @@
     [queryFollowingCount whereKeyExists:kFTActivityToUserKey];
     [queryFollowingCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
+            NSLog(@"number %d",number);
             [followingCountLabel setText:[NSString stringWithFormat:@"%d FOLLOWING", number]];
         }
     }];
 }
 
-- (void)updateCoverPhoto {
-    PFFile *coverPhotoFile = [self.user objectForKey:kFTUserCoverPhotoKey];
-    if (coverPhotoFile) {
-        [coverPhotoImageView setFile:coverPhotoFile];
-        [coverPhotoImageView loadInBackground:^(UIImage *image, NSError *error) {
-            if (!error) {
-                UIImageView *coverPhoto = [[UIImageView alloc] initWithImage:image];
-                coverPhoto.frame = self.coverPhotoImageView.bounds;
-                coverPhoto.alpha = 0.0f;
-                coverPhoto.clipsToBounds = YES;
-                
-                [self.profilePictureBackgroundView addSubview:coverPhoto];
-                
-                [UIView animateWithDuration:0.3f animations:^{
-                    coverPhoto.alpha = 1.0f;
-                }];
-            }
-        }];
+- (void)updateCoverPhoto:(UIImage *)photo {
+    
+    for (UIView *subView in self.profilePictureBackgroundView.subviews) {
+        [subView removeFromSuperview];
     }
+    
+    UIImageView *coverImageView = [[UIImageView alloc] initWithFrame:coverPhotoImageView.frame];
+    [coverImageView setImage:photo];
+    [coverImageView setClipsToBounds:YES];
+    [coverImageView setBackgroundColor:FT_GRAY];
+    [self.profilePictureBackgroundView addSubview:coverImageView];
 }
 
-- (void)updateProfilePicture {
-    PFFile *imageFile = [self.user objectForKey:kFTUserProfilePicMediumKey];
-    if (imageFile) {
-        [profilePictureImageView setFile:imageFile];
-        [profilePictureImageView loadInBackground:^(UIImage *image, NSError *error) {
-            if (!error) {
-                [UIView animateWithDuration:0.3f animations:^{
-                    profilePictureBackgroundView.alpha = 1.0f;
-                    profilePictureImageView.alpha = 1.0f;
-                }];
-            }
-        }];
-    } else {
-        UIImageView *profileImageView = [[UIImageView alloc] initWithFrame:profilePictureImageView.frame];
-        [profileImageView setImage:[UIImage imageNamed:IMAGE_PROFILE_EMPTY]];
-        [profileImageView setImage:[UIImage imageNamed:IMAGE_PROFILE_EMPTY]];
-        [profileImageView setImage:[UIImage imageNamed:IMAGE_PROFILE_EMPTY]];
-        [profileImageView setClipsToBounds:YES];
-        [profileImageView.layer setCornerRadius:CORNERRADIUS(profileImageView.frame.size.width)];
-        [self addSubview:profileImageView];
+- (void)updateProfilePicture:(UIImage *)photo {
+    
+    for (UIView *subView in self.profilePictureImageView.subviews) {
+        [subView removeFromSuperview];
     }
+    
+    UIImageView *profileImageView = [[UIImageView alloc] initWithFrame:profilePictureImageView.frame];
+    [profileImageView setImage:photo];
+    [profileImageView setClipsToBounds:YES];
+    [profileImageView.layer setCornerRadius:CORNERRADIUS(profileImageView.frame.size.width)];
+    [self addSubview:profileImageView];
+}
+
+- (void)updateBiography:(NSString *)bio {
+    
+    // Biography
+    CGFloat width = self.frame.size.width;    
+    CGSize settingsLabelSize = followerCountLabel.frame.size;
+    CGPoint settingsLabelOrgin = followerCountLabel.frame.origin;
+    CGFloat bioHeight = self.frame.size.height - (settingsLabelOrgin.y + settingsLabelSize.height);
+    [profileBiography setFrame:CGRectMake(5, settingsLabelOrgin.y + settingsLabelSize.height, width-10, bioHeight)];
+    [profileBiography setText:bio];
+    
+    NSString *website = [self.user objectForKey:kFTUserWebsiteKey];
+    if (website) {
+        // Website
+        [profileBiography setText:[NSString stringWithFormat:@"%@\n%@",profileBiography.text,website]];
+    }
+    
+    __unsafe_unretained typeof(self) weakSelf = self;
+    
+    [profileBiography setDetectionBlock:^(STTweetHotWord hotWord, NSString *string, NSString *protocol, NSRange range) {
+        NSArray *hotWords = @[ HOTWORD_HANDLE, HOTWORD_HASHTAG, HOTWORD_LINK ];
+        /*
+         NSString *detectionString = [NSString stringWithFormat:@"%@ [%d,%d]: %@%@", hotWords[hotWord], (int)range.location, (int)range.length, string, (protocol != nil) ? [NSString stringWithFormat:@" *%@*", protocol] : @""];
+         */
+        
+        if ([hotWords[hotWord] isEqualToString:HOTWORD_HANDLE]) {
+            if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(userProfileHeaderView:didTapUserMention:)]) {
+                [weakSelf.delegate userProfileHeaderView:weakSelf didTapUserMention:string];
+            }
+        } else if ([hotWords[hotWord] isEqualToString:HOTWORD_HASHTAG]) {
+            if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(userProfileHeaderView:didTapHashtag:)]) {
+                [weakSelf.delegate userProfileHeaderView:weakSelf didTapHashtag:string];
+            }
+        } else if ([hotWords[hotWord] isEqualToString:HOTWORD_LINK]) {
+            if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(userProfileHeaderView:didTapLink:)]) {
+                [weakSelf.delegate userProfileHeaderView:weakSelf didTapLink:string];
+            }
+        }
+    }];
 }
 
 @end
