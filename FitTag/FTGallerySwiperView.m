@@ -9,10 +9,10 @@
 #import "FTGallerySwiperView.h"
 
 #define DASH_IMAGE @"dash"
-#define DASH_WIDTH 9
-#define DASH_HEIGHT 3
-#define PADDING_Y 5
-#define PADDING_X 1
+#define DASH_WIDTH 8
+#define DASH_HEIGHT DASH_WIDTH
+#define PADDING_Y 0
+#define PADDING_X 8
 #define DASH_AREA PADDING_X + DASH_WIDTH
 
 @interface FTGallerySwiperView() {
@@ -41,7 +41,6 @@
     
     position = numberOfDashes - 1; // Last element position
     
-    
     if (dashes.count > 0) { // if dashes is > 0 remove all imageview from the superview
         for (UIImageView *imageView in dashes) {
             [imageView removeFromSuperview];
@@ -52,52 +51,44 @@
     [dashes removeAllObjects];
     
     for (int i = 1; i <= numberOfDashes; i++) {
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:DASH_IMAGE]];
+        UIImageView *imageView = [[UIImageView alloc] init];
+        
         if (i == 1) {
-            [imageView setFrame:CGRectMake(0, PADDING_Y, DASH_WIDTH, DASH_HEIGHT)];
+            [imageView setBackgroundColor:FT_RED];
         } else {
-            [imageView setFrame:CGRectMake((self.frame.size.width - (DASH_AREA * i)), PADDING_Y, DASH_WIDTH, DASH_HEIGHT)];
+            [imageView setBackgroundColor:[UIColor whiteColor]];
         }
+        
+        [imageView setClipsToBounds:YES];
+        [imageView.layer setBorderWidth:0.4];
+        [imageView.layer setBorderColor:[FT_RED CGColor]];
+        [imageView.layer setCornerRadius:CORNERRADIUS(DASH_WIDTH)];
+        [imageView setFrame:CGRectMake((DASH_AREA * i), PADDING_Y, DASH_WIDTH, DASH_HEIGHT)];
         [dashes addObject:imageView];
         [self addSubview:imageView];
     }
 }
 
 - (void)onGallerySwipedLeft:(NSInteger)page {
-
-    /* *****notes******* */
-    // dashes.count is an array and needs to be compared by
-    // subtracting one since pages starts at 0
-    /* *****end notes******* */
-    
-    if (dashes.count > 0 || page <= dashes.count) {
-        UIImageView *imageView = [dashes objectAtIndex:dashes.count - page];
-        
-        CGRect newFrame = imageView.frame;
-        newFrame.origin.x = DASH_AREA * page;
-
-        [UIView animateWithDuration:0.2
-                         animations:^{
-                             imageView.frame = newFrame;
-                         }];
-    }
+    [self onGallerySwipe:page];
 }
 
 - (void)onGallerySwipedRight:(NSInteger)page {
+    [self onGallerySwipe:page];
+}
+
+- (void)onGallerySwipe:(NSInteger)page {
     
-    if (dashes.count > 0 || dashes.count <= page) {
-        if ([dashes objectAtIndex:page]) {
-            UIImageView *imageView = [dashes objectAtIndex:dashes.count - page - 1];
-            
-            CGRect newFrame = imageView.frame;
-            newFrame.origin.x = self.frame.size.width - ((DASH_AREA * (dashes.count - (page + 1)) + 1));
-            
-            [UIView animateWithDuration:0.2
-                             animations:^{
-                                 imageView.frame = newFrame;
-                             }];
-        }
+    for (UIView *dash in dashes) {
+        [UIView animateWithDuration:0.2 animations:^{
+            [dash setBackgroundColor:[UIColor whiteColor]];
+        }];
     }
+    
+    UIImageView *imageView = [dashes objectAtIndex:page];
+    [UIView animateWithDuration:0.2 animations:^{
+        [imageView setBackgroundColor:FT_RED];
+    }];
 }
 
 @end
