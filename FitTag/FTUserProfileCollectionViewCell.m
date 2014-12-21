@@ -14,6 +14,7 @@
 
 @implementation FTUserProfileCollectionViewCell
 @synthesize imageView;
+@synthesize post;
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -35,7 +36,10 @@
     }
 }
 
-- (void)setPost:(PFObject *)post {    
+- (void)setPost:(PFObject *)aPost {
+    
+    post = aPost;
+    
     if (post) {
         [self loadImageView:[post objectForKey:kFTPostImageKey]];
     }
@@ -44,8 +48,21 @@
 - (void)loadImageView:(PFFile *)file {
     [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
         if (!error) {
+            
             [imageView setImage:[UIImage imageWithData:data]];
             [self addSubview:imageView];
+            
+            // If video show playbutton
+            if ([[post objectForKey:kFTPostTypeKey] isEqualToString:kFTPostTypeVideo]) {
+                
+                CGSize frameSize = self.frame.size;
+                
+                UIImageView *playImageView = [[UIImageView alloc] initWithImage:IMAGE_PLAY_BUTTON];
+                [playImageView setFrame:CGRectMake(0, 0, 25, 25)];
+                [playImageView setCenter:CGPointMake(frameSize.width/2, frameSize.height/2)];
+                [self addSubview:playImageView];
+            }
+            
         } else {
             NSLog(@"Error trying to download image..");
         }
