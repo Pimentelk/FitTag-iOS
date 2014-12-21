@@ -14,6 +14,7 @@
 #import "FTInterestViewFlowLayout.h"
 #import "AppDelegate.h"
 #import "FTFlowLayout.h"
+#import "FTSearchViewController.h"
 //#import "FTNetworkViewController.h"
 //#import "Reachability.h"
 
@@ -125,6 +126,7 @@
     
     if ([PFUser currentUser]) {
         [self isFirstTimeUser:[PFUser currentUser]];
+        return;
     }
 }
 
@@ -197,6 +199,7 @@
     
         [self didLogInWithFacebook:user];
         [self didLogInWithTwitter:user];
+        [self autoFollowFittag:user];
         
         NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
         
@@ -312,8 +315,26 @@
             [user setValue:kFTUserTypeUser forKey:kFTUserTypeKey];
             [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (error) {
-                    NSLog(@"%@%@",ERROR_MESSAGE,error);
-                    //[user saveEventually];
+                    NSLog(@"error.code: %ld",(long)error.code);
+                    switch (error.code) {
+                        case 203:
+                            [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Duplicate Email Error", nil)
+                                                        message:NSLocalizedString(@"It looks like the email for this account has already been associated with another account", nil)
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                              otherButtonTitles:nil] show];
+                            [self dismissViewControllerAnimated:NO completion:nil];
+                            //[[PFUser currentUser] deleteInBackground];
+                            [(AppDelegate *)[[UIApplication sharedApplication] delegate] logOut];
+                            break;
+                            
+                        default:
+                            break;
+                    }
+                }
+                
+                if (!error) {
+                    NSLog(@"twitter updated successful");
                 }
             }];
         }
@@ -336,6 +357,13 @@
                                              [NSString stringWithFormat:FACEBOOK_GRAPH_PICTURES_URL,
                                               [FBuser objectForKey:FBUserIDKey]]]];
                 
+                if (profileImageData) {
+                    PFFile *mediumPicFile = [PFFile fileWithData:profileImageData];
+                    [user setObject:mediumPicFile forKey:kFTUserProfilePicMediumKey];
+                    PFFile *smallPicFile = [PFFile fileWithData:profileImageData];
+                    [user setObject:smallPicFile forKey:kFTUserProfilePicSmallKey];
+                }
+                
                 // Get the data from facebook and put it into the user object
                 [user setValue:[FBuser objectForKey:FBUserFirstNameKey] forKey:kFTUserFirstnameKey];
                 [user setValue:[FBuser objectForKey:FBUserLastNameKey] forKey:kFTUserLastnameKey];
@@ -344,14 +372,6 @@
                 [user setValue:[FBuser objectForKey:FBUserIDKey] forKey:kFTUserFacebookIDKey];
                 //[user setValue:DEFAULT_BIO_TEXT_B forKey:kFTUserBioKey];
                 [user setValue:kFTUserTypeUser forKey:kFTUserTypeKey];
-                
-                if (profileImageData) {                    
-                    PFFile *mediumPicFile = [PFFile fileWithData:profileImageData];
-                    [user setObject:mediumPicFile forKey:kFTUserProfilePicMediumKey];
-                    PFFile *smallPicFile = [PFFile fileWithData:profileImageData];
-                    [user setObject:smallPicFile forKey:kFTUserProfilePicSmallKey];
-                }
-                
                 [user setValue:[NSDate date] forKey:kFTUserLastLoginKey];
                 [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (error) {
@@ -364,7 +384,7 @@
                                                   cancelButtonTitle:NSLocalizedString(@"OK", nil)
                                                   otherButtonTitles:nil] show];
                                 [self dismissViewControllerAnimated:NO completion:nil];
-                                [[PFUser currentUser] deleteInBackground];
+                                //[[PFUser currentUser] deleteInBackground];
                                 [(AppDelegate *)[[UIApplication sharedApplication] delegate] logOut];
                                 break;
                                 
@@ -387,6 +407,54 @@
     
     NSLog(@"%@ %@",ERROR_MESSAGE,USER_NOT_LOGIN_FACEBOOK);
     return NO;
+}
+
+- (void)autoFollowFittag:(PFUser *)user {
+    
+    PFQuery *fittagQuery = [PFQuery queryWithClassName:kFTUserClassKey];
+    [fittagQuery whereKey:kFTUserDisplayNameKey equalTo:@"kevin_fittag"];
+    [fittagQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            if (objects.count == 1) {
+                
+                PFUser *fittagUser = [objects objectAtIndex:0];
+                if (fittagUser) {
+                    [FTUtility followUserEventually:fittagUser block:^(BOOL succeeded, NSError *error) {
+                        if (error) {
+                            NSLog(@"Error following fittag: %@",error);
+                        } else {
+                            [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserFollowingChangedNotification object:nil];
+                            //if ([[self.user objectForKey:kFTUserTypeKey] isEqualToString:kFTUserTypeBusiness]) {
+                            //[[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityBusinessFollowingChangedNotification object:nil];
+                            //}
+                        }
+                    }];
+                } else {
+                    NSLog(@"No fittag user...");
+                }
+                
+            } else {
+                NSLog(@"There should only be one user... BUT THERE ISN'T!!!");
+            }
+        }
+    }];
+    
+    /*
+    PFObject *follow = [[PFObject alloc] initWithClassName:kFTActivityClassKey];
+    [follow setObject:user forKey:kFTActivityFromUserKey];
+    [follow setObject:@"" forKey:kFTActivityToUserKey];
+    [follow setObject:kFTActivityTypeFollow forKey:kFTActivityTypeKey];
+    
+    // photos are public, but may only be modified by the user who uploaded them
+    PFACL *followACL = [PFACL ACLWithUser:[PFUser currentUser]];
+    [followACL setPublicReadAccess:YES];
+    follow.ACL = followACL;
+    [follow saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (!error) {
+            
+        }
+    }];
+    */
 }
 
 - (void)didTapBackButtonAction:(UIButton *)button {
