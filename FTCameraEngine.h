@@ -18,22 +18,6 @@
 @protocol FTCameraEngineDelegate;
 @interface FTCameraEngine : NSObject
 
-+ (FTCameraEngine *)engine;
-- (void) startup;
-- (void) shutdown;
-- (AVCaptureVideoPreviewLayer *) getPreviewLayer;
-
-- (void)startCapture;
-- (void)pauseCapture;
-- (void)stopCapture;
-- (void)resumeCapture;
-
-- (void)captureStillImage;
-- (void)switchCamera;
-- (void)setFlashMode:(AVCaptureFlashMode)flashMode;
-- (void)runStillImageCaptureAnimation;
-- (void)focusAndExposeTap:(UIGestureRecognizer *)gestureRecognizer;
-
 @property (nonatomic, weak) id <FTCameraEngineDelegate> delegate;
 
 @property (atomic, readwrite) BOOL isCapturing;
@@ -52,6 +36,24 @@
 @property (nonatomic) AVCaptureVideoDataOutput *videoDataOutput;
 @property (nonatomic) AVCaptureAudioDataOutput *audioDataOutput;
 @property (nonatomic) CGFloat maxDuration;
+
++ (FTCameraEngine *)engine;
+- (void) startup;
+- (void) shutdown;
+- (AVCaptureVideoPreviewLayer *) getPreviewLayer;
+- (void)updateProgress;
+
+- (void)startCapture;
+- (void)pauseCapture;
+- (void)stopCapture;
+- (void)resumeCapture;
+- (void)endCapture;
+
+- (void)captureStillImage;
+- (void)switchCamera;
+- (void)setFlashMode:(AVCaptureFlashMode)flashMode;
+- (void)runStillImageCaptureAnimation;
+- (void)focusAndExposeTap:(UIGestureRecognizer *)gestureRecognizer;
 
 @end
 

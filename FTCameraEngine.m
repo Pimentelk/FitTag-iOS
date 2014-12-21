@@ -28,6 +28,8 @@ static FTCameraEngine *theEngine;
     long _cy;
     int _channels;
     Float64 _samplerate;
+    CGFloat maxDuration;
+    CGFloat seconds;
 }
 
 @end
@@ -37,6 +39,7 @@ static FTCameraEngine *theEngine;
 
 @synthesize isCapturing = _isCapturing;
 @synthesize isPaused = _isPaused;
+@synthesize maxDuration = _maxDuration;
 
 + (void) initialize {
     // test recommended to avoid duplicate init via subclass
@@ -49,6 +52,12 @@ static FTCameraEngine *theEngine;
     return theEngine;
 }
 
+- (void)updateProgress {
+    if (delegate && [delegate respondsToSelector:@selector(cameraEngine:progressStatusUpdate:)]) {
+        [delegate cameraEngine:self progressStatusUpdate:seconds];
+    }
+}
+
 - (void)startup {
     NSLog(@"startUp");
     if (self.session == nil) {
@@ -57,7 +66,7 @@ static FTCameraEngine *theEngine;
         self.isPaused = NO;
         _currentFile = 0;
         _discont = NO;
-        self.maxDuration = 10;
+        _maxDuration = 10;
         
         // create capture device with video input
         AVCaptureSession *session = [[AVCaptureSession alloc] init];
@@ -155,8 +164,19 @@ static FTCameraEngine *theEngine;
                     _progressTime = CMTimeMake(0,0);
                     self.isCapturing = YES;
                     _isLimitReached = NO;
+                    seconds = 0;
                 }
         }
+}
+
+- (void)endCapture {
+    NSLog(@"endCapture");
+    _lastVideo.flags = 0;
+    _lastAudio.flags = 0;
+    seconds = 0;
+    self.isCapturing = NO;
+    self.isCapturing = NO;
+    _encoder = nil;    
 }
 
 - (void)stopCapture {
@@ -164,6 +184,7 @@ static FTCameraEngine *theEngine;
         
     _lastVideo.flags = 0;
     _lastAudio.flags = 0;
+    seconds = 0;
     
     @synchronized(self) {
         if (self.isCapturing) {
@@ -333,7 +354,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 }
             }
             
-            CGFloat seconds = ((double)_progressTime.value)/_progressTime.timescale;
+            seconds = ((double)_progressTime.value)/_progressTime.timescale;
             
             if (seconds >= 10) {
                 _isLimitReached = YES;
