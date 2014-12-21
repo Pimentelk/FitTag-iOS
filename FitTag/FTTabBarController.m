@@ -22,15 +22,7 @@
     //NSLog(@"%@::viewDidLoad",VIEWCONTROLLER_TABBAR);
     [super viewDidLoad];
     
-    self.tabBar.tintColor = [UIColor colorWithRed:FT_RED_COLOR_RED
-                                            green:FT_RED_COLOR_GREEN
-                                             blue:FT_RED_COLOR_BLUE alpha:1.0f];
-    
-    // iOS 7 style
-    self.tabBar.tintColor = [UIColor colorWithRed:FT_RED_COLOR_RED
-                                            green:FT_RED_COLOR_GREEN
-                                             blue:FT_RED_COLOR_BLUE alpha:1.0f];
-    
+    self.tabBar.tintColor = FT_RED;    
     self.tabBar.barTintColor = [UIColor whiteColor];
     
     self.navController = [[UINavigationController alloc] init];
