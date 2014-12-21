@@ -25,10 +25,17 @@
 
 @implementation FTRewardsCollectionViewController
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FTUtilityBusinessFollowingChangedNotification object:nil];
+}
+
 - (void)viewDidLoad {
     NSLog(@"%@::viewDidLoad",VIEWCONTROLLER_REWARDS);
     [super viewDidLoad];
-        
+    
+    // User followed business
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userFollowingChanged:) name:FTUtilityBusinessFollowingChangedNotification object:nil];
+    
     // Toolbar & Navigationbar Setup
     [self.navigationItem setTitle:NAVIGATION_TITLE_REWARDS];
 
@@ -222,6 +229,13 @@
 - (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapUsedTab:(id)tab {
     //NSLog(@"%@::rewardsHeaderView:didTapUsedButton:",VIEWCONTROLLER_REWARDS);
     [self queryForTable:REWARDS_FILTER_USED];
+}
+
+#pragma mark - ()
+
+- (void)userFollowingChanged:(NSNotification *)note {
+    NSLog(@"FTRewardsViewController::userFollowingChanged");
+    [self queryForTable:REWARDS_FILTER_ACTIVE];
 }
 
 @end
