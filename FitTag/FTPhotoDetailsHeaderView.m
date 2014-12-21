@@ -429,10 +429,10 @@ static TTTTimeIntervalFormatter *timeFormatter;
         }];
     }
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification
+    [[NSNotificationCenter defaultCenter] postNotificationName:FTPostDetailsViewControllerUserLikedUnlikedPhotoNotification
                                                         object:self.photo
                                                       userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:liked]
-                                                                                           forKey:FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey]];
+                                                                                           forKey:FTPostDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey]];
 }
 
 - (void)didTapLikerButtonAction:(UIButton *)button {
