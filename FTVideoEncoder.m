@@ -55,7 +55,7 @@
     [_writer addInput:_audioInput];
 }
 
-- (void) finishWithCompletionHandler:(void (^)(void))handler {
+- (void)finishWithCompletionHandler:(void (^)(void))handler {
     [_writer finishWritingWithCompletionHandler:handler];
 }
 
