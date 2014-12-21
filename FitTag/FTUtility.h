@@ -27,7 +27,7 @@
 + (void)followUserInBackground:(PFUser *)user block:(void (^)(BOOL succeeded, NSError *error))completionBlock;
 + (void)followUserEventually:(PFUser *)user block:(void (^)(BOOL succeeded, NSError *error))completionBlock;
 + (void)followUsersEventually:(NSArray *)users block:(void (^)(BOOL succeeded, NSError *error))completionBlock;
-+ (void)unfollowUserEventually:(PFUser *)user block:(void (^)(NSError *error))completionBlock;
++ (void)unfollowUserEventually:(PFUser *)user block:(void (^)(BOOL succeeded, NSError *error))completionBlock;
 + (void)unfollowUserEventually:(PFUser *)user;
 + (void)unfollowUsersEventually:(NSArray *)users;
 
@@ -36,6 +36,8 @@
 + (void)drawSideAndTopDropShadowForRect:(CGRect)rect inContext:(CGContextRef)context;
 + (void)addBottomDropShadowToNavigationBarForNavigationController:(UINavigationController *)navigationController;
 + (NSDictionary*)parseURLParams:(NSString *)query;
+
++ (CGFloat)findHeightForText:(NSString *)text havingWidth:(CGFloat)widthValue AndFont:(UIFont *)font;
 
 + (NSString *)getLowercaseStringWithoutSymbols:(NSString *)mention;
 

@@ -78,7 +78,7 @@
                     [[FTCache sharedCache] setAttributesForPost:photo likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
                 }
                 
-                [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification object:photo userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:succeeded] forKey:FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey]];
+                [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification object:photo userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:succeeded] forKey:FTPostDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey]];
             }];
             
         }];
@@ -143,7 +143,7 @@
                     [[FTCache sharedCache] setAttributesForPost:video likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
                 }
                 
-                [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification object:video userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:succeeded] forKey:FTVideoDetailsViewControllerUserLikedUnlikedVideoNotificationUserInfoLikedKey]];
+                [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification object:video userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:succeeded] forKey:FTPostDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey]];
             }];
             
         }];
@@ -194,7 +194,7 @@
                     [[FTCache sharedCache] setAttributesForPost:video likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
                 }
                 
-                [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification object:video userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:FTVideoDetailsViewControllerUserLikedUnlikedVideoNotificationUserInfoLikedKey]];
+                [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification object:video userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:FTPostDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey]];
             }];
             
         } else {
@@ -250,7 +250,7 @@
                     [[FTCache sharedCache] setAttributesForPost:photo likers:likers commenters:commenters likedByCurrentUser:isLikedByCurrentUser];
                 }
                 
-                [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification object:photo userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey]];
+                [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification object:photo userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:FTPostDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey]];
             }];
             
         } else {
@@ -672,10 +672,7 @@
 }
 
 + (void)unfollowUserEventually:(PFUser *)user
-                         block:(void (^)(NSError *error))completionBlock {
-    
-    //[FTUtility unfollowUserEventually:user block:completionBlock];
-    //[[FTCache sharedCache] setFollowStatus:NO user:user];
+                         block:(void (^)(BOOL succeeded, NSError *error))completionBlock {
     
     PFQuery *query = [PFQuery queryWithClassName:kFTActivityClassKey];
     [query whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
@@ -683,15 +680,14 @@
     [query whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
     [query findObjectsInBackgroundWithBlock:^(NSArray *followActivities, NSError *error) {
         // While normally there should only be one follow activity returned, we can't guarantee that.
-        
         if (!error) {
-            for (PFObject *followActivity in followActivities) {
-                [followActivity deleteEventually];
-            }
-        }
-        
-        if (completionBlock) {
-            completionBlock(error);
+            [PFObject deleteAllInBackground:followActivities block:^(BOOL succeeded, NSError *error) {
+                if (!error) {
+                    if (completionBlock) {
+                        completionBlock(succeeded, error);
+                    }
+                }
+            }];
         }
     }];
     
@@ -756,59 +752,6 @@
     return query;
 }
 
-/*
-+ (PFQuery *)queryForActivitiesOnPhoto:(PFObject *)photo cachePolicy:(PFCachePolicy)cachePolicy {
-    PFQuery *queryLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryLikes whereKey:kFTActivityPostKey equalTo:photo];
-    [queryLikes whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
-    
-    PFQuery *queryComments = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryComments whereKey:kFTActivityPostKey equalTo:photo];
-    [queryComments whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeComment];
-    
-    PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects:queryLikes,queryComments,nil]];
-    [query setCachePolicy:cachePolicy];
-    [query includeKey:kFTActivityFromUserKey];
-    [query includeKey:kFTActivityPostKey];
-    
-    return query;
-}
-
-+ (PFQuery *)queryForActivitiesOnVideo:(PFObject *)video cachePolicy:(PFCachePolicy)cachePolicy {
-    PFQuery *queryLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryLikes whereKey:kFTActivityPostKey equalTo:video];
-    [queryLikes whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
-    
-    PFQuery *queryComments = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryComments whereKey:kFTActivityPostKey equalTo:video];
-    [queryComments whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeComment];
-    
-    PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects:queryLikes,queryComments,nil]];
-    [query setCachePolicy:cachePolicy];
-    [query includeKey:kFTActivityFromUserKey];
-    [query includeKey:kFTActivityPostKey];
-    
-    return query;
-}
-
-+ (PFQuery *)queryForActivitiesOnGallery:(PFObject *)gallery cachePolicy:(PFCachePolicy)cachePolicy {
-    PFQuery *queryLikes = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryLikes whereKey:kFTActivityPostKey equalTo:gallery];
-    [queryLikes whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
-    
-    PFQuery *queryComments = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [queryComments whereKey:kFTActivityPostKey equalTo:gallery];
-    [queryComments whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeComment];
-    
-    PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects:queryLikes,queryComments,nil]];
-    [query setCachePolicy:cachePolicy];
-    [query includeKey:kFTActivityFromUserKey];
-    [query includeKey:kFTActivityPostKey];
-    
-    return query;
-}
-*/
-
 #pragma mark Parse URL parameters
 
 // A function for parsing URL parameters returned by the Feed Dialog.
@@ -828,6 +771,26 @@
 
 + (NSString *)getLowercaseStringWithoutSymbols:(NSString *)string {    
     return [[string stringByReplacingOccurrencesOfString:@"@" withString:EMPTY_STRING] lowercaseString];
+}
+
+#pragma mark Calculate text height
+
++ (CGFloat)findHeightForText:(NSString *)text havingWidth:(CGFloat)widthValue AndFont:(UIFont *)font {
+    CGFloat result = font.pointSize+4;
+    if (text) {
+        CGSize size;
+        
+        if (IS_OS_7_OR_LATER) {
+            //iOS 7
+            CGRect frame = [text boundingRectWithSize:CGSizeMake(widthValue, CGFLOAT_MAX)
+                                              options:NSStringDrawingUsesLineFragmentOrigin
+                                           attributes:@{NSFontAttributeName:font}
+                                              context:nil];
+            size = CGSizeMake(frame.size.width, frame.size.height+1);
+        }
+        result = MAX(size.height, result);
+    }
+    return result;
 }
 
 #pragma mark Shadow Rendering
