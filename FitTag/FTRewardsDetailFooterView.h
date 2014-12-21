@@ -9,6 +9,7 @@
 @protocol FTRewardsDetailsFooterViewDelegate;
 @interface FTRewardsDetailFooterView : UIView
 @property (nonatomic,weak) id <FTRewardsDetailsFooterViewDelegate> delegate;
+@property BOOL canRedeem;
 @end
 
 @protocol FTRewardsDetailsFooterViewDelegate <NSObject>

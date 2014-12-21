@@ -10,9 +10,11 @@
 
 @interface FTRewardsDetailFooterView ()
 @property (nonatomic, strong) UIView *contentView;
+@property (nonatomic, strong) UIButton *redeemButton;
 @end
 
 @implementation FTRewardsDetailFooterView
+@synthesize redeemButton;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -21,9 +23,9 @@
         self.contentView = [[UIView alloc] initWithFrame:frame];
         [self addSubview:self.contentView];
         
-        [self.contentView setBackgroundColor:[UIColor colorWithRed:234/255.0f green:234/255.0f blue:234/255.0f alpha:1]];
+        [self.contentView setBackgroundColor:[UIColor whiteColor]];
         
-        UIButton *redeemButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        redeemButton = [UIButton buttonWithType:UIButtonTypeCustom];
         CGFloat redeemButtonW = 182.0f;
         CGFloat redeemButtonH = 40.0f;
         CGFloat paddingX = (self.frame.size.width - redeemButtonW) / 2; // Button width:182
@@ -32,9 +34,27 @@
         [redeemButton setFrame:CGRectMake(paddingX, paddingY, redeemButtonW, redeemButtonH)];
         [redeemButton setBackgroundImage:[UIImage imageNamed:@"redeem_reward"] forState:UIControlStateNormal];
         [redeemButton addTarget:self action:@selector(didTapRedeemButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [self.contentView addSubview:redeemButton];
+        [self showRedeemButton];
     }
     return self;
+}
+
+- (void)showRedeemButton {
+    
+    self.canRedeem = NO;
+    
+    PFQuery *queryReward = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [queryReward whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
+    [queryReward whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeRedeem];
+    [queryReward whereKeyExists:kFTActivityRewardKey];
+    [queryReward countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+        if (!error) {
+            if (number == 0) {
+                [self.contentView addSubview:redeemButton];
+                self.canRedeem = YES;
+            }
+        }
+    }];
 }
 
 - (void)didTapRedeemButtonAction:(id)sender {
