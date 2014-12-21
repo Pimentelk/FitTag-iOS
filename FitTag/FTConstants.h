@@ -36,28 +36,43 @@ extern NSString *const kFTUserDefaultsCacheFacebookFriendsKey;
 extern NSString *const kFTLaunchURLHostTakePicture;
 
 #pragma mark - NSNotification
+
+// Profile
+extern NSString *const FTProfileDidChangeBioNotification;
+extern NSString *const FTProfileDidChangeProfilePhotoNotification;
+extern NSString *const FTProfileDidChangeCoverPhotoNotification;
+
+// Comment box text
+#define CAPTION_TEXT @"Write a caption"
+
+// Remote
 extern NSString *const FTAppDelegateApplicationDidReceiveRemoteNotification;
 
+// Utilities
+extern NSString *const FTUtilityUserFollowersChangedNotification;
 extern NSString *const FTUtilityUserFollowingChangedNotification;
+extern NSString *const FTUtilityBusinessFollowingChangedNotification;
 extern NSString *const FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification;
 extern NSString *const FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification;
 extern NSString *const FTUtilityDidFinishProcessingProfilePictureNotification;
 
+// Tabbar
 extern NSString *const FTTabBarControllerDidFinishEditingPhotoNotification;
 extern NSString *const FTTabBarControllerDidFinishImageFileUploadNotification;
 
+// Timeline
 extern NSString *const FTTimelineViewControllerUserDeletedPostNotification;
 
-extern NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification;
-extern NSString *const FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification;
+// Post
+extern NSString *const FTPostDetailsViewControllerUserLikedUnlikedPhotoNotification;
+extern NSString *const FTPostDetailsViewControllerUserCommentedOnPhotoNotification;
 
+// Reward
 extern NSString *const FTRewardsCollectionViewControllerUserReceiveRewardNotification;
 
 #pragma mark - User Info Keys
-extern NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey;
-extern NSString *const FTVideoDetailsViewControllerUserLikedUnlikedVideoNotificationUserInfoLikedKey;
-extern NSString *const kFTEditPhotoViewControllerUserInfoCommentKey;
-extern NSString *const kFTEditVideoViewControllerUserInfoCommentKey;
+extern NSString *const FTPostDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey;
+extern NSString *const kFTEditPostViewControllerUserInfoCommentKey;
 
 #pragma mark - Installation Class
 
@@ -213,7 +228,7 @@ extern NSString *const kFTPushPayloadActivityRewardKey;
 
 extern NSString *const kFTPushPayloadFromUserObjectIdKey;
 extern NSString *const kFTPushPayloadToUserObjectIdKey;
-extern NSString *const kFTPushPayloadPhotoObjectIdKey;
+extern NSString *const kFTPushPayloadPostObjectIdKey;
 
 #pragma mark - FaceBook Keys
 extern NSString *const FBUserFirstNameKey;

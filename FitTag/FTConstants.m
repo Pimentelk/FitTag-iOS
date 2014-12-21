@@ -33,28 +33,40 @@ NSString *const kFTUserDefaultsCacheFacebookFriendsKey                     = @"c
 NSString *const kFTLaunchURLHostTakePicture = @"camera";
 
 #pragma mark - NSNotification
+
+// Profile
+NSString *const FTProfileDidChangeBioNotification                                   = @"com.fittag.userProfileViewController.profileDidChangeBioNotification";
+NSString *const FTProfileDidChangeProfilePhotoNotification                          = @"com.fittag.userProfileViewController.profileDidChangeProfilePhotoNotification";
+NSString *const FTProfileDidChangeCoverPhotoNotification                            = @"com.fittag.userProfileViewController.profileDidChangeCoverPhotoNotification";
+
+// Remote
 NSString *const FTAppDelegateApplicationDidReceiveRemoteNotification                = @"com.fittag.appDelegate.applicationDidReceiveRemoteNotification";
 
+// Utilities
+NSString *const FTUtilityUserFollowersChangedNotification                           = @"com.fittag.utility.userFollowersChanged";
 NSString *const FTUtilityUserFollowingChangedNotification                           = @"com.fittag.utility.userFollowingChanged";
+NSString *const FTUtilityBusinessFollowingChangedNotification                       = @"com.fittag.utility.businessFollowingChanged";
 NSString *const FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification          = @"com.fittag.utility.userLikedUnlikedPhotoCallbackFinished";
 NSString *const FTUtilityUserLikedUnlikedVideoCallbackFinishedNotification          = @"com.fittag.utility.userLikedUnlikedVideoCallbackFinished";
 NSString *const FTUtilityDidFinishProcessingProfilePictureNotification              = @"com.fittag.utility.didFinishProcessingProfilePictureNotification";
 
+// Tabbar
 NSString *const FTTabBarControllerDidFinishEditingPhotoNotification                 = @"com.fittag.tabBarController.didFinishEditingPhoto";
 NSString *const FTTabBarControllerDidFinishImageFileUploadNotification              = @"com.fittag.tabBarController.didFinishImageFileUploadNotification";
 
+// Timeline
 NSString *const FTTimelineViewControllerUserDeletedPostNotification                 = @"com.fittag.timelineViewController.userDeletedPhoto";
 
-NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotification       = @"com.fittag.photoDetailsViewController.userLikedUnlikedPhotoInDetailsViewNotification";
-NSString *const FTPhotoDetailsViewControllerUserCommentedOnPhotoNotification        = @"com.fittag.photoDetailsViewController.userCommentedOnPhotoInDetailsViewNotification";
+// Post
+NSString *const FTPostDetailsViewControllerUserLikedUnlikedPhotoNotification        = @"com.fittag.photoDetailsViewController.userLikedUnlikedPostInDetailsViewNotification";
+NSString *const FTPostDetailsViewControllerUserCommentedOnPhotoNotification         = @"com.fittag.photoDetailsViewController.userCommentedOnPostInDetailsViewNotification";
 
+// Reward
 NSString *const FTRewardsCollectionViewControllerUserReceiveRewardNotification      = @"com.fittag.rewardsCollectionViewController.userDidRedeemRewardNotification";
 
 #pragma mark - User Info Keys
-NSString *const FTPhotoDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey = @"liked";
-NSString *const FTVideoDetailsViewControllerUserLikedUnlikedVideoNotificationUserInfoLikedKey = @"liked";
-NSString *const kFTEditPhotoViewControllerUserInfoCommentKey = @"comment";
-NSString *const kFTEditVideoViewControllerUserInfoCommentKey = @"comment";
+NSString *const FTPostDetailsViewControllerUserLikedUnlikedPhotoNotificationUserInfoLikedKey = @"liked";
+NSString *const kFTEditPostViewControllerUserInfoCommentKey = @"comment";
 
 #pragma mark - Installation Class
 
@@ -210,7 +222,7 @@ NSString *const kFTPushPayloadActivityRewardKey   = @"r";
 
 NSString *const kFTPushPayloadFromUserObjectIdKey = @"fu";
 NSString *const kFTPushPayloadToUserObjectIdKey   = @"tu";
-NSString *const kFTPushPayloadPhotoObjectIdKey    = @"pid";
+NSString *const kFTPushPayloadPostObjectIdKey    = @"pid";
 
 #pragma mark - FaceBook Keys
 NSString *const FBUserFirstNameKey  = @"first_name";
