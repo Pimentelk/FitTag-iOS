@@ -61,24 +61,21 @@
         commentBox.frame = CGRectMake(COMMENT_BOX_X, COMMENT_BOX_Y, self.frame.size.width, COMMENT_BOX_HEIGHT);
         [mainView addSubview:commentBox];
         
-        commentSendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [commentSendButton setEnabled:NO];
-        [commentSendButton setBackgroundImage:[UIImage imageNamed:@"send_button"] forState:UIControlStateNormal];
-        [commentSendButton addTarget:self action:@selector(didTapSendButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [commentSendButton setFrame: CGRectMake(self.frame.size.width - SEND_BUTTON_WIDTH - SEND_BUTTON_PADDING_RIGHT,
-                                               self.frame.origin.y + SEND_BUTTON_PADDING_TOP,
-                                               SEND_BUTTON_WIDTH, SEND_BUTTON_HEIGHT)];
-        
-        [commentSendButton setUserInteractionEnabled:YES];
-        [mainView addSubview:commentSendButton];
-        [mainView bringSubviewToFront:commentSendButton];
-        
         commentField = [[UITextField alloc] initWithFrame:CGRectMake( COMMENT_FIELD_X, COMMENT_FIELD_Y, COMMENT_FIELD_WIDTH, COMMENT_FIELD_HEIGHT)];
         commentField.font = [UIFont systemFontOfSize:DEFAULT_SYSTEM_FONT_SIZE];
         commentField.returnKeyType = UIReturnKeySend;
         commentField.textColor = [UIColor colorWithRed:73.0f/255.0f green:55.0f/255.0f blue:35.0f/255.0f alpha:1.0f];
         commentField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-        [mainView addSubview:commentField];        
+        [mainView addSubview:commentField];
+        
+        commentSendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [commentSendButton setEnabled:NO];
+        [commentSendButton setBackgroundImage:[UIImage imageNamed:@"send_button"] forState:UIControlStateNormal];
+        [commentSendButton addTarget:self action:@selector(didTapSendButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [commentSendButton setFrame:CGRectMake(COMMENT_FIELD_X + COMMENT_FIELD_WIDTH, COMMENT_FIELD_Y + 3, SEND_BUTTON_WIDTH, SEND_BUTTON_HEIGHT)];
+        [commentSendButton setUserInteractionEnabled:YES];
+        [mainView addSubview:commentSendButton];
+        [mainView bringSubviewToFront:commentSendButton];
     }
     return self;
 }
