@@ -226,7 +226,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
 }
 
 - (void)didTapActivityButton:(id)sender {
-    NSLog(@"self.activity: %@",self.activity);
+    //NSLog(@"self.activity: %@",self.activity);
     if (self.delegate && [self.delegate respondsToSelector:@selector(cell:didTapActivityButton:)]) {
         [self.delegate cell:self didTapActivityButton:self.activity];
     }    
