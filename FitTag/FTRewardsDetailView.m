@@ -32,12 +32,14 @@
 @property (nonatomic, strong) FTRewardsDetailFooterView *footerView;
 @property (nonatomic, strong) UIImageView *rewardPhoto;
 @property (nonatomic, strong) UIView *popUpView;
+@property (nonatomic, strong) UIButton *popupNoButton;
 @property BOOL isPopupHidden;
 @end
 
 @implementation FTRewardsDetailView
 @synthesize reward;
 @synthesize rewardPhoto;
+@synthesize popupNoButton;
 
 - (id)initWithReward:(PFObject *)aReward {
     self = [super initWithStyle:UITableViewStylePlain];    
@@ -91,11 +93,18 @@
     self.headerView.delegate = self;
     self.tableView.tableHeaderView = self.headerView;
     
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapCouponImageAction:)];
+    [tapGesture setNumberOfTapsRequired:1];
+    
     // Set table footer
     
     self.footerView = [[FTRewardsDetailFooterView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, REWARD_FOOTER_HEIGHT)];
     self.footerView.delegate = self;
     self.tableView.tableFooterView = self.footerView;
+    
+    if (self.footerView.canRedeem) {
+        [self.headerView addGestureRecognizer:tapGesture];        
+    }
     
     // Popup View
     
@@ -122,10 +131,9 @@
     [popupYesButton setFrame:CGRectMake(yPaddingX, yPaddingY, yButtonWidth, yButtonHeight)];
     [self.popUpView addSubview:popupYesButton];
     
-    
     // Popup no Button
     
-    UIButton *popupNoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    popupNoButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [popupNoButton setBackgroundImage:[UIImage imageNamed:NO_BUTTON] forState:UIControlStateNormal];
     [popupNoButton addTarget:self
                       action:@selector(didTapNoButtonAction)
@@ -138,7 +146,7 @@
     
     [popupNoButton setFrame:CGRectMake(nPaddingX, nPaddingY, nButtonWidth, nButtonHeight)];
     [self.popUpView addSubview:popupNoButton];
- 
+    
     // Popup message
     
     UILabel *popupMessage = [[UILabel alloc] initWithFrame:CGRectMake(35.0f, nPaddingY + nButtonHeight, 250.0f, 45.0f)];
@@ -210,19 +218,17 @@
                                         }
                                     }];
     } else {
-        
         UIAlertView *emailAlert = [[UIAlertView alloc] initWithTitle:@"Submit Email"
                                                              message:EMAIL_ERROR_MESSAGE
                                                             delegate:self
                                                    cancelButtonTitle:@"cancel"
                                                    otherButtonTitles:@"OK", nil];
-        
         [emailAlert setAlertViewStyle: UIAlertViewStylePlainTextInput];
         [emailAlert show];
     }
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     
     NSLog(@"Entered: %@",[[alertView textFieldAtIndex:0] text]);
     
@@ -321,11 +327,21 @@
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
     [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
     
     FTBusinessProfileViewController *businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     [businessProfileViewController setBusiness:business];
     [self.navigationController pushViewController:businessProfileViewController animated:YES];
+}
+
+#pragma mark - ()
+
+- (void)didTapCouponImageAction:(id)sender {
+    if (self.isPopupHidden) {
+        [self showPopup];
+    } else {
+        [self removePopup];
+    }
 }
 
 @end
