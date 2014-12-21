@@ -200,8 +200,4 @@
     }
 }
 
-- (void)followCell:(FTFollowCell *)inviteCell didTapFollowButton:(UIButton *)button user:(PFUser *)aUser {
-    
-}
-
 @end
