@@ -34,7 +34,7 @@
 - (id)initWithStyle:(UITableViewStyle)style {
     self = [super initWithStyle:style];
     if (self) {
-        NSLog(@"%@::initWithStyle:",VIEWCONTROLLER_ACTIVITY);
+        //NSLog(@"%@::initWithStyle:",VIEWCONTROLLER_ACTIVITY);
         
         // The className to query on
         self.parseClassName = kFTActivityClassKey;
@@ -54,7 +54,7 @@
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-    NSLog(@"%@::viewDidLoad",VIEWCONTROLLER_ACTIVITY);
+    //NSLog(@"%@::viewDidLoad",VIEWCONTROLLER_ACTIVITY);
     [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     
     [super viewDidLoad];
@@ -82,7 +82,7 @@
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    NSLog(@"%@::preferredStatusBarStyle",VIEWCONTROLLER_ACTIVITY);
+    //NSLog(@"%@::preferredStatusBarStyle",VIEWCONTROLLER_ACTIVITY);
     return UIStatusBarStyleLightContent;
 }
 
@@ -316,7 +316,7 @@
     [dismissProfileButton setTintColor:[UIColor whiteColor]];
     
     FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController setUser:[PFUser currentUser]];
+    [profileViewController setUser:user];
     [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
