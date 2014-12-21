@@ -202,7 +202,6 @@
     }];
     
     // Setup and position the profile buttons
-    
     CGFloat profileImageViewEnd = userProfileImageView.frame.size.height + userProfileImageView.frame.origin.y;
     CGFloat frameWidth = self.view.frame.size.width;
     CGFloat firstButtonPositionY = profileImageViewEnd + (((self.view.frame.size.height - profileImageViewEnd) - (PROFILE_BUTTON_HEIGHT * PROFILE_BUTTON_COUNT)) / 2);
@@ -363,7 +362,7 @@
     userFirstname = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, TOP_PADDING, textViewWidth, textViewHeight)];
     [userFirstname setPlaceholder:@"FIRST NAME"];
     [userFirstname setBackgroundColor:[UIColor whiteColor]];
-    [userFirstname setFont:BENDERSOLID(14)];
+    [userFirstname setFont:HelveticaNeue(14)];
     [userFirstname setDelegate:self];
     if ([self.user objectForKey:kFTUserFirstnameKey]) {
         [userFirstname setText:[self.user objectForKey:kFTUserFirstnameKey]];
@@ -374,7 +373,7 @@
                                                                  textViewWidth, textViewHeight)];
     [userLastname setPlaceholder:@"LAST NAME"];
     [userLastname setBackgroundColor:[UIColor whiteColor]];
-    [userLastname setFont:BENDERSOLID(14)];
+    [userLastname setFont:HelveticaNeue(14)];
     [userLastname setDelegate:self];
     if ([self.user objectForKey:kFTUserLastnameKey]) {
         [userLastname setText:[self.user objectForKey:kFTUserLastnameKey]];
@@ -384,7 +383,7 @@
     userHandle = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, userLastname.frame.size.height+userLastname.frame.origin.y+TOP_PADDING, textViewWidth, textViewHeight)];
     [userHandle setPlaceholder:@"USER HANDLE"];
     [userHandle setBackgroundColor:[UIColor whiteColor]];
-    [userHandle setFont:BENDERSOLID(14)];
+    [userHandle setFont:HelveticaNeue(14)];
     [userHandle setDelegate:self];
     if ([self.user objectForKey:kFTUserDisplayNameKey]) {
         [userHandle setText:[self.user objectForKey:kFTUserDisplayNameKey]];
@@ -396,7 +395,7 @@
     userWebsite = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, userHandle.frame.size.height+userHandle.frame.origin.y+TOP_PADDING, textViewWidth, textViewHeight)];
     [userWebsite setPlaceholder:@"WEBSITE"];
     [userWebsite setBackgroundColor:[UIColor whiteColor]];
-    [userWebsite setFont:BENDERSOLID(14)];
+    [userWebsite setFont:HelveticaNeue(14)];
     if ([self.user objectForKey:kFTUserWebsiteKey]) {
         [userWebsite setText:[self.user objectForKey:kFTUserWebsiteKey]];
     }
@@ -406,7 +405,7 @@
     userBiography = [[UITextView alloc] initWithFrame:CGRectMake(textViewX, userWebsite.frame.size.height+userWebsite.frame.origin.y+TOP_PADDING, textViewWidth, 150)];
     [userBiography setBackgroundColor:[UIColor whiteColor]];
     [userBiography setTextColor:[UIColor blackColor]];
-    [userBiography setFont:BENDERSOLID(14)];
+    [userBiography setFont:HelveticaNeue(14)];
     [userBiography setUserInteractionEnabled:YES];
     [userBiography setDelegate:self];
     if ([self.user objectForKey:kFTUserBioKey]) {
@@ -862,9 +861,27 @@
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
             [self showHudMessage:PROFILE_UPDATED WithDuration:3];
+            
+            // Notify if new cover photo is available
+            [[NSNotificationCenter defaultCenter] postNotificationName:FTProfileDidChangeCoverPhotoNotification object:photo];
         }
         
         if (error) {
+            
+            [coverPhotoImageView setImage:nil];
+            
+            if (!missingCoverPhotoLabel) {
+                missingCoverPhotoLabel = [[UILabel alloc] initWithFrame:coverPhotoImageView.frame];
+                [missingCoverPhotoLabel setTextAlignment:NSTextAlignmentCenter];
+                [missingCoverPhotoLabel setUserInteractionEnabled:NO];
+                [missingCoverPhotoLabel setFont:SYSTEMFONTBOLD(24)];
+                [missingCoverPhotoLabel setTextColor: [UIColor blackColor]];
+                [missingCoverPhotoLabel setText:@"No Cover Photo Found"];
+                
+                [coverPhotoImageView addSubview:missingCoverPhotoLabel];
+                [self.view addSubview:coverPhotoImageView];
+            }
+            
             [[[UIAlertView alloc] initWithTitle:@"Error"
                                         message:@"Unable to save your profile picture. Please try again later, if the problem continues contact support."
                                        delegate:self
@@ -888,9 +905,15 @@
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
             [self showHudMessage:PROFILE_UPDATED WithDuration:3];
+            
+            // Notify if new profile photo is available
+            [[NSNotificationCenter defaultCenter] postNotificationName:FTProfileDidChangeProfilePhotoNotification object:photo];
         }
         
         if (error) {
+            // clear image
+            [userProfileImageView setImage:nil];
+            
             [[[UIAlertView alloc] initWithTitle:@"Error"
                                         message:@"Unable to save your profile picture. Please try again later, if the problem continues contact support."
                                        delegate:self
@@ -980,9 +1003,15 @@
                         [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
                             if (!error) {
                                 [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
+                                
                                 UIImage *profileImage = [UIImage imageWithData:data];
+                                
                                 [userProfileImageView setImage:profileImage];
+                                
                                 [self showHudMessage:PROFILE_UPDATED WithDuration:3];
+                                
+                                // Notify if new profile photo is available
+                                [[NSNotificationCenter defaultCenter] postNotificationName:FTProfileDidChangeProfilePhotoNotification object:profileImage];
                             }
                         }];
                     }
@@ -1056,9 +1085,14 @@
                     [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
                         if (!error) {
                             [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
+                            
                             UIImage *profileImage = [UIImage imageWithData:data];
                             [userProfileImageView setImage:profileImage];
+                            
                             [self showHudMessage:PROFILE_UPDATED WithDuration:3];
+                            
+                            // Notify if new profile photo is available
+                            [[NSNotificationCenter defaultCenter] postNotificationName:FTProfileDidChangeProfilePhotoNotification object:profileImage];
                         }
                     }];
                 }
@@ -1119,13 +1153,16 @@
         missingCoverPhotoLabel = [[UILabel alloc] initWithFrame:coverPhotoImageView.frame];
         [missingCoverPhotoLabel setTextAlignment:NSTextAlignmentCenter];
         [missingCoverPhotoLabel setUserInteractionEnabled:NO];
-        [missingCoverPhotoLabel setFont:BENDERSOLID(24)];
+        [missingCoverPhotoLabel setFont:SYSTEMFONTBOLD(24)];
         [missingCoverPhotoLabel setTextColor: [UIColor blackColor]];
         [missingCoverPhotoLabel setText:@"No Cover Photo Found"];
         
         [coverPhotoImageView addSubview:missingCoverPhotoLabel];
         [self.view addSubview:coverPhotoImageView];
     }
+    
+    // Notify if new cover photo is available
+    [[NSNotificationCenter defaultCenter] postNotificationName:FTProfileDidChangeCoverPhotoNotification object:nil];
 }
 
 - (void)didTapTakePhotoButtonAction:(id)sender {
@@ -1277,20 +1314,23 @@
         }
     }
     
-    if (userWebsite.text.length > 0) {
-        [self.user setObject:userWebsite.text forKey:kFTUserWebsiteKey];
-    }
+    [self.user setObject:userWebsite.text forKey:kFTUserWebsiteKey];
     
     if (userHandle.text.length > 0) {
+        
         if (userHandle.text.length < 15) {
             
-            NSCharacterSet *alphaNumericSet = [NSCharacterSet alphanumericCharacterSet];
-            if ([[userHandle.text stringByTrimmingCharactersInSet:alphaNumericSet] isEqualToString:EMPTY_STRING]) {
-                [self.user setObject:[userHandle.text lowercaseString] forKey:kFTUserDisplayNameKey];
-            } else {
-                [self showHudMessage:HUD_MESSAGE_HANDLE_INVALID WithDuration:2];
+            NSCharacterSet *alphaNumericUnderscoreSet = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_"];
+            alphaNumericUnderscoreSet = [alphaNumericUnderscoreSet invertedSet];
+            userHandle.text = [userHandle.text stringByReplacingOccurrencesOfString:@" " withString:@""];
+            NSRange range = [userHandle.text rangeOfCharacterFromSet:alphaNumericUnderscoreSet];
+            
+            if (range.location != NSNotFound) {
+                [FTUtility showHudMessage:HUD_MESSAGE_HANDLE_INVALID WithDuration:2];
                 return;
             }
+            
+            [self.user setObject:[userHandle.text lowercaseString] forKey:kFTUserDisplayNameKey];
             
         } else {
             [self showHudMessage:HUD_MESSAGE_CHARACTER_LIMIT WithDuration:2];
@@ -1301,6 +1341,8 @@
         return;
     }
     
+    BOOL updateBio = NO;
+    
     if (userBiography.text.length > 150) {
         [self showHudMessage:HUD_MESSAGE_BIOGRAPHY_LIMIT WithDuration:2];
         return;
@@ -1308,6 +1350,7 @@
     
     if (userBiography.text.length <= 150 && userBiography.text.length > 0) {
         [self.user setObject:userBiography.text forKey:kFTUserBioKey];
+        updateBio = YES;
     }
     
     [self.user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -1315,6 +1358,9 @@
             NSLog(HUD_MESSAGE_UPDATED);
             [self showHudMessage:HUD_MESSAGE_UPDATED WithDuration:3];
             [self.navigationController popViewControllerAnimated:NO];
+            
+            // Notify if new biography text is available
+            [[NSNotificationCenter defaultCenter] postNotificationName:FTProfileDidChangeBioNotification object:userBiography.text];            
         }
         
         if (error) {
