@@ -131,13 +131,12 @@
         [followerCountLabel setText:@"0 FOLLOWERS"];
         [self.containerView addSubview:followerCountLabel];
         
-        UITapGestureRecognizer *followingLabelTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                                   action:@selector(didTapFollowingAction:)];
+        UITapGestureRecognizer *followingLabelTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapFollowingAction:)];
         [followingLabelTapGesture setNumberOfTapsRequired:1];
         
         // Following count UILabel
         followingCountLabel = [[UILabel alloc] init];
-        [followingCountLabel setFrame:CGRectMake(followerCountLabel.frame.size.width + 1, followLabelsY, followLabelsWidth, 30)];
+        [followingCountLabel setFrame:CGRectMake(followerCountLabel.frame.size.width, followLabelsY, followLabelsWidth, 30)];
         [followingCountLabel setTextAlignment:NSTextAlignmentCenter];
         [followingCountLabel setBackgroundColor:[UIColor whiteColor]];
         [followingCountLabel setTextColor:[UIColor blackColor]];
@@ -196,11 +195,12 @@
         [self.containerView addSubview:businessMenuBackground];
         [self.containerView bringSubviewToFront:businessMenuBackground];
         
+        CGFloat bioY = businessMenuBackground.frame.origin.y + businessMenuBackground.frame.size.height;
+        CGFloat bioHeight = self.frame.size.height - bioY;
+        
         // User bio text view
-        profileBiography = [[UITextView alloc] initWithFrame:CGRectMake(0, businessMenuBackground.frame.origin.y +
-                                                                        businessMenuBackground.frame.size.height,
-                                                                        self.frame.size.width, 55)];
-        [profileBiography setBackgroundColor:[UIColor whiteColor]];
+        profileBiography = [[UITextView alloc] initWithFrame:CGRectMake(0, bioY, self.frame.size.width, bioHeight)];
+        [profileBiography setBackgroundColor:FT_GRAY];
         [profileBiography setTextColor:[UIColor blackColor]];
         [profileBiography setFont:[UIFont boldSystemFontOfSize:14.0f]];
         [profileBiography setText:DEFAULT_BIO_TEXT_B];
@@ -461,19 +461,19 @@
 
 - (void)configureFollowButtons {
     if (isFollowing) { // following
-        NSLog(@"configureFollowButtons: User is following this business.");
+        //NSLog(@"configureFollowButtons: User is following this business.");
         [followButton setHidden:YES];
         [unfollowButton setHidden:NO];
     } else { // not following
-        NSLog(@"configureFollowButtons: User is not following this business.");
+        //NSLog(@"configureFollowButtons: User is not following this business.");
         [followButton setHidden:NO];
         [unfollowButton setHidden:YES];
     }
 }
 
 - (void)didTapFollowButtonAction:(UIButton *)button {
-    UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    [loadingActivityIndicatorView startAnimating];
+    //UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    //[loadingActivityIndicatorView startAnimating];
     
     [FTUtility followUserEventually:self.business block:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
@@ -481,6 +481,8 @@
             
             isFollowing = YES;
             [self configureFollowButtons];
+            [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserFollowingChangedNotification object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityBusinessFollowingChangedNotification object:nil];
         } else {
             NSLog(@"followButtonAction::error");
         }
@@ -488,15 +490,17 @@
 }
 
 - (void)didTapUnfollowButtonAction:(UIButton *)button {
-    UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    [loadingActivityIndicatorView startAnimating];
+    //UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    //[loadingActivityIndicatorView startAnimating];
     
-    [FTUtility unfollowUserEventually:self.business block:^(NSError *error) {
+    [FTUtility unfollowUserEventually:self.business block:^(BOOL succeeded, NSError *error) {
         if (!error) {
             [self updateFollowingCount];
             
             isFollowing = NO;
             [self configureFollowButtons];
+            [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserFollowingChangedNotification object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityBusinessFollowingChangedNotification object:nil];
         } else {
             NSLog(@"unfollowButtonAction::error");
         }
