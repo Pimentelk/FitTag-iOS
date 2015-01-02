@@ -711,7 +711,8 @@ static TTTTimeIntervalFormatter *timeFormatter;
             swiperView = [[FTGallerySwiperView alloc] init];
             [swiperView setFrame:CGRectMake(0, 0, (16 * objects.count), 20)];
             
-            CGFloat swiperCenterY = frameSize.height-likeBarHeight-5-captionHeight;
+            //CGFloat swiperCenterY = frameSize.height-likeBarHeight-5-captionHeight;
+            CGFloat swiperCenterY = nameHeaderHeight + carousel.frame.size.height - 5;
             
             [swiperView setCenter:CGPointMake(frameSize.width/2, swiperCenterY)];
             
