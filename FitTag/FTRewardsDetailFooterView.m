@@ -20,6 +20,9 @@
     self = [super initWithFrame:frame];
     if (self) {
         NSLog(@"FTRewardsDetailFooterView");
+        
+        self.canRedeem = NO;
+        
         self.contentView = [[UIView alloc] initWithFrame:frame];
         [self addSubview:self.contentView];
         
@@ -40,9 +43,6 @@
 }
 
 - (void)showRedeemButton {
-    
-    self.canRedeem = NO;
-    
     PFQuery *queryReward = [PFQuery queryWithClassName:kFTActivityClassKey];
     [queryReward whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
     [queryReward whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeRedeem];
@@ -52,6 +52,8 @@
             if (number == 0) {
                 [self.contentView addSubview:redeemButton];
                 self.canRedeem = YES;
+            } else {
+                self.canRedeem = NO;
             }
         }
     }];
