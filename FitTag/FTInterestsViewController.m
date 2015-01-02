@@ -8,7 +8,8 @@
 
 #import "FTInterestsViewController.h"
 #import "FTInterestCell.h"
-#import "FTInspirationViewController.h"
+//#import "FTInspirationViewController.h"
+#import "FTFollowFriendsViewController.h"
 #import "FTCollectionHeaderView.h"
 #import "FTFlowLayout.h"
 
@@ -27,7 +28,8 @@
 @property (nonatomic, strong) UILabel *continueMessage;
 @property (nonatomic, strong) UIButton *continueButton;
 @property (nonatomic, strong) FTLocationManager *locationManager;
-@property (nonatomic, strong) FTInspirationViewController *inspirationViewController;
+@property (nonatomic, strong) FTFollowFriendsViewController *followFriendsViewController;
+//@property (nonatomic, strong) FTInspirationViewController *inspirationViewController;
 @property (nonatomic) BOOL locationUpdated;
 @end
 
@@ -37,7 +39,8 @@
 @synthesize continueMessage;
 @synthesize continueButton;
 @synthesize locationManager;
-@synthesize inspirationViewController;
+//@synthesize inspirationViewController;
+@synthesize followFriendsViewController;
 @synthesize locationUpdated;
 
 - (void)viewDidLoad {
@@ -71,19 +74,6 @@
     // Override the back idnicator
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     [self.navigationController.navigationBar setBarTintColor:FT_RED];
-    
-    if (self.isFirstLaunch && locationUpdated) {
-        // Layout param
-        FTFlowLayout *inspirationLayoutFlow = [[FTFlowLayout alloc] init];
-        [inspirationLayoutFlow setItemSize:CGSizeMake(self.view.frame.size.width,100)];
-        [inspirationLayoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-        [inspirationLayoutFlow setMinimumInteritemSpacing:0];
-        [inspirationLayoutFlow setMinimumLineSpacing:0];
-        [inspirationLayoutFlow setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-        [inspirationLayoutFlow setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,42)];
-        
-        inspirationViewController = [[FTInspirationViewController alloc] initWithCollectionViewLayout:inspirationLayoutFlow];
-    }
     
     // Back button
     UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] init];
@@ -182,9 +172,7 @@
     continueButton = nil;
     continueMessage = nil;
     
-    if (!self.isFirstLaunch) {
-        [self.navigationController setToolbarHidden:YES animated:NO];        
-    }
+    [self.navigationController setToolbarHidden:YES animated:NO];
 }
 
 #pragma mark - FTLocationManagerDelegate
@@ -220,27 +208,55 @@
         return;
     }
     
-    NSLog(@"Selected Interests: %@",selectedInterests);
+    //NSLog(@"Selected Interests: %@",selectedInterests);
     
     // Save selected interests here...
+    [MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:NO];
+    
     [user setObject:selectedInterests forKey:kFTUserInterestsKey];
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (!error) {
-            NSLog(@"interests were saved successfully..");
+            
+            [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:NO];
+            
+            //NSLog(@"interests were saved successfully..");
             if (delegate && [delegate respondsToSelector:@selector(interestsViewController:didUpdateUserInterests:)]) {
                 [delegate interestsViewController:self didUpdateUserInterests:selectedInterests];
             }
+            
+            // Show the interests
+            UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
+            [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+            [backIndicator setStyle:UIBarButtonItemStylePlain];
+            [backIndicator setTarget:self];
+            [backIndicator setAction:@selector(didTapPopButtonAction:)];
+            [backIndicator setTintColor:[UIColor whiteColor]];
+            
+            UIBarButtonItem *doneIndicator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(didTapBackButtonAction:)];
+            [doneIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+            [doneIndicator setStyle:UIBarButtonItemStylePlain];
+            [doneIndicator setTintColor:[UIColor whiteColor]];
+            
+            followFriendsViewController = [[FTFollowFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+            followFriendsViewController.followUserQueryType = FTFollowUserQueryTypeInterest;
+            [followFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
+            [followFriendsViewController.navigationItem setRightBarButtonItem:doneIndicator];
+            [self.navigationController pushViewController:followFriendsViewController animated:YES];
+            
         }
+        
         if (error) {
+            [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:NO];
+            
             NSLog(@"Error: saveEventually... %@", error);
             //[user saveEventually];
         }
     }];
     
-    if (self.isFirstLaunch && locationUpdated) {
+    if (self.isFirstLaunch) {
         // If this is part of the first time launch flow show the inspiration screen next.
         // only if the location has been updated
-        [self.navigationController pushViewController:inspirationViewController animated:YES];
+        //[self.navigationController pushViewController:inspirationViewController animated:YES];
         return;
     }
     
@@ -325,11 +341,13 @@
     return cell;
 }
 
-- (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+- (CGFloat) collectionView:(UICollectionView *)collectionView
+                    layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
     return 0;
 }
 
-- (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+- (CGFloat) collectionView:(UICollectionView *)collectionView
+                    layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
     return 0;
 }
 
@@ -343,6 +361,10 @@
 }
 
 #pragma mark - ()
+
+- (void)didTapPopButtonAction:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
+}
 
 - (void)didTapBackButtonAction:(id)sender {
     if (self != [self.navigationController.viewControllers objectAtIndex:0]) {
