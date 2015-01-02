@@ -3,11 +3,10 @@
 //  FitTag
 //
 //  Created by Kevin Pimentel on 6/12/14.
-//  Copyright (c) 2014 ___FULLUSERNAME___. All rights reserved.
+//  Copyright (c) 2015 FitTag. All rights reserved.
 //
 
 #import "AppDelegate.h"
-
 #import "Reachability.h"
 #import "UIImage+ResizeAdditions.h"
 #import "FTConfigViewController.h"
@@ -274,19 +273,6 @@
     //NSLog(@"%@::isParseReachable:",APPDELEGATE_RESPONDER);
     return self.networkStatus != NotReachable;
 }
-
-/*
-- (void)presentLoginViewControllerAnimated:(BOOL)animated {
-    NSLog(@"%@::presentLoginViewControllerAnimated:",APPDELEGATE_RESPONDER);
-}
-*/
-
-/*
-- (void)presentLoginViewController {
-    //NSLog(@"%@::presentLoginViewController:",APPDELEGATE_RESPONDER);
-    //[self presentLoginViewControllerAnimated:NO];
-}
-*/
 
 - (void)presentTabBarController {
     
