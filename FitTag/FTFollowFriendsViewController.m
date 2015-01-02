@@ -39,6 +39,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    NSLog(@"FTFollowFriendsViewController::viewDidLoad");
+    
     locationUpdated = NO;
     
     UIImage *noLocationImage = [UIImage imageNamed:@"no_location"];
@@ -88,7 +90,12 @@
     } else {
         [self.tableView setTableHeaderView:headerView];
         [self.tableView.tableHeaderView setHidden:NO];
-        [self queryForUserType:FTFollowUserQueryTypeDefault];
+        
+        if (followUserQueryType == 0) {
+            [self queryForUserType:FTFollowUserQueryTypeDefault];
+        } else {
+            [self queryForUserType:followUserQueryType];
+        }
     }
 }
 
@@ -163,7 +170,7 @@
 
 - (void)queryForUserType:(FTFollowUserQueryType)type {
     
-    NSLog(@"%@::queryForUserType",VIEWCONTROLLER_INVITE);
+    NSLog(@"%@::queryForUserType::%d",VIEWCONTROLLER_INVITE,type);
     
     // List of all users being followed by the current user
     PFQuery *followingActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
@@ -213,6 +220,7 @@
                     [followUsersByLocationQuery setLimit:100];
                     [followUsersByLocationQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                         if (!error) {
+                            [headerView setLocationSelected];
                             self.objects = objects;
                             [self.tableView reloadData];
                         }
@@ -221,6 +229,7 @@
                     break;
                     
                 case FTFollowUserQueryTypeInterest: {
+                    
                     
                     if (![[PFUser currentUser] objectForKey:kFTUserInterestsKey]) {
                         [[[UIAlertView alloc] initWithTitle:@"User Interest Error"
@@ -243,6 +252,7 @@
                     [followUsersByInterestQuery setLimit:100];
                     [followUsersByInterestQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                         if (!error) {
+                            [headerView setInterestSelected];
                             self.objects = objects;
                             [self.tableView reloadData];
                         }
