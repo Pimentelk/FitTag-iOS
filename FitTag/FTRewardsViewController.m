@@ -67,10 +67,9 @@
 }
 
 - (void)queryForTable:(NSString *)status {
-    NSLog(@"%@::queryForTable",VIEWCONTROLLER_REWARDS);
-    // Show HUD view
-    //[MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
+    //NSLog(@"%@::queryForTable",VIEWCONTROLLER_REWARDS);
     
+    // Get a list of used rewards for the used tab
     if ([status isEqual:kFTRewardTypeUsed]) {
         NSLog(@"Used...");
         PFQuery *usedQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
@@ -79,6 +78,7 @@
         [usedQuery includeKey:kFTActivityRewardKey];
         [usedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if (!error) {
+                
                 NSMutableArray *tmpRewards = [[NSMutableArray alloc] init];
                 for (PFObject *object in objects) {
                     if ([object objectForKey:kFTActivityRewardKey]) {
@@ -102,11 +102,13 @@
         return;
     }
     
-    PFQuery *deletedRewardQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [deletedRewardQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeDelete];
-    [deletedRewardQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
-    [deletedRewardQuery includeKey:kFTActivityRewardKey];
-    [deletedRewardQuery findObjectsInBackgroundWithBlock:^(NSArray *activities, NSError *error) {
+    // Get a list of "deleted" rewards so that we don't display them in active or expired tabs
+    PFQuery *usedOrDeletedRewardQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [usedOrDeletedRewardQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeDelete];
+    [usedOrDeletedRewardQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeRedeem];
+    [usedOrDeletedRewardQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
+    [usedOrDeletedRewardQuery includeKey:kFTActivityRewardKey];
+    [usedOrDeletedRewardQuery findObjectsInBackgroundWithBlock:^(NSArray *activities, NSError *error) {
         if (!error) {
             
             NSMutableArray *deletedRewards = [[NSMutableArray alloc] init];
@@ -116,8 +118,8 @@
                     [deletedRewards addObject:reward.objectId];
                 }
             }
-            NSLog(@"deletedRewards:%@",deletedRewards);
             
+            //NSLog(@"deletedRewards:%@",deletedRewards);
             if (![status isEqual:kFTRewardTypeUsed]) {
                 
                 PFQuery *followingActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];

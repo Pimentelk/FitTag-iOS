@@ -94,7 +94,7 @@
     self.tableView.tableHeaderView = self.headerView;
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapCouponImageAction:)];
-    [tapGesture setNumberOfTapsRequired:1];
+    [tapGesture setNumberOfTapsRequired:2];
     
     // Set table footer
     
