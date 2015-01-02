@@ -287,9 +287,23 @@
         [self.moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
-    /* Location */
-    PFGeoPoint *geoPoint = [self.gallery objectForKey:kFTPostLocationKey];
-    if (geoPoint) {
+    if ([self.gallery objectForKey:kFTPostPlaceKey]) {
+        
+        PFObject *place = [self.gallery objectForKey:kFTPostPlaceKey];
+        [place fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+            if (!error) {
+                [locationLabel setText:[place objectForKey:kFTPlaceNameKey]];
+                [locationLabel setUserInteractionEnabled:YES];
+                
+                UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
+                locationTapRecognizer.numberOfTapsRequired = 1;
+                [locationLabel addGestureRecognizer:locationTapRecognizer];
+            }
+        }];
+        
+    } else if ([self.gallery objectForKey:kFTPostLocationKey]) {
+        
+        PFGeoPoint *geoPoint = [self.gallery objectForKey:kFTPostLocationKey];
         CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
         CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
         [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
@@ -300,16 +314,16 @@
                         [locationLabel setText:postLocation];
                         [locationLabel setUserInteractionEnabled:YES];
                         
-                        UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                                        action:@selector(didTapLocationAction:)];
-                        tapRecognizer.numberOfTapsRequired = 1;
-                        [locationLabel addGestureRecognizer:tapRecognizer];
+                        UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
+                        locationTapRecognizer.numberOfTapsRequired = 1;
+                        [locationLabel addGestureRecognizer:locationTapRecognizer];
                     }
                 }
             } else {
                 NSLog(@"ERROR: %@",error);
             }
         }];
+        
     } else {
         [locationLabel setText:EMPTY_STRING];
     }

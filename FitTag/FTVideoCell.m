@@ -228,9 +228,23 @@
         [self.moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
-    // Location
-    PFGeoPoint *geoPoint = [self.video objectForKey:kFTPostLocationKey];
-    if (geoPoint) {
+    if ([self.video objectForKey:kFTPostPlaceKey]) {
+        
+        PFObject *place = [self.video objectForKey:kFTPostPlaceKey];
+        [place fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+            if (!error) {
+                [locationLabel setText:[place objectForKey:kFTPlaceNameKey]];
+                [locationLabel setUserInteractionEnabled:YES];
+                
+                UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
+                locationTapRecognizer.numberOfTapsRequired = 1;
+                [locationLabel addGestureRecognizer:locationTapRecognizer];
+            }
+        }];
+        
+    } else if ([self.video objectForKey:kFTPostLocationKey]) {
+        
+        PFGeoPoint *geoPoint = [self.video objectForKey:kFTPostLocationKey];
         CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
         CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
         [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
@@ -250,6 +264,7 @@
                 NSLog(@"ERROR: %@",error);
             }
         }];
+        
     } else {
         [locationLabel setText:EMPTY_STRING];
     }

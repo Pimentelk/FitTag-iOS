@@ -191,6 +191,10 @@
 #pragma mark - FTPhotoCellView
 
 - (void)setPhoto:(PFObject *)aPhoto {
+    
+    // reset text
+    [locationLabel setText:EMPTY_STRING];
+    
     photo = aPhoto;
     //NSLog(@"setPhoto FTPhotoViewCell::photo %@",photo);
     
@@ -226,9 +230,23 @@
         [self.moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
-    //Location
-    PFGeoPoint *geoPoint = [self.photo objectForKey:kFTPostLocationKey];
-    if (geoPoint) {
+    if ([self.photo objectForKey:kFTPostPlaceKey]) {
+        
+        PFObject *place = [self.photo objectForKey:kFTPostPlaceKey];
+        [place fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+            if (!error) {
+                [locationLabel setText:[place objectForKey:kFTPlaceNameKey]];
+                [locationLabel setUserInteractionEnabled:YES];
+                
+                UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
+                locationTapRecognizer.numberOfTapsRequired = 1;
+                [locationLabel addGestureRecognizer:locationTapRecognizer];
+            }
+        }];
+        
+    } else if ([self.photo objectForKey:kFTPostLocationKey]) {
+        
+        PFGeoPoint *geoPoint = [self.photo objectForKey:kFTPostLocationKey];
         CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
         CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
         [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
@@ -248,6 +266,7 @@
                 NSLog(@"ERROR: %@",error);
             }
         }];
+        
     } else {
         [locationLabel setText:EMPTY_STRING];
     }
