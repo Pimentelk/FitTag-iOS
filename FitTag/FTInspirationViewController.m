@@ -20,9 +20,7 @@
 @property (nonatomic, strong) NSMutableArray *selectedUsers;
 @property (nonatomic, strong) UILabel *continueMessage;
 @property (nonatomic, strong) UIButton *continueButton;
-@property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) PFGeoPoint *geoPoint;
-@property (nonatomic) BOOL locationUpdated;
 
 @property (nonatomic, strong) FTInviteFriendsViewController *inviteFriendsViewController;
 @end
@@ -30,9 +28,7 @@
 @implementation FTInspirationViewController
 @synthesize continueMessage;
 @synthesize continueButton;
-@synthesize locationManager;
 @synthesize geoPoint;
-@synthesize locationUpdated;
 @synthesize inviteFriendsViewController;
 @synthesize selectedUsers;
 
@@ -40,14 +36,7 @@
     [super viewDidLoad];
 
     // Update the users location
-    locationUpdated = NO;
-    
-    if (IS_OS_8_OR_LATER) {
-        [[self locationManager] requestAlwaysAuthorization];
-    }
-    
-    [[self locationManager] startUpdatingLocation];
-    
+        
     if (![PFUser currentUser]) {
         [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
         return;
@@ -105,7 +94,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
+        
     // Label
     continueMessage = [[UILabel alloc] initWithFrame:CGRectMake(10, 8, 280, 30)];
     continueMessage.numberOfLines = 0;
@@ -144,6 +133,7 @@
 }
 
 - (void)queryForUsers {
+    NSLog(@"qyeryForUsers");
     // Select all users who share similar interests
     // List of all users being followed by the current user
     PFQuery *followingActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
@@ -169,6 +159,7 @@
             [sharedInterestQuery whereKey:kFTUserObjectIdKey notContainedIn:followedUserIds];
             [sharedInterestQuery whereKey:kFTUserInterestsKey containedIn:self.interests];
             [sharedInterestQuery whereKeyExists:kFTUserInterestsKey];
+            [sharedInterestQuery whereKeyExists:kFTUserProfilePicMediumKey];
             
             /*
             if (geoPoint) {
@@ -333,56 +324,6 @@
     return sharedInterests;
 }
 
-#pragma mark - CLLocationManagerDelegate
-
-- (CLLocationManager *)locationManager {
-    //NSLog(@"%@::locationManager",VIEWCONTROLLER_MAP);
-    if (locationManager != nil) {
-        return locationManager;
-    }
-    locationManager = [[CLLocationManager alloc] init];
-    locationManager.delegate = self;
-    locationManager.distanceFilter = kCLDistanceFilterNone;
-    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    return locationManager;
-}
-
-- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    //NSLog(@"%@::didFailWithError: %@", VIEWCONTROLLER_MAP, error);
-    [[[UIAlertView alloc] initWithTitle:@"Error"
-                                message:@"Failed to Get Your Location"
-                               delegate:nil
-                      cancelButtonTitle:@"OK"
-                      otherButtonTitles:nil] show];
-    
-    locationUpdated = NO;
-    [self queryForUsers];
-    return;
-}
-
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-    //NSLog(@"%@::locationManager:didUpdateLocations:",VIEWCONTROLLER_MAP);
-    if (locationUpdated) {
-        return;
-    }
-    locationUpdated = YES;
-    [locationManager stopUpdatingLocation];
-    
-    PFUser *user = [PFUser currentUser];
-    if (user) {
-        CLLocation *location = [locations lastObject];
-        geoPoint = [PFGeoPoint geoPointWithLatitude:location.coordinate.latitude
-                                          longitude:location.coordinate.longitude];
-        [user setValue:geoPoint forKey:kFTUserLocationKey];
-        [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            if (succeeded) {
-                //NSLog(@"%@::locationManager:didUpdateLocations: - User location updated successfully.",VIEWCONTROLLER_MAP);
-                [self queryForUsers];
-            }
-        }];
-    }
-}
-
 #pragma mark 
 
 - (void)didTapBackButtonAction:(id)sender {
@@ -400,15 +341,17 @@
     //UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     //[loadingActivityIndicatorView startAnimating];
     [FTUtility followUserEventually:targetUser block:^(BOOL succeeded, NSError *error) {
-        if (error) {
-            
-        }
-        
         if (succeeded) {
             NSLog(@"followButtonAction::succeeded");
+            [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserFollowingChangedNotification object:nil];
             
-        } else {
-            NSLog(@"followButtonAction::error:%@",error);
+            if ([[targetUser objectForKey:kFTUserTypeKey] isEqualToString:kFTUserTypeBusiness]) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityBusinessFollowingChangedNotification object:nil];
+            }
+        }
+        
+        if (error) {
+            NSLog(@"unfollowButtonAction::error:%@",error);
         }
     }];
 }
@@ -417,15 +360,17 @@
     //UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     //[loadingActivityIndicatorView startAnimating];
     
-    [FTUtility unfollowUserEventually:targetUser block:^(NSError *error) {
-        if (error) {
+    [FTUtility unfollowUserEventually:targetUser block:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            NSLog(@"unfollowButtonAction::succeeded");
+            [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserFollowingChangedNotification object:nil];
             
+            if ([[targetUser objectForKey:kFTUserTypeKey] isEqualToString:kFTUserTypeBusiness]) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityBusinessFollowingChangedNotification object:nil];
+            }
         }
         
-        if (!error) {
-            NSLog(@"unfollowButtonAction::succeeded");
-            
-        } else {
+        if (error) {
             NSLog(@"unfollowButtonAction::error:%@",error);
         }
     }];
