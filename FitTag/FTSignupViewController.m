@@ -11,8 +11,6 @@
 //#import "UIView+FormScroll.h"
 #import "ImageCustomNavigationBar.h"
 
-#define TAKE_PHOTO_BUTTON 80
-
 #define ADD_PHOTO @"add_photo"
 #define FITTAG_LOGO @"fittag_logo"
 #define SEPARATORS @"separators"
@@ -160,7 +158,7 @@
     [self.signUpView.signUpButton setFrame:signupButtonFrame];
     
     CGRect cancelButtonFrame = self.signUpView.signUpButton.frame;
-    cancelButtonFrame.origin.y = signupButtonFrame.origin.y + signupButtonFrame.size.height + 30;
+    cancelButtonFrame.origin.y = self.signUpView.frame.size.height - cancelButtonFrame.size.height;
     
     UIButton *cancelButton = [[UIButton alloc] initWithFrame:cancelButtonFrame];
     [cancelButton addTarget:self action:@selector(didTapCancelButtonAction:) forControlEvents:UIControlEventTouchUpInside];
