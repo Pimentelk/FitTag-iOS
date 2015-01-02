@@ -37,11 +37,18 @@
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     NSLog(@"FTLocationManager::didFailWithError: %@", error);
+    
+    /*
     [[[UIAlertView alloc] initWithTitle:@"Error"
                                 message:@"Failed to Get Your Location"
                                delegate:nil
                       cancelButtonTitle:@"OK"
                       otherButtonTitles:nil] show];
+    */
+    
+    if (delegate && [delegate respondsToSelector:@selector(locationManager:didFailWithError:)]) {
+        [delegate locationManager:self didFailWithError:error];
+    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {

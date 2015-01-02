@@ -25,4 +25,11 @@
  */
 - (void)locationManager:(FTLocationManager *)locationManager didUpdateUserLocation:(CLLocation *)location geoPoint:(PFGeoPoint *)aGeoPoint;
 
+/*!
+ Sent to the delegate when the location fails to update
+ @param error the error that caused the fail
+ */
+- (void)locationManager:(FTLocationManager *)locationManager didFailWithError:(NSError *)error;
+
+
 @end
