@@ -15,5 +15,5 @@
 @property (nonatomic, strong) PFUser *user;
 - (void)queryForFollowers;
 - (void)queryForFollowing;
-
+- (void)queryForLickersOf:(PFObject *)object;
 @end

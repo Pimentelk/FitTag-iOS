@@ -8,6 +8,7 @@
 
 #import "FTViewFriendsViewController.h"
 #import "FTUserProfileViewController.h"
+#import "FTBusinessProfileViewController.h"
 
 #define DATACELL_IDENTIFIER @"DataCell"
 #define TABLE_VIEW_HEIGHT 80
@@ -17,12 +18,14 @@
 @property (nonatomic, strong) NSArray *objects;
 @property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
 @property (nonatomic, strong) FTUserProfileViewController *profileViewController;
+@property (nonatomic, strong) FTBusinessProfileViewController *businessViewController;
 @property (nonatomic, strong) UIBarButtonItem *backIndicator;
 @end
 
 @implementation FTViewFriendsViewController
 @synthesize flowLayout;
 @synthesize profileViewController;
+@synthesize businessViewController;
 @synthesize backIndicator;
 
 - (void)viewDidLoad {
@@ -30,6 +33,7 @@
     
     if (!self.user) {
         [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
+        return;
     }
     
     [self.tableView setSeparatorColor:[UIColor clearColor]];
@@ -68,6 +72,37 @@
 }
 
 #pragma mark - ()
+
+- (void)queryForLickersOf:(PFObject *)object {
+    
+    self.objects = nil;
+    [self.tableView reloadData];
+    
+    PFUser *postUser = [object objectForKey:kFTPostUserKey];
+    
+    // List of all likes for object
+    PFQuery *followingActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
+    [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeLike];
+    [followingActivitiesQuery whereKey:kFTActivityToUserKey equalTo:postUser];
+    [followingActivitiesQuery whereKey:kFTActivityPostKey equalTo:object];
+    [followingActivitiesQuery includeKey:kFTActivityFromUserKey];
+    [followingActivitiesQuery setCachePolicy:kPFCachePolicyNetworkOnly];
+    [followingActivitiesQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            
+            NSMutableArray *following = [[NSMutableArray alloc] init];
+            
+            for (PFUser *followed in objects) {
+                if ([followed objectForKey:kFTActivityFromUserKey]) {
+                    [following addObject:[followed objectForKey:kFTActivityFromUserKey]];
+                }
+            }
+            
+            self.objects = following;
+            [self.tableView reloadData];
+        }
+    }];
+}
 
 - (void)queryForFollowing {
     
@@ -165,18 +200,29 @@
 
 - (void)followCell:(FTFollowCell *)inviteCell didTapProfileImage:(UIButton *)button user:(PFUser *)aUser {
     //NSLog(@"%@::followCell:didTapProfileImage:user",VIEWCONTROLLER_INVITE);
-    if (profileViewController) {
-        profileViewController = nil;
+    PFUser *selectedUser = aUser;
+    NSString *userType = [selectedUser objectForKey:kFTUserTypeKey];
+    
+    if ([userType isEqualToString:kFTUserTypeBusiness]) {
+        if (businessViewController) {
+            businessViewController = nil;
+        }
+        
+        businessViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+        [businessViewController.navigationItem setLeftBarButtonItem:backIndicator];
+        [businessViewController setBusiness:selectedUser];
+        [self.navigationController pushViewController:businessViewController animated:YES];
+        
+    } else {
+        if (profileViewController) {
+            profileViewController = nil;
+        }
+        
+        profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+        [profileViewController.navigationItem setLeftBarButtonItem:backIndicator];
+        [profileViewController setUser:selectedUser];
+        [self.navigationController pushViewController:profileViewController animated:YES];
     }
-    
-    profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController.navigationItem setLeftBarButtonItem:backIndicator];
-    [profileViewController setUser:aUser];
-    [self.navigationController pushViewController:profileViewController animated:YES];
-}
-
-- (void)followCell:(FTFollowCell *)inviteCell didTapFollowButton:(UIButton *)button user:(PFUser *)aUser {
-    
 }
 
 #pragma mark - ()
