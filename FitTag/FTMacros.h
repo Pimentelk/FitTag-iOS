@@ -219,7 +219,18 @@
 // Photo button
 #define TAKE_PHOTO_BUTTON 80
 
+// Suggestion Type
+#define SUGGESTION_TYPE_USERS @"users"
+#define SUGGESTION_TYPE_HASHTAGS @"hashtags"
+#define SUGGESTION_TYPE_PLACES @"places"
+
+// Suggestion user types
+#define SUGGEST_ALL @"SUGGEST_ALL"
+#define SUGGEST_BUSINESS @"SUGGEST_BUSINESS"
+#define SUGGEST_AMBASSADOR @"SUGGEST_AMBASSADOR"
+
 // IMAGES
+#define IMAGE_BUSINESS_ICON [UIImage imageNamed:@"search_business"]
 #define IMAGE_PLAY_BUTTON [UIImage imageNamed:@"play_button"]
 #define IMAGE_FOLLOW_SELECTED @"follow_selected"
 #define IMAGE_FOLLOW_UNSELECTED @"follow_unselected"
