@@ -19,14 +19,46 @@
 #import "FTLoginViewController.h"
 #import "FTSignupViewController.h"
 
+#define OVERLAY_HEGIHT 212
+#define OVERLAY_WIDTH 320
+
+#define LOGO_WIDTH 320
+#define LOGO_HEIGHT 102
+
+#define FACEBOOK_WIDTH 295
+#define FACEBOOK_HEIGHT 57
+
+#define OVERLAY_PADDING 10
+
+#define SIGNUP_WIDTH 142
+#define SIGNUP_HEIGHT 57
+
+#define LOGIN_WIDTH 142
+#define LOGIN_HEIGHT 57
+
+#define LOGIN_SIGNUP_PADDING 11
 
 @interface FTConfigViewController () {
     FTLoginViewController *loginViewController;
     FTSignupViewController *signUpViewController;
 }
+@property (nonatomic, strong) UIButton *facebookButton;
+@property (nonatomic, strong) UIButton *twitterButton;
+@property (nonatomic, strong) UIButton *signupButton;
+@property (nonatomic, strong) UIButton *loginButton;
+@property (nonatomic, strong) UIView *overlayView;
+@property (nonatomic, strong) UIView *logoView;
+@property (nonatomic, strong) UITapGestureRecognizer *tapGesture;
 @end
 
 @implementation FTConfigViewController
+@synthesize facebookButton;
+@synthesize twitterButton;
+@synthesize signupButton;
+@synthesize loginButton;
+@synthesize overlayView;
+@synthesize logoView;
+@synthesize tapGesture;
 
 #pragma mark - UIViewController
 
@@ -48,32 +80,134 @@
     [[PFUser currentUser] refreshInBackgroundWithTarget:self selector:@selector(refreshCurrentUserCallbackWithResult:error:)];
 }
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [self.view setBackgroundColor:FT_RED];
+    
+    tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLogoAction:)];
+    [tapGesture setNumberOfTapsRequired:1];
+    
+    CGSize viewSize = self.view.frame.size;
+    
+    logoView = [[UIView alloc] initWithFrame:CGRectMake((viewSize.width-164)/2, 70, 164, 32)];
+    [logoView setBackgroundColor:[UIColor clearColor]];
+    [logoView setUserInteractionEnabled:YES];
+    [logoView addGestureRecognizer:tapGesture];
+    [logoView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:FITTAG_LOGO]]];
+    [self.view addSubview:logoView];
+    
+    overlayView = [[UIView alloc] initWithFrame:CGRectMake(0, viewSize.height - OVERLAY_HEGIHT, viewSize.width, OVERLAY_HEGIHT)];
+    [overlayView setBackgroundColor:[UIColor clearColor]];
+    [overlayView setUserInteractionEnabled:YES];
+    [overlayView addGestureRecognizer:tapGesture];
+    [overlayView setBackgroundColor:[UIColor colorWithPatternImage:LOGIN_IMAGE_OVERLAY]];
+    [self.view addSubview:overlayView];
+    
+    // Customize the Log In View Controller
+    loginViewController = [[FTLoginViewController alloc] init];
+    loginViewController.delegate = self;
+    loginViewController.facebookPermissions = @[@"email",@"public_profile",@"user_friends"];
+    loginViewController.fields = PFLogInFieldsUsernameAndPassword | PFLogInFieldsTwitter | PFLogInFieldsFacebook | PFLogInFieldsPasswordForgotten | PFLogInFieldsLogInButton;
+    
+    // Customize the Sign Up View Controller
+    signUpViewController = [[FTSignupViewController alloc] init];
+    signUpViewController.delegate = self;
+    signUpViewController.fields = PFSignUpFieldsDefault;
+    loginViewController.signUpController = signUpViewController;
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     NSLog(@"%@::viewDidAppear:",VIEWCONTROLLER_CONFIG);
     [super viewDidAppear:animated];
+    
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_CONFIG];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
     
-    if (![PFUser currentUser]) {
-        // Customize the Log In View Controller
-        loginViewController = [[FTLoginViewController alloc] init];
-        loginViewController.delegate = self;
-        loginViewController.facebookPermissions = @[@"email",@"public_profile",@"user_friends"];
-        loginViewController.fields = PFLogInFieldsUsernameAndPassword | PFLogInFieldsTwitter | PFLogInFieldsFacebook | PFLogInFieldsSignUpButton | PFLogInFieldsPasswordForgotten | PFLogInFieldsLogInButton;
-        
-        // Customize the Sign Up View Controller
-        
-        signUpViewController = [[FTSignupViewController alloc] init];
-        signUpViewController.delegate = self;
-        signUpViewController.fields = PFSignUpFieldsDefault;
-        loginViewController.signUpController = signUpViewController;
-        
-        [self presentViewController:loginViewController animated:NO completion:NULL];
-    }
+    CGSize viewSize = self.view.frame.size;
+    
+    CGRect facebookRect = CGRectMake((viewSize.width - FACEBOOK_WIDTH)/2, OVERLAY_PADDING, FACEBOOK_WIDTH, FACEBOOK_HEIGHT);
+    
+    facebookButton = loginViewController.logInView.facebookButton;
+    [facebookButton addTarget:self action:@selector(didTapFacebookButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [facebookButton setFrame:facebookRect];
+    [facebookButton setImage:nil forState:UIControlStateNormal];
+    [facebookButton setImage:nil forState:UIControlStateHighlighted];
+    [facebookButton setBackgroundImage:LOGIN_IMAGE_FACEBOOK forState:UIControlStateNormal];
+    [facebookButton setBackgroundImage:LOGIN_IMAGE_FACEBOOK forState:UIControlStateSelected];
+    [facebookButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
+    [facebookButton setTitle:EMPTY_STRING forState:UIControlStateSelected];
+    [facebookButton addTarget:self action:@selector(didTapFacebookButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [overlayView addSubview:facebookButton];
+    
+    CGRect twitterRect = facebookRect;
+    twitterRect.origin.y += OVERLAY_PADDING + facebookRect.size.height;
+    
+    twitterButton = loginViewController.logInView.twitterButton;
+    [twitterButton addTarget:self action:@selector(didTapTwitterButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [twitterButton setFrame:twitterRect];
+    [twitterButton setImage:nil forState:UIControlStateNormal];
+    [twitterButton setImage:nil forState:UIControlStateHighlighted];
+    [twitterButton setBackgroundImage:LOGIN_IMAGE_TWITTER forState:UIControlStateNormal];
+    [twitterButton setBackgroundImage:LOGIN_IMAGE_TWITTER forState:UIControlStateSelected];
+    [twitterButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
+    [twitterButton setTitle:EMPTY_STRING forState:UIControlStateSelected];
+    
+    [twitterButton setBackgroundImage:LOGIN_IMAGE_TWITTER forState:UIControlStateNormal];
+    [twitterButton addTarget:self action:@selector(didTapTwitterButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [overlayView addSubview:twitterButton];
+    
+    CGRect signupRect = CGRectMake(twitterRect.origin.x, twitterRect.origin.y, SIGNUP_WIDTH, SIGNUP_HEIGHT);
+    signupRect.origin.y += OVERLAY_PADDING + twitterRect.size.height;
+    
+    signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [signupButton setFrame:signupRect];
+    [signupButton setImage:LOGIN_IMAGE_SIGNUP forState:UIControlStateNormal];
+    [signupButton addTarget:self action:@selector(didTapSignupButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [overlayView addSubview:signupButton];
+    
+    CGRect loginRect = signupRect;
+    loginRect.origin.x += loginRect.size.width + LOGIN_SIGNUP_PADDING;
+    
+    loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [loginButton setFrame:loginRect];
+    [loginButton setImage:LOGIN_IMAGE_LOGIN forState:UIControlStateNormal];
+    [loginButton addTarget:self action:@selector(didTapLoginButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [overlayView addSubview:loginButton];
 }
 
 #pragma mark - ()
+
+- (void)didTapFacebookButtonAction:(UIButton *)button {
+    [self presentViewController:loginViewController animated:YES completion:NULL];
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
+                                                          action:kFTTrackEventActionTypeButtonPress
+                                                           label:kFTTrackEventLabelTypeFacebook
+                                                           value:nil] build]];
+}
+
+- (void)didTapTwitterButtonAction:(UIButton *)button {
+    [self presentViewController:loginViewController animated:YES completion:NULL];
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
+                                                          action:kFTTrackEventActionTypeButtonPress
+                                                           label:kFTTrackEventLabelTypeTwitter
+                                                           value:nil] build]];
+}
+
+- (void)didTapSignupButtonAction:(UIButton *)button {
+    [self presentViewController:signUpViewController animated:YES completion:NULL];
+}
+
+- (void)didTapLoginButtonAction:(UIButton *)button {
+    [self presentViewController:loginViewController animated:YES completion:NULL];
+}
+
+- (void)didTapLogoAction:(id)sender {
+    [FTUtility showHudMessage:@"boop" WithDuration:1];
+}
 
 - (void)refreshCurrentUserCallbackWithResult:(PFObject *)refreshedObject
                                        error:(NSError *)error {
