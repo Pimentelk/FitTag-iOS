@@ -190,7 +190,7 @@
     [followingActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
     [followingActivitiesQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
     followingActivitiesQuery.cachePolicy = kPFCachePolicyNetworkOnly;
-    followingActivitiesQuery.limit = 100;
+    followingActivitiesQuery.limit = 500;
 
     // Posts from users being followed
     PFQuery *postsFromFollowedUsersQuery = [PFQuery queryWithClassName:self.parseClassName];
@@ -204,6 +204,7 @@
         
     PFQuery *query = [PFQuery orQueryWithSubqueries:[NSArray arrayWithObjects: postsFromFollowedUsersQuery, postsFromCurrentUserQuery, nil]];
     [query includeKey:kFTPostUserKey];
+    [query includeKey:kFTPostPlaceKey];
     [query orderByDescending:@"createdAt"];
         
     // A pull-to-refresh should always trigger a network request.
