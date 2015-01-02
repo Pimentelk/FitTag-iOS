@@ -21,6 +21,7 @@
 #import "FTViewFriendsViewController.h"
 
 @interface FTPostDetailsViewController()
+
 @property (nonatomic, strong) UITextField *commentTextField;
 @property (nonatomic, strong) UIButton *commentSendButton;
 @property (nonatomic, assign) BOOL likersQueryInProgress;
@@ -36,9 +37,14 @@
 @property (nonatomic, strong) UICollectionViewFlowLayout *businessFlowLayout;
 
 @property (nonatomic, strong) FTSearchViewController *searchViewController;
+
+@property (nonatomic, strong) FTSuggestionTableView *suggestionTableView;
+
+@property (nonatomic, strong) UIBarButtonItem *cancelButton;
+
 @end
 
-static const CGFloat kFTCellInsetWidth = 0.0f;
+static const CGFloat kFTCellInsetWidth = 10.0f;
 
 @implementation FTPostDetailsViewController
 @synthesize commentTextField;
@@ -52,6 +58,8 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 @synthesize flowLayout;
 @synthesize businessFlowLayout;
 @synthesize searchViewController;
+@synthesize suggestionTableView;
+@synthesize cancelButton;
 
 #pragma mark - Initialization
 
@@ -60,7 +68,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification object:self.post];
 }
 
-- (id)initWithPost:(PFObject* )aPost AndType:(NSString *)aType {
+- (id)initWithPost:(PFObject *)aPost AndType:(NSString *)aType {
     self = [super initWithStyle:UITableViewStylePlain];
     if (self) {
         // The className to query on
@@ -89,8 +97,14 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     
     [super viewDidLoad];
+        
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     
     [self.navigationItem setTitle:NAVIGATION_TITLE_COMMENT];
+        
+    // Cancel button
+    cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(didTapcancelButtonAction:)];
+    [cancelButton setTintColor:[UIColor whiteColor]];
     
     // Override the back idnicator
     dismissProfileButton = [[UIBarButtonItem alloc] init];
@@ -128,20 +142,8 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     // Init search view controller
     searchViewController = [[FTSearchViewController alloc] init];
     
-    // Load Camera
-    /*
-    UIBarButtonItem *loadCameraButton = [[UIBarButtonItem alloc] init];
-    [loadCameraButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_CAMERA]];
-    [loadCameraButton setStyle:UIBarButtonItemStylePlain];
-    [loadCameraButton setTarget:self];
-    [loadCameraButton setAction:@selector(didTapLoadCameraButtonAction:)];
-    */
-    //[self.navigationItem setRightBarButtonItem:loadCameraButton];
-
     // Header view
     self.headerView = [[FTPostDetailsHeaderView alloc] initWithFrame:[FTPostDetailsHeaderView rectForView] post:self.post type:self.type];
-    
-    //CGFloat height = [FTPostDetailsHeaderView heightForCellWithName:nil contentString:[self.post objectForKey:kFTPostCaptionKey]];
     
     NSString *caption = [self.post objectForKey:kFTPostCaptionKey];
     CGRect headerRect = self.headerView.frame;
@@ -161,16 +163,21 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     commentTextField.delegate = self;
     footerView.delegate = self;
     
-    
     self.headerView.delegate = self;
     self.tableView.tableHeaderView = self.headerView;
-    self.tableView.tableFooterView = footerView;
+    self.tableView.tableFooterView = self.footerView;
     
     // Register to be notified when the keyboard will be shown to scroll the view
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLikedOrUnlikedPhoto:)
                                                  name:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification object:self.post];
     
+    suggestionTableView = [[FTSuggestionTableView alloc] initWithFrame:CGRectMake(0, 150, 320, 150) style:UITableViewStylePlain];
+    [suggestionTableView setBackgroundColor:[UIColor whiteColor]];
+    [suggestionTableView setSuggestionDelegate:self];
+    [suggestionTableView setAlpha:0];
+    
+    [self.view addSubview:suggestionTableView];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -185,6 +192,10 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     }
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     if ([self.headerView moviePlayer]) {
@@ -194,8 +205,16 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 
 #pragma mark - UITableViewDelegate
 
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 0;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    return 0;
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row < self.objects.count) { // A comment row
+    if ([tableView isEqual:self.tableView] && indexPath.row < self.objects.count) { // A comment row
         PFObject *object = [self.objects objectAtIndex:indexPath.row];
         
         if (object) {
@@ -240,18 +259,20 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 }
 
 - (void)objectsDidLoad:(NSError *)error {
+    //NSLog(@"objectsDidLoad:%@",error);
     [super objectsDidLoad:error];
     [self.headerView reloadLikeBar];
     [self loadLikers];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath object:(PFObject *)object {
-    static NSString *cellID = @"CommentCell";
+    
+    static NSString *BaseTextCell = @"CommentCell";
     
     // Try to dequeue a cell and create one if necessary
-    FTBaseTextCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+    FTBaseTextCell *cell = [tableView dequeueReusableCellWithIdentifier:BaseTextCell];
     if (cell == nil) {
-        cell = [[FTBaseTextCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
+        cell = [[FTBaseTextCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:BaseTextCell];
         cell.cellInsetWidth = kFTCellInsetWidth;
         cell.delegate = self;
     }
@@ -278,6 +299,14 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 #pragma mark - UITextFieldDelegate
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
+    
+    NSLog(@"stuff:%f",self.tableView.contentOffset.y);
+    
+    CGRect tableViewRect = CGRectMake(0, self.footerView.frame.origin.y-210, self.tableView.frame.size.width, 210);
+    [suggestionTableView setFrame:tableViewRect];
+    [suggestionTableView setAlpha:0];
+    [self.navigationItem setRightBarButtonItem:cancelButton];
+    
     NSString *trimmedComment = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if (trimmedComment.length != 0 && [self.post objectForKey:kFTPostUserKey]) {
         [commentSendButton setEnabled:YES];
@@ -286,7 +315,99 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     }
 }
 
--(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    
+    [self.view bringSubviewToFront:suggestionTableView];
+    
+    NSArray *mentionRanges = [FTUtility rangesOfMentionsInString:textField.text];
+    NSArray *hashtagRanges = [FTUtility rangesOfHashtagsInString:textField.text];
+    
+    NSTextCheckingResult *currentMention;
+    NSTextCheckingResult *currentHashtag;
+    
+    if (mentionRanges.count > 0) {
+        for (int i = 0; i < [mentionRanges count]; i++) {
+            
+            NSTextCheckingResult *mention = [mentionRanges objectAtIndex:i];
+            //Check if the currentRange intersects the mention
+            //Have to add an extra space to the range for if you're at the end of a hashtag. (since NSLocationInRange uses a < instead of <=)
+            NSRange currentlyTypingMentionRange = NSMakeRange(mention.range.location, mention.range.length + 1);
+
+            if (NSLocationInRange(range.location, currentlyTypingMentionRange)) {
+                //If the cursor is over the hashtag, then snag that hashtag for matching purposes.
+                currentMention = mention;
+            }
+        }
+    }
+    
+    if (hashtagRanges.count > 0) {
+        for (int i = 0; i < [hashtagRanges count]; i++) {
+            
+            NSTextCheckingResult *hashtag = [hashtagRanges objectAtIndex:i];
+            //Check if the currentRange intersects the mention
+            //Have to add an extra space to the range for if you're at the end of a hashtag. (since NSLocationInRange uses a < instead of <=)
+            NSRange currentlyTypingHashtagRange = NSMakeRange(hashtag.range.location, hashtag.range.length + 1);
+            
+            if (NSLocationInRange(range.location, currentlyTypingHashtagRange)) {
+                //If the cursor is over the hashtag, then snag that hashtag for matching purposes.
+                currentHashtag = hashtag;
+            }
+        }
+    }
+    
+    if (currentMention){
+        
+        // Disable scrolling to prevent interfearance with controller
+        [self.tableView setScrollEnabled:NO];
+        
+        // Fade in
+        [UIView animateWithDuration:0.4 animations:^{
+            [suggestionTableView setAlpha:1];
+        }];
+        
+        // refresh the suggestions array
+        [suggestionTableView refreshSuggestionsWithType:SUGGESTION_TYPE_USERS];
+        
+        NSString *text = [[textField.text substringWithRange:currentMention.range] stringByReplacingOccurrencesOfString:@"@" withString:EMPTY_STRING];
+        text = [text stringByAppendingString:string];
+        
+        if (text.length > 0) {
+            
+            NSLog(@"text:%@",text);
+            NSLog(@"string:%@",string);
+            NSLog(@"textField.text:%@",textField.text);
+            
+            [suggestionTableView updateSuggestionWithText:text AndType:SUGGESTION_TYPE_USERS];
+        }
+        
+    } else if (currentHashtag){
+        
+        // Disable scrolling to prevent interfearance with controller
+        [self.tableView setScrollEnabled:NO];
+        
+        // Fade in
+        [UIView animateWithDuration:0.4 animations:^{
+            [suggestionTableView setAlpha:1];
+        }];
+        
+        // refresh the suggestions array
+        [suggestionTableView refreshSuggestionsWithType:SUGGESTION_TYPE_HASHTAGS];
+        
+        NSString *text = [[textField.text substringWithRange:currentHashtag.range] stringByReplacingOccurrencesOfString:@"#" withString:EMPTY_STRING];
+        text = [text stringByAppendingString:string];
+        
+        if (text.length > 0) {
+            [suggestionTableView updateSuggestionWithText:text AndType:SUGGESTION_TYPE_HASHTAGS];
+        }
+        
+    } else {
+        //NSLog(@"Not showing auto complete...");
+        [self.tableView setScrollEnabled:YES];
+        [UIView animateWithDuration:0.4 animations:^{
+            [suggestionTableView setAlpha:0];
+        }];
+    }
+    
     NSString *trimmedComment = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if (trimmedComment.length != 0 && [self.post objectForKey:kFTPostUserKey]) {
         [commentSendButton setEnabled:YES];
@@ -297,6 +418,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
+    
     NSString *trimmedComment = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if (trimmedComment.length != 0 && [self.post objectForKey:kFTPostUserKey]) {
         [commentSendButton setEnabled:YES];
@@ -360,6 +482,11 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     }
     
     [textField setText:EMPTY_STRING];
+    [suggestionTableView setAlpha:0];
+    
+    [self.tableView setScrollEnabled:YES];
+    [self.navigationItem setRightBarButtonItem:nil];
+    
     return [textField resignFirstResponder];
 }
 
@@ -367,6 +494,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     [commentTextField resignFirstResponder];
+    [self.navigationItem setRightBarButtonItem:nil];
 }
 
 #pragma mark - FTBaseTextCellDelegate
@@ -440,7 +568,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 }
 
 - (void)cell:(FTBaseTextCell *)cellView didTapUserButton:(PFUser *)aUser {
-    NSLog(@"%@::didTapUserButton:",VIEWCONTROLLER_ACTIVITY);
+    //NSLog(@"%@::didTapUserButton:",VIEWCONTROLLER_ACTIVITY);
     // Push user profile
     FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     [profileViewController setUser:aUser];
@@ -484,7 +612,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
             if (users.count == 1) {
                 
                 PFUser *mentionedUser = [users objectAtIndex:0];
-                NSLog(@"mentionedUser:%@",mentionedUser);
+                //NSLog(@"mentionedUser:%@",mentionedUser);
                 
                 if ([mentionedUser objectForKey:kFTUserTypeBusiness]) {
                     businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:businessFlowLayout];
@@ -526,7 +654,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 
 - (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView
           didTapCommentButton:(UIButton *)button {
-    [footerView.commentField becomeFirstResponder];
+    [commentTextField becomeFirstResponder];
 }
 
 - (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView
@@ -542,7 +670,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
 - (void)postDetailsHeaderView:(FTPostDetailsHeaderView *)headerView
                didTapLocation:(UIButton *)button
                          post:(PFObject *)aPost {
-    NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
+    //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
     // Map Home View
     FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
     if ([aPost objectForKey:kFTPostLocationKey]) {
@@ -622,7 +750,7 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     }
     
     if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_SHARE_ON_FACEBOOK]) {
-        NSLog(@"didTapFacebookShareButtonAction");
+        //NSLog(@"didTapFacebookShareButtonAction");
         // Check that the user account is linked
         [FTUtility prepareToSharePostOnFacebook:post];
     } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_SHARE_ON_TWITTER]) {
@@ -670,7 +798,30 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [self textFieldShouldReturn:commentTextField];
 }
 
+#pragma mark - FTSuggestionTableViewDelegate
+
+- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView didSelectHashtag:(NSString *)hashtag completeString:(NSString *)completeString {
+    if (hashtag) {
+        //NSString *hashtagString = [@"#" stringByAppendingString:hashtag];
+        NSString *replaceString = [commentTextField.text stringByReplacingOccurrencesOfString:completeString withString:hashtag];
+        [commentTextField setText:replaceString];
+    }
+}
+
+- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView didSelectUser:(PFUser *)user completeString:(NSString *)completeString {
+    if ([user objectForKey:kFTUserDisplayNameKey]) {
+        NSString *displayname = [user objectForKey:kFTUserDisplayNameKey];
+        //NSString *mentionString = [@"@" stringByAppendingString:displayname];
+        NSString *replaceString = [commentTextField.text stringByReplacingOccurrencesOfString:completeString withString:displayname];
+        [commentTextField setText:replaceString];
+    }
+}
+
 #pragma mark - ()
+
+- (void)didTapTableViewAction:(id)sender {
+    //NSLog(@"didTapTableViewAction:");
+}
 
 - (void)didTapLoadCameraButtonAction:(id)sender {
     FTCamViewController *cameraViewController = [[FTCamViewController alloc] init];
@@ -691,8 +842,8 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     
     if ([userType isEqualToString:kFTUserTypeBusiness]) {
         
-        NSLog(@"user:%@",user);
-        NSLog(@"userType:%@",userType);
+        //NSLog(@"user:%@",user);
+        //NSLog(@"userType:%@",userType);
         
         UICollectionViewFlowLayout *businessFloyLayout = [[UICollectionViewFlowLayout alloc] init];
         [businessFloyLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
@@ -718,11 +869,19 @@ static const CGFloat kFTCellInsetWidth = 0.0f;
     [self.headerView reloadLikeBar];
 }
 
-- (void)keyboardWillShow:(NSNotification*)note {
-    // Scroll the view to the comment text box
-    NSDictionary* info = [note userInfo];
-    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-    [self.tableView setContentOffset:CGPointMake(0.0f, self.tableView.contentSize.height-kbSize.height) animated:YES];
+- (void)keyboardWillShow:(NSNotification *)note {
+    NSDictionary *info = [note userInfo];
+    CGRect kbRect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGSize kbSize = kbRect.size;
+    CGFloat offset = self.tableView.contentSize.height - kbSize.height;
+    [self.tableView setContentOffset:CGPointMake(0,offset) animated:NO];
+}
+
+- (void)didTapcancelButtonAction:(id)sender {
+    [suggestionTableView setAlpha:0];
+    [self.navigationItem setRightBarButtonItem:nil];
+    [commentTextField resignFirstResponder];
+    [self.tableView setScrollEnabled:YES];
 }
 
 - (void)loadLikers {
