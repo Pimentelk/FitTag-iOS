@@ -780,14 +780,13 @@
     if (text) {
         CGSize size;
         
-        if (IS_OS_7_OR_LATER) {
-            //iOS 7
-            CGRect frame = [text boundingRectWithSize:CGSizeMake(widthValue, CGFLOAT_MAX)
-                                              options:NSStringDrawingUsesLineFragmentOrigin
-                                           attributes:@{NSFontAttributeName:font}
-                                              context:nil];
-            size = CGSizeMake(frame.size.width, frame.size.height+1);
-        }
+        CGRect frame = [text boundingRectWithSize:CGSizeMake(widthValue, CGFLOAT_MAX)
+                                          options:NSStringDrawingUsesLineFragmentOrigin
+                                       attributes:@{NSFontAttributeName:font}
+                                          context:nil];
+        
+        size = CGSizeMake(frame.size.width, frame.size.height+1);
+        
         result = MAX(size.height, result);
     }
     return result;
@@ -949,11 +948,23 @@
     return matchedResults;
 }
 
++ (NSArray *)rangesOfHashtagsInString:(NSString *)string {
+    NSRegularExpression *hashtagDetector = [[NSRegularExpression alloc] initWithPattern:@"#\\w\\w*"
+                                                                                options:NSRegularExpressionCaseInsensitive
+                                                                                  error:nil];
+    NSArray *hashtagRanges = [hashtagDetector matchesInString:string
+                                                      options:NSMatchingWithoutAnchoringBounds
+                                                        range:NSMakeRange(0, string.length)];
+    return hashtagRanges;
+}
+
 + (NSArray *)extractMentionsFromText:(NSString *)text {
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@(\\w+)" options:0 error:&error];
     
-    NSArray *matches = [regex matchesInString:text options:0 range:NSMakeRange(0,text.length)];
+    NSArray *matches = [regex matchesInString:text
+                                      options:0
+                                        range:NSMakeRange(0,text.length)];
     
     NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
     
@@ -964,6 +975,16 @@
         [matchedResults addObject:word];
     }
     return matchedResults;
+}
+
++ (NSArray *)rangesOfMentionsInString:(NSString *)string {
+    NSRegularExpression *hashtagDetector = [[NSRegularExpression alloc] initWithPattern:@"@\\w\\w*"
+                                                                                options:NSRegularExpressionCaseInsensitive
+                                                                                  error:nil];
+    NSArray *hashtagRanges = [hashtagDetector matchesInString:string
+                                                      options:NSMatchingWithoutAnchoringBounds
+                                                        range:NSMakeRange(0, string.length)];
+    return hashtagRanges;
 }
 
 #pragma mark showHudMessage

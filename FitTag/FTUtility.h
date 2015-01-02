@@ -42,7 +42,9 @@
 + (NSString *)getLowercaseStringWithoutSymbols:(NSString *)mention;
 
 + (NSArray *)extractHashtagsFromText:(NSString *)text;
++ (NSArray *)rangesOfMentionsInString:(NSString *)string;
 + (NSArray *)extractMentionsFromText:(NSString *)text;
++ (NSArray *)rangesOfHashtagsInString:(NSString *)string;
 
 + (void)showHudMessage:(NSString *)message WithDuration:(NSTimeInterval)duration;
 
