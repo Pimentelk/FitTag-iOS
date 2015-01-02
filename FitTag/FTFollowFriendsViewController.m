@@ -8,32 +8,47 @@
 
 #import "FTFollowFriendsViewController.h"
 #import "FTUserProfileViewController.h"
+#import "FTBusinessProfileViewController.h"
 
 #define DATACELL_IDENTIFIER @"DataCell"
-#define TABLE_VIEW_HEIGHT 80
+#define TABLE_VIEW_HEIGHT 40
 
 @interface FTFollowFriendsViewController()
 @property (nonatomic, strong) NSArray *objects;
 @property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
 @property (nonatomic, strong) FTUserProfileViewController *profileViewController;
+@property (nonatomic, strong) FTBusinessProfileViewController *businessViewController;
 @property (nonatomic, strong) FTInviteTableHeaderView *headerView;
 @property (nonatomic, strong) FTLocationManager *locationManager;
 @property (nonatomic, strong) UIBarButtonItem *backIndicator;
+@property (nonatomic, strong) UIImageView *errorLocationImage;
+@property BOOL locationUpdated;
 @end
 
 @implementation FTFollowFriendsViewController
 @synthesize flowLayout;
 @synthesize profileViewController;
+@synthesize businessViewController;
 @synthesize followUserQueryType;
 @synthesize headerView;
 @synthesize locationManager;
 @synthesize backIndicator;
+@synthesize locationUpdated;
+@synthesize errorLocationImage;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    locationUpdated = NO;
+    
+    UIImage *noLocationImage = [UIImage imageNamed:@"no_location"];
+    errorLocationImage = [[UIImageView alloc] initWithImage:noLocationImage];
+    [errorLocationImage setFrame:CGRectMake(0, 0, 263, 298)];
+    [errorLocationImage setCenter:CGPointMake(self.view.frame.size.width/2, (self.view.frame.size.height/2)-TABLE_VIEW_HEIGHT)];
+    
+    // manage user location
     locationManager = [[FTLocationManager alloc] init];
-    [locationManager requestLocationAuthorization];
+    [locationManager setDelegate:self];
     
     //[self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     [self.tableView setSeparatorColor:[UIColor clearColor]];
@@ -62,7 +77,7 @@
     [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
     
     // Table headerview
-    headerView = [[FTInviteTableHeaderView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 40)];
+    headerView = [[FTInviteTableHeaderView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, TABLE_VIEW_HEIGHT)];
     headerView.delegate = self;
     
     [headerView setLocationSelected];
@@ -79,6 +94,12 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    [locationManager requestLocationAuthorization];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_FOLLOW];
@@ -165,6 +186,13 @@
             switch (type) {
                 case FTFollowUserQueryTypeNear: {
                     
+                    if (!locationUpdated) {
+                        [self.view addSubview:errorLocationImage];
+                        self.objects = nil;
+                        [self.tableView reloadData];
+                        return;
+                    }
+                    
                     if (![[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
                         [[[UIAlertView alloc] initWithTitle:@"User Location Error"
                                                     message:@"User location needs to be enabled to find users near you."
@@ -203,6 +231,8 @@
                         return;
                     }
                     
+                    [errorLocationImage removeFromSuperview];
+                    
                     NSArray *interests = [[PFUser currentUser] objectForKey:kFTUserInterestsKey];
                                         
                     PFQuery *followUsersByInterestQuery = [PFQuery queryWithClassName:kFTUserClassKey];
@@ -226,6 +256,16 @@
             }
         }
     }];
+}
+
+#pragma mark - FTLocationManagerDelegate
+
+- (void)locationManager:(FTLocationManager *)locationManager didUpdateUserLocation:(CLLocation *)location geoPoint:(PFGeoPoint *)aGeoPoint {
+    locationUpdated = YES;
+}
+
+- (void)locationManager:(FTLocationManager *)locationManager didFailWithError:(NSError *)error {
+    locationUpdated = NO;
 }
 
 #pragma mark - UITableViewDelegate
@@ -264,18 +304,30 @@
 
 - (void)followCell:(FTFollowCell *)inviteCell didTapProfileImage:(UIButton *)button user:(PFUser *)aUser {
     //NSLog(@"%@::followCell:didTapProfileImage:user",VIEWCONTROLLER_INVITE);
-    if (profileViewController) {
-        profileViewController = nil;
+    
+    PFUser *selectedUser = aUser;
+    NSString *userType = [selectedUser objectForKey:kFTUserTypeKey];
+    
+    if ([userType isEqualToString:kFTUserTypeBusiness]) {
+        if (businessViewController) {
+            businessViewController = nil;
+        }
+        
+        businessViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+        [businessViewController.navigationItem setLeftBarButtonItem:backIndicator];
+        [businessViewController setBusiness:selectedUser];
+        [self.navigationController pushViewController:businessViewController animated:YES];
+        
+    } else {
+        if (profileViewController) {
+            profileViewController = nil;
+        }
+        
+        profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+        [profileViewController.navigationItem setLeftBarButtonItem:backIndicator];
+        [profileViewController setUser:selectedUser];
+        [self.navigationController pushViewController:profileViewController animated:YES];
     }
-    
-    profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController.navigationItem setLeftBarButtonItem:backIndicator];
-    [profileViewController setUser:aUser];
-    [self.navigationController pushViewController:profileViewController animated:YES];
-}
-
-- (void)followCell:(FTFollowCell *)inviteCell didTapFollowButton:(UIButton *)button user:(PFUser *)aUser {
-    
 }
 
 #pragma mark - FTInviteTableHeaderViewDelegate
