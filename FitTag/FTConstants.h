@@ -122,6 +122,7 @@ extern NSString *const kFTPostPostsKey;
 extern NSString *const kFTPostHashTagKey;
 extern NSString *const kFTPostMentionKey;
 extern NSString *const kFTPostCaptionKey;
+extern NSString *const kFTPostPlaceKey;
 
 extern NSString *const kFTPostTypeGallery;
 extern NSString *const kFTPostTypeGalleryImage;
@@ -193,6 +194,32 @@ extern NSString *const kFTUserCoverPhotoKey;
 extern NSString *const kFTUserTypeUser;
 extern NSString *const kFTUserTypeAmbassador;
 extern NSString *const kFTUserTypeBusiness;
+
+#pragma mark - PFObject Place Class
+
+// Class key
+extern NSString *const kFTPlaceClassKey;
+
+// Field keys
+extern NSString *const kFTPlaceNameKey;
+extern NSString *const kFTPlaceDescriptionKey;
+extern NSString *const kFTPlaceLocationKey;
+extern NSString *const kFTPlaceVerifiedKey;
+extern NSString *const kFTPlaceIconKey;
+extern NSString *const kFTPlaceContactKey;
+
+#pragma mark - PFObject Location Class
+
+// Class key
+extern NSString *const kFTLocationClassKey;
+
+// Field keys
+extern NSString *const kFTLocationAddressKey;
+extern NSString *const kFTLocationCityKey;
+extern NSString *const kFTLocationStateKey;
+extern NSString *const kFTLocationPostalCodeKey;
+extern NSString *const kFTLocationCountryKey;
+extern NSString *const kFTLocationGeoPointKey;
 
 #pragma mark - Cached Post Attributes
 

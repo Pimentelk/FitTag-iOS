@@ -187,6 +187,33 @@ NSString *const kFTPostTypeVideo            = @"video";
 NSString *const kFTPostHashTagKey           = @"hashTags";
 NSString *const kFTPostMentionKey           = @"mentions";
 NSString *const kFTPostCaptionKey           = @"caption";
+NSString *const kFTPostPlaceKey             = @"place";
+
+#pragma mark - PFObject Place Class
+
+// Class key
+NSString *const kFTPlaceClassKey            = @"Place";
+
+// Field keys
+NSString *const kFTPlaceNameKey             = @"name";
+NSString *const kFTPlaceDescriptionKey      = @"description";
+NSString *const kFTPlaceLocationKey         = @"location";
+NSString *const kFTPlaceVerifiedKey         = @"verified";
+NSString *const kFTPlaceIconKey             = @"icon";
+NSString *const kFTPlaceContactKey          = @"contact";
+
+#pragma mark - PFObject Location Class
+
+// Class key
+NSString *const kFTLocationClassKey         = @"Location";
+
+// Field keys
+NSString *const kFTLocationAddressKey       = @"address";
+NSString *const kFTLocationCityKey          = @"city";
+NSString *const kFTLocationStateKey         = @"state";
+NSString *const kFTLocationPostalCodeKey    = @"postalcode";
+NSString *const kFTLocationCountryKey       = @"country";
+NSString *const kFTLocationGeoPointKey      = @"location";
 
 #pragma mark - Cached Post Attributes
 
