@@ -22,10 +22,7 @@
         self.accessoryType = UITableViewCellAccessoryNone;
         self.backgroundColor = [UIColor clearColor];
         
-        [self.contentView setBackgroundColor:[UIColor colorWithRed:FT_RED_COLOR_RED
-                                                             green:FT_RED_COLOR_GREEN
-                                                              blue:FT_RED_COLOR_BLUE
-                                                             alpha:1.0f]];
+        [self.contentView setBackgroundColor:FT_RED];
         
         UILabel *loadMoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
         [loadMoreLabel setTextAlignment:NSTextAlignmentCenter];
