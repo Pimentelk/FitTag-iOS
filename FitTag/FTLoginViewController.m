@@ -9,6 +9,9 @@
 #import "FTLoginViewController.h"
 #import "UIView+FormScroll.h"
 
+#define PLACEHOLDER_USERNAME @"Username"
+#define PLACEHOLDER_PASSWORD @"Password"
+
 @interface FTLoginViewController ()
 @property (nonatomic, strong) UIImageView *loginHex;
 @property (nonatomic, strong) UIImageView *signupBackground;
@@ -29,24 +32,40 @@
     
     [super viewDidLoad];
     
+    [self.logInView setBackgroundColor:FT_RED];
+    
+    UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [cancelButton addTarget:self action:@selector(didTapCancelButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [cancelButton setTitle:@"cancel" forState:UIControlStateNormal];
+    [cancelButton setBackgroundColor:[UIColor clearColor]];
+    [cancelButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    [cancelButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+    [cancelButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
+    [cancelButton setFrame:CGRectMake((self.logInView.frame.size.width-60)/2, self.logInView.frame.size.height-10, 60, 20)];
+    [self.logInView addSubview:cancelButton];
+    
     // Set background image
-    [self.logInView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-    [self.logInView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"login_background_image_01"]]];
+    //[self.logInView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    //[self.logInView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"login_background_image_01"]]];
     
     // Set logo image
     [self.logInView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:FITTAG_LOGO]]];
 
+    [self.logInView.externalLogInLabel setText:EMPTY_STRING];
+    
     // Set motto
-    fitTagMotto = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"login_screen_motto"]];
-    [self.logInView addSubview: self.fitTagMotto];
+    //fitTagMotto = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"login_screen_motto"]];
+    //[self.logInView addSubview: self.fitTagMotto];
 
+    /*
     // Set buttons appearance
     [self.logInView.dismissButton setImage:nil forState:UIControlStateNormal];
     [self.logInView.dismissButton setImage:nil forState:UIControlStateHighlighted];
     [self.logInView.dismissButton setImage:nil forState:UIControlStateSelected];
+    */
     
     // Set login button
-    
+    /*
     [self.logInView.facebookButton setImage:nil forState:UIControlStateNormal];
     [self.logInView.facebookButton setImage:nil forState:UIControlStateHighlighted];
     [self.logInView.facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook_button"] forState:UIControlStateHighlighted];
@@ -54,7 +73,8 @@
     [self.logInView.facebookButton addTarget:self action:@selector(didTapFacebookButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.logInView.facebookButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
     [self.logInView.facebookButton setTitle:EMPTY_STRING forState:UIControlStateHighlighted];
-    
+    */
+    /*
     [self.logInView.twitterButton setImage:nil forState:UIControlStateNormal];
     [self.logInView.twitterButton setImage:nil forState:UIControlStateHighlighted];
     [self.logInView.twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter_button"] forState:UIControlStateNormal];
@@ -62,7 +82,8 @@
     [self.logInView.twitterButton addTarget:self action:@selector(didTapTwitterButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.logInView.twitterButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
     [self.logInView.twitterButton setTitle:EMPTY_STRING forState:UIControlStateHighlighted];
-    
+    */
+    /*
     [self.logInView.signUpButton setBackgroundImage:[UIImage imageNamed:@"signup_button"] forState:UIControlStateNormal];
     [self.logInView.signUpButton setBackgroundImage:[UIImage imageNamed:@"signup_button"] forState:UIControlStateHighlighted];
     [self.logInView.signUpButton addTarget:self action:@selector(didTapSignupButtonAction:) forControlEvents:UIControlEventTouchUpInside];
@@ -130,23 +151,60 @@
     [self.logInView.externalLogInLabel setText:nil];
     
     // Gesture recognizer
-    
+    */
     UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapHideKeyboardAction:)];
-    
     [self.view setGestureRecognizers:@[ tapGestureRecognizer ]];
+    
 }
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     
+    [self.logInView.logo setCenter:CGPointMake(160, 80)];
+    
+    UITextField *usernameView = self.logInView.usernameField;
+    
+    CGRect usernameFieldRect = self.logInView.usernameField.frame;
+    usernameFieldRect.origin.y = (self.logInView.frame.size.height - (usernameFieldRect.size.height * 2) - 20) / 2;
+    
+    [usernameView setFrame:usernameFieldRect];
+    [usernameView setTextAlignment:NSTextAlignmentLeft];
+    [usernameView setTextColor:[UIColor blackColor]];
+    [usernameView setPlaceholder:PLACEHOLDER_USERNAME];
+    [usernameView setBorderStyle:UITextBorderStyleRoundedRect];
+    [usernameView setBackgroundColor:[UIColor whiteColor]];
+    [usernameView setDelegate:self];
+    
+    UITextField *passwordView = self.logInView.passwordField;
+    
+    CGRect passwordFieldRect = self.logInView.passwordField.frame;
+    passwordFieldRect.origin.y = usernameFieldRect.size.height + usernameFieldRect.origin.y + 10;
+    
+    [passwordView setFrame:passwordFieldRect];
+    [passwordView setTextAlignment:NSTextAlignmentLeft];
+    [passwordView setTextColor:[UIColor blackColor]];
+    [passwordView setPlaceholder:PLACEHOLDER_PASSWORD];
+    [passwordView setBorderStyle:UITextBorderStyleRoundedRect];
+    [passwordView setBackgroundColor:[UIColor whiteColor]];
+    [passwordView setDelegate:self];
+    
+    
+    UIButton *signupButton = self.logInView.logInButton;
+    
+    CGRect signupButtonFrame = self.logInView.logInButton.frame;
+    signupButtonFrame.origin.y = signupButtonFrame.size.height + signupButtonFrame.origin.y + 10;
+    
+    [signupButton setFrame:signupButtonFrame];
+    
+    /*
     // Set frame for elements
     [self.logInView.logo setFrame:CGRectMake([self getCenterX: 165.0f],45.0f,165.0f,35.0f)];
     [self.fitTagMotto setFrame:CGRectMake([self getCenterX: CGRectGetWidth(self.fitTagMotto.bounds)],
                                           CGRectGetMaxY(self.logInView.logo.bounds) + CGRectGetHeight(self.logInView.logo.bounds) + CGRectGetHeight(self.fitTagMotto.bounds),
                                           245.0f,17.0f)];
     
-    [self.logInView.facebookButton setFrame:CGRectMake(20.0f, 327.0f, 71.0f, 80.0f)];
-    [self.logInView.twitterButton setFrame:CGRectMake(230.0f, 327.0f, 71.0f, 80.0f)];
+    //[self.logInView.facebookButton setFrame:CGRectMake(20.0f, 327.0f, 71.0f, 80.0f)];
+    //[self.logInView.twitterButton setFrame:CGRectMake(230.0f, 327.0f, 71.0f, 80.0f)];
     
     [self.signupBackground setFrame:CGRectMake(0.0f,(self.view.frame.size.height) - CGRectGetHeight(self.signupBackground.bounds) + 1.0f,320.0f,71.0f)];
     
@@ -171,7 +229,7 @@
     [self.logInView.passwordForgottenButton setFrame:CGRectMake([self getCenterX: 93.0f],135.0f + CGRectGetHeight(self.loginHex.bounds),93.0f,11.0f)];
     [self.logInView.usernameField setFrame:CGRectMake((self.view.frame.size.width)/4.0f - 5.0f,180.0f,190.0f,50.0f)];
     [self.logInView.passwordField setFrame:CGRectMake((self.view.frame.size.width)/4.0f - 5.0f,240.0f,190.0f,50.0f)];
-    
+    */
     NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     
     UILabel *appVersionLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width-130, 15, 120, 20)];
@@ -181,6 +239,7 @@
     [appVersionLabel setTextColor:[UIColor whiteColor]];
     
     [self.logInView addSubview:appVersionLabel];
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -217,6 +276,12 @@
     return (newLength > 30) ? NO : YES;
 }
 
+#pragma mark - ()
+
+- (void)didTapCancelButtonAction:(UIButton *)button {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark - GAI Event Tracking
 
 - (void)didTapLogInButtonAction:(UIButton *)button {
@@ -244,6 +309,7 @@
 }
 
 - (void)didTapFacebookButtonAction:(UIButton *)button {
+    NSLog(@"didTapFacebookButtonAction:");
     id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
     [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
                                                           action:kFTTrackEventActionTypeButtonPress
