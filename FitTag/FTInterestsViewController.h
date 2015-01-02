@@ -6,8 +6,10 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
+#import "FTLocationManager.h"
+
 @protocol FTInterestsViewControllerDelegate;
-@interface FTInterestsViewController : UICollectionViewController
+@interface FTInterestsViewController : UICollectionViewController <FTLocationManagerDelegate>
 
 /*! FTGalleryCell Delegate */
 @property (nonatomic, weak) id <FTInterestsViewControllerDelegate> delegate;

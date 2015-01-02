@@ -26,7 +26,9 @@
 @property (nonatomic, strong) PFUser *user;
 @property (nonatomic, strong) UILabel *continueMessage;
 @property (nonatomic, strong) UIButton *continueButton;
+@property (nonatomic, strong) FTLocationManager *locationManager;
 @property (nonatomic, strong) FTInspirationViewController *inspirationViewController;
+@property (nonatomic) BOOL locationUpdated;
 @end
 
 @implementation FTInterestsViewController
@@ -34,10 +36,18 @@
 @synthesize delegate;
 @synthesize continueMessage;
 @synthesize continueButton;
+@synthesize locationManager;
 @synthesize inspirationViewController;
+@synthesize locationUpdated;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    locationUpdated = NO;
+    
+    // manage user location
+    locationManager = [[FTLocationManager alloc] init];
+    [locationManager setDelegate:self];
     
     if (![PFUser currentUser]) {
         [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
@@ -62,7 +72,7 @@
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     [self.navigationController.navigationBar setBarTintColor:FT_RED];
     
-    if (self.isFirstLaunch) {
+    if (self.isFirstLaunch && locationUpdated) {
         // Layout param
         FTFlowLayout *inspirationLayoutFlow = [[FTFlowLayout alloc] init];
         [inspirationLayoutFlow setItemSize:CGSizeMake(self.view.frame.size.width,100)];
@@ -133,6 +143,8 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    [locationManager requestLocationAuthorization];
+    
     // Toolbar
     [self.navigationController setToolbarHidden:NO animated:NO];
     [self.navigationController.toolbar setTintColor:[UIColor grayColor]];
@@ -175,6 +187,16 @@
     }
 }
 
+#pragma mark - FTLocationManagerDelegate
+
+- (void)locationManager:(FTLocationManager *)locationManager didUpdateUserLocation:(CLLocation *)location geoPoint:(PFGeoPoint *)aGeoPoint {
+    locationUpdated = YES;
+}
+
+- (void)locationManager:(FTLocationManager *)locationManager didFailWithError:(NSError *)error {
+    locationUpdated = NO;
+}
+
 #pragma mark - InterestViewController
 
 - (void)didTapContinueButtonAction:(UIButton *)button {
@@ -215,8 +237,9 @@
         }
     }];
     
-    if (self.isFirstLaunch) {
+    if (self.isFirstLaunch && locationUpdated) {
         // If this is part of the first time launch flow show the inspiration screen next.
+        // only if the location has been updated
         [self.navigationController pushViewController:inspirationViewController animated:YES];
         return;
     }
