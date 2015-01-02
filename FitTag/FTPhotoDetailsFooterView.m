@@ -52,9 +52,11 @@
     if (self) {
         // Initialization code
         self.backgroundColor = [UIColor clearColor];
+        self.clipsToBounds = YES;
         
-        mainView = [[UIView alloc] initWithFrame:CGRectMake( MAIN_VIEW_X, MAIN_VIEW_Y, self.frame.size.width, MAIN_VIEW_HEIGHT)];
-        mainView.backgroundColor = [UIColor whiteColor];
+        mainView = [[UIView alloc] initWithFrame:CGRectMake(MAIN_VIEW_X, MAIN_VIEW_Y, self.frame.size.width, 43)];
+        mainView.backgroundColor = [UIColor clearColor];
+        mainView.clipsToBounds = YES;
         [self addSubview:mainView];
         
         UIImageView *commentBox = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"comment_bar"]];
@@ -74,6 +76,7 @@
         [commentSendButton addTarget:self action:@selector(didTapSendButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [commentSendButton setFrame:CGRectMake(COMMENT_FIELD_X + COMMENT_FIELD_WIDTH, COMMENT_FIELD_Y + 3, SEND_BUTTON_WIDTH, SEND_BUTTON_HEIGHT)];
         [commentSendButton setUserInteractionEnabled:YES];
+        
         [mainView addSubview:commentSendButton];
         [mainView bringSubviewToFront:commentSendButton];
     }
@@ -95,7 +98,7 @@
 #pragma mark - FTPhotoDetailsFooterView
 
 + (CGRect)rectForView {
-    return CGRectMake(0,0,[UIScreen mainScreen].bounds.size.width,69);
+    return CGRectMake(0,0,[UIScreen mainScreen].bounds.size.width,40);
 }
 
 #pragma mark - ()
