@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UITextField *locationTextField;
 @property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, strong) UISwitch *shareLocationSwitch;
+@property (nonatomic, strong) UILabel *shareLocationLabel;
 @property (nonatomic) BOOL hideDropShadow;
 
 @property (nonatomic, weak) id<FTPostDetailsFooterViewDelegate> delegate;
@@ -27,7 +28,29 @@
 
 @protocol FTPostDetailsFooterViewDelegate <NSObject>
 @optional
+
+/*!
+ Sent to the delegate when the comment button is tapped
+ @param button the tapped UIButton
+ */
 - (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView didTapFacebookShareButton:(UIButton *)button;
+
+/*!
+ Sent to the delegate when the comment button is tapped
+ @param button the tapped UIButton
+ */
 - (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView didTapSubmitPostButton:(UIButton *)button;
+
+/*!
+ Sent to the delegate when the comment button is tapped
+ @param button the tapped UIButton
+ */
 - (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView didTapTwitterShareButton:(UIButton *)button;
+
+/*!
+ Sent to the delegate when the comment button is tapped
+ @param button the tapped UIButton
+ */
+- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView didChangeShareLocationSwitch:(UISwitch *)lever;
+
 @end

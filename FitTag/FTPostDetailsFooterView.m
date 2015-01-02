@@ -29,20 +29,23 @@
 @synthesize facebookButton;
 @synthesize twitterButton;
 @synthesize shareLocationSwitch;
+@synthesize delegate;
+@synthesize shareLocationLabel;
 
 - (id)initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
         self.backgroundColor = [UIColor clearColor];
+        self.clipsToBounds = YES;
         
         CGSize frameSize = self.frame.size;
         
-        mainView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frameSize.width, 190)];
+        mainView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frameSize.width, 185)];
         mainView.backgroundColor = FT_GRAY;
         [self addSubview:mainView];
         
-        UIImageView *commentBox = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, frameSize.width, 200)];
+        UIImageView *commentBox = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, frameSize.width, 185)];
         [mainView addSubview:commentBox];
         
         commentView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, frameSize.width, 45)];
@@ -61,7 +64,7 @@
         [shareLocationView setBackgroundColor:FT_RED];
         [mainView addSubview:shareLocationView];
         
-        UILabel *shareLocationLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 0, 220, 40)];
+        shareLocationLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 0, 220, 40)];
         [shareLocationLabel setText:@"FitTag your location?"];
         [shareLocationLabel setTextColor:[UIColor whiteColor]];
         [shareLocationLabel setBackgroundColor:[UIColor clearColor]];
@@ -69,7 +72,8 @@
         [shareLocationView addSubview:shareLocationLabel];
         
         shareLocationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(commentRect.size.width - 80, 4, 0, 0)];
-        [shareLocationSwitch setOn:YES];
+        [shareLocationSwitch setOn:NO];
+        [shareLocationSwitch addTarget:self action:@selector(didChangeShareLocationSwitch:) forControlEvents:UIControlEventTouchUpInside];
         [shareLocationView addSubview:shareLocationSwitch];
         
         
@@ -139,18 +143,28 @@
 #pragma mark - FTDetailsFooterView
 
 + (CGRect)rectForView {
-    return CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 200);
+    return CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 185);
 }
 
 #pragma mark - ()
 
--(void)didTapFacebookShareButtonAction:(UIButton *)button {
+- (void)didChangeShareLocationSwitch:(UISwitch *)lever {
+    if (![lever isOn]) {
+        return;
+    }
+    
+    if (delegate && [delegate respondsToSelector:@selector(postDetailsFooterView:didChangeShareLocationSwitch:)]) {
+        [delegate postDetailsFooterView:self didChangeShareLocationSwitch:lever];
+    }
+}
+
+- (void)didTapFacebookShareButtonAction:(UIButton *)button {
     if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
         [button setSelected:![button isSelected]];
         
         if ([button isSelected]) {
-            if ([self.delegate respondsToSelector:@selector(postDetailsFooterView:didTapFacebookShareButton:)]){
-                [self.delegate postDetailsFooterView:self didTapFacebookShareButton:button];
+            if ([delegate respondsToSelector:@selector(postDetailsFooterView:didTapFacebookShareButton:)]){
+                [delegate postDetailsFooterView:self didTapFacebookShareButton:button];
             }
         }
     } else {
@@ -164,13 +178,13 @@
     }
 }
 
--(void)didTapTwitterShareButtonAction:(UIButton *)button {
+- (void)didTapTwitterShareButtonAction:(UIButton *)button {
     
     if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
         [button setSelected:![button isSelected]];
         if ([button isSelected]) {
-            if ([self.delegate respondsToSelector:@selector(postDetailsFooterView:didTapTwitterShareButton:)]){
-                [self.delegate postDetailsFooterView:self didTapTwitterShareButton:button];
+            if ([delegate respondsToSelector:@selector(postDetailsFooterView:didTapTwitterShareButton:)]){
+                [delegate postDetailsFooterView:self didTapTwitterShareButton:button];
             }
         }
     } else {
@@ -183,15 +197,16 @@
     }
 }
 
--(void)didTapSubmitPostButtonAction:(UIButton *)button {
+- (void)didTapSubmitPostButtonAction:(UIButton *)button {
     
     if ([button isSelected])
         return;
     
     [button setSelected:YES];
     
-    if ([self.delegate respondsToSelector:@selector(postDetailsFooterView:didTapSubmitPostButton:)]){
-        [self.delegate postDetailsFooterView:self didTapSubmitPostButton:button];
+    if ([delegate respondsToSelector:@selector(postDetailsFooterView:didTapSubmitPostButton:)]){
+        [delegate postDetailsFooterView:self didTapSubmitPostButton:button];
     }
 }
+
 @end
