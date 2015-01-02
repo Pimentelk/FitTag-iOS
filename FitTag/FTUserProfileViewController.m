@@ -13,6 +13,7 @@
 #import "FTCamViewController.h"
 #import "FTSettingsViewController.h"
 #import "FTViewFriendsViewController.h"
+#import "FTSearchViewController.h"
 
 #define GRID_SMALL @"SMALLGRID"
 #define GRID_FULL @"FULGRID"
@@ -28,12 +29,32 @@
 @property (nonatomic, strong) NSArray *cells;
 @property (nonatomic, strong) FTViewFriendsViewController *viewFriendsViewController;
 @property (nonatomic, strong) FTUserProfileHeaderView *headerView;
+@property (nonatomic, strong) FTSearchViewController *searchViewController;
+@property (nonatomic, strong) FTBusinessProfileViewController *businessProfileViewController;
+@property (nonatomic, strong) FTUserProfileViewController *userProfileViewController;
+@property (nonatomic, strong) FTFollowFriendsViewController *followFriendsViewController;
+//@property int threshold;
 @end
 
 @implementation FTUserProfileViewController
 @synthesize user;
 @synthesize viewFriendsViewController;
+@synthesize searchViewController;
+@synthesize businessProfileViewController;
+@synthesize followFriendsViewController;
+@synthesize userProfileViewController;
 @synthesize headerView;
+//@synthesize threshold;
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FTUtilityUserFollowersChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FTUtilityUserFollowingChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FTProfileDidChangeBioNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FTProfileDidChangeProfilePhotoNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FTProfileDidChangeCoverPhotoNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FTTabBarControllerDidFinishEditingPhotoNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FTTimelineViewControllerUserDeletedPostNotification object:nil];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -43,10 +64,23 @@
         return;
     }
     
+    // Add observers
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeFollowersAction:) name:FTUtilityUserFollowersChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeFollowingAction:) name:FTUtilityUserFollowingChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeBioAction:) name:FTProfileDidChangeBioNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeProfilePhotoAction:) name:FTProfileDidChangeProfilePhotoNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCoverPhotoAction:) name:FTProfileDidChangeCoverPhotoNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidPublishPost:) name:FTTabBarControllerDidFinishEditingPhotoNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidDeletePost:) name:FTTimelineViewControllerUserDeletedPostNotification object:nil];
+
     headerView = nil;
     
     cellTab = GRID_SMALL;
     
+    // tresh hold
+    //threshold = 3;
+    
+    // Show navigation bar
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     
     self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], NSForegroundColorAttributeName,nil];
@@ -66,17 +100,39 @@
     [self.collectionView setDelegate:self];
     [self.collectionView setDataSource:self];
     
-    // initialize FTViewFriendsViewController
     UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
     [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
     [backIndicator setStyle:UIBarButtonItemStylePlain];
     [backIndicator setTarget:self];
     [backIndicator setAction:@selector(didTapBackButtonAction:)];
     [backIndicator setTintColor:[UIColor whiteColor]];
-    
+        
     viewFriendsViewController = [[FTViewFriendsViewController alloc] init];
     [viewFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
     [viewFriendsViewController setUser:self.user];
+    
+    searchViewController = [[FTSearchViewController alloc] init];
+    [searchViewController.navigationItem setLeftBarButtonItem:backIndicator];
+    
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
+    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [flowLayout setMinimumInteritemSpacing:0];
+    [flowLayout setMinimumLineSpacing:0];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
+    
+    // Business profile
+    businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    [businessProfileViewController.navigationItem setLeftBarButtonItem:backIndicator];
+    
+    // User profile
+    userProfileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    [userProfileViewController.navigationItem setLeftBarButtonItem:backIndicator];
+    
+    // Show suggestions if mention not found
+    followFriendsViewController = [[FTFollowFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+    [followFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
 }
 
 - (void)setUser:(PFUser *)aUser {
@@ -94,22 +150,6 @@
         [self.navigationItem setTitle:[user objectForKey:kFTUserDisplayNameKey]];
     } else {
         [self.navigationItem setTitle:NAVIGATION_TITLE_PROFILE];
-    }
-    
-    #pragma GCC diagnostic ignored "-Wundeclared-selector"
-    if (headerView) {
-        
-        if ([headerView respondsToSelector:@selector(updateCoverPhoto)]) {
-            [headerView performSelector:@selector(updateCoverPhoto)];
-        }
-        
-        if ([headerView respondsToSelector:@selector(updateFollowerCount)]) {
-            [headerView performSelector:@selector(updateFollowerCount)];
-        }
-        
-        if ([headerView respondsToSelector:@selector(updateFollowingCount)]) {
-            [headerView performSelector:@selector(updateFollowingCount)];
-        }
     }
 }
 
@@ -135,18 +175,16 @@
 }
 
 - (void)queryForTable:(PFUser *)aUser {
-    //NSLog(@"%@::queryForTable:",VIEWCONTROLLER_USER);
+    NSLog(@"%@::queryForTable:",VIEWCONTROLLER_USER);
     // Show HUD view
-    //[MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
     PFQuery *postsFromUserQuery = [PFQuery queryWithClassName:kFTPostClassKey];
     [postsFromUserQuery whereKey:kFTPostUserKey equalTo:aUser];
     [postsFromUserQuery whereKey:kFTPostTypeKey containedIn:@[kFTPostTypeImage,kFTPostTypeVideo,kFTPostTypeGallery]];
     [postsFromUserQuery orderByDescending:@"createdAt"];
+    [postsFromUserQuery setCachePolicy:kPFCachePolicyNetworkOnly];
     [postsFromUserQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (!error) {
-            //NSLog(@"cells: %@",self.cells);
             self.cells = objects;
-            //[MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
             [self.collectionView reloadData];
         } else {
             NSLog(@"Error: %@ %@", error, [error userInfo]);
@@ -165,32 +203,40 @@
         headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
                                                         withReuseIdentifier:HEADERVIEW
                                                                forIndexPath:indexPath];
-        [headerView setDelegate: self];
-        [headerView setUser: self.user];
-        [headerView fetchUserProfileData: self.user];
+        
+        [headerView setDelegate:self];
+        [headerView setUser:self.user];
+        [headerView fetchUserProfileData:self.user];
         reusableview = headerView;
     }
     return reusableview;
 }
 
-- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+- (CGSize)collectionView:(UICollectionView *)collectionView
+                  layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
+
+    NSString *content = [self.user objectForKey:kFTUserBioKey];
+    NSString *website = [self.user objectForKey:kFTUserWebsiteKey];
+    
+    if (website) {
+        content = [NSString stringWithFormat:@"%@\n%@",content,[self.user objectForKey:kFTUserWebsiteKey]];
+    }
+    
+    CGFloat height = [FTUtility findHeightForText:content havingWidth:self.view.frame.size.width AndFont:SYSTEMFONTBOLD(14)];
+    CGSize headerSize = CGSizeMake(self.view.frame.size.width, height + PROFILE_HEADER_VIEW_HEIGHT + 15);
+    return headerSize;
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return self.cells.count;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     //NSLog(@"indexpath: %ld",(long)indexPath.row);
     if ([cellTab isEqualToString:kFTUserTypeBusiness]) {
-        UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-        [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
-        [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-        [flowLayout setMinimumInteritemSpacing:0];
-        [flowLayout setMinimumLineSpacing:0];
-        [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-        [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
         PFUser *business = self.cells[indexPath.row];
         //NSLog(@"FTUserProfileCollectionViewController:: business: %@",business);
         if (business) {
-            FTBusinessProfileViewController *businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
             [businessProfileViewController setBusiness:business];
             [self.navigationController pushViewController:businessProfileViewController animated:YES];
         }
@@ -219,13 +265,6 @@
     return cell;
 }
 
-/*
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
-    
-    return CGSizeMake(self.view.frame.size.width, 60);
-}
-*/
-
 #pragma mark - Navigation Bar
 
 - (void)didTapLoadCameraButtonAction:(id)sender {
@@ -240,6 +279,7 @@
 
 #pragma mark - FTUserProfileCollectionHeaderViewDelegate
 
+/*
 - (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileCollectionHeaderView
                        didTapGridButton:(UIButton *)button {
     //NSLog(@"%@::userProfileCollectionHeaderView:didTapGridButton:",VIEWCONTROLLER_USER);
@@ -309,10 +349,10 @@
         }
     }];
 }
-
-- (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileCollectionHeaderView
-                   didTapSettingsButton:(id)sender {
-    //NSLog(@"%@::userProfileCollectionHeaderView:didTapSettingsButton:",VIEWCONTROLLER_USER);
+*/
+- (void)userProfileHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView
+         didTapSettingsButton:(id)sender {
+    //NSLog(@"%@::userProfileHeaderView:didTapSettingsButton:",VIEWCONTROLLER_USER);
     FTSettingsViewController *settingsViewController = [[FTSettingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
     UINavigationController *navController = [[UINavigationController alloc] init];
     [navController setViewControllers:@[settingsViewController] animated:NO];
@@ -321,15 +361,133 @@
     }];
 }
 
--(void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapFollowersButton:(id)sender {
+- (void)userProfileHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView
+        didTapFollowersButton:(id)sender {
+    
     [viewFriendsViewController queryForFollowers];
     [self.navigationController pushViewController:viewFriendsViewController animated:YES];
 }
 
--(void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapFollowingButton:(id)sender {
+- (void)userProfileHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView
+        didTapFollowingButton:(id)sender {
+    
     [viewFriendsViewController queryForFollowing];
     [self.navigationController pushViewController:viewFriendsViewController animated:YES];
+}
+
+- (void)userProfileHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapHashtag:(NSString *)Hashtag {
+    if (searchViewController) {
+        [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
+        [searchViewController setSearchString:Hashtag];
+        [self.navigationController pushViewController:searchViewController animated:YES];
+    }
+}
+
+- (void)userProfileHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapUserMention:(NSString *)mention {
     
+    NSString *lowercaseStringWithoutSymbols = [FTUtility getLowercaseStringWithoutSymbols:mention];
+    
+    //****** Display Name ********//
+    PFQuery *queryStringMatchHandle = [PFQuery queryWithClassName:kFTUserClassKey];
+    [queryStringMatchHandle whereKeyExists:kFTUserDisplayNameKey];
+    [queryStringMatchHandle whereKey:kFTUserDisplayNameKey equalTo:lowercaseStringWithoutSymbols];
+    [queryStringMatchHandle findObjectsInBackgroundWithBlock:^(NSArray *users, NSError *error) {
+        if (!error) {
+            
+            //NSLog(@"users:%@",users);
+            //NSLog(@"users.count:%lu",(unsigned long)users.count);
+            
+            if (users.count == 1) {
+                
+                PFUser *mentionedUser = [users objectAtIndex:0];
+                //NSLog(@"mentionedUser:%@",mentionedUser);
+                
+                if ([mentionedUser objectForKey:kFTUserTypeBusiness]) {
+                    [businessProfileViewController setBusiness:mentionedUser];
+                    [self.navigationController pushViewController:businessProfileViewController animated:YES];
+                } else {
+                    [userProfileViewController setUser:mentionedUser];
+                    [self.navigationController pushViewController:userProfileViewController animated:YES];
+                }
+                
+            } else {
+                
+                [followFriendsViewController setFollowUserQueryType:FTFollowUserQueryTypeTagger];
+                [followFriendsViewController setSearchString:lowercaseStringWithoutSymbols];
+                [followFriendsViewController querySearchForUser];
+                
+                [self.navigationController pushViewController:followFriendsViewController animated:YES];
+            }
+        }
+    }];
+}
+
+- (void)userProfileHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapLink:(NSString *)link {
+    
+    // Clean the string
+    
+    NSString *cleanLink;
+    cleanLink = [link lowercaseString];
+    cleanLink = [cleanLink stringByReplacingOccurrencesOfString:@"www." withString:@""];
+    cleanLink = [cleanLink stringByReplacingOccurrencesOfString:@"http://" withString:@""];
+    cleanLink = [NSString stringWithFormat:@"http://www.%@",cleanLink];
+
+    NSURL *url = [NSURL URLWithString:cleanLink];
+    [[UIApplication sharedApplication] openURL:url];
+}
+
+#pragma mark - ()
+#pragma GCC diagnostic ignored "-Wundeclared-selector"
+
+- (void)didChangeFollowersAction:(NSNotification *)note {
+    //NSLog(@"FTUserProfileViewController::didChangeFollowersAction");
+    if (headerView && [headerView respondsToSelector:@selector(updateFollowerCount)]) {
+        [headerView performSelector:@selector(updateFollowerCount)];
+    }
+}
+
+- (void)didChangeFollowingAction:(NSNotification *)note {
+    //NSLog(@"FTUserProfileViewController::didChangeFollowingAction");
+    if (headerView && [headerView respondsToSelector:@selector(updateFollowingCount)]) {
+        [headerView performSelector:@selector(updateFollowingCount)];
+    }
+}
+
+- (void)didChangeBioAction:(NSNotification *)note {
+    
+    [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
+    
+    NSString *biography = [note object];
+    
+    if (headerView && [headerView respondsToSelector:@selector(updateBiography:)]) {
+        [headerView performSelector:@selector(updateBiography:) withObject:biography];
+    }
+}
+
+- (void)didChangeProfilePhotoAction:(NSNotification *)note {
+    
+    UIImage *photo = [note object];
+    
+    if (headerView && [headerView respondsToSelector:@selector(updateProfilePicture:)]) {
+        [headerView performSelector:@selector(updateProfilePicture:) withObject:photo];
+    }
+}
+
+- (void)didChangeCoverPhotoAction:(NSNotification *)note {
+    
+    UIImage *photo = [note object];
+    
+    if (headerView && [headerView respondsToSelector:@selector(updateCoverPhoto:)]) {
+        [headerView performSelector:@selector(updateCoverPhoto:) withObject:photo];
+    }
+}
+
+- (void)userDidPublishPost:(NSNotification *)note {
+    [self queryForTable:self.user];
+}
+
+- (void)userDidDeletePost:(NSNotificationCenter *)note {
+    [self queryForTable:self.user];
 }
 
 @end

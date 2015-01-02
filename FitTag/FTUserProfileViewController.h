@@ -8,6 +8,6 @@
 
 #import "FTUserProfileHeaderView.h"
 
-@interface FTUserProfileViewController : UICollectionViewController <FTUserProfileHeaderViewDelegate>
+@interface FTUserProfileViewController : UICollectionViewController <FTUserProfileHeaderViewDelegate,UICollectionViewDelegateFlowLayout>
 @property (nonatomic, strong) PFUser *user;
 @end
