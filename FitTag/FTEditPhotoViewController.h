@@ -8,8 +8,16 @@
 
 #import "FTPostDetailsFooterView.h"
 #import <CoreLocation/CoreLocation.h>
+#import "FTSuggestionTableView.h"
+#import "FTPlacesViewController.h"
 
-@interface FTEditPhotoViewController : UIViewController <UITextViewDelegate,UITextFieldDelegate,UIScrollViewDelegate,FTPostDetailsFooterViewDelegate,CLLocationManagerDelegate>
+@interface FTEditPhotoViewController : UIViewController <UITextViewDelegate,
+                                                         UITextFieldDelegate,
+                                                         UIScrollViewDelegate,
+                                                         FTSuggestionTableViewDelegate,
+                                                         FTPlacesViewControllerDelegate,
+                                                         FTPostDetailsFooterViewDelegate,
+                                                         CLLocationManagerDelegate>
 
 - (id)initWithImage:(UIImage *)aImage;
 
