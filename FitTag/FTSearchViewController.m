@@ -11,9 +11,8 @@
 
 #define DATACELL_IDENTIFIER @"DataCell"
 
-@interface FTSearchViewController() {
-    UISearchBar *searchBar;
-}
+@interface FTSearchViewController()
+
 @property (nonatomic, strong) NSMutableDictionary *outstandingSectionHeaderQueries;
 @end
 
@@ -33,18 +32,21 @@
     self.navigationController.navigationBar.barTintColor = FT_RED;
     self.tableView.delegate = self;
     
-    // Searchbar
-    searchBar = [[UISearchBar alloc] init];
-    searchBar.delegate = self;
-    searchBar.text = searchString;
-    [self.navigationItem setTitleView:searchBar];
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
+    [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backIndicator setStyle:UIBarButtonItemStylePlain];
+    [backIndicator setTarget:self];
+    [backIndicator setAction:@selector(didTapBackButtonAction:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setLeftBarButtonItem:backIndicator];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
     if (searchString.length > 0) {
-        searchBar.text = searchString;
+        [self.navigationItem setTitle:searchString];
         [self loadObjects];
     }
 }
@@ -84,21 +86,8 @@
     return query;
 }
 
-#pragma mark - UISearchBarDelegate
-
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchbar {
-    [searchbar resignFirstResponder];
-    
-    if (searchString.length > 0) {
-        searchBar.text = searchString;
-        [self loadObjects];
-    }
-}
-
-#pragma mark - UIScrollViewDelegate
-
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    [searchBar resignFirstResponder];
+- (void)didTapBackButtonAction:(UIButton *)button {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - UITableViewDelegate
