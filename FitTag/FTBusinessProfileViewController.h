@@ -9,6 +9,6 @@
 #import "FTBusinessProfileHeaderView.h"
 #import <MessageUI/MessageUI.h>
 
-@interface FTBusinessProfileViewController : UICollectionViewController <FTBusinessProfileHeaderViewDelegate,MFMailComposeViewControllerDelegate>
+@interface FTBusinessProfileViewController : UICollectionViewController <FTBusinessProfileHeaderViewDelegate,MFMailComposeViewControllerDelegate,UICollectionViewDelegateFlowLayout>
 @property (nonatomic, strong) PFUser *business;
 @end

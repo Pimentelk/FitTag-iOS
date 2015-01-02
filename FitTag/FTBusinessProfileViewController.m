@@ -130,6 +130,14 @@
     return reusableview;
 }
 
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
+
+    NSString *content = [self.business objectForKey:kFTUserBioKey];
+    CGFloat height = [FTUtility findHeightForText:content havingWidth:self.view.frame.size.width AndFont:SYSTEMFONTBOLD(14)];
+    CGSize headerSize = CGSizeMake(self.view.frame.size.width, height + PROFILE_HEADER_VIEW_HEIGHT_BUSINESS + 30);
+    return headerSize;
+}
+
 - (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return self.cells.count;
 }
@@ -146,7 +154,7 @@
         [flowLayout setMinimumInteritemSpacing:0];
         [flowLayout setMinimumLineSpacing:0];
         [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-        [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
+        [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
         
         PFUser *followedBusiness = self.cells[indexPath.row];
         //NSLog(@"FTUserProfileCollectionViewController:: followedBusiness: %@",followedBusiness);
@@ -157,8 +165,7 @@
         }
         
     } else {
-        FTPostDetailsViewController *postDetailView = [[FTPostDetailsViewController alloc] initWithPost:self.cells[indexPath.row]
-                                                                                                AndType:nil];
+        FTPostDetailsViewController *postDetailView = [[FTPostDetailsViewController alloc] initWithPost:self.cells[indexPath.row] AndType:nil];
         [self.navigationController pushViewController:postDetailView animated:YES];
     }
 }
@@ -183,13 +190,6 @@
     return cell;
 }
 
-/*
- - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
- 
- return CGSizeMake(self.view.frame.size.width, 60);
- }
- */
-
 #pragma mark - Navigation Bar
 
 - (void)loadCameraAction:(id)sender {
@@ -204,17 +204,28 @@
 #pragma mark - FTbusinessProfileHeaderViewDelegate
 
 - (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
-                       didTapGetThereButton:(UIButton *)button {
+             didTapGetThereButton:(UIButton *)button {
+        
+    UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] init];
+    [backButtonItem setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backButtonItem setStyle:UIBarButtonItemStylePlain];
+    [backButtonItem setTarget:self];
+    [backButtonItem setAction:@selector(didTapBackButtonAction:)];
+    [backButtonItem setTintColor:[UIColor whiteColor]];
     
     FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
+    if ([self.business objectForKey:kFTUserLocationKey]) {
+        PFGeoPoint *geoPoint = [self.business objectForKey:kFTUserLocationKey];
+        CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
+        [mapViewController setInitialLocation:location];
+    }    
     
-    CLLocation *location = [[CLLocation alloc] initWithLatitude:40.7409816 longitude:-74.03021560000002];
-    [mapViewController setInitialLocation:location];
+    [mapViewController.navigationItem setLeftBarButtonItem:backButtonItem];
     [self.navigationController pushViewController:mapViewController animated:YES];
 }
 
 - (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
-                           didTapCallButton:(UIButton *)button {
+                 didTapCallButton:(UIButton *)button {
     
     NSString *phNo = @"+8638525694";
     NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",phNo]];
@@ -232,7 +243,7 @@
 }
 
 - (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
-                          didTapVideoButton:(UIButton *)button {
+                didTapVideoButton:(UIButton *)button {
     
     if ([business objectForKey:kFTUserPromoVideo]) {
         PFFile *videoFile = [business objectForKey:kFTUserPromoVideo];
@@ -348,7 +359,8 @@
 
 
 - (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
-                          didTapEmailButton:(UIButton *)button {
+                didTapEmailButton:(UIButton *)button {
+    
     if ([MFMailComposeViewController canSendMail]) {
         
         mailer = [[MFMailComposeViewController alloc] init];
@@ -385,7 +397,7 @@
 }
 
 - (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
-                       didTapBusinessButton:(UIButton *)button {
+             didTapBusinessButton:(UIButton *)button {
     
     cellTab = kFTUserTypeBusiness; // kFTUserTypeBusiness | SMALLGRID | FULLGRID | TAGGED
     //[MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
@@ -504,5 +516,4 @@
                           otherButtonTitles: nil] show];
     }
 }
-
 @end
