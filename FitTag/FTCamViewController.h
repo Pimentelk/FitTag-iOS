@@ -6,6 +6,13 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
+#import "FTCameraEngine.h"
+#import "FTVideoEncoder.h"
+#import <AssetsLibrary/AssetsLibrary.h>
+#import "FTEditPhotoViewController.h"
+#import "FTEditVideoViewController.h"
+#import "FTCamRollViewController.h"
+
 typedef enum {
     FTCamFlashButtonStateNone = 0,
     FTCamFlashButtonStateOff = 1 << 0,
@@ -13,13 +20,6 @@ typedef enum {
     FTCamFlashButtonStateAuto = 1 << 2,
     FTCamFlashButtonStateDefault = FTCamFlashButtonStateAuto
 } FTCamFlashButtonState;
-
-#import "FTCameraEngine.h"
-#import "FTVideoEncoder.h"
-#import <AssetsLibrary/AssetsLibrary.h>
-#import "FTEditPhotoViewController.h"
-#import "FTEditVideoViewController.h"
-#import "FTCamRollViewController.h"
 
 @protocol FTCamViewControllerDelegate;
 

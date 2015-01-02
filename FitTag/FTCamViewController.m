@@ -36,6 +36,7 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 
 @interface FTCamViewController ()
 
+@property BOOL isPhotoCapture;
 @property (nonatomic) CGFloat progress;
 
 @property (nonatomic, readonly, assign) FTCamFlashButtonState camFlashButtonState;
@@ -58,6 +59,8 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 
 @property (nonatomic) UIButton *toggleFlashButton;
 @property (nonatomic) UIButton *toggleCrosshairs;
+
+@property (nonatomic, strong) NSMutableArray *capturedPhotos;
 
 // Track flash mode
 @property (nonatomic) NSArray *flashImages;
@@ -103,9 +106,15 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 @synthesize previewLayer;
 @synthesize liveView;
 @synthesize progress;
+@synthesize capturedPhotos;
+@synthesize isPhotoCapture;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    // Track captured photos
+    capturedPhotos = [[NSMutableArray alloc] init];
+    isPhotoCapture = YES;
     
     // Set the default flash state to auto
     camFlashButtonState = FTCamFlashButtonStateAuto;
@@ -129,6 +138,8 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
     [self.tabBarController.tabBar setHidden:YES];
     
     dispatch_async([self sessionQueue], ^{
+        
+        [self.nextBarButton setEnabled:NO];
         
         if (!camEngine) {
             camEngine = [FTCameraEngine engine];
@@ -388,7 +399,6 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
                                                                             elementHeight:39
                                                                               frameHeight:self.view.frame.size.height], 44, 39)];
         [self.view addSubview:showCameraButton];
-        [self.nextBarButton setEnabled:YES];
     }
     
     // Camera roll button
@@ -473,6 +483,7 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
         [snapStillImageButton setHidden:YES];
         [progressViewBorder setHidden:NO];
         [self.navigationItem setTitle: @"VIDEO"];
+        isPhotoCapture = NO;
     } else {
         [crosshairs setHidden:NO];
         [toggleFlashButton setHidden:NO];
@@ -481,6 +492,7 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
         [snapStillImageButton setHidden:NO];
         [progressViewBorder setHidden:YES];
         [self.navigationItem setTitle:NAVIGATION_TITLE_CAM];
+        isPhotoCapture = YES;
     }
 }
 
@@ -490,7 +502,18 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 }
 
 - (void)didTapNextButtonAction:(id)sender {
-    [camEngine stopCapture];
+    
+    if (isPhotoCapture) {
+        if (capturedPhotos.count == 1) {
+            self.editPhotoViewController = [[FTEditPhotoViewController alloc] initWithImage:[capturedPhotos objectAtIndex:0]];
+            [self.navigationController pushViewController:editPhotoViewController animated:NO];
+        } else if (capturedPhotos.count > 1) {
+            FTEditPostViewController *editPostViewController = [[FTEditPostViewController alloc] initWithArray:capturedPhotos];
+            [self.navigationController pushViewController:editPostViewController animated:NO];
+        }
+    } else {
+        [camEngine stopCapture];
+    }
 }
 
 - (void)didTapBackButtonAction:(id)sender {
@@ -652,12 +675,7 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 
 - (void)shouldUpdateProgressView:(NSNumber *)progress {
     NSLog(@"%@::updateProgress:",VIEWCONTROLLER_CAM);
-    /*
-    if (![progress isEqualToNumber:[NSDecimalNumber notANumber]]) {
-        NSLog(@"progress: %f",[progress floatValue]);
-        [self.progressView setProgress:[progress floatValue] animated:YES];
-    }
-    */
+    
 }
 
 - (void)pauseMovieRecording:(id)sender {
@@ -712,6 +730,18 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
     }
 }
 
+- (void)generatePhotoBubble {
+    int i = 1;
+    for (UIImage *image in capturedPhotos) {
+        UIImageView *imageBubble = [[UIImageView alloc] initWithFrame:CGRectMake((i*16)+(8*i), 8, 16, 16)];
+        [imageBubble.layer setCornerRadius:CORNERRADIUS(16)];
+        [imageBubble setClipsToBounds:YES];
+        [imageBubble setImage:image];
+        [cameraOverlay addSubview:imageBubble];
+        i++;
+    }
+}
+
 #pragma mark - FTCamRollViewControllerDelegate
 
 - (void)camRollViewController:(FTCamRollViewController *)camRollViewController
@@ -738,6 +768,10 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.progressView setProgress:progress animated:NO];
+            
+            if (progress > 0) {
+                [self.nextBarButton setEnabled:YES];
+            }
         });
     });
 }
@@ -781,8 +815,25 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 - (void)cameraEngine:(FTCameraEngine *)cameraEngine capturedImage:(UIImage *)image {
     if (!self.isProfilePciture && !self.isCoverPhoto) {
         // Prepare to upload the taken image
-        self.editPhotoViewController = [[FTEditPhotoViewController alloc] initWithImage:image];
-        [self.navigationController pushViewController:editPhotoViewController animated:NO];
+        
+        if (capturedPhotos.count < 4) {
+            [capturedPhotos addObject:image];
+            
+            if (capturedPhotos.count > 0) {
+                [self.nextBarButton setEnabled:YES];
+            }
+            
+            [self generatePhotoBubble];
+        } else {
+            [[[UIAlertView alloc] initWithTitle:@"Only 4 photos please!"
+                                        message:@"You can only send 4 photos at a time."
+                                       delegate:nil
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil] show];
+        }
+        
+        
+        
     } else if (self.isProfilePciture){
         // Return the profile image
         [self didTakeProfilePictureAction:image];
