@@ -8,8 +8,17 @@
 
 #import "FTPostDetailsFooterView.h"
 #import <CoreLocation/CoreLocation.h>
+#import "FTSuggestionTableView.h"
+#import "FTPlacesViewController.h"
 
-@interface FTEditVideoViewController : UIViewController <UITextViewDelegate,UITextFieldDelegate,UIScrollViewDelegate,FTPostDetailsFooterViewDelegate,CLLocationManagerDelegate,UIAlertViewDelegate>
+@interface FTEditVideoViewController : UIViewController <UITextViewDelegate,
+                                                         UITextFieldDelegate,
+                                                         UIScrollViewDelegate,
+                                                         FTPostDetailsFooterViewDelegate,
+                                                         CLLocationManagerDelegate,
+                                                         FTSuggestionTableViewDelegate,
+                                                         FTPlacesViewControllerDelegate,
+                                                         UIAlertViewDelegate>
 
 @property (nonatomic,readonly) UIButton *playButton;
 

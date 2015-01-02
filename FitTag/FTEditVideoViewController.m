@@ -28,6 +28,10 @@
 @property (nonatomic, strong) UIImageView *videoPlaceHolderView;
 @property (nonatomic, strong) NSString *postLocation;
 @property (nonatomic, strong) UISwitch *shareLocationSwitch;
+@property UIScrollView *originalScrollView;
+@property (nonatomic, strong) UIBarButtonItem *cancelButton;
+@property (nonatomic, strong) FTSuggestionTableView *suggestionTableView;
+@property (nonatomic, strong) PFObject *place;
 @end
 
 @implementation FTEditVideoViewController
@@ -43,6 +47,10 @@
 @synthesize videoImageView;
 @synthesize videoPlaceHolderView;
 @synthesize shareLocationSwitch;
+@synthesize originalScrollView;
+@synthesize cancelButton;
+@synthesize suggestionTableView;
+@synthesize place;
 
 #pragma mark - NSObject
 
@@ -215,6 +223,24 @@
     [self.scrollView bringSubviewToFront:self.playButton];
     
     [postDetailsFooterView.submitButton setEnabled:YES];
+    
+    // Setup the suggestions view
+    
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+    
+    originalScrollView = self.scrollView;
+    
+    // Cancel button
+    cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(didTapcancelButtonAction:)];
+    [cancelButton setTintColor:[UIColor whiteColor]];
+    
+    suggestionTableView = [[FTSuggestionTableView alloc] initWithFrame:CGRectMake(0, 150, 320, 150) style:UITableViewStylePlain];
+    [suggestionTableView setBackgroundColor:[UIColor whiteColor]];
+    [suggestionTableView setSuggestionDelegate:self];
+    [suggestionTableView setAlpha:0];
+    [self.navigationItem setRightBarButtonItem:nil];
+    
+    [self.view addSubview:suggestionTableView];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -223,6 +249,44 @@
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_EDIT_VIDEO];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
+}
+
+#pragma mark - FTPlacesViewControllerDelegate
+
+- (void)placesViewController:(FTPlacesViewController *)placesViewController didTapSelectPlace:(PFObject *)aPlace {
+    
+    place = aPlace;
+    
+    NSLog(@"placesViewController:didTapSelectPlace:%@",place);
+    
+    if ([place objectForKey:kFTPlaceNameKey]) {
+        NSLog(@"place selected:%@",[place objectForKey:kFTPlaceNameKey]);
+        [postDetailsFooterView.shareLocationLabel setText:[place objectForKey:kFTPlaceNameKey]];
+    }
+}
+
+- (void)placesViewController:(FTPlacesViewController *)placesViewController didTapCancelButton:(UIButton *)button {
+    place = nil;
+}
+
+
+#pragma mark - FTSuggestionTableViewDelegate
+
+- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView didSelectHashtag:(NSString *)hashtag completeString:(NSString *)completeString {
+    if (hashtag) {
+        //NSString *hashtagString = [@"#" stringByAppendingString:hashtag];
+        NSString *replaceString = [commentTextView.text stringByReplacingOccurrencesOfString:completeString withString:hashtag];
+        [commentTextView setText:replaceString];
+    }
+}
+
+- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView didSelectUser:(PFUser *)user completeString:(NSString *)completeString {
+    if ([user objectForKey:kFTUserDisplayNameKey]) {
+        NSString *displayname = [user objectForKey:kFTUserDisplayNameKey];
+        //NSString *mentionString = [@"@" stringByAppendingString:displayname];
+        NSString *replaceString = [commentTextView.text stringByReplacingOccurrencesOfString:completeString withString:displayname];
+        [commentTextView setText:replaceString];
+    }
 }
 
 -(void)movieFinishedCallBack:(NSNotification *)notification{
@@ -302,13 +366,6 @@
 
 #pragma mark - UITextFieldDelegate
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [textField resignFirstResponder];
-    return YES;
-}
-
-#pragma mark - UITextViewDelegate
-
 - (void)textViewDidEndEditing:(UITextView *)textView {
     if (textView.text.length == 0) {
         commentTextView.textColor = [UIColor lightGrayColor];
@@ -324,12 +381,106 @@
     return YES;
 }
 
--(void)textViewDidChange:(UITextView *)textView {
-    if (commentTextView.text.length == 0) {
-        commentTextView.textColor = [UIColor lightGrayColor];
-        commentTextView.text = CAPTION_TEXT;
-        [commentTextView resignFirstResponder];
+- (void)textViewDidBeginEditing:(UITextView *)textView {
+    CGRect tableViewRect = CGRectMake(0, self.postDetailsFooterView.frame.origin.y-210, self.scrollView.frame.size.width, 210);
+    [suggestionTableView setFrame:tableViewRect];
+    [self.navigationItem setRightBarButtonItem:cancelButton];
+}
+
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+    
+    [self.view bringSubviewToFront:suggestionTableView];
+    
+    NSArray *mentionRanges = [FTUtility rangesOfMentionsInString:textView.text];
+    NSArray *hashtagRanges = [FTUtility rangesOfHashtagsInString:textView.text];
+    
+    NSTextCheckingResult *currentMention;
+    NSTextCheckingResult *currentHashtag;
+    
+    if (mentionRanges.count > 0) {
+        for (int i = 0; i < [mentionRanges count]; i++) {
+            
+            NSTextCheckingResult *mention = [mentionRanges objectAtIndex:i];
+            //Check if the currentRange intersects the mention
+            //Have to add an extra space to the range for if you're at the end of a hashtag. (since NSLocationInRange uses a < instead of <=)
+            NSRange currentlyTypingMentionRange = NSMakeRange(mention.range.location, mention.range.length + 1);
+            
+            if (NSLocationInRange(range.location, currentlyTypingMentionRange)) {
+                //If the cursor is over the hashtag, then snag that hashtag for matching purposes.
+                currentMention = mention;
+            }
+        }
     }
+    
+    if (hashtagRanges.count > 0) {
+        for (int i = 0; i < [hashtagRanges count]; i++) {
+            
+            NSTextCheckingResult *hashtag = [hashtagRanges objectAtIndex:i];
+            //Check if the currentRange intersects the mention
+            //Have to add an extra space to the range for if you're at the end of a hashtag. (since NSLocationInRange uses a < instead of <=)
+            NSRange currentlyTypingHashtagRange = NSMakeRange(hashtag.range.location, hashtag.range.length + 1);
+            
+            if (NSLocationInRange(range.location, currentlyTypingHashtagRange)) {
+                //If the cursor is over the hashtag, then snag that hashtag for matching purposes.
+                currentHashtag = hashtag;
+            }
+        }
+    }
+    
+    if (currentMention){
+        
+        // Disable scrolling to prevent interfearance with controller
+        [self.scrollView setScrollEnabled:NO];
+        
+        // Fade in
+        [UIView animateWithDuration:0.4 animations:^{
+            [suggestionTableView setAlpha:1];
+        }];
+        
+        // refresh the suggestions array
+        [suggestionTableView refreshSuggestionsWithType:SUGGESTION_TYPE_USERS];
+        
+        NSString *string = [[textView.text substringWithRange:currentMention.range] stringByReplacingOccurrencesOfString:@"@" withString:EMPTY_STRING];
+        string = [string stringByAppendingString:text];
+        
+        if (text.length > 0) {
+            
+            //NSLog(@"text:%@",text);
+            //NSLog(@"string:%@",string);
+            //NSLog(@"textField.text:%@",textField.text);
+            
+            [suggestionTableView updateSuggestionWithText:string AndType:SUGGESTION_TYPE_USERS];
+        }
+        
+    } else if (currentHashtag){
+        
+        // Disable scrolling to prevent interfearance with controller
+        [self.scrollView setScrollEnabled:NO];
+        
+        // Fade in
+        [UIView animateWithDuration:0.4 animations:^{
+            [suggestionTableView setAlpha:1];
+        }];
+        
+        // refresh the suggestions array
+        [suggestionTableView refreshSuggestionsWithType:SUGGESTION_TYPE_HASHTAGS];
+        
+        NSString *string = [[textView.text substringWithRange:currentHashtag.range] stringByReplacingOccurrencesOfString:@"#" withString:EMPTY_STRING];
+        string = [string stringByAppendingString:text];
+        
+        if (text.length > 0) {
+            [suggestionTableView updateSuggestionWithText:string AndType:SUGGESTION_TYPE_HASHTAGS];
+        }
+        
+    } else {
+        //NSLog(@"Not showing auto complete...");
+        [self.scrollView setScrollEnabled:YES];
+        [UIView animateWithDuration:0.4 animations:^{
+            [suggestionTableView setAlpha:0];
+        }];
+    }
+    
+    return YES;
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -340,6 +491,14 @@
 }
 
 #pragma mark - FTPhotoPostDetailsFooterViewDelegate
+
+- (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView
+ didChangeShareLocationSwitch:(UISwitch *)lever {
+    FTPlacesViewController *placesTableViewController = [[FTPlacesViewController alloc] init];
+    [placesTableViewController setGeoPoint:self.geoPoint];
+    [placesTableViewController setDelegate:self];
+    [self.navigationController pushViewController:placesTableViewController animated:YES];
+}
 
 -(void)facebookShareButton:(id)sender{
     // Share to facebook
@@ -361,6 +520,19 @@
 
 #pragma mark - ()
 
+- (void)didTapcancelButtonAction:(id)sender {
+    
+    [self.scrollView setScrollEnabled:YES];
+    
+    [commentTextView resignFirstResponder];
+    [suggestionTableView setAlpha:0];
+    [self.navigationItem setRightBarButtonItem:nil];
+    CGSize scrollViewContentSize = CGSizeMake(self.scrollView.frame.size.width,scrollViewHeight);
+    [UIView animateWithDuration:0.200f animations:^{
+        [self.scrollView setContentSize:scrollViewContentSize];
+    }];
+}
+
 - (void)incrementUserPostCount {
     // Increment user post count
     PFUser *user = [PFUser currentUser];
@@ -368,10 +540,10 @@
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (!error) {
             long int postCount = (long)[[user objectForKey:kFTUserPostCountKey] integerValue];
-            NSLog(@"postCount %ld",postCount);
+            //NSLog(@"postCount %ld",postCount);
             
             NSNumber *rewardCount = [NSNumber numberWithUnsignedInteger:(postCount / 10)];
-            NSLog(@"rewardCount %@",rewardCount);
+            //NSLog(@"rewardCount %@",rewardCount);
             
             [user setValue:rewardCount forKey:kFTUserRewardsEarnedKey];
             [user saveInBackground];
@@ -379,7 +551,7 @@
     }];
 }
 
-- (NSArray *) checkForHashtag {
+- (NSArray *)checkForHashtag {
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)"
                                                                            options:0 error:&error];
@@ -441,20 +613,30 @@
     }
 }
 
+#pragma mark - NSKeyboardWillShow
+
 - (void)keyboardWillShow:(NSNotification *)note {
+    
+    [self.scrollView setScrollEnabled:NO];
+    
     CGRect keyboardFrameEnd = [[note.userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGSize scrollViewContentSize = self.scrollView.bounds.size;
+    CGSize scrollViewContentSize = originalScrollView.bounds.size;
     scrollViewContentSize.height += keyboardFrameEnd.size.height;
     [self.scrollView setContentSize:scrollViewContentSize];
     
-    CGPoint scrollViewContentOffset = self.scrollView.contentOffset;
+    CGPoint scrollViewContentOffset = originalScrollView.contentOffset;
     // Align the bottom edge of the photo with the keyboard
-    scrollViewContentOffset.y = scrollViewContentOffset.y + keyboardFrameEnd.size.height * 3.0f - [UIScreen mainScreen].bounds.size.height;
     
-    [self.scrollView setContentOffset:scrollViewContentOffset animated:YES];
+    scrollViewContentOffset.y = 0;
+    scrollViewContentOffset.y += keyboardFrameEnd.size.height - postDetailsFooterView.frame.size.height + commentTextView.frame.size.height;
+    
+    [self.scrollView setContentOffset:scrollViewContentOffset animated:NO];
 }
 
 - (void)keyboardWillHide:(NSNotification *)note {
+    
+    [self.scrollView setScrollEnabled:YES];
+    
     CGSize scrollViewContentSize = CGSizeMake(self.scrollView.frame.size.width,scrollViewHeight);
     [UIView animateWithDuration:0.200f animations:^{
         [self.scrollView setContentSize:scrollViewContentSize];
@@ -467,11 +649,11 @@
     //NSLog(@"FTEditVideoViewController::doneButtonAction:%@",sender);
     // Make sure there were no errors creating the image files
     if (!self.videoFile || !self.imageFile){
-        [[[UIAlertView alloc] initWithTitle:@"Couldn't post your video"
-                                    message:nil
+        [[[UIAlertView alloc] initWithTitle:@"Missing Video"
+                                    message:@"Something went wrong, we couldn't post your video."
                                    delegate:nil
-                          cancelButtonTitle:nil
-                          otherButtonTitles:@"Dismiss", nil] show];
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil] show];
         return;
     }
     
@@ -503,15 +685,20 @@
             
             if (commentText && commentText.length > 0) {
                 // create and save photo caption
-                NSLog(@"video caption");
+                //NSLog(@"video caption");
                 [video setObject:commentText forKey:kFTPostCaptionKey];
                 description = commentText;
             }
         }
         
         if ([self.shareLocationSwitch isOn]) {
+            
             if (self.geoPoint) {
                 [video setObject:self.geoPoint forKey:kFTPostLocationKey];
+            }
+            
+            if (place) {
+                [video setObject:place forKey:kFTPostPlaceKey];
             }
         }
         
