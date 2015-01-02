@@ -6,6 +6,10 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-@interface FTHandleViewController : UIViewController <UITextFieldDelegate>
+#include "FTCamViewController.h"
+
+@interface FTHandleViewController : UIViewController <UITextFieldDelegate,FTCamViewControllerDelegate>
+
+@property (nonatomic, strong) UIImage *profilePhoto;
 
 @end
