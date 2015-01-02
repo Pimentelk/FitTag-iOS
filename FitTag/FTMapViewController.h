@@ -15,6 +15,7 @@
 #import "FTLocationManager.h"
 #import "FTAmbassadorAnnotationView.h"
 #import "FTBusinessAnnotationView.h"
+#import "FTSuggestionCell.h"
 
 @interface FTMapViewController : UIViewController <FTSearchHeaderViewDelegate,
                                                    FTMapScrollViewItemDelegate,
@@ -24,6 +25,9 @@
                                                    UITextFieldDelegate,
                                                    FTAmbassadorAnnotationViewDelegate,
                                                    FTBusinessAnnotationViewDelegate,
+                                                   UITableViewDataSource,
+                                                   FTSuggestionCellDelegate,
+                                                   UITableViewDelegate,
                                                    FTLocationManagerDelegate>
 @property (nonatomic, strong) PFObject *user;
 @property (nonatomic, strong) MKMapView *mapView;

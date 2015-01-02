@@ -16,6 +16,7 @@
 #import "FTBusinessProfileViewController.h"
 #import "FTNavigationController.h"
 #import "FTPostDetailsViewController.h"
+#import "FTUserProfileViewController.h"
 
 // CONSTANTS
 
@@ -78,7 +79,7 @@ enum PinAnnotationTypeTag {
     UILabel *fitTagsLabel;
     UILabel *taggersLabel;
     FTSearchQueryType searchQueryType;
-    BOOL isTaggersSelected;
+    BOOL isUserFilterSelected;
     int position;
 }
 
@@ -86,33 +87,70 @@ enum PinAnnotationTypeTag {
 @property (nonatomic, assign) CLLocationDistance radius;
 @property (nonatomic, strong) PFGeoPoint *geoPoint;
 @property (nonatomic, strong) FTSearchViewController *searchViewController;
-@property (nonatomic, strong) FTSearchHeaderView *searchHeaderView;
 @property (nonatomic, strong) FTCircleOverlay *targetOverlay;
 @property (nonatomic, strong) FTFollowFriendsViewController *followFriendsViewController;
 @property (nonatomic, strong) UINavigationController *followFriendsNavController;
 @property (nonatomic, strong) FTLocationManager *locationManager;
+@property (nonatomic, strong) UIImageView *errorLocationImage;
+@property (nonatomic, strong) NSMutableArray *suggestions;
+@property (nonatomic, strong) NSMutableArray *users;
+@property (nonatomic, strong) NSMutableArray *hashtags;
+@property (nonatomic, strong) UITableView *suggestionsTableView;
+@property (nonatomic, strong) UIBarButtonItem *doneButton;
+@property (nonatomic, strong) UIBarButtonItem *postButton;
+@property (nonatomic, strong) UIImage *searchBarImage;
 @end
 
 @implementation FTMapViewController
-@synthesize searchHeaderView;
 @synthesize geoPoint;
 @synthesize searchViewController;
 @synthesize followFriendsViewController;
 @synthesize followFriendsNavController;
 @synthesize locationManager;
+@synthesize errorLocationImage;
+@synthesize suggestions;
+@synthesize users;
+@synthesize hashtags;
+@synthesize suggestionsTableView;
+@synthesize doneButton;
+@synthesize postButton;
+@synthesize searchBarImage;
 
 - (void)viewDidLoad{
     [super viewDidLoad];
     
-    mapItems = [[NSMutableArray alloc] init];
+    [self.view setBackgroundColor:[UIColor whiteColor]];
     
-    // Init the MKMapView
-    self.mapView = [[MKMapView alloc] initWithFrame: self.view.frame];
+    CGRect frameRect = self.view.frame;
+    
+    // init arrays
+    mapItems = [[NSMutableArray alloc] init];
+    suggestions = [[NSMutableArray alloc] init];
+    users = [[NSMutableArray alloc] init];
+    hashtags = [[NSMutableArray alloc] init];
+    
+    [self searchSuggestions];
+    
+    // init the MKMapView
+    self.mapView = [[MKMapView alloc] initWithFrame:self.view.frame];
     [self.mapView setDelegate:self];
     [self.mapView setShowsBuildings:NO];
     [self.mapView setShowsPointsOfInterest:NO];
     [self.mapView setZoomEnabled:YES];
     [self.mapView setHidden:NO];
+    
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(shouldDismissViewGesture:)];
+    [tapGesture setNumberOfTapsRequired:1];
+    
+    UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(shouldDismissViewGesture:)];
+    [swipeGesture setDirection:UISwipeGestureRecognizerDirectionDown];
+    
+    UIImage *noLocationImage = [UIImage imageNamed:@"no_location"];
+    errorLocationImage = [[UIImageView alloc] initWithImage:noLocationImage];
+    [errorLocationImage setUserInteractionEnabled:YES];
+    [errorLocationImage setFrame:CGRectMake(0, 0, 263, 298)];
+    [errorLocationImage setCenter:CGPointMake(frameRect.size.width/2, frameRect.size.height/2)];
+    [errorLocationImage setGestureRecognizers:@[ tapGesture, swipeGesture ]];
     
     // manage user location
     locationManager = [[FTLocationManager alloc] init];
@@ -129,16 +167,25 @@ enum PinAnnotationTypeTag {
     
     // Create searchbar buttons & container
     CGFloat containerY = self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y;
-    filterButtonsContainer = [[UIView alloc] initWithFrame:CGRectMake(0, containerY, self.view.frame.size.width, 40)];
+    filterButtonsContainer = [[UIView alloc] initWithFrame:CGRectMake(0, containerY, frameRect.size.width, 40)];
     [filterButtonsContainer setBackgroundColor:[UIColor whiteColor]];
     [filterButtonsContainer setUserInteractionEnabled:YES];
     [filterButtonsContainer setAlpha:0];
     
+    CGFloat suggestionsY = containerY + filterButtonsContainer.frame.size.height;
+    
+    // config the suggestions tableview
+    suggestionsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, suggestionsY, frameRect.size.width, 210) style:UITableViewStylePlain];
+    [suggestionsTableView setDelegate:self];
+    [suggestionsTableView setDataSource:self];
+    [suggestionsTableView setAlpha:0];
+    
+    // config filter
     CGFloat filterButtonWidth = filterButtonsContainer.frame.size.width / 2;
     CGFloat filterButtonHeight = filterButtonsContainer.frame.size.height;
     
     taggersLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, filterButtonWidth, filterButtonHeight)];
-    [taggersLabel setText:@"Taggers"];
+    [taggersLabel setText:@"Users"];
     [taggersLabel setFont:BENDERSOLID(16)];
     [taggersLabel setBackgroundColor:[UIColor whiteColor]];
     [taggersLabel setTextColor:[UIColor blackColor]];
@@ -151,25 +198,25 @@ enum PinAnnotationTypeTag {
     [filterButtonsContainer addSubview:taggersLabel];
     
     fitTagsLabel = [[UILabel alloc] initWithFrame:CGRectMake(filterButtonWidth, 0, filterButtonWidth, filterButtonHeight)];
-    [fitTagsLabel setText:@"FitTags"];
+    [fitTagsLabel setText:@"Hashtags"];
     [fitTagsLabel setFont:BENDERSOLID(16)];
-    [fitTagsLabel setBackgroundColor:[UIColor whiteColor]];
-    [fitTagsLabel setTextColor:[UIColor blackColor]];
+    [fitTagsLabel setBackgroundColor:FT_GRAY];
+    [fitTagsLabel setTextColor:FT_RED];
     [fitTagsLabel setTextAlignment:NSTextAlignmentCenter];
     [fitTagsLabel setUserInteractionEnabled:YES];
     
+    isUserFilterSelected = YES;
+
     UITapGestureRecognizer *fittagsTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapFitTagsLabelAction:)];
     [fittagsTapGesture setNumberOfTapsRequired:1];
+    
     [fitTagsLabel addGestureRecognizer:fittagsTapGesture];
     [filterButtonsContainer addSubview:fitTagsLabel];
     
-    [self.mapView addSubview:filterButtonsContainer];
-    [self.mapView bringSubviewToFront:filterButtonsContainer];
-        
-    // Scrollview
+    // config Scrollview
     CGFloat toolbarHeight = (self.navigationController.toolbar.frame.size.height > 0) ? self.navigationController.toolbar.frame.size.height : 44;
     CGFloat scrollViewY = self.mapView.frame.size.height - SCROLLVIEW_HEIGHT - toolbarHeight;
-    NSLog(@"scrollViewY:%f",scrollViewY);
+    
     CGFloat scrollViewWidth = self.mapView.frame.size.width;
     
     scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, scrollViewY, scrollViewWidth, SCROLLVIEW_HEIGHT)];
@@ -194,7 +241,11 @@ enum PinAnnotationTypeTag {
     searchViewController = [[FTSearchViewController alloc] init];
     [searchViewController.navigationItem setLeftBarButtonItem:dismissSearchButton];
     
-    // Init search user controller
+    doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(didTapDoneButtonAction:)];
+    [doneButton setTintColor:[UIColor whiteColor]];
+    
+    postButton = self.navigationItem.rightBarButtonItem;
+    
     UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
     [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
     [backIndicator setStyle:UIBarButtonItemStylePlain];
@@ -208,16 +259,16 @@ enum PinAnnotationTypeTag {
     [followFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
     
     // Default filter type
-    [fitTagsLabel setBackgroundColor:FT_RED];
-    [fitTagsLabel setTextColor:[UIColor whiteColor]];
-    [taggersLabel setBackgroundColor:[UIColor whiteColor]];
-    [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
-    isTaggersSelected = NO;
-}
+    [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];}
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
     [locationManager requestLocationAuthorization];
+    
+    [searchBar resignFirstResponder];
+    [filterButtonsContainer setAlpha:0];
+    [suggestionsTableView setAlpha:0];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -228,22 +279,144 @@ enum PinAnnotationTypeTag {
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
 }
 
-#pragma mark - SearchBarDelegate
+#pragma mark - UITableViewDelegate
 
-- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
-    [UIView animateWithDuration:ANIMATION_DURATION animations:^{
-       [filterButtonsContainer setAlpha:1];
-    }];
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    // Return the number of sections.
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    // Return the number of rows in the section.
+    return suggestions.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    FTSuggestionCell *cell = (FTSuggestionCell *)[tableView dequeueReusableCellWithIdentifier:@"DataCell"];
+    if (cell == nil) {
+        cell = [[FTSuggestionCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"DataCell"];
+        [cell setDelegate:self];
+    }
+    
+    if (suggestions && suggestions.count) {
+        //NSLog(@"%@",[suggestions objectAtIndex:indexPath.row]);
+        if (isUserFilterSelected) {
+            PFUser *user = (PFUser *)[suggestions objectAtIndex:indexPath.row];
+            [cell setUser:user];
+        } else {
+            [cell setHashtag:[suggestions objectAtIndex:indexPath.row]];
+        }
+    }
+    
+    return cell;
+}
+
+#pragma mark - FTSuggestionTableViewCellDelegate
+
+- (void)suggestionView:(FTSuggestionCell *)suggestionView didSelectHashtag:(NSString *)hashtag {
+    [searchBar resignFirstResponder];
+    [filterButtonsContainer setAlpha:0];
+    [suggestionsTableView setAlpha:0];
+    
+    [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
+    [searchViewController setSearchString:[hashtag lowercaseString]];
+    [self.navigationController pushViewController:searchViewController animated:YES];
+}
+
+- (void)suggestionView:(FTSuggestionCell *)suggestionView didSelectUser:(PFUser *)aUser {
+    [searchBar resignFirstResponder];
+    [filterButtonsContainer setAlpha:0];
+    [suggestionsTableView setAlpha:0];
+    
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
+    [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backIndicator setStyle:UIBarButtonItemStylePlain];
+    [backIndicator setTarget:self];
+    [backIndicator setAction:@selector(didTapPopSearchButtonAction:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [flowLayout setItemSize:CGSizeMake(self.mapView.frame.size.width/3,105)];
+    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [flowLayout setMinimumInteritemSpacing:0];
+    [flowLayout setMinimumLineSpacing:0];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+    
+    NSString *userType = [aUser objectForKey:kFTUserTypeKey];
+    
+    if ([userType isEqualToString:kFTUserTypeBusiness]) {
+        
+        [flowLayout setHeaderReferenceSize:CGSizeMake(self.mapView.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
+        
+        FTBusinessProfileViewController *profileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+        [profileViewController setBusiness:aUser];
+        [profileViewController.navigationItem setLeftBarButtonItem:backIndicator];
+        [self.navigationController pushViewController:profileViewController animated:YES];
+    } else {
+        
+        [flowLayout setHeaderReferenceSize:CGSizeMake(self.mapView.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
+        
+        FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+        [profileViewController setUser:aUser];
+        [profileViewController.navigationItem setLeftBarButtonItem:backIndicator];
+        [self.navigationController pushViewController:profileViewController animated:YES];
+    }
+}
+
+#pragma mark - UISearchBarDelegate
+
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)aSearchBar {
+    
+    [self.navigationItem setRightBarButtonItem:doneButton];
+    
     return YES;
+}
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)aSearchBar {
+    NSLog(@"started editing..");
+    
+    [self.suggestions removeAllObjects];
+    
+    if (isUserFilterSelected) {
+        [self.suggestions addObjectsFromArray:users];
+    } else {
+        [self.suggestions addObjectsFromArray:hashtags];
+    }
+    [suggestionsTableView reloadData];
+    
+    [UIView animateWithDuration:ANIMATION_DURATION animations:^{
+        [filterButtonsContainer setAlpha:1];
+        [suggestionsTableView setAlpha:1];
+    }];
+    
+    if (aSearchBar.text.length > 0) {
+        [self updateSuggestions:aSearchBar.text];
+    }
+}
+
+- (void)searchBarTextDidEndEditing:(UISearchBar *)aSearchBar {
+    //NSLog(@"searchText:%@",searchBar.text);
+    
+    [self.navigationItem setRightBarButtonItem:postButton];
+    
+    [searchBar resignFirstResponder];
+    [filterButtonsContainer setAlpha:0];
+    [suggestionsTableView setAlpha:0];
+}
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    [self updateSuggestions:searchText];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchbar {
     [searchBar resignFirstResponder];
     [UIView animateWithDuration:ANIMATION_DURATION animations:^{
         [filterButtonsContainer setAlpha:0];
+        [suggestionsTableView setAlpha:0];
     }];
     
-    if (isTaggersSelected) {
+    if (isUserFilterSelected) {
         NSString *lowercaseStringWithoutSymbols = [[searchBar.text stringByReplacingOccurrencesOfString:@"@" withString:EMPTY_STRING] lowercaseString];
         [followFriendsViewController setFollowUserQueryType:FTFollowUserQueryTypeTagger];
         [followFriendsViewController setSearchString:lowercaseStringWithoutSymbols];
@@ -256,16 +429,13 @@ enum PinAnnotationTypeTag {
     }
 }
 
-- (void)didTapPopSearchButtonAction:(UIButton *)button {
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
 #pragma mark - MKMapViewDelegate
 
 - (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated {
     [searchBar resignFirstResponder];
     [UIView animateWithDuration:ANIMATION_DURATION animations:^{
         [filterButtonsContainer setAlpha:0];
+        [suggestionsTableView setAlpha:0];
     }];
 }
 
@@ -365,28 +535,178 @@ enum PinAnnotationTypeTag {
 
 #pragma mark - ()
 
+- (void)updateSuggestions:(NSString *)searchText {
+    [suggestions removeAllObjects];
+    
+    if (isUserFilterSelected) {
+        if ([searchText isEqualToString:EMPTY_STRING]) {
+            [suggestions addObjectsFromArray:users];
+            [suggestionsTableView reloadData];
+            return;
+        }
+        
+        for (PFUser *user in users) {
+            NSString *displayName = [user objectForKey:kFTUserDisplayNameKey];
+            NSRange substringRange = [[displayName lowercaseString] rangeOfString:[searchText lowercaseString]];
+            if (substringRange.location != NSNotFound) {
+                [suggestions addObject:user];
+            }
+        }
+        
+    } else {
+        if ([searchText isEqualToString:EMPTY_STRING]) {
+            [suggestions addObjectsFromArray:hashtags];
+            [suggestionsTableView reloadData];
+            return;
+        }
+        
+        for (NSString *hashtag in hashtags) {
+            NSRange substringRange = [[hashtag lowercaseString] rangeOfString:[searchText lowercaseString]];
+            if (substringRange.location != NSNotFound) {
+                [suggestions addObject:hashtag];
+            }
+        }
+    }
+    
+    [suggestionsTableView reloadData];
+}
+
+- (void)didTapDoneButtonAction:(id)sender {
+    
+    [searchBar resignFirstResponder];
+    [filterButtonsContainer setAlpha:0];
+    [suggestionsTableView setAlpha:0];
+}
+
+- (void)searchSuggestions {
+    
+    PFQuery *usersQuery = [PFQuery queryWithClassName:kFTUserClassKey];
+    [usersQuery  whereKeyExists:kFTUserDisplayNameKey];
+    [usersQuery  whereKeyExists:kFTUserProfilePicSmallKey];
+    [usersQuery findObjectsInBackgroundWithBlock:^(NSArray *userObjects, NSError *error) {
+        if (!error) {
+            
+            NSMutableArray *userSuggestions = [[NSMutableArray alloc] initWithArray:userObjects];
+            NSMutableArray *displayNames = [[NSMutableArray alloc] init];
+            
+            // Get array of names
+            for (PFUser *user in users) {
+                [displayNames addObject:[user objectForKey:kFTUserDisplayNameKey]];
+            }
+            
+            for (PFUser *userSuggestion in userSuggestions) {
+                
+                NSString *displayName = [userSuggestion objectForKey:kFTUserDisplayNameKey];
+                
+                if (![displayNames containsObject:displayName]) {
+                    NSLog(@"displayName:%@",displayName);
+                    [users addObject:userSuggestion];
+                }
+            }
+            //NSLog(@"users:%@",users);
+        }
+        
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+    
+    PFQuery *hashtagQuery = [PFQuery queryWithClassName:kFTPostClassKey];
+    [hashtagQuery whereKeyExists:kFTPostHashTagKey];
+    [hashtagQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            //[self.suggestions removeAllObjects];
+            
+            NSMutableArray *hashtagSuggestions = [[NSMutableArray alloc] initWithArray:objects]; // array of PFObjects
+            
+            for (PFObject *object in hashtagSuggestions) { // loop throught PFObjects
+                NSMutableArray *postHashtags = [object objectForKey:kFTPostHashTagKey]; // array of hashtags
+                for (NSString *postHashtag in postHashtags) { // loop through array of hashtags
+                    if (![hashtags containsObject:postHashtag]) { // if unique insert into our array else skip
+                        NSLog(@"postHashtag:%@",postHashtag);
+                        [hashtags addObject:postHashtag];
+                    }
+                }
+            }
+            //NSLog(@"hashtagObjects:%@",hashtags);
+        }
+        
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
+
+- (void)didTapPopSearchButtonAction:(UIButton *)button {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)shouldDismissViewGesture:(id)sender {
+    [searchBar resignFirstResponder];
+}
+
 - (void)didTapBackButtonAction:(UIButton *)button {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)didTapTaggersLabelAction:(id)sender {
     NSLog(@"%@::didTapTaggersLabelAction:",VIEWCONTROLLER_MAP);
-    isTaggersSelected = YES;
-    [taggersLabel setBackgroundColor:FT_RED];
-    [taggersLabel setTextColor:[UIColor whiteColor]];
+    isUserFilterSelected = YES;
+    [fitTagsLabel setBackgroundColor:FT_GRAY];
+    [fitTagsLabel setTextColor:FT_RED];
     
-    [fitTagsLabel setBackgroundColor:[UIColor whiteColor]];
-    [fitTagsLabel setTextColor:[UIColor blackColor]];
+    [taggersLabel setBackgroundColor:[UIColor whiteColor]];
+    [taggersLabel setTextColor:[UIColor blackColor]];
+    
+    /*
+    [searchBar setImage:[self imageFromText:@"@"]
+       forSearchBarIcon:UISearchBarIconSearch
+                  state:UIControlStateNormal];
+    */
+    
+    [self.suggestions removeAllObjects];
+    [self.suggestions addObjectsFromArray:users];
+    [suggestionsTableView reloadData];
 }
 
 - (void)didTapFitTagsLabelAction:(id)sender {
     NSLog(@"%@::didTapFitTagsLabelAction:",VIEWCONTROLLER_MAP);
-    isTaggersSelected = NO;
-    [fitTagsLabel setBackgroundColor:FT_RED];
-    [fitTagsLabel setTextColor:[UIColor whiteColor]];
+    isUserFilterSelected = NO;
+    [taggersLabel setBackgroundColor:FT_GRAY];
+    [taggersLabel setTextColor:FT_RED];
     
-    [taggersLabel setBackgroundColor:[UIColor whiteColor]];
-    [taggersLabel setTextColor:[UIColor blackColor]];
+    [fitTagsLabel setBackgroundColor:[UIColor whiteColor]];
+    [fitTagsLabel setTextColor:[UIColor blackColor]];
+    
+    /*
+    [searchBar setImage:[self imageFromText:@"#"]
+       forSearchBarIcon:UISearchBarIconSearch
+                  state:UIControlStateNormal];
+    */
+    
+    [self.suggestions removeAllObjects];
+    [self.suggestions addObjectsFromArray:hashtags];
+    [suggestionsTableView reloadData];
+}
+
+- (UIImage *)imageFromText:(NSString *)text {
+    
+    CGSize size = [text sizeWithAttributes:
+                   @{NSFontAttributeName:
+                         [UIFont systemFontOfSize:12.0f]}];
+    
+    if (UIGraphicsBeginImageContextWithOptions != NULL)
+        UIGraphicsBeginImageContextWithOptions(size,NO,0.0);
+    else
+        UIGraphicsBeginImageContext(size);
+    
+    [text drawAtPoint:CGPointMake(0.0, 0.0) withAttributes:@{NSFontAttributeName:
+                                                                 [UIFont systemFontOfSize:12.0f]}];
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return image;
 }
 
 - (void)setMapCenterWithPoint:(PFGeoPoint *)centerPoint {
@@ -421,7 +741,9 @@ enum PinAnnotationTypeTag {
     [self.view addSubview: self.mapView];
     
     // center our map view around this geopoint
-    MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(geoPoint.latitude, geoPoint.longitude), MKCoordinateSpanMake(0.0225f, 0.0225f));
+    MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(self.location.coordinate.latitude,
+                                                                                  self.location.coordinate.longitude),
+                                                       MKCoordinateSpanMake(0.0225f, 0.0225f));
 
     // Animate zoom into geopoint center
     [self.mapView setRegion:region animated:NO];
@@ -546,19 +868,10 @@ enum PinAnnotationTypeTag {
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
     [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(self.mapView.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
-    
-    // Override the back idnicator
-    UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
-    [dismissProfileButton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
-    [dismissProfileButton setStyle:UIBarButtonItemStylePlain];
-    [dismissProfileButton setTarget:self];
-    [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
-    [dismissProfileButton setTintColor:[UIColor whiteColor]];
-    
+    [flowLayout setHeaderReferenceSize:CGSizeMake(self.mapView.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
+        
     FTBusinessProfileViewController *profileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     [profileViewController setBusiness:aUser];
-    [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
 
@@ -580,6 +893,38 @@ enum PinAnnotationTypeTag {
 - (void)locationManager:(FTLocationManager *)locationManager didUpdateUserLocation:(CLLocation *)location geoPoint:(PFGeoPoint *)aGeoPoint {
     geoPoint = aGeoPoint;
     [self setInitialLocation:location];
+    
+    // Remove filterButtonsContainer from the superview if applicable
+    [errorLocationImage removeFromSuperview];
+    
+    // refresh the map
+    [self.mapView removeFromSuperview];
+    [self.view addSubview: self.mapView];
+    
+    // refresh the filter buttons
+    [filterButtonsContainer removeFromSuperview];
+    [self.mapView addSubview:filterButtonsContainer];
+    [self.mapView bringSubviewToFront:filterButtonsContainer];
+    
+    // refresh the suggestions table
+    [suggestionsTableView removeFromSuperview];
+    [self.mapView addSubview:suggestionsTableView];
+    [self.mapView bringSubviewToFront:suggestionsTableView];
+}
+
+- (void)locationManager:(FTLocationManager *)locationManager didFailWithError:(NSError *)error {
+    [self.view addSubview:errorLocationImage];
+    
+    // Remove filterButtonsContainer & map from the superview (mapview) and add them to the view
+    [filterButtonsContainer removeFromSuperview];
+    [suggestionsTableView removeFromSuperview];
+    [self.mapView removeFromSuperview];
+    
+    [self.view addSubview:filterButtonsContainer];
+    [self.view bringSubviewToFront:filterButtonsContainer];
+    
+    [self.mapView addSubview:suggestionsTableView];
+    [self.mapView bringSubviewToFront:suggestionsTableView];
 }
 
 #pragma mark - FTBusinessAnnotationViewDelegate
