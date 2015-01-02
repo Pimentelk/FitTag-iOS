@@ -1341,8 +1341,6 @@
         return;
     }
     
-    BOOL updateBio = NO;
-    
     if (userBiography.text.length > 150) {
         [self showHudMessage:HUD_MESSAGE_BIOGRAPHY_LIMIT WithDuration:2];
         return;
@@ -1350,7 +1348,6 @@
     
     if (userBiography.text.length <= 150 && userBiography.text.length > 0) {
         [self.user setObject:userBiography.text forKey:kFTUserBioKey];
-        updateBio = YES;
     }
     
     [self.user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
