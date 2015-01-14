@@ -50,7 +50,7 @@
         [locationButton setTextColor:[UIColor blackColor]];
         [locationButton setBackgroundColor:[UIColor lightGrayColor]];
         [locationButton setUserInteractionEnabled:YES];
-        [locationButton setFont:BENDERSOLID(16)];
+        [locationButton setFont:MULIREGULAR(16)];
         [locationButton addGestureRecognizer:locationTapGesture];
         
         [self addSubview:locationButton];
@@ -65,7 +65,7 @@
         [interestButton setTextColor:[UIColor blackColor]];
         [interestButton setBackgroundColor:[UIColor lightGrayColor]];
         [interestButton setUserInteractionEnabled:YES];
-        [interestButton setFont:BENDERSOLID(16)];
+        [interestButton setFont:MULIREGULAR(16)];
         [interestButton addGestureRecognizer:interestTapGesture];
         
         [self addSubview:interestButton];
