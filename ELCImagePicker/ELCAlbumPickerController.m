@@ -35,7 +35,7 @@
 	[self.navigationItem setTitle:@"Loading..."];
     [self.navigationController setToolbarHidden:YES];
     [self.navigationController.navigationBar setTranslucent:YES];
-    [self.navigationController.navigationBar setBarTintColor:[UIColor redColor]];
+    [self.navigationController.navigationBar setBarTintColor:FT_RED];
     
     // Override the back idnicator
     UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] init];
@@ -82,11 +82,14 @@
             // Group Enumerator Failure Block
             void (^assetGroupEnumberatorFailure)(NSError *) = ^(NSError *error) {
                 
-                UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Error" message:[NSString stringWithFormat:@"Album Error: %@ - %@", [error localizedDescription], [error localizedRecoverySuggestion]] delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil];
-                [alert show];
+                [[[UIAlertView alloc] initWithTitle:@"Error"
+                                            message:[NSString stringWithFormat:@"Album Error: %@ - %@", [error localizedDescription], [error localizedRecoverySuggestion]]
+                                           delegate:nil
+                                  cancelButtonTitle:@"Ok"
+                                  otherButtonTitles:nil] show];
                 
-                NSLog(@"A problem occured %@", [error description]);	                                 
-            };	
+                NSLog(@"A problem occured %@", [error description]);
+            };
                     
             // Enumerate Albums
             [self.library enumerateGroupsWithTypes:ALAssetsGroupAll
@@ -99,7 +102,7 @@
 
 - (void)reloadTableView
 {
-    NSLog(@"reloadTableView");
+    //NSLog(@"reloadTableView");
 	[self.tableView reloadData];
 	[self.navigationItem setTitle:@"Select an Album"];
     [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
@@ -156,7 +159,7 @@
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"cellForRowAtIndexPath");
+    //NSLog(@"cellForRowAtIndexPath");
     static NSString *CellIdentifier = @"Cell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -181,7 +184,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"didSelectRowAtIndexPath");
+    //NSLog(@"didSelectRowAtIndexPath");
 	ELCAssetTablePicker *picker = [[ELCAssetTablePicker alloc] initWithNibName: nil bundle: nil];
 	picker.parent = self;
 
