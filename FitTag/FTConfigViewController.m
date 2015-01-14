@@ -90,11 +90,14 @@
     
     CGSize viewSize = self.view.frame.size;
     
-    logoView = [[UIView alloc] initWithFrame:CGRectMake((viewSize.width-164)/2, 70, 164, 32)];
+    UIImageView *logoImageView = [[UIImageView alloc] initWithImage:LOGIN_IMAGE_LOGO];
+    [logoImageView setFrame:CGRectMake(0, 0, 320, 79)];
+    
+    logoView = [[UIView alloc] initWithFrame:CGRectMake(0, 70, 320, 79)];
     [logoView setBackgroundColor:[UIColor clearColor]];
     [logoView setUserInteractionEnabled:YES];
     [logoView addGestureRecognizer:tapGesture];
-    [logoView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:FITTAG_LOGO]]];
+    [logoView addSubview:logoImageView];
     [self.view addSubview:logoView];
     
     overlayView = [[UIView alloc] initWithFrame:CGRectMake(0, viewSize.height - OVERLAY_HEGIHT, viewSize.width, OVERLAY_HEGIHT)];
