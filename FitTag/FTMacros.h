@@ -48,6 +48,7 @@
 
 // Font
 #define BENDERSOLID(s) [UIFont fontWithName:@"BenderSolid" size:s]
+#define MULIREGULAR(s) [UIFont fontWithName:@"Muli" size:s]
 #define HelveticaNeue(s) [UIFont fontWithName:@"HelveticaNeue" size:s]
 #define SYSTEMFONTBOLD(s) [UIFont boldSystemFontOfSize:s]
 
@@ -193,6 +194,9 @@
 #define FT_LINKBLUE_COLOR_GREEN 164/255.0f
 
 // Timeline Cells Tool bar items
+#define COMMENT_BUTTON [UIImage imageNamed:@"comment_button"]
+#define ENCOURAGE_BUTTON_UNSELECTED [UIImage imageNamed:@"encourage_button_unselected"]
+#define ENCOURAGE_BUTTON_SELECTED [UIImage imageNamed:@"encourage_button_selected"]
 
 #define COMMENT_BUBBLE_WHITE [UIImage imageNamed:@"commentbubble_white"]
 #define COMMENT_BUBBLE [UIImage imageNamed:@"commentbubble"]
@@ -201,11 +205,11 @@
 #define HEART_UNSELECTED [UIImage imageNamed:@"heart_unselected"]
 #define MORE_BUTTON [UIImage imageNamed:@"morebutton"]
 
-#define COUNTER_WIDTH 37
-#define COUNTER_HEIGHT 19
+#define COUNTER_WIDTH 38
+#define COUNTER_HEIGHT 20
 
-#define BUTTON_WIDTH 21
-#define BUTTON_HEIGHT 18
+#define BUTTON_WIDTH 79
+#define BUTTON_HEIGHT 20
 
 #define BUTTON_PADDING 10
 
