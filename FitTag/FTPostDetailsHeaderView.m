@@ -48,7 +48,7 @@
 #define likeBarX baseHorizontalOffset
 #define likeBarY nameHeaderHeight + mainImageHeight
 #define likeBarWidth baseWidth
-#define likeBarHeight 30.0f
+#define likeBarHeight 60.0f
 
 //#define likeButtonX 9.0f
 #define likeButtonY 7.0f
@@ -75,6 +75,7 @@
 // Redeclare for edit
 @property (nonatomic, strong, readwrite) PFUser *photographer;
 @property (nonatomic, strong) UILabel *locationLabel;
+@property (nonatomic, strong) UILabel *distanceLabel;
 
 @property (nonatomic, strong) STTweetLabel *contentLabel;
 @property (nonatomic, strong) UILabel *timeLabel;
@@ -109,6 +110,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
 @synthesize avatarImageView;
 @synthesize userButton;
 @synthesize locationLabel;
+@synthesize distanceLabel;
 @synthesize contentLabel;
 @synthesize captionHeight;
 @synthesize timeLabel;
@@ -247,7 +249,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     if (date) {
         
         NSString *time = [timeFormatter stringForTimeIntervalFromDate:[NSDate date] toDate:date];
-        NSDictionary *userAttributes = @{NSFontAttributeName: BENDERSOLID(14)};
+        NSDictionary *userAttributes = @{NSFontAttributeName: MULIREGULAR(14)};
         CGSize stringBoundingBox = [time sizeWithAttributes:userAttributes];
         
         CGFloat frameWidth = self.frame.size.width;
@@ -461,10 +463,6 @@ static TTTTimeIntervalFormatter *timeFormatter;
     
     [self configHeader:self.photographer];
     
-    // Get loction
-    
-    [self configLocation:[self.post objectForKey:kFTPostLocationKey]];
-    
     // Create bottom section for the header view; the likes
     
     CGSize frameSize = self.frame.size;
@@ -476,13 +474,29 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [self addSubview:toolbar];
     
     //location label
-    locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, BUTTONS_TOP_PADDING, 130, 20)];
+    locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, BUTTONS_TOP_PADDING+30, 240, 20)];
     [locationLabel setText:EMPTY_STRING];
     [locationLabel setBackgroundColor:[UIColor clearColor]];
     [locationLabel setTextColor:FT_RED];
-    [locationLabel setFont:BENDERSOLID(13)];
+    [locationLabel setFont:MULIREGULAR(13)];
     
     [toolbar addSubview:locationLabel];
+    
+    //distance label
+    distanceLabel = [[UILabel alloc] initWithFrame:CGRectMake(toolbar.frame.size.width-80, BUTTONS_TOP_PADDING+30, 80, 20)];
+    [distanceLabel setText:EMPTY_STRING];
+    [distanceLabel setBackgroundColor:[UIColor clearColor]];
+    [distanceLabel setTextColor:FT_RED];
+    [distanceLabel setFont:MULIREGULAR(13)];
+    
+    [toolbar addSubview:distanceLabel];
+    
+    // Get loction
+    
+    //[self configLocation:[self.post objectForKey:kFTPostLocationKey]];
+    [self configPlace];
+    
+    // Buttons
     
     moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
     //[moreButton setBackgroundImage:[UIImage imageNamed:@"more_button"] forState:UIControlStateNormal];
@@ -501,7 +515,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [commentCounter setBackgroundImage:COUNTER_BOX forState:UIControlStateNormal];
     [commentCounter setTitle:EMPTY_STRING forState:UIControlStateNormal];
     [commentCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
-    [commentCounter.titleLabel setFont:BENDERSOLID(18)];
+    [commentCounter.titleLabel setFont:MULIREGULAR(18)];
     [commentCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
     [commentCounter setTitleColor:FT_RED forState:UIControlStateNormal];
     [commentCounter setTitleColor:FT_RED forState:UIControlStateSelected];
@@ -517,7 +531,8 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [self.commentButton setBackgroundColor:[UIColor clearColor]];
     //[self.commentButton setBackgroundImage:[UIImage imageNamed:@"comment_bubble"] forState:UIControlStateNormal];
     [self.commentButton addTarget:self action:@selector(didTapCommentButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.commentButton setBackgroundImage:COMMENT_BUBBLE forState:UIControlStateNormal];
+    //[self.commentButton setBackgroundImage:COMMENT_BUBBLE forState:UIControlStateNormal];
+    [self.commentButton setBackgroundImage:COMMENT_BUTTON forState:UIControlStateNormal];
     [self.commentButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
     [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
@@ -537,7 +552,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [likeCounter setBackgroundImage:COUNTER_BOX forState:UIControlStateNormal];
     [likeCounter setTitle:@"0" forState:UIControlStateNormal];
     [likeCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
-    [likeCounter.titleLabel setFont:BENDERSOLID(18)];
+    [likeCounter.titleLabel setFont:MULIREGULAR(18)];
     [likeCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
     [likeCounter setTitleColor:FT_RED forState:UIControlStateNormal];
     [likeCounter setTitleColor:FT_RED forState:UIControlStateSelected];
@@ -556,9 +571,15 @@ static TTTTimeIntervalFormatter *timeFormatter;
     //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateSelected];
     //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateHighlighted];
     
+    /*
     [self.likeButton setBackgroundImage:HEART_UNSELECTED forState:UIControlStateNormal];
     [self.likeButton setBackgroundImage:HEART_SELECTED forState:UIControlStateSelected];
     [self.likeButton setBackgroundImage:HEART_SELECTED forState:UIControlStateHighlighted];
+    */
+    
+    [self.likeButton setBackgroundImage:ENCOURAGE_BUTTON_UNSELECTED forState:UIControlStateNormal];
+    [self.likeButton setBackgroundImage:ENCOURAGE_BUTTON_SELECTED forState:UIControlStateSelected];
+    [self.likeButton setBackgroundImage:ENCOURAGE_BUTTON_SELECTED forState:UIControlStateHighlighted];
     
     [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
@@ -648,7 +669,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
             [self.userButton setBackgroundColor:[UIColor clearColor]];
             [self.userButton setTitleColor:FT_RED forState:UIControlStateNormal];
             [self.userButton setTitleColor:FT_DARKGRAY forState:UIControlStateHighlighted];
-            [[self.userButton titleLabel] setFont:BENDERSOLID(18)];
+            [[self.userButton titleLabel] setFont:MULIREGULAR(18)];
             [[self.userButton titleLabel] setLineBreakMode:NSLineBreakByTruncatingTail];
             [[self.userButton titleLabel] setShadowOffset:CGSizeMake(0,1)];
             [self.userButton setContentHorizontalAlignment: UIControlContentHorizontalAlignmentLeft];
@@ -659,7 +680,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
             // we resize the button to fit the user's name to avoid having a huge touch area
             CGFloat constrainWidth = self.frame.size.width;
             CGFloat userButtonPointWidth = AVATAR_X + AVATAR_WIDTH + 9;
-            CGFloat userButtonPointHeight = (nameHeaderHeight - 12) / 2;
+            CGFloat userButtonPointHeight = (nameHeaderHeight - 18) / 2;
             CGPoint userButtonPoint = CGPointMake(userButtonPointWidth,userButtonPointHeight);
             constrainWidth -= userButtonPoint.x;
             CGSize constrainSize = CGSizeMake(constrainWidth, nameHeaderHeight - userButtonPoint.y*2.0f);
@@ -676,7 +697,7 @@ static TTTTimeIntervalFormatter *timeFormatter;
             [self addSubview:avatarImageView];
             
             self.timeLabel = [[UILabel alloc] init];
-            [self.timeLabel setFont:BENDERSOLID(14)];
+            [self.timeLabel setFont:MULIREGULAR(14)];
             [self.timeLabel setTextColor:[UIColor lightGrayColor]];
             [self.timeLabel setBackgroundColor:[UIColor clearColor]];
             [self.timeLabel setShadowColor:[UIColor colorWithWhite:1.0f alpha:0.70f]];
@@ -718,29 +739,33 @@ static TTTTimeIntervalFormatter *timeFormatter;
             
             int i = 0;
             for (PFObject *object in objects) {
-                PFFile *file = [object objectForKey:kFTPostImageKey];
-                [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-                    if (!error) {                        
-                        CGFloat xOrigin = i * self.frame.size.width;
-                        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, frameSize.width, frameSize.width)];
-                        [imageView setBackgroundColor:[UIColor whiteColor]];
-                        
-                        UIImage *image = [UIImage imageWithData:data];
-                        [imageView setImage:image];
-                        [imageView setClipsToBounds:YES];
-                        [imageView setContentMode:CONTENTMODE];
-                        [imageView setUserInteractionEnabled:YES];
-                        
-                        [carousel addSubview:imageView];
-                    }
-                }];
-                i++;
                 
-                if (objects.count == i) {
-                    [self addSubview:carousel];
-                    [self sendSubviewToBack:carousel];
-                    [self.postImageView setHidden:YES];
-                }
+                PFFile *file = [object objectForKey:kFTPostImageKey];
+                
+                if (file && ![file isEqual:[NSNull null]]) {
+                    [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                        if (!error) {
+                            CGFloat xOrigin = i * self.frame.size.width;
+                            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, frameSize.width, frameSize.width)];
+                            [imageView setBackgroundColor:[UIColor whiteColor]];
+                            
+                            UIImage *image = [UIImage imageWithData:data];
+                            [imageView setImage:image];
+                            [imageView setClipsToBounds:YES];
+                            [imageView setContentMode:CONTENTMODE];
+                            [imageView setUserInteractionEnabled:YES];
+                            
+                            [carousel addSubview:imageView];
+                        }
+                    }];
+                    i++;
+                    
+                    if (objects.count == i) {
+                        [self addSubview:carousel];
+                        [self sendSubviewToBack:carousel];
+                        [self.postImageView setHidden:YES];
+                    }
+                }                
             }
             
             if (objects.count > 1) {
@@ -840,9 +865,63 @@ static TTTTimeIntervalFormatter *timeFormatter;
     } else {
         NSLog(@"No geopoint...");
     }
+    
+    // Calculate distance
+    if (geoPoint && [[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
+
+        CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
+        // Get the current users location
+        PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
+        CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
+        
+        // Current users distance to the item
+        NSString *distanceString = [NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)];
+        [self.distanceLabel setText:distanceString];
+        
+    } else {
+        [self.distanceLabel setText:EMPTY_STRING];
+    }
+}
+
+- (void)configPlace {
+    if ([self.post objectForKey:kFTPostPlaceKey]) {
+        
+        PFObject *place = [self.post objectForKey:kFTPostPlaceKey];
+        [place fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+            if (!error) {
+                [locationLabel setText:[place objectForKey:kFTPlaceNameKey]];
+                [locationLabel setUserInteractionEnabled:YES];
+                
+                UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
+                locationTapRecognizer.numberOfTapsRequired = 1;
+                [locationLabel addGestureRecognizer:locationTapRecognizer];
+            }
+        }];
+        
+        PFGeoPoint *geoPoint = [self.post objectForKey:kFTPostLocationKey];
+        
+        // Calculate distance
+        if (geoPoint && [[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
+            CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
+            
+            // Get the current users location
+            PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
+            CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
+            
+            // Current users distance to the item
+            [self.distanceLabel setText:[NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
+            
+        } else {
+            [self.distanceLabel setText:EMPTY_STRING];
+        }
+    }
 }
 
 #pragma mark - ()
+
+- (CLLocationDistance)distanceFrom:(CLLocation *)postLocation to:(CLLocation *)userLocation {
+    return [postLocation distanceFromLocation:userLocation];
+}
 
 - (void)didTapCommentButtonAction:(UIButton *)button {
     if (delegate && [delegate respondsToSelector:@selector(postDetailsHeaderView:didTapCommentButton:)]) {
