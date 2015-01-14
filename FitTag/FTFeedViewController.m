@@ -172,6 +172,7 @@
             }
         }
     }
+    
 }
 
 - (void)didTapFollowFriendsButtonAction:(id)sender {
@@ -263,7 +264,7 @@
 }
 
 - (BOOL)didLogInWithTwitter:(PFObject *)user {
-    NSLog(@"%@::didLogInWithTwitter:",VIEWCONTROLLER_FEED);
+    //NSLog(@"%@::didLogInWithTwitter:",VIEWCONTROLLER_FEED);
     if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
         NSLog(USER_DID_LOGIN_TWITTER);
         NSString *requestString = [NSString stringWithFormat:TWITTER_API_USERS,[PFTwitterUtils twitter].screenName];
@@ -412,7 +413,7 @@
 - (void)autoFollowFittag:(PFUser *)user {
     
     PFQuery *fittagQuery = [PFQuery queryWithClassName:kFTUserClassKey];
-    [fittagQuery whereKey:kFTUserDisplayNameKey equalTo:@"kevin_fittag"];
+    [fittagQuery whereKey:kFTUserDisplayNameKey equalTo:@"fittag"];
     [fittagQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (!error) {
             if (objects.count == 1) {
