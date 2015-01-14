@@ -44,7 +44,7 @@
         
         // ImageView Placeholder
         self.profileImageView = [[UIImageView alloc] initWithFrame:CGRectMake(PROFILE_IMAGE_X, 4, FOLLOW_IMAGE_WIDTH, FOLLOW_IMAGE_HEIGHT)];
-        self.profileImageView.backgroundColor = [UIColor redColor];
+        self.profileImageView.backgroundColor = FT_RED;
         self.profileImageView.userInteractionEnabled = YES;
         self.profileImageView.layer.cornerRadius = CORNERRADIUS(profileImageView.frame.size.width);
         self.profileImageView.clipsToBounds = YES;
@@ -102,11 +102,15 @@
     // If the user has a profile picture available load it
     if ([self.user objectForKey:kFTUserProfilePicSmallKey]) {
         PFFile *file = [self.user objectForKey:kFTUserProfilePicSmallKey];
-        [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-            if (!error) {
-                self.profileImageView.image = [UIImage imageWithData:data];
-            }
-        }];
+        if (file && ![file isEqual:[NSNull null]]) {
+            [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                if (!error) {
+                    self.profileImageView.image = [UIImage imageWithData:data];
+                }
+            }];
+        } else {
+            self.profileImageView.image = [UIImage imageNamed:IMAGE_PROFILE_EMPTY];
+        }
     } else {
         self.profileImageView.image = [UIImage imageNamed:IMAGE_PROFILE_EMPTY];
     }
