@@ -12,6 +12,8 @@
 #import "FTCamViewController.h"
 #import "FTMapViewController.h"
 #import "FTViewFriendsViewController.h"
+#import "FTUserProfileViewController.h"
+#import "FTSearchViewController.h"
 
 #define GRID_SMALL @"SMALLGRID"
 #define GRID_FULL @"FULLGRID"
@@ -28,6 +30,10 @@
 @property (nonatomic, strong) MBProgressHUD *hud;
 @property (nonatomic, strong) FTViewFriendsViewController *viewFriendsViewController;
 @property (nonatomic, strong) MPMoviePlayerViewController *mpViewController;
+@property (nonatomic, strong) FTBusinessProfileViewController *businessProfileViewController;
+@property (nonatomic, strong) FTUserProfileViewController *userProfileViewController;
+@property (nonatomic, strong) FTFollowFriendsViewController *followFriendsViewController;
+@property (nonatomic, strong) FTSearchViewController *searchViewController;
 @end
 
 @implementation FTBusinessProfileViewController
@@ -35,6 +41,10 @@
 @synthesize mailer;
 @synthesize viewFriendsViewController;
 @synthesize mpViewController;
+@synthesize businessProfileViewController;
+@synthesize userProfileViewController;
+@synthesize followFriendsViewController;
+@synthesize searchViewController;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -82,10 +92,35 @@
     viewFriendsViewController = [[FTViewFriendsViewController alloc] init];
     [viewFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
     [viewFriendsViewController setUser:self.business];
+    
+    searchViewController = [[FTSearchViewController alloc] init];
+    [searchViewController.navigationItem setLeftBarButtonItem:backIndicator];
+    
+    // Business profile
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
+    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [flowLayout setMinimumInteritemSpacing:0];
+    [flowLayout setMinimumLineSpacing:0];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
+    
+    // Business profile
+    businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    [businessProfileViewController.navigationItem setLeftBarButtonItem:backIndicator];
+    
+    // User profile
+    userProfileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+    [userProfileViewController.navigationItem setLeftBarButtonItem:backIndicator];
+    
+    // Show suggestions if mention not found
+    followFriendsViewController = [[FTFollowFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+    [followFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];    
+    [super viewDidAppear:animated];
+    
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_BUSINESS];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
@@ -122,7 +157,7 @@
                                                                                      withReuseIdentifier:REUSEABLE_IDENTIFIER_HEADER
                                                                                             forIndexPath:indexPath];
         
-        [headerView setDelegate: self];
+        [headerView setDelegate:self];
         [headerView setBusiness:self.business];
         [headerView fetchBusinessProfileData: self.business];
         reusableview = headerView;
@@ -133,33 +168,29 @@
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
 
     NSString *content = [self.business objectForKey:kFTUserBioKey];
+    NSString *website = [self.business objectForKey:kFTUserWebsiteKey];
+    
+    if (website) {
+        content = [NSString stringWithFormat:@"%@\n%@",content,[self.business objectForKey:kFTUserWebsiteKey]];
+    }
+    
     CGFloat height = [FTUtility findHeightForText:content havingWidth:self.view.frame.size.width AndFont:SYSTEMFONTBOLD(14)];
     CGSize headerSize = CGSizeMake(self.view.frame.size.width, height + PROFILE_HEADER_VIEW_HEIGHT_BUSINESS + 30);
+    
     return headerSize;
 }
 
-- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return self.cells.count;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"indexpath: %ld",(long)indexPath.row);
+    //NSLog(@"indexpath: %ld",(long)indexPath.row);
     if ([cellTab isEqualToString:kFTUserTypeBusiness]) {
-        
-        CGFloat itemLength = (self.view.frame.size.width / 3);
-        
-        UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-        [flowLayout setItemSize:CGSizeMake(itemLength,itemLength)];
-        [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-        [flowLayout setMinimumInteritemSpacing:0];
-        [flowLayout setMinimumLineSpacing:0];
-        [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-        [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
         
         PFUser *followedBusiness = self.cells[indexPath.row];
         //NSLog(@"FTUserProfileCollectionViewController:: followedBusiness: %@",followedBusiness);
         if (followedBusiness) {
-            FTBusinessProfileViewController *businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
             [businessProfileViewController setBusiness:followedBusiness];
             [self.navigationController pushViewController:businessProfileViewController animated:YES];
         }
@@ -179,7 +210,7 @@
     if ([cell isKindOfClass:[FTUserProfileCollectionViewCell class]]) {
         cell.backgroundColor = [UIColor clearColor];
         if ([cellTab isEqualToString:kFTUserTypeBusiness]) {
-            NSLog(@"self.cells: %@", self.cells[indexPath.row]);
+            //NSLog(@"self.cells: %@", self.cells[indexPath.row]);
             PFUser *followedBusiness = self.cells[indexPath.row];
             [cell setUser:followedBusiness];
         } else {
@@ -201,41 +232,150 @@
     [self.navigationController popViewControllerAnimated:NO];
 }
 
-#pragma mark - FTbusinessProfileHeaderViewDelegate
+#pragma mark - FTBusinessProfileHeaderViewDelegate
+
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapHashtag:(NSString *)Hashtag {
+    
+    if (searchViewController) {
+        [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
+        [searchViewController setSearchString:Hashtag];
+        [self.navigationController pushViewController:searchViewController animated:YES];
+    }
+}
+
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapUserMention:(NSString *)mention {
+    
+    NSString *lowercaseStringWithoutSymbols = [FTUtility getLowercaseStringWithoutSymbols:mention];
+    
+    //****** Display Name ********//
+    PFQuery *queryStringMatchHandle = [PFQuery queryWithClassName:kFTUserClassKey];
+    [queryStringMatchHandle whereKeyExists:kFTUserDisplayNameKey];
+    [queryStringMatchHandle whereKey:kFTUserDisplayNameKey equalTo:lowercaseStringWithoutSymbols];
+    [queryStringMatchHandle findObjectsInBackgroundWithBlock:^(NSArray *users, NSError *error) {
+        if (!error) {
+            
+            //NSLog(@"users:%@",users);
+            //NSLog(@"users.count:%lu",(unsigned long)users.count);
+            
+            if (users.count == 1) {
+                
+                PFUser *mentionedUser = [users objectAtIndex:0];
+                //NSLog(@"mentionedUser:%@",mentionedUser);
+                
+                if ([mentionedUser objectForKey:kFTUserTypeBusiness]) {
+                    
+                    [businessProfileViewController setBusiness:mentionedUser];
+                    [self.navigationController pushViewController:businessProfileViewController animated:YES];
+                } else {
+                    [userProfileViewController setUser:mentionedUser];
+                    [self.navigationController pushViewController:userProfileViewController animated:YES];
+                }
+                
+            } else {
+                
+                [followFriendsViewController setFollowUserQueryType:FTFollowUserQueryTypeTagger];
+                [followFriendsViewController setSearchString:lowercaseStringWithoutSymbols];
+                [followFriendsViewController querySearchForUser];
+                
+                [self.navigationController pushViewController:followFriendsViewController animated:YES];
+            }
+        }
+    }];
+}
+
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapLink:(NSString *)link {
+    
+    // Clean the string
+    NSString *cleanLink;
+    cleanLink = [link lowercaseString];
+    cleanLink = [cleanLink stringByReplacingOccurrencesOfString:@"www." withString:@""];
+    cleanLink = [cleanLink stringByReplacingOccurrencesOfString:@"http://" withString:@""];
+    cleanLink = [NSString stringWithFormat:@"http://www.%@",cleanLink];
+    
+    NSURL *url = [NSURL URLWithString:cleanLink];
+    [[UIApplication sharedApplication] openURL:url];
+}
 
 - (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
              didTapGetThereButton:(UIButton *)button {
-        
-    UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] init];
-    [backButtonItem setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
-    [backButtonItem setStyle:UIBarButtonItemStylePlain];
-    [backButtonItem setTarget:self];
-    [backButtonItem setAction:@selector(didTapBackButtonAction:)];
-    [backButtonItem setTintColor:[UIColor whiteColor]];
     
-    FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
+    NSLog(@"didTapGetThereButton:");
+    
+    NSLog(@"kFTUserLocationKey:%@",[self.business objectForKey:kFTUserLocationKey]);
+    
     if ([self.business objectForKey:kFTUserLocationKey]) {
+        
         PFGeoPoint *geoPoint = [self.business objectForKey:kFTUserLocationKey];
+        
         CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-        [mapViewController setInitialLocation:location];
-    }    
-    
-    [mapViewController.navigationItem setLeftBarButtonItem:backButtonItem];
-    [self.navigationController pushViewController:mapViewController animated:YES];
+        CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
+        [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+            if (!error) {
+                
+                for (CLPlacemark *placemark in placemarks) {
+                    
+                    NSString *address = [NSString stringWithFormat:@"%@ %@ %@ %@",[placemark thoroughfare],[placemark locality],[placemark administrativeArea],[placemark country]];
+                    
+                    if (address) {
+                        
+                        NSString *currentLocation = @"Current Location";
+                        NSString *url = [NSString stringWithFormat:@"maps://?saddr=%@&daddr=%@&directionsmode=driving",
+                                         [currentLocation stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
+                                         [address stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                        
+                        BOOL opened = [[UIApplication sharedApplication] openURL: [NSURL URLWithString: url]];
+                        
+                        if (!opened) {
+                            [[[UIAlertView alloc]initWithTitle:@"Message"
+                                                       message:@"Something went wrong. Could not open your local maps GPS."
+                                                      delegate:nil
+                                             cancelButtonTitle:@"ok"
+                                             otherButtonTitles:nil, nil] show];
+                        }
+                        
+                    } else {
+                        [[[UIAlertView alloc]initWithTitle:@"Message"
+                                                   message:@"Location is not available."
+                                                  delegate:nil
+                                         cancelButtonTitle:@"ok"
+                                         otherButtonTitles:nil, nil] show];
+                    }
+                    
+                }
+            }
+            
+            if (error) {
+                NSLog(@"error:%@",error);
+                [[[UIAlertView alloc]initWithTitle:@"Message"
+                                           message:@"Location is not available."
+                                          delegate:nil
+                                 cancelButtonTitle:@"ok"
+                                 otherButtonTitles:nil, nil] show];
+            }
+        }];
+    } else {
+        
+        [[[UIAlertView alloc]initWithTitle:@"Message"
+                                   message:@"Location is not available."
+                                  delegate:nil
+                         cancelButtonTitle:@"ok"
+                         otherButtonTitles:nil, nil] show];
+    }
 }
 
 - (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
                  didTapCallButton:(UIButton *)button {
     
-    NSString *phNo = @"+8638525694";
+    NSString *phNo = [business objectForKey:kFTUserPhoneKey];
     NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",phNo]];
+    //NSLog(@"phone btn touch %@", phNo);
     
     if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
         [[UIApplication sharedApplication] openURL:phoneUrl];
-        NSLog(@"phone btn touch %@", phNo);
+       
     } else  {
-        [[[UIAlertView alloc]initWithTitle:@"Alert"
-                                   message:@"Call facility is not available!!!"
+        [[[UIAlertView alloc]initWithTitle:@"Message"
+                                   message:@"Call facility is not available."
                                   delegate:nil
                          cancelButtonTitle:@"ok"
                          otherButtonTitles:nil, nil] show];
@@ -248,7 +388,7 @@
     if ([business objectForKey:kFTUserPromoVideo]) {
         PFFile *videoFile = [business objectForKey:kFTUserPromoVideo];
         NSURL *videoURL = [NSURL URLWithString:videoFile.url];
-        NSLog(@"videoURL:%@",videoURL);
+        //NSLog(@"videoURL:%@",videoURL);
         
         mpViewController = [[MPMoviePlayerViewController alloc] initWithContentURL:videoURL];
         [mpViewController.moviePlayer setScalingMode:SCALINGMODE];
@@ -270,8 +410,8 @@
         [self presentViewController:mpViewController animated:YES completion:nil];
         
     } else {
-        [[[UIAlertView alloc]initWithTitle:@"Alert"
-                                   message:@"No video available!!!"
+        [[[UIAlertView alloc]initWithTitle:@"Message"
+                                   message:@"No video available."
                                   delegate:nil
                          cancelButtonTitle:@"ok"
                          otherButtonTitles:nil, nil] show];
@@ -284,38 +424,38 @@
 
 - (void)loadStateDidChange:(NSNotification *)notification {
     
-    NSLog(@"loadStateDidChange: %@",notification);
+    //NSLog(@"loadStateDidChange: %@",notification);
     
     if (self.mpViewController.moviePlayer.loadState & MPMovieLoadStatePlayable) {
-        NSLog(@"loadState... MPMovieLoadStatePlayable");
+        //NSLog(@"loadState... MPMovieLoadStatePlayable");
     }
     
     if (self.mpViewController.moviePlayer.loadState & MPMovieLoadStatePlaythroughOK) {
         //[moviePlayer.view setHidden:NO];
         
-        NSLog(@"loadState... MPMovieLoadStatePlaythroughOK");
+        //NSLog(@"loadState... MPMovieLoadStatePlaythroughOK");
         //[self.imageView setHidden:YES];
     }
     
     if (self.mpViewController.moviePlayer.loadState & MPMovieLoadStateStalled) {
-        NSLog(@"loadState... MPMovieLoadStateStalled");
+        //NSLog(@"loadState... MPMovieLoadStateStalled");
     }
     
     if (self.mpViewController.moviePlayer.loadState & MPMovieLoadStateUnknown) {
-        NSLog(@"loadState... MPMovieLoadStateUnknown");
+        //NSLog(@"loadState... MPMovieLoadStateUnknown");
     }
 }
 
 - (void)moviePlayerStateChange:(NSNotification *)notification{
     
-    NSLog(@"moviePlayerStateChange: %@",notification);
+    //NSLog(@"moviePlayerStateChange: %@",notification);
     
     if (self.mpViewController.moviePlayer.loadState & (MPMovieLoadStatePlayable | MPMovieLoadStatePlaythroughOK)) {
-        NSLog(@"loadState... MPMovieLoadStatePlayable | MPMovieLoadStatePlaythroughOK..");
+        //NSLog(@"loadState... MPMovieLoadStatePlayable | MPMovieLoadStatePlaythroughOK..");
         //[self.playButton setHidden:YES];
         
         if (self.mpViewController.moviePlayer.playbackState & MPMoviePlaybackStatePlaying){
-            NSLog(@"moviePlayer... MPMoviePlaybackStatePlaying");
+            //NSLog(@"moviePlayer... MPMoviePlaybackStatePlaying");
             //[UIView animateWithDuration:1 animations:^{
                 //[self.mpViewController.moviePlayer.view setAlpha:1];
             //}];
@@ -323,13 +463,13 @@
     }
     
     if (self.mpViewController.moviePlayer.playbackState & MPMoviePlaybackStatePlaying){
-        NSLog(@"moviePlayer... MPMoviePlaybackStatePlaying");
+        //NSLog(@"moviePlayer... MPMoviePlaybackStatePlaying");
     }
     
     if (self.mpViewController.moviePlayer.playbackState & MPMoviePlaybackStateStopped){
         //[self.playButton setHidden:NO];
         
-        NSLog(@"moviePlayer... MPMoviePlaybackStateStopped");
+        //NSLog(@"moviePlayer... MPMoviePlaybackStateStopped");
     }
     
     if (self.mpViewController.moviePlayer.playbackState & MPMoviePlaybackStatePaused){
@@ -340,20 +480,20 @@
             [self.mpViewController.moviePlayer prepareToPlay];
         }];
         */
-        NSLog(@"moviePlayer... MPMoviePlaybackStatePaused");
+        //NSLog(@"moviePlayer... MPMoviePlaybackStatePaused");
     }
     
     if (self.mpViewController.moviePlayer.playbackState & MPMoviePlaybackStateInterrupted){
-        NSLog(@"moviePlayer... Interrupted");
+       // NSLog(@"moviePlayer... Interrupted");
         //[self.moviePlayer stop];
     }
     
     if (self.mpViewController.moviePlayer.playbackState & MPMoviePlaybackStateSeekingForward){
-        NSLog(@"moviePlayer... Forward");
+        //NSLog(@"moviePlayer... Forward");
     }
     
     if (self.mpViewController.moviePlayer.playbackState & MPMoviePlaybackStateSeekingBackward){
-        NSLog(@"moviePlayer... Backward");
+        //NSLog(@"moviePlayer... Backward");
     }
 }
 
@@ -391,7 +531,7 @@
 }
 
 - (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
-                           didTapGridButton:(UIButton *)button {
+                 didTapGridButton:(UIButton *)button {
     cellTab = GRID_SMALL;
     [self queryForTable:self.business];
 }
@@ -425,7 +565,7 @@
 }
 
 - (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
-                         didTapTaggedButton:(UIButton *)button {
+               didTapTaggedButton:(UIButton *)button {
     
     cellTab = GRID_TAGGED;
     NSMutableString *displayName = [[self.business objectForKey:kFTUserDisplayNameKey] mutableCopy];
@@ -458,21 +598,22 @@
 }
 
 - (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
-                       didTapSettingsButton:(id)sender {
+             didTapSettingsButton:(id)sender {
     
 }
 
 - (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
-                      didTapFollowersButton:(id)sender {
+            didTapFollowersButton:(id)sender {
+    
     [viewFriendsViewController queryForFollowers];
     [self.navigationController pushViewController:viewFriendsViewController animated:YES];
 }
 
 - (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
-                      didTapFollowingButton:(id)sender {
+            didTapFollowingButton:(id)sender {
+    
     [viewFriendsViewController queryForFollowing];
     [self.navigationController pushViewController:viewFriendsViewController animated:YES];
-    
 }
 
 #pragma mark - MFMessageComposeViewControllerDelegate
