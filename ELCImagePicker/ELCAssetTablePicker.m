@@ -61,7 +61,7 @@
     
     // Set the buttons color to red
     [self.navigationController setToolbarHidden:NO];
-    [self.navigationController.toolbar setBarTintColor:[UIColor redColor]];
+    [self.navigationController.toolbar setBarTintColor:FT_RED];
     [self.navigationController.toolbar setTintColor:[UIColor whiteColor]];
     [self.navigationController.toolbar setTranslucent:YES];
     
