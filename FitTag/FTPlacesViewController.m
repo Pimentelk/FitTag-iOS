@@ -61,7 +61,7 @@
     [addPlaceButton setTitle:@"+" forState:UIControlStateNormal];
     [addPlaceButton setTitleColor:FT_RED forState:UIControlStateNormal];
     [addPlaceButton setBackgroundColor:[UIColor clearColor]];
-    [addPlaceButton.titleLabel setFont:BENDERSOLID(40)];
+    [addPlaceButton.titleLabel setFont:MULIREGULAR(40)];
     [addPlaceButton addTarget:self action:@selector(didTapAddPlaceButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapAddPlaceButtonAction:)];
@@ -85,7 +85,7 @@
     [addPlaceLabel setText:@"Add new FitTag place"];
     [addPlaceLabel setBackgroundColor:[UIColor clearColor]];
     [addPlaceLabel setTextColor:FT_RED];
-    [addPlaceLabel setFont:BENDERSOLID(20)];
+    [addPlaceLabel setFont:MULIREGULAR(20)];
     [addPlaceLabel setUserInteractionEnabled:YES];
     [addPlaceLabel addGestureRecognizer:tapGesture];
     
