@@ -30,7 +30,7 @@
 @property (nonatomic, strong) FTPostDetailsFooterView *postDetailsFooterView;
 @property (nonatomic, strong) UISwitch *shareLocationSwitch;
 @property UIScrollView *originalScrollView;
-@property (nonatomic, strong) UIBarButtonItem *cancelButton;
+@property (nonatomic, strong) UIBarButtonItem *doneButton;
 @property (nonatomic, strong) FTSuggestionTableView *suggestionTableView;
 @property (nonatomic, strong) PFObject *place;
 @end
@@ -49,7 +49,7 @@
 @synthesize shareLocationSwitch;
 @synthesize locationLabelOriginalY;
 @synthesize originalScrollView;
-@synthesize cancelButton;
+@synthesize doneButton;
 @synthesize suggestionTableView;
 @synthesize place;
 
@@ -119,7 +119,7 @@
     // NavigationBar & ToolBar
     [self.navigationController.navigationBar setHidden:NO];
     [self.navigationController.toolbar setHidden:YES];
-    [self.navigationItem setTitle:@"Edit"];
+    [self.navigationItem setTitle:NAVIGATION_TITLE_CAM];
     [self.navigationItem setHidesBackButton:NO];
     
     // Override the back idnicator
@@ -142,8 +142,8 @@
     originalScrollView = self.scrollView;
     
     // Cancel button
-    cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(didTapcancelButtonAction:)];
-    [cancelButton setTintColor:[UIColor whiteColor]];
+    doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(didTapDoneButtonAction:)];
+    [doneButton setTintColor:[UIColor whiteColor]];
     
     suggestionTableView = [[FTSuggestionTableView alloc] initWithFrame:CGRectMake(0, 150, 320, 150) style:UITableViewStylePlain];
     [suggestionTableView setBackgroundColor:[UIColor whiteColor]];
@@ -201,7 +201,7 @@
 - (void)textViewDidBeginEditing:(UITextView *)textView {
     CGRect tableViewRect = CGRectMake(0, self.postDetailsFooterView.frame.origin.y-210, self.scrollView.frame.size.width, 210);
     [suggestionTableView setFrame:tableViewRect];
-    [self.navigationItem setRightBarButtonItem:cancelButton];
+    [self.navigationItem setRightBarButtonItem:doneButton];
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
@@ -444,7 +444,7 @@
     return YES;
 }
 
-- (void)didTapcancelButtonAction:(id)sender {
+- (void)didTapDoneButtonAction:(id)sender {
     
     [self.scrollView setScrollEnabled:YES];
     
@@ -492,8 +492,13 @@
     
     // Make sure there were no errors creating the image files
     if (!self.photoFile || !self.thumbnailFile) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
-        [alert show];
+        
+        [[[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
+                                    message:nil
+                                   delegate:nil
+                          cancelButtonTitle:nil
+                          otherButtonTitles:@"Dismiss", nil] show];
+        
         return;
     }
     
@@ -508,8 +513,13 @@
         
         // Make sure there were no errors creating the image files
         if (!self.photoFile || !self.thumbnailFile) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post your photo" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
-            [alert show];
+            
+            [[[UIAlertView alloc] initWithTitle:@"Couldn't post your photo"
+                                        message:nil
+                                       delegate:nil
+                              cancelButtonTitle:nil
+                              otherButtonTitles:@"Dismiss", nil] show];
+            
             return;
         }
         

@@ -29,7 +29,7 @@
 @property (nonatomic, strong) NSString *postLocation;
 @property (nonatomic, strong) UISwitch *shareLocationSwitch;
 @property UIScrollView *originalScrollView;
-@property (nonatomic, strong) UIBarButtonItem *cancelButton;
+@property (nonatomic, strong) UIBarButtonItem *doneButton;
 @property (nonatomic, strong) FTSuggestionTableView *suggestionTableView;
 @property (nonatomic, strong) PFObject *place;
 @end
@@ -48,7 +48,7 @@
 @synthesize videoPlaceHolderView;
 @synthesize shareLocationSwitch;
 @synthesize originalScrollView;
-@synthesize cancelButton;
+@synthesize doneButton;
 @synthesize suggestionTableView;
 @synthesize place;
 
@@ -126,7 +126,7 @@
     // NavigationBar & ToolBar
     [self.navigationController.navigationBar setHidden:NO];
     [self.navigationController.toolbar setHidden:YES];
-    [self.navigationItem setTitle:@"TAG YOUR FIT"];
+    [self.navigationItem setTitle:NAVIGATION_TITLE_CAM];
     [self.navigationItem setHidesBackButton:NO];
     
     // Override the back idnicator
@@ -231,8 +231,8 @@
     originalScrollView = self.scrollView;
     
     // Cancel button
-    cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(didTapcancelButtonAction:)];
-    [cancelButton setTintColor:[UIColor whiteColor]];
+    doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(didTapDoneButtonAction:)];
+    [doneButton setTintColor:[UIColor whiteColor]];
     
     suggestionTableView = [[FTSuggestionTableView alloc] initWithFrame:CGRectMake(0, 150, 320, 150) style:UITableViewStylePlain];
     [suggestionTableView setBackgroundColor:[UIColor whiteColor]];
@@ -384,7 +384,7 @@
 - (void)textViewDidBeginEditing:(UITextView *)textView {
     CGRect tableViewRect = CGRectMake(0, self.postDetailsFooterView.frame.origin.y-210, self.scrollView.frame.size.width, 210);
     [suggestionTableView setFrame:tableViewRect];
-    [self.navigationItem setRightBarButtonItem:cancelButton];
+    [self.navigationItem setRightBarButtonItem:doneButton];
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
@@ -520,14 +520,17 @@
 
 #pragma mark - ()
 
-- (void)didTapcancelButtonAction:(id)sender {
+- (void)didTapDoneButtonAction:(id)sender {
     
     [self.scrollView setScrollEnabled:YES];
     
     [commentTextView resignFirstResponder];
     [suggestionTableView setAlpha:0];
+    
     [self.navigationItem setRightBarButtonItem:nil];
+    
     CGSize scrollViewContentSize = CGSizeMake(self.scrollView.frame.size.width,scrollViewHeight);
+    
     [UIView animateWithDuration:0.200f animations:^{
         [self.scrollView setContentSize:scrollViewContentSize];
     }];
