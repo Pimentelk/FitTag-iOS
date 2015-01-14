@@ -20,7 +20,7 @@
 #define PROFILE_BUTTON_COUNT 3
 #define FACEBOOK_PHOTO @"Facebook Profile Image"
 #define TWITTER_PHOTO @"Twitter Profile Image"
-#define TAKE_PHOTO @"Take Photo"
+#define TAKE_PHOTO @"Add Photo"
 #define CROP_PHOTO @"Crop Photo"
 #define CLEAR_PHOTO @"Clear Photo"
 #define SELECT_PHOTO @"Select Photo"
@@ -49,7 +49,6 @@
 @property (nonatomic, strong) UITextField *userHandle;
 @property (nonatomic, strong) UITextField *userWebsite;
 
-@property (nonatomic, strong) PFUser *user;
 @property (nonatomic, strong) MBProgressHUD *hud;
 @property (nonatomic, strong) UIWebView *webView;
 @property (nonatomic, strong) UIView *webViewNavigationBar;
@@ -139,9 +138,6 @@
     // Navigation bar ends
     navigationBarEnd = self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y;
     
-    // Set the current user
-    self.user = [PFUser currentUser];
-    
     self.automaticallyAdjustsScrollViewInsets = NO;
     
     // Set Background
@@ -192,15 +188,19 @@
     
     PFUser *user = [PFUser currentUser];
     PFFile *file = [user objectForKey:kFTUserProfilePicMediumKey];
-    [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-        if (!error) {
-            UIImage *profileImage = [UIImage imageWithData:data];
-            [userProfileImageView setImage:profileImage];
-            [userProfileImageView setContentMode:UIViewContentModeScaleAspectFit];
-            [self.view addSubview:userProfileImageView];
-        }
-    }];
     
+    
+    if (file && ![file isEqual:[NSNull null]]) {
+        
+        [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+            if (!error) {
+                UIImage *profileImage = [UIImage imageWithData:data];
+                [userProfileImageView setImage:profileImage];
+                [userProfileImageView setContentMode:UIViewContentModeScaleAspectFit];
+                [self.view addSubview:userProfileImageView];
+            }
+        }];
+    }
     // Setup and position the profile buttons
     CGFloat profileImageViewEnd = userProfileImageView.frame.size.height + userProfileImageView.frame.origin.y;
     CGFloat frameWidth = self.view.frame.size.width;
@@ -257,13 +257,13 @@
     PFUser *user = [PFUser currentUser];
     PFFile *file = [user objectForKey:kFTUserCoverPhotoKey];
     
-    if (file) {
+    if (file && ![file isEqual:[NSNull null]]) {
         
         [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
             if (!error) {
                 UIImage *profileImage = [UIImage imageWithData:data];
                 [coverPhotoImageView setImage:profileImage];
-                [coverPhotoImageView setContentMode:UIViewContentModeScaleAspectFill];
+                [coverPhotoImageView setContentMode:UIViewContentModeScaleAspectFit];
                 [self.view addSubview:coverPhotoImageView];
             }
         }];
@@ -273,7 +273,7 @@
         missingCoverPhotoLabel = [[UILabel alloc] initWithFrame:coverPhotoImageView.frame];
         [missingCoverPhotoLabel setTextAlignment: NSTextAlignmentCenter];
         [missingCoverPhotoLabel setUserInteractionEnabled:NO];
-        [missingCoverPhotoLabel setFont:BENDERSOLID(24)];
+        [missingCoverPhotoLabel setFont:MULIREGULAR(24)];
         [missingCoverPhotoLabel setTextColor: [UIColor blackColor]];
         [missingCoverPhotoLabel setText:@"No Cover Photo Found"];
         
@@ -297,7 +297,7 @@
     
     CGRect takePhotoFrame = takePhotoButton.frame;
     takePhotoFrame.origin.y = takePhotoFrame.size.height + takePhotoFrame.origin.y;
-    
+    /*
     cropPhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [cropPhotoButton setFrame:takePhotoFrame];
     [cropPhotoButton setBackgroundColor:[UIColor whiteColor]];
@@ -309,9 +309,10 @@
     
     CGRect cropPhotoFrame = cropPhotoButton.frame;
     cropPhotoFrame.origin.y = cropPhotoFrame.size.height + cropPhotoFrame.origin.y;
-    
+    */
     clearPhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [clearPhotoButton setFrame:cropPhotoFrame];
+    //[clearPhotoButton setFrame:cropPhotoFrame];
+    [clearPhotoButton setFrame:takePhotoFrame];
     [clearPhotoButton setBackgroundColor:[UIColor whiteColor]];
     [clearPhotoButton setTitle:CLEAR_PHOTO forState:UIControlStateNormal];
     [clearPhotoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
@@ -340,6 +341,9 @@
 - (void)configureBiography {
     //NSLog(@"%@::configureBiography",VIEWCONTROLLER_SETTINGS_DETAIL);
     
+    // Set the current user
+    PFUser *user = [PFUser currentUser];
+    
     // Navigation bar ends
     navigationBarEnd = self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y;
     
@@ -364,8 +368,8 @@
     [userFirstname setBackgroundColor:[UIColor whiteColor]];
     [userFirstname setFont:HelveticaNeue(14)];
     [userFirstname setDelegate:self];
-    if ([self.user objectForKey:kFTUserFirstnameKey]) {
-        [userFirstname setText:[self.user objectForKey:kFTUserFirstnameKey]];
+    if ([user objectForKey:kFTUserFirstnameKey]) {
+        [userFirstname setText:[user objectForKey:kFTUserFirstnameKey]];
     }
     [scrollView addSubview:userFirstname];
     
@@ -375,8 +379,8 @@
     [userLastname setBackgroundColor:[UIColor whiteColor]];
     [userLastname setFont:HelveticaNeue(14)];
     [userLastname setDelegate:self];
-    if ([self.user objectForKey:kFTUserLastnameKey]) {
-        [userLastname setText:[self.user objectForKey:kFTUserLastnameKey]];
+    if ([user objectForKey:kFTUserLastnameKey]) {
+        [userLastname setText:[user objectForKey:kFTUserLastnameKey]];
     }
     [scrollView addSubview:userLastname];
     
@@ -385,8 +389,8 @@
     [userHandle setBackgroundColor:[UIColor whiteColor]];
     [userHandle setFont:HelveticaNeue(14)];
     [userHandle setDelegate:self];
-    if ([self.user objectForKey:kFTUserDisplayNameKey]) {
-        [userHandle setText:[self.user objectForKey:kFTUserDisplayNameKey]];
+    if ([user objectForKey:kFTUserDisplayNameKey]) {
+        [userHandle setText:[user objectForKey:kFTUserDisplayNameKey]];
     }
     [userHandle setAutocorrectionType:UITextAutocorrectionTypeNo];
     [userHandle setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -396,8 +400,8 @@
     [userWebsite setPlaceholder:@"WEBSITE"];
     [userWebsite setBackgroundColor:[UIColor whiteColor]];
     [userWebsite setFont:HelveticaNeue(14)];
-    if ([self.user objectForKey:kFTUserWebsiteKey]) {
-        [userWebsite setText:[self.user objectForKey:kFTUserWebsiteKey]];
+    if ([user objectForKey:kFTUserWebsiteKey]) {
+        [userWebsite setText:[user objectForKey:kFTUserWebsiteKey]];
     }
     [scrollView addSubview:userWebsite];
     
@@ -408,8 +412,8 @@
     [userBiography setFont:HelveticaNeue(14)];
     [userBiography setUserInteractionEnabled:YES];
     [userBiography setDelegate:self];
-    if ([self.user objectForKey:kFTUserBioKey]) {
-        [userBiography setText:[self.user objectForKey:kFTUserBioKey]];
+    if ([user objectForKey:kFTUserBioKey]) {
+        [userBiography setText:[user objectForKey:kFTUserBioKey]];
     }
     [scrollView addSubview:userBiography];
     
@@ -432,7 +436,7 @@
     UILabel *facebookLabel = [[UILabel alloc] initWithFrame:CGRectMake(LEFT_PADDING, 0, 120, ROW_HEIGHT)];
     [facebookLabel setTextAlignment: NSTextAlignmentLeft];
     [facebookLabel setUserInteractionEnabled: YES];
-    [facebookLabel setFont:BENDERSOLID(18)];
+    [facebookLabel setFont:MULIREGULAR(18)];
     [facebookLabel setTextColor: [UIColor blackColor]];
     [facebookLabel setText:SOCIAL_FACEBOOK];
     [facebookLabel setTag:0];
@@ -441,7 +445,7 @@
     UILabel *twitterLabel = [[UILabel alloc] initWithFrame:CGRectMake(LEFT_PADDING, 0, 120, ROW_HEIGHT)];
     [twitterLabel setTextAlignment: NSTextAlignmentLeft];
     [twitterLabel setUserInteractionEnabled: YES];
-    [twitterLabel setFont:BENDERSOLID(18)];
+    [twitterLabel setFont:MULIREGULAR(18)];
     [twitterLabel setTextColor: [UIColor blackColor]];
     [twitterLabel setText:SOCIAL_TWITTER];
     [twitterLabel setTag:1];
@@ -480,7 +484,7 @@
         UILabel *notificationLabel = [[UILabel alloc] initWithFrame:CGRectMake(LEFT_PADDING, 0, 240, ROW_HEIGHT)];
         [notificationLabel setTextAlignment: NSTextAlignmentLeft];
         [notificationLabel setUserInteractionEnabled: YES];
-        [notificationLabel setFont:BENDERSOLID(18)];
+        [notificationLabel setFont:MULIREGULAR(18)];
         [notificationLabel setTextColor: [UIColor blackColor]];
         [notificationLabel setText:[notification objectAtIndex:0]];
         [notificationLabel setTag:[[notification objectAtIndex:1] integerValue]];        
@@ -530,7 +534,7 @@
             rewardLabel.textAlignment =  NSTextAlignmentLeft;
             rewardLabel.textColor = [UIColor blackColor];
             rewardLabel.backgroundColor = [UIColor clearColor];
-            rewardLabel.font = BENDERSOLID(18);
+            rewardLabel.font = MULIREGULAR(18);
             rewardLabel.text = @"Reward Push Notifications";
             rewardLabel.tag = 6;
             [businessnameLabels addObject:rewardLabel];
@@ -542,7 +546,7 @@
                 UILabel *businessnameLabel = [[UILabel alloc] initWithFrame:CGRectMake(LEFT_PADDING, 0, 240, ROW_HEIGHT)];
                 [businessnameLabel setTextAlignment: NSTextAlignmentLeft];
                 [businessnameLabel setUserInteractionEnabled: YES];
-                [businessnameLabel setFont:BENDERSOLID(18)];
+                [businessnameLabel setFont:MULIREGULAR(18)];
                 [businessnameLabel setTextColor:[UIColor blackColor]];
                 [businessnameLabel setText:[business objectForKey:kFTUserCompanyNameKey]];
                 [businessnameLabel setTag:7];
@@ -622,22 +626,42 @@
 
 #pragma mark - UITextViewDelegate
 
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+    //NSLog(@"%@::textView:shouldChangeTextInRange:replacementText:",VIEWCONTROLLER_SETTINGS_DETAIL);
+    
+    NSInteger integer = 150 - textView.text.length;
+    [self showHudMessage:[NSString stringWithFormat:@"%ld",(long)integer] WithDuration:1];
+    return YES;
+}
+
 - (void)textViewDidBeginEditing:(UITextView *)textView {
+    NSLog(@"textViewDidBeginEditing:");
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDuration:0.3];
     [UIView setAnimationBeginsFromCurrentState:YES];
     scrollView.frame = CGRectMake(scrollView.frame.origin.x, (scrollView.frame.origin.y - 140.0), scrollView.frame.size.width, scrollView.frame.size.height);
     [UIView commitAnimations];
+    
+    if ([userBiography.text isEqualToString:CAPTION_ABOUT]) {
+        userBiography.text = EMPTY_STRING;
+        userBiography.textColor = [UIColor blackColor];
+    }
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView {
+    NSLog(@"textViewDidEndEditing:");
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDuration:0.3];
     [UIView setAnimationBeginsFromCurrentState:YES];
     scrollView.frame = CGRectMake(scrollView.frame.origin.x, (scrollView.frame.origin.y + 140.0), scrollView.frame.size.width, scrollView.frame.size.height);
     [UIView commitAnimations];
+    
+    if (userBiography.text.length == 0) {
+        userBiography.textColor = [UIColor lightGrayColor];
+        userBiography.text = CAPTION_ABOUT;
+    }
 }
 
 #pragma mark - UITableViewDelegate
@@ -844,6 +868,8 @@
 
 - (void)camViewController:(FTCamViewController *)camViewController coverPhoto:(UIImage *)photo {
     
+    //NSLog(@"camViewController:coverPhoto:");
+    
     if (missingCoverPhotoLabel) {
         [missingCoverPhotoLabel removeFromSuperview];
         missingCoverPhotoLabel = nil;
@@ -882,7 +908,7 @@
                 [self.view addSubview:coverPhotoImageView];
             }
             
-            [[[UIAlertView alloc] initWithTitle:@"Error"
+            [[[UIAlertView alloc] initWithTitle:@"Network Problems"
                                         message:@"Unable to save your profile picture. Please try again later, if the problem continues contact support."
                                        delegate:self
                               cancelButtonTitle:@"ok"
@@ -983,7 +1009,7 @@
 }
 
 - (void)didTapFacebookImageButtonAction:(id)sender {
-    NSLog(@"didTapFacebookImageButtonAction");
+    //NSLog(@"didTapFacebookImageButtonAction");
     [self clearProfileImageButtons];
     
     if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
@@ -1000,20 +1026,24 @@
                     if (succeeded) {
                         // Update profile image
                         PFFile *file = [PFFile fileWithName:FILE_MEDIUM_JPEG data:profileImageData];
-                        [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-                            if (!error) {
-                                [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
-                                
-                                UIImage *profileImage = [UIImage imageWithData:data];
-                                
-                                [userProfileImageView setImage:profileImage];
-                                
-                                [self showHudMessage:PROFILE_UPDATED WithDuration:3];
-                                
-                                // Notify if new profile photo is available
-                                [[NSNotificationCenter defaultCenter] postNotificationName:FTProfileDidChangeProfilePhotoNotification object:profileImage];
-                            }
-                        }];
+                        
+                        if (file && ![file isEqual:[NSNull null]]) {
+                            
+                            [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                                if (!error) {
+                                    [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
+                                    
+                                    UIImage *profileImage = [UIImage imageWithData:data];
+                                    
+                                    [userProfileImageView setImage:profileImage];
+                                    
+                                    [self showHudMessage:PROFILE_UPDATED WithDuration:3];
+                                    
+                                    // Notify if new profile photo is available
+                                    [[NSNotificationCenter defaultCenter] postNotificationName:FTProfileDidChangeProfilePhotoNotification object:profileImage];
+                                }
+                            }];
+                        }
                     }
                     
                     if (error) {
@@ -1046,7 +1076,7 @@
 }
 
 - (void)didTapTwitterImageButtonAction:(id)sender {
-    NSLog(@"didTapTwitterImageButtonAction");
+    //NSLog(@"didTapTwitterImageButtonAction");
     [self clearProfileImageButtons];
     if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
         NSLog(USER_DID_LOGIN_TWITTER);
@@ -1082,19 +1112,23 @@
                 } else {
                     // Update profile image
                     PFFile *file = [PFFile fileWithName:FILE_MEDIUM_JPEG data:profileImageData];
-                    [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-                        if (!error) {
-                            [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
-                            
-                            UIImage *profileImage = [UIImage imageWithData:data];
-                            [userProfileImageView setImage:profileImage];
-                            
-                            [self showHudMessage:PROFILE_UPDATED WithDuration:3];
-                            
-                            // Notify if new profile photo is available
-                            [[NSNotificationCenter defaultCenter] postNotificationName:FTProfileDidChangeProfilePhotoNotification object:profileImage];
-                        }
-                    }];
+                    
+                    if (file && ![file isEqual:[NSNull null]]) {
+                        
+                        [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                            if (!error) {
+                                [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
+                                
+                                UIImage *profileImage = [UIImage imageWithData:data];
+                                [userProfileImageView setImage:profileImage];
+                                
+                                [self showHudMessage:PROFILE_UPDATED WithDuration:3];
+                                
+                                // Notify if new profile photo is available
+                                [[NSNotificationCenter defaultCenter] postNotificationName:FTProfileDidChangeProfilePhotoNotification object:profileImage];
+                            }
+                        }];
+                    }
                 }
             }];
         } else {
@@ -1117,7 +1151,7 @@
 }
 
 - (void)didTapTakeCoverPhotoButtonAction:(UIButton *)sender {
-    NSLog(@"didTapTakeCoverPhotoButtonAction");
+    //NSLog(@"didTapTakeCoverPhotoButtonAction");
     [self clearProfileImageButtons];
     
     FTCamViewController *camViewController = [[FTCamViewController alloc] init];
@@ -1145,6 +1179,7 @@
 }
 
 - (void)didTapClearCoverPhotoButtonAction:(UIButton *)button {
+    
     [self clearProfileImageButtons];
     
     coverPhotoImageView.image = nil;
@@ -1161,12 +1196,26 @@
         [self.view addSubview:coverPhotoImageView];
     }
     
-    // Notify if new cover photo is available
-    [[NSNotificationCenter defaultCenter] postNotificationName:FTProfileDidChangeCoverPhotoNotification object:nil];
+    PFUser *user = [PFUser currentUser];
+    [user setObject:[NSNull null] forKey:kFTUserCoverPhotoKey];
+    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (!error) {
+            
+            [FTUtility showHudMessage:@"cover cleared.." WithDuration:2];
+            
+            // Notify if new cover photo is available
+            [[NSNotificationCenter defaultCenter] postNotificationName:FTProfileDidChangeCoverPhotoNotification object:nil];
+        }
+        
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+    
 }
 
 - (void)didTapTakePhotoButtonAction:(id)sender {
-    NSLog(@"didTapTakePhotoButtonAction");
+    //NSLog(@"didTapTakePhotoButtonAction");
     [self clearProfileImageButtons];
     
     if (missingCoverPhotoLabel) {
@@ -1296,9 +1345,11 @@
     
     [self didGestureHideKeyboardAction];
     
+    PFUser *user = [PFUser currentUser];
+    
     if (userFirstname.text.length > 0) {
         if (userFirstname.text.length < 20) {
-            [self.user setObject:userFirstname.text forKey:kFTUserFirstnameKey];
+            [user setObject:userFirstname.text forKey:kFTUserFirstnameKey];
         } else {
             [self showHudMessage:HUD_MESSAGE_CHARACTER_LIMIT WithDuration:2];
             return;
@@ -1307,14 +1358,14 @@
     
     if (userLastname.text.length > 0) {
         if (userLastname.text.length < 20) {
-            [self.user setObject:userLastname.text forKey:kFTUserLastnameKey];
+            [user setObject:userLastname.text forKey:kFTUserLastnameKey];
         } else {
             [self showHudMessage:HUD_MESSAGE_CHARACTER_LIMIT WithDuration:2];
             return;
         }
     }
     
-    [self.user setObject:userWebsite.text forKey:kFTUserWebsiteKey];
+    [user setObject:userWebsite.text forKey:kFTUserWebsiteKey];
     
     if (userHandle.text.length > 0) {
         
@@ -1330,7 +1381,7 @@
                 return;
             }
             
-            [self.user setObject:[userHandle.text lowercaseString] forKey:kFTUserDisplayNameKey];
+            [user setObject:[userHandle.text lowercaseString] forKey:kFTUserDisplayNameKey];
             
         } else {
             [self showHudMessage:HUD_MESSAGE_CHARACTER_LIMIT WithDuration:2];
@@ -1347,10 +1398,10 @@
     }
     
     if (userBiography.text.length <= 150 && userBiography.text.length > 0) {
-        [self.user setObject:userBiography.text forKey:kFTUserBioKey];
+        [user setObject:userBiography.text forKey:kFTUserBioKey];
     }
     
-    [self.user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
             NSLog(HUD_MESSAGE_UPDATED);
             [self showHudMessage:HUD_MESSAGE_UPDATED WithDuration:3];
@@ -1374,13 +1425,6 @@
             
         }
     }];
-}
-
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
-    //NSLog(@"%@::textView:shouldChangeTextInRange:replacementText:",VIEWCONTROLLER_SETTINGS_DETAIL);
-    NSInteger integer = 150 - textView.text.length;
-    [self showHudMessage:[NSString stringWithFormat:@"%ld",(long)integer] WithDuration:1];
-    return YES;
 }
 
 @end
