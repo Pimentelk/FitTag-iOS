@@ -39,6 +39,7 @@
 @implementation FTRewardsDetailView
 @synthesize reward;
 @synthesize rewardPhoto;
+@synthesize rewardType;
 @synthesize popupNoButton;
 
 - (id)initWithReward:(PFObject *)aReward {
@@ -62,6 +63,7 @@
 }
 
 -(void)viewDidLoad {
+    
     [super viewDidLoad];
     
     // Title
@@ -77,38 +79,46 @@
     
     [self.navigationItem setLeftBarButtonItem:backIndicator];
     
-    // remove this offer button
-    UIBarButtonItem *removeReward = [[UIBarButtonItem alloc] init];
-    [removeReward setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_TRASH]];
-    [removeReward setStyle:UIBarButtonItemStylePlain];
-    [removeReward setTarget:self];
-    [removeReward setAction:@selector(didTapRemoveRewardButtonAction:)];
-    [removeReward setTintColor:[UIColor whiteColor]];
-    
-    [self.navigationItem setRightBarButtonItem:removeReward];
+    switch (rewardType) {
+        case FTRewardTypeActive: {
+            
+            UIBarButtonItem *removeReward = [[UIBarButtonItem alloc] init];
+            [removeReward setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_TRASH]];
+            [removeReward setStyle:UIBarButtonItemStylePlain];
+            [removeReward setTarget:self];
+            [removeReward setAction:@selector(didTapRemoveRewardButtonAction:)];
+            [removeReward setTintColor:[UIColor whiteColor]];
+            
+            [self.navigationItem setRightBarButtonItem:removeReward];
+        }
+            break;
+            
+        default:
+            break;
+    }
     
     // Set table header
-    
-    self.headerView = [[FTRewardsDetailHeaderView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, REWARD_HEADER_HEIGHT) reward:reward];
-    self.headerView.delegate = self;
-    self.tableView.tableHeaderView = self.headerView;
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapCouponImageAction:)];
     [tapGesture setNumberOfTapsRequired:2];
     
+    CGRect frameRect = self.view.frame;
+    
+    self.headerView = [[FTRewardsDetailHeaderView alloc] initWithFrame:CGRectMake(0, 0, frameRect.size.width, REWARD_HEADER_HEIGHT) reward:reward];
+    self.headerView.delegate = self;
+    self.tableView.tableHeaderView = self.headerView;
+    
+    [self.headerView addGestureRecognizer:tapGesture];
+    
     // Set table footer
     
-    self.footerView = [[FTRewardsDetailFooterView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, REWARD_FOOTER_HEIGHT)];
+    self.footerView = [[FTRewardsDetailFooterView alloc] initWithFrame:CGRectMake(0, 0, frameRect.size.width, REWARD_FOOTER_HEIGHT) reward:reward];
     self.footerView.delegate = self;
     self.tableView.tableFooterView = self.footerView;
     
-    if (self.footerView.canRedeem) {
-        [self.headerView addGestureRecognizer:tapGesture];        
-    }
-    
     // Popup View
     
-    self.popUpView = [[UIView alloc] initWithFrame:CGRectMake(( self.view.frame.size.width - POPUP_WIDTH ) / 2, POPUP_PADDING, POPUP_WIDTH, POPUP_HEIGHT)];
+    self.popUpView = [[UIView alloc] initWithFrame:CGRectMake(( frameRect.size.width - POPUP_WIDTH ) / 2, POPUP_PADDING, POPUP_WIDTH, POPUP_HEIGHT)];
     [self.popUpView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:IMAGE_REWARDS_POPUP]]];
     [self.view addSubview:self.popUpView];
     [self.view bringSubviewToFront:self.popUpView];
@@ -152,7 +162,7 @@
     UILabel *popupMessage = [[UILabel alloc] initWithFrame:CGRectMake(35.0f, nPaddingY + nButtonHeight, 250.0f, 45.0f)];
     popupMessage.textAlignment =  NSTextAlignmentLeft;
     popupMessage.textColor = [UIColor colorWithRed:149/255.0f green:149/255.0f blue:149/255.0f alpha:1];
-    popupMessage.font = BENDERSOLID(15);
+    popupMessage.font = MULIREGULAR(15);
     popupMessage.text = POPUP_MESSAGE;
     popupMessage.numberOfLines = 0;
     popupMessage.lineBreakMode = NSLineBreakByWordWrapping;
@@ -199,13 +209,13 @@
                                             
                                             [activity saveEventually];
                                             
-                                            //NSLog(@"ratings %@",ratings);
-                                            UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle:@"Success"
-                                                                                                  message:CLOUD_SUCESS_MESSAGE
-                                                                                                 delegate:nil
-                                                                                        cancelButtonTitle:@"OK"
-                                                                                        otherButtonTitles: nil];
-                                            [myAlertView show];
+                                            [[[UIAlertView alloc] initWithTitle:@"Success"
+                                                                        message:CLOUD_SUCESS_MESSAGE
+                                                                       delegate:nil
+                                                              cancelButtonTitle:@"OK"
+                                                              otherButtonTitles: nil] show];
+                                            
+                                            [self.footerView.redeemButton setHidden:YES];
                                             
                                         } else {
                                             NSLog(@"Error: %@",error);
@@ -223,7 +233,7 @@
                                                             delegate:self
                                                    cancelButtonTitle:@"cancel"
                                                    otherButtonTitles:@"OK", nil];
-        [emailAlert setAlertViewStyle: UIAlertViewStylePlainTextInput];
+        [emailAlert setAlertViewStyle:UIAlertViewStylePlainTextInput];
         [emailAlert show];
     }
 }
@@ -337,6 +347,11 @@
 #pragma mark - ()
 
 - (void)didTapCouponImageAction:(id)sender {
+    
+    if (!self.footerView.canRedeem) {
+        return;
+    }
+    
     if (self.isPopupHidden) {
         [self showPopup];
     } else {
