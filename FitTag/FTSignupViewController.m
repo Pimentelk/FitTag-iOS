@@ -70,32 +70,37 @@
     // background
     [self.signUpView setBackgroundColor:FT_RED];
     
-    // Set logo
-    [self.signUpView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:FITTAG_LOGO]]];
+    UIImageView *logoImageView = [[UIImageView alloc] initWithImage:LOGIN_IMAGE_LOGO];
+    [logoImageView setFrame:CGRectMake(0, 0, 320, 79)];
+    
+    // Set logo image
+    [self.signUpView setLogo:logoImageView];
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapHideKeyboardAction)];
     UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(didTapHideKeyboardAction)];
     swipeGesture.direction = UISwipeGestureRecognizerDirectionDown;
     [self.view setGestureRecognizers:@[swipeGesture, tapGesture]];
     
+    /*
     if (profileImageButton) {
         [profileImageButton removeFromSuperview];
         profileImageButton = nil;
     }
+    */
     
     CGFloat padding = (self.signUpView.logo.frame.size.height + 10);
     NSLog(@"logoTop:%f",padding);
     
+    /*
     profileImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
     //[profileImageButton setFrame:CGRectMake((frameSize.width - TAKE_PHOTO_BUTTON) / 2, (((origin - TAKE_PHOTO_BUTTON) / 2) - padding), TAKE_PHOTO_BUTTON, TAKE_PHOTO_BUTTON)];
-    
-    
     [profileImageButton setBackgroundColor:FT_GRAY];
     [profileImageButton addTarget:self action:@selector(didTapLoadCameraButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [profileImageButton setClipsToBounds:YES];
     [profileImageButton.layer setCornerRadius:CORNERRADIUS(TAKE_PHOTO_BUTTON)];
     [profileImageButton setImage:[UIImage imageNamed:IMAGE_PROFILE_EMPTY] forState:UIControlStateNormal];
     [self.signUpView addSubview:profileImageButton];
+    */
     
     // Terms
     
@@ -105,7 +110,7 @@
     [termsLabel setBackgroundColor:[UIColor clearColor]];
     [termsLabel setTextAlignment:NSTextAlignmentCenter];
     [termsLabel setNumberOfLines:0];
-    [termsLabel setFont:BENDERSOLID(12)];
+    [termsLabel setFont:MULIREGULAR(12)];
     [termsLabel setTextColor:[UIColor whiteColor]];
     [self.signUpView addSubview:termsLabel];
 }
@@ -114,8 +119,8 @@
 - (void)viewDidLayoutSubviews{
     [super viewDidLayoutSubviews];
     
-    CGRect profileImageButtonRect = CGRectMake(0, 0, TAKE_PHOTO_BUTTON, TAKE_PHOTO_BUTTON);
-    [profileImageButton setFrame:profileImageButtonRect];
+    //CGRect profileImageButtonRect = CGRectMake(0, 0, TAKE_PHOTO_BUTTON, TAKE_PHOTO_BUTTON);
+    //[profileImageButton setFrame:profileImageButtonRect];
     
     [self.signUpView.logo setCenter:CGPointMake(160, 80)];
     
@@ -177,12 +182,12 @@
     
     // Profile button position
     
-    CGFloat logoEnds = self.signUpView.logo.frame.size.height + self.signUpView.logo.center.y;
-    CGFloat profileImageButtonY = (((usernameFieldRect.origin.y - logoEnds) - TAKE_PHOTO_BUTTON) / 2) + logoEnds + self.signUpView.logo.frame.size.height;
+    //CGFloat logoEnds = self.signUpView.logo.frame.size.height + self.signUpView.logo.center.y;
+    //CGFloat profileImageButtonY = (((usernameFieldRect.origin.y - logoEnds) - TAKE_PHOTO_BUTTON) / 2) + logoEnds + self.signUpView.logo.frame.size.height;
     
-    CGFloat imageButtonX = self.signUpView.logo.center.x;
+    //CGFloat imageButtonX = self.signUpView.logo.center.x;
     
-    [self.profileImageButton setCenter:CGPointMake(imageButtonX, profileImageButtonY)];
+    //[self.profileImageButton setCenter:CGPointMake(imageButtonX, profileImageButtonY)];
     
     // Terms and condition
     
@@ -291,10 +296,12 @@
 
 #pragma mark - FTEditPhotoViewController
 
+/*
 - (void)camViewController:(FTCamViewController *)camViewController profilePicture:(UIImage *)photo {
     //NSLog(@"%@::camViewController:photo:",VIEWCONTROLLER_SIGNUP);
     self.profilePhoto = photo;
     [self.profileImageButton setImage:photo forState:UIControlStateNormal];
 }
+*/
 
 @end
