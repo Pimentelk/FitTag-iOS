@@ -38,7 +38,7 @@
         
         if ([[ELCConsole mainConsole] onOrder]) {
             labIndex = [[UILabel alloc] initWithFrame:CGRectMake(5, 5, 16, 16)];
-            labIndex.backgroundColor = [UIColor redColor];
+            labIndex.backgroundColor = FT_RED;
             labIndex.clipsToBounds = YES;
             labIndex.textAlignment = NSTextAlignmentCenter;
             labIndex.textColor = [UIColor whiteColor];
