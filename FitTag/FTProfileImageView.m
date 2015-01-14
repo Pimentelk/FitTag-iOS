@@ -59,7 +59,7 @@
 
     self.profileImageView.image = [UIImage imageNamed:IMAGE_PROFILE_DEFAULT];
     
-    if (!file)
+    if (!file || [file isEqual:[NSNull null]])
         return;
     
     self.profileImageView.file = file;
