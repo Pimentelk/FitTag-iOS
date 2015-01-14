@@ -152,13 +152,14 @@
     CGRect tmpFram = self.originalFrame;
     tmpFram.origin.y = 20;
     self.navigationController.navigationBar.frame = tmpFram;
-    
+    /*
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         NSString *className = NSStringFromClass([view class]);
         if (![className isEqualToString:@"_UINavigationBarBackground"] && ![className isEqualToString:@"_UINavigationBarBackIndicatorView"]) {
             view.alpha = 1;
         }
     }
+    */
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -239,7 +240,7 @@
         // Load More Section
         return 0;
     }
-    return 350;
+    return 380;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -450,13 +451,17 @@
                 [videoCell.imageView loadInBackground];
                 videoCell.imageView.contentMode = UIViewContentModeScaleAspectFill;
             } else {
-                [videoCell.imageView.file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-                    if (!error) {
-                        [videoCell.imageView loadInBackground];
-                    } else {
-                        NSLog(@"ERROR:%@",error);
-                    }
-                }];
+                
+                if (videoCell.imageView.file && ![videoCell.imageView.file isEqual:[NSNull null]]) {
+                    
+                    [videoCell.imageView.file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                        if (!error) {
+                            [videoCell.imageView loadInBackground];
+                        } else {
+                            NSLog(@"ERROR:%@",error);
+                        }
+                    }];
+                }
             }
         }
         
@@ -546,13 +551,15 @@
                 //NSLog(@"data is available");
                 [photoCell.imageView loadInBackground];
             } else {
-                [photoCell.imageView.file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-                    if (!error) {
-                        [photoCell.imageView loadInBackground];
-                    } else {
-                        NSLog(@"ERROR:%@",error);
-                    }
-                }];
+                if (photoCell.imageView.file && ![photoCell.imageView.file isEqual:[NSNull null]]) {
+                    [photoCell.imageView.file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                        if (!error) {
+                            [photoCell.imageView loadInBackground];
+                        } else {
+                            NSLog(@"ERROR:%@",error);
+                        }
+                    }];
+                }
             }
         }
         
@@ -662,7 +669,7 @@ didTapLikeGalleryButton:(UIButton *)button
     
     //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
     // Map Home View
-    FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
+    FTMapViewController *mapViewController = [[FTMapViewController alloc] initWithSearchBar:NO];
     if ([gallery objectForKey:kFTPostLocationKey]) {
         [mapViewController setInitialLocationObject:gallery];
     }
@@ -749,7 +756,7 @@ didTapLikeVideoButton:(UIButton *)button
     //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
     // Map Home View
     
-    FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
+    FTMapViewController *mapViewController = [[FTMapViewController alloc] initWithSearchBar:NO];
     if ([video objectForKey:kFTPostLocationKey]) {
         [mapViewController setInitialLocationObject:video];
     }
@@ -860,7 +867,7 @@ didTapLikePhotoButton:(UIButton *)button
                 photo:(PFObject *)photo {
     //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
     // Map Home View
-    FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
+    FTMapViewController *mapViewController = [[FTMapViewController alloc] initWithSearchBar:NO];
     if ([photo objectForKey:kFTPostLocationKey]) {
         [mapViewController setInitialLocationObject:photo];
     }
@@ -902,7 +909,7 @@ didTapLikeCountButton:(UIButton *)button
     if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_SHARE_ON_FACEBOOK]) {
         //NSLog(@"didTapFacebookShareButtonAction");
         // Check that the user account is linked
-        [FTUtility prepareToSharePostOnFacebook:self.currentPostMoreOption];
+        //[FTUtility prepareToSharePostOnFacebook:self.currentPostMoreOption];
     } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_SHARE_ON_TWITTER]) {
         [FTUtility prepareToSharePostOnTwitter:self.currentPostMoreOption];
     } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:ACTION_REPORT_INAPPROPRIATE]) {
@@ -941,6 +948,16 @@ didTapLikeCountButton:(UIButton *)button
 
 #pragma mark - UIScrollViewDelegate
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    //scrollView.bounces = NO;
+    if (scrollView.contentSize.height - scrollView.contentOffset.y + 40 < (self.view.bounds.size.height)) {
+        if (![self isLoading]) {
+            [self loadNextPage];
+        }
+    }
+}
+
+/*
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     CGRect frame = self.navigationController.navigationBar.frame;
     CGFloat size = frame.size.height - 21;
@@ -1009,6 +1026,7 @@ didTapLikeCountButton:(UIButton *)button
         [self updateBarButtonItems:alpha];
     }];
 }
+*/
 
 #pragma mark - UIHeaderViewDelegate
 
@@ -1018,8 +1036,8 @@ didTapLikeCountButton:(UIButton *)button
     
     if ([userType isEqualToString:kFTUserTypeBusiness]) {
         
-        NSLog(@"user:%@",user);
-        NSLog(@"userType:%@",userType);
+        //NSLog(@"user:%@",user);
+        //NSLog(@"userType:%@",userType);
         
         UICollectionViewFlowLayout *businessFloyLayout = [[UICollectionViewFlowLayout alloc] init];
         [businessFloyLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
@@ -1075,25 +1093,22 @@ didTapLikeCountButton:(UIButton *)button
     //NSLog(@"loadStateDidChange: %@",notification);
     switch (moviePlayer.loadState) {
         case MPMovieLoadStatePlayable: {
-            NSLog(@"moviePlayer... MPMovieLoadStatePlayable");
+            //NSLog(@"moviePlayer... MPMovieLoadStatePlayable");
             [UIView animateWithDuration:1 animations:^{
                 [moviePlayer.view setAlpha:1];
             }];
         }
             break;
         case MPMovieLoadStatePlaythroughOK: {
-            NSLog(@"moviePlayer... MPMovieLoadStatePlaythroughOK");
-            
+            //NSLog(@"moviePlayer... MPMovieLoadStatePlaythroughOK");
         }
             break;
         case MPMovieLoadStateStalled: {
-            NSLog(@"moviePlayer... MPMovieLoadStateStalled");
-            
+            //NSLog(@"moviePlayer... MPMovieLoadStateStalled");
         }
             break;
         case MPMovieLoadStateUnknown: {
-            NSLog(@"moviePlayer... MPMovieLoadStateUnknown");
-            
+            //NSLog(@"moviePlayer... MPMovieLoadStateUnknown");
         }
             break;
         default:
@@ -1105,18 +1120,18 @@ didTapLikeCountButton:(UIButton *)button
     //NSLog(@"moviePlayerStateChange: %@",notification);
     switch (moviePlayer.playbackState) {
         case MPMoviePlaybackStateStopped: {
-            NSLog(@"moviePlayer... MPMoviePlaybackStateStopped");
+            //NSLog(@"moviePlayer... MPMoviePlaybackStateStopped");
         }
             break;
         case MPMoviePlaybackStatePlaying: {
-            NSLog(@"moviePlayer... MPMoviePlaybackStatePlaying");
+            //NSLog(@"moviePlayer... MPMoviePlaybackStatePlaying");
             [UIView animateWithDuration:1 animations:^{
                 [moviePlayer.view setAlpha:1];
             }];
         }
             break;
         case MPMoviePlaybackStatePaused: {
-            NSLog(@"moviePlayer... MPMoviePlaybackStatePaused");
+            //NSLog(@"moviePlayer... MPMoviePlaybackStatePaused");
             [UIView animateWithDuration:0.3 animations:^{
                 [moviePlayer.view setAlpha:0];
                 [moviePlayer prepareToPlay];
@@ -1124,18 +1139,15 @@ didTapLikeCountButton:(UIButton *)button
         }
             break;
         case MPMoviePlaybackStateInterrupted: {
-            NSLog(@"moviePlayer... MPMoviePlaybackStateInterrupted");
-            
+            //NSLog(@"moviePlayer... MPMoviePlaybackStateInterrupted");
         }
             break;
         case MPMoviePlaybackStateSeekingForward: {
-            NSLog(@"moviePlayer... MPMoviePlaybackStateSeekingForward");
-            
+            //NSLog(@"moviePlayer... MPMoviePlaybackStateSeekingForward");
         }
             break;
         case MPMoviePlaybackStateSeekingBackward: {
-            NSLog(@"moviePlayer... MPMoviePlaybackStateSeekingBackward");
-            
+            //NSLog(@"moviePlayer... MPMoviePlaybackStateSeekingBackward");            
         }
             break;
         default:
@@ -1158,17 +1170,16 @@ didTapLikeCountButton:(UIButton *)button
                                                   delegate:self
                                          cancelButtonTitle:@"Cancel"
                                     destructiveButtonTitle:nil
-                                         otherButtonTitles:ACTION_SHARE_ON_FACEBOOK,
+                                         otherButtonTitles:/*ACTION_SHARE_ON_FACEBOOK,*/
                                                            ACTION_SHARE_ON_TWITTER,
                                                            ACTION_REPORT_INAPPROPRIATE,
                                                            ACTION_DELETE_POST, nil];
     } else {
-        NSLog(@"!=");
         actionSheet = [[UIActionSheet alloc] initWithTitle:nil
                                                   delegate:self
                                          cancelButtonTitle:@"Cancel"
                                     destructiveButtonTitle:nil
-                                         otherButtonTitles:ACTION_SHARE_ON_FACEBOOK,
+                                         otherButtonTitles:/*ACTION_SHARE_ON_FACEBOOK,*/
                                                            ACTION_SHARE_ON_TWITTER,
                                                            ACTION_REPORT_INAPPROPRIATE, nil];
     }
@@ -1218,7 +1229,7 @@ didTapLikeCountButton:(UIButton *)button
 }
 
 - (void)userFollowingChanged:(NSNotification *)note {
-    NSLog(@"FTTimelineViewController::userFollowingChanged:");
+    //NSLog(@"FTTimelineViewController::userFollowingChanged:");
     self.shouldReloadOnAppear = YES;
     [self loadObjects];
 }
@@ -1254,18 +1265,17 @@ didTapLikeCountButton:(UIButton *)button
     
     switch (result) {
         case MFMailComposeResultCancelled:
-            NSLog(MAIL_CANCELLED);
+            //NSLog(MAIL_CANCELLED);
             break;
         case MFMailComposeResultSaved:
-            NSLog(MAIL_SAVED);
+            //NSLog(MAIL_SAVED);
             break;
         case MFMailComposeResultSent:
-            NSLog(MAIL_SENT);
-            
+            //NSLog(MAIL_SENT);
             [FTUtility showHudMessage:MAIL_SENT WithDuration:2];
             break;
         default:
-            NSLog(MAIL_FAIL);
+            //NSLog(MAIL_FAIL);
             break;
     }
     // Remove the mail view
