@@ -46,7 +46,7 @@
 }
 
 - (void)didTapSelectUserButtonAction:(UIButton *)button {
-    NSLog(@"didTapSelectUserButtonAction:");
+    //NSLog(@"didTapSelectUserButtonAction:");
     
     [button setSelected:![button isSelected]];
     
