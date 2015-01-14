@@ -116,12 +116,33 @@ enum PinAnnotationTypeTag {
 @synthesize postButton;
 @synthesize searchBarImage;
 
-- (void)viewDidLoad{
+- (id)initWithSearchBar:(BOOL)show {
+    
+    self = [super init];
+    if (self) {
+        // Searchbar
+        searchBar = [[UISearchBar alloc] init];
+        searchBar.delegate = self;
+        
+        if (show == YES) {
+            [self.navigationItem setTitleView:searchBar];
+        }
+        
+        self = [self init];
+    }
+    return self;
+}
+
+- (void)viewDidLoad {
+    
     [super viewDidLoad];
     
     [self.view setBackgroundColor:[UIColor whiteColor]];
     
     CGRect frameRect = self.view.frame;
+    
+    // init position
+    position = 0;
     
     // init arrays
     mapItems = [[NSMutableArray alloc] init];
@@ -159,12 +180,6 @@ enum PinAnnotationTypeTag {
     // Set radius
     self.radius = KILOMETER_FIVE;
     
-    // Searchbar
-    searchBar = [[UISearchBar alloc] init];
-    searchBar.delegate = self;
-    
-    [self.navigationItem setTitleView:searchBar];
-    
     // Create searchbar buttons & container
     CGFloat containerY = self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y;
     filterButtonsContainer = [[UIView alloc] initWithFrame:CGRectMake(0, containerY, frameRect.size.width, 40)];
@@ -186,7 +201,7 @@ enum PinAnnotationTypeTag {
     
     taggersLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, filterButtonWidth, filterButtonHeight)];
     [taggersLabel setText:@"Users"];
-    [taggersLabel setFont:BENDERSOLID(16)];
+    [taggersLabel setFont:MULIREGULAR(16)];
     [taggersLabel setBackgroundColor:[UIColor whiteColor]];
     [taggersLabel setTextColor:[UIColor blackColor]];
     [taggersLabel setTextAlignment:NSTextAlignmentCenter];
@@ -199,7 +214,7 @@ enum PinAnnotationTypeTag {
     
     fitTagsLabel = [[UILabel alloc] initWithFrame:CGRectMake(filterButtonWidth, 0, filterButtonWidth, filterButtonHeight)];
     [fitTagsLabel setText:@"Hashtags"];
-    [fitTagsLabel setFont:BENDERSOLID(16)];
+    [fitTagsLabel setFont:MULIREGULAR(16)];
     [fitTagsLabel setBackgroundColor:FT_GRAY];
     [fitTagsLabel setTextColor:FT_RED];
     [fitTagsLabel setTextAlignment:NSTextAlignmentCenter];
@@ -259,7 +274,8 @@ enum PinAnnotationTypeTag {
     [followFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
     
     // Default filter type
-    [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];}
+    [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
+}
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -374,7 +390,7 @@ enum PinAnnotationTypeTag {
 }
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)aSearchBar {
-    NSLog(@"started editing..");
+    //NSLog(@"started editing..");
     
     [self.suggestions removeAllObjects];
     
@@ -459,7 +475,21 @@ enum PinAnnotationTypeTag {
             annotationView.position = position;
             annotationView.delegate = self;
             position++;
+            
         }
+        
+        FTAmbassadorGeoPointAnnotation *ambassadorGeoPointAnnotation = annotation;
+        
+        for (int i = 0; i < mapItems.count; i++) {
+            
+            PFObject *object = mapItems[i];
+            NSString *mapItemId = object.objectId;
+            
+            if ([mapItemId isEqualToString:[ambassadorGeoPointAnnotation objectId]]) {
+                annotationView.position = i;
+            }
+        }
+        
         return annotationView;
         
     } else if ([annotation isKindOfClass:[FTBusinessGeoPointAnnotation class]]) {
@@ -470,12 +500,23 @@ enum PinAnnotationTypeTag {
             annotationView.tag = PinAnnotationTypeTagGeoPoint;
             annotationView.canShowCallout = NO;
             annotationView.draggable = NO;
-            annotationView.position = position;
             annotationView.delegate = self;
-            FTBusinessGeoPointAnnotation *businessGeoPointAnnotation = annotation;
-            annotationView.file = [businessGeoPointAnnotation file];
-            position++;
         }
+        
+        FTBusinessGeoPointAnnotation *businessGeoPointAnnotation = annotation;
+        annotationView.file = [businessGeoPointAnnotation file];
+        annotationView.coordinate = [businessGeoPointAnnotation coordinate];
+        
+        for (int i = 0; i < mapItems.count; i++) {
+            
+            PFObject *object = mapItems[i];
+            NSString *mapItemId = object.objectId;
+            
+            if ([mapItemId isEqualToString:[businessGeoPointAnnotation objectId]]) {
+                annotationView.position = i;
+            }
+        }
+        
         return annotationView;
     }
     return nil;
@@ -493,8 +534,7 @@ enum PinAnnotationTypeTag {
         MKCircleRenderer *annotationView = (MKCircleRenderer *)[mapView dequeueReusableAnnotationViewWithIdentifier:CircleOverlayIdentifier];
         
         if (!annotationView) {
-            MKCircle *circle = [MKCircle circleWithCenterCoordinate:circleOverlay.coordinate
-                                                             radius:circleOverlay.radius];
+            MKCircle *circle = [MKCircle circleWithCenterCoordinate:circleOverlay.coordinate radius:circleOverlay.radius];
             annotationView = [[MKCircleRenderer alloc] initWithCircle:circle];
         }
         
@@ -599,7 +639,7 @@ enum PinAnnotationTypeTag {
                 NSString *displayName = [userSuggestion objectForKey:kFTUserDisplayNameKey];
                 
                 if (![displayNames containsObject:displayName]) {
-                    NSLog(@"displayName:%@",displayName);
+                    //NSLog(@"displayName:%@",displayName);
                     [users addObject:userSuggestion];
                 }
             }
@@ -623,7 +663,7 @@ enum PinAnnotationTypeTag {
                 NSMutableArray *postHashtags = [object objectForKey:kFTPostHashTagKey]; // array of hashtags
                 for (NSString *postHashtag in postHashtags) { // loop through array of hashtags
                     if (![hashtags containsObject:postHashtag]) { // if unique insert into our array else skip
-                        NSLog(@"postHashtag:%@",postHashtag);
+                        //NSLog(@"postHashtag:%@",postHashtag);
                         [hashtags addObject:postHashtag];
                     }
                 }
@@ -650,7 +690,7 @@ enum PinAnnotationTypeTag {
 }
 
 - (void)didTapTaggersLabelAction:(id)sender {
-    NSLog(@"%@::didTapTaggersLabelAction:",VIEWCONTROLLER_MAP);
+    //NSLog(@"%@::didTapTaggersLabelAction:",VIEWCONTROLLER_MAP);
     isUserFilterSelected = YES;
     [fitTagsLabel setBackgroundColor:FT_GRAY];
     [fitTagsLabel setTextColor:FT_RED];
@@ -670,7 +710,7 @@ enum PinAnnotationTypeTag {
 }
 
 - (void)didTapFitTagsLabelAction:(id)sender {
-    NSLog(@"%@::didTapFitTagsLabelAction:",VIEWCONTROLLER_MAP);
+    //NSLog(@"%@::didTapFitTagsLabelAction:",VIEWCONTROLLER_MAP);
     isUserFilterSelected = NO;
     [taggersLabel setBackgroundColor:FT_GRAY];
     [taggersLabel setTextColor:FT_RED];
@@ -691,17 +731,14 @@ enum PinAnnotationTypeTag {
 
 - (UIImage *)imageFromText:(NSString *)text {
     
-    CGSize size = [text sizeWithAttributes:
-                   @{NSFontAttributeName:
-                         [UIFont systemFontOfSize:12.0f]}];
+    CGSize size = [text sizeWithAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:12.0f]}];
     
     if (UIGraphicsBeginImageContextWithOptions != NULL)
         UIGraphicsBeginImageContextWithOptions(size,NO,0.0);
     else
         UIGraphicsBeginImageContext(size);
     
-    [text drawAtPoint:CGPointMake(0.0, 0.0) withAttributes:@{NSFontAttributeName:
-                                                                 [UIFont systemFontOfSize:12.0f]}];
+    [text drawAtPoint:CGPointMake(0.0, 0.0) withAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:12.0f]}];
     
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
@@ -735,7 +772,7 @@ enum PinAnnotationTypeTag {
 }
 
 - (void)configureOverlay {
-    NSLog(@"%@::configureOverlay:",VIEWCONTROLLER_MAP);
+    //NSLog(@"%@::configureOverlay:",VIEWCONTROLLER_MAP);
     [self.mapView removeAnnotations:self.mapView.annotations];
     [self.mapView removeOverlays:self.mapView.overlays];
     [self.view addSubview: self.mapView];
@@ -751,6 +788,9 @@ enum PinAnnotationTypeTag {
 }
 
 - (void)updateLocations {
+    
+    //NSLog(@"updateLocations..");
+    
     CGFloat miles = self.radius/1000.0f;
     
     for (UIView *mapScrollViewSubView in scrollView.subviews) {
@@ -783,9 +823,12 @@ enum PinAnnotationTypeTag {
             
             PFQuery *innerQuery = [PFQuery queryWithClassName:kFTUserClassKey];
             [innerQuery whereKey:kFTUserTypeKey equalTo:kFTUserTypeAmbassador];
+            [innerQuery whereKey:kFTUserTypeKey equalTo:kFTUserTypeUser];
             
             PFQuery *query = [PFQuery queryWithClassName:kFTPostClassKey];
+            [query whereKey:kFTPostLocationKey nearGeoPoint:nearGeoPoint withinMiles:miles];
             [query whereKeyExists:kFTPostLocationKey];
+            [query whereKeyExists:kFTPostPlaceKey];
             [query whereKey:kFTPostUserKey matchesQuery:innerQuery];
             [query includeKey:kFTPostUserKey];
             [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -862,17 +905,40 @@ enum PinAnnotationTypeTag {
 }
 
 - (void)mapScrollViewItem:(FTMapScrollViewItem *)mapScrollViewItem didTapUserItem:(UIButton *)button user:(PFUser *)aUser {
+    
+    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
+    [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backIndicator setStyle:UIBarButtonItemStylePlain];
+    [backIndicator setTarget:self];
+    [backIndicator setAction:@selector(didTapPopSearchButtonAction:)];
+    [backIndicator setTintColor:[UIColor whiteColor]];
+    
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     [flowLayout setItemSize:CGSizeMake(self.mapView.frame.size.width/3,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
     [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(self.mapView.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
+    
+    NSString *userType = [aUser objectForKey:kFTUserTypeKey];
+    
+    if ([userType isEqualToString:kFTUserTypeBusiness]) {
         
-    FTBusinessProfileViewController *profileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController setBusiness:aUser];
-    [self.navigationController pushViewController:profileViewController animated:YES];
+        [flowLayout setHeaderReferenceSize:CGSizeMake(self.mapView.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
+        
+        FTBusinessProfileViewController *profileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+        [profileViewController setBusiness:aUser];
+        [profileViewController.navigationItem setLeftBarButtonItem:backIndicator];
+        [self.navigationController pushViewController:profileViewController animated:YES];
+    } else {
+        
+        [flowLayout setHeaderReferenceSize:CGSizeMake(self.mapView.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
+        
+        FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+        [profileViewController setUser:aUser];
+        [profileViewController.navigationItem setLeftBarButtonItem:backIndicator];
+        [self.navigationController pushViewController:profileViewController animated:YES];
+    }
 }
 
 #pragma mark - UITextFieldDelegate
@@ -929,17 +995,27 @@ enum PinAnnotationTypeTag {
 
 #pragma mark - FTBusinessAnnotationViewDelegate
 
-- (void)businessAnnotationView:(FTBusinessAnnotationView *)businessAnnotationView didTapBusinessAnnotationView:(id)sender {
-    NSLog(@"businessAnnotationView:%d",businessAnnotationView.position);
-    [UIView animateWithDuration:1 animations:^{
-        [scrollView setContentOffset:CGPointMake(businessAnnotationView.position * self.view.frame.size.width,0)];
-    }];
+- (void)businessAnnotationView:(FTBusinessAnnotationView *)businessAnnotationView
+  didTapBusinessAnnotationView:(id)sender
+                    coordinate:(CLLocationCoordinate2D)coordinate {
+    
+    if (CLLocationCoordinate2DIsValid(coordinate)) {
+        
+        MKCoordinateRegion region = MKCoordinateRegionMake(coordinate, MKCoordinateSpanMake(0.0225f, 0.0225f));
+        
+        // Animate zoom into geopoint center
+        [self.mapView setRegion:region animated:YES];
+        
+        [UIView animateWithDuration:1 animations:^{
+            [scrollView setContentOffset:CGPointMake(businessAnnotationView.position * self.view.frame.size.width,0)];
+        }];
+    }
 }
 
 #pragma mark - FTAmbassadorAnnotationViewDelegate
 
 - (void)ambassadorAnnotationView:(FTAmbassadorAnnotationView *)ambassadorAnnotationView didTapAmbassadorAnnotationView:(id)sender {
-    NSLog(@"ambassadorAnnotationView:%d",ambassadorAnnotationView.position);
+    //NSLog(@"ambassadorAnnotationView:%d",ambassadorAnnotationView.position);
     [UIView animateWithDuration:1 animations:^{
         [scrollView setContentOffset:CGPointMake(ambassadorAnnotationView.position * self.view.frame.size.width,0)];
     }];

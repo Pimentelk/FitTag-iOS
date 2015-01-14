@@ -34,5 +34,5 @@
 
 - (void)setInitialLocation:(CLLocation *)aLocation;
 - (void)setInitialLocationObject:(PFObject *)object;
-
+- (id)initWithSearchBar:(BOOL)show;
 @end
