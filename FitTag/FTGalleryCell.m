@@ -21,6 +21,7 @@
 @property (nonatomic, strong) UIView *containerView;
 //@property (nonatomic, strong) FTProfileImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *locationLabel;
+@property (nonatomic, strong) UILabel *distanceLabel;
 @property (nonatomic, strong) TTTTimeIntervalFormatter *timeIntervalFormatter;
 @property (nonatomic, assign) CGFloat lastContentOffset;
 @property (nonatomic, strong) FTGallerySwiperView *swiperView;
@@ -32,6 +33,7 @@
 //@synthesize avatarImageView;
 @synthesize userButton;
 @synthesize locationLabel;
+@synthesize distanceLabel;
 @synthesize timeIntervalFormatter;
 @synthesize gallery;
 @synthesize buttons;
@@ -73,7 +75,7 @@
         CGSize frameSize = self.frame.size;
         
         UIView *toolbar = [[UIView alloc] init];
-        toolbar.frame = CGRectMake(0, self.galleryButton.frame.size.height, frameSize.width, 30);
+        toolbar.frame = CGRectMake(0, self.galleryButton.frame.size.height, frameSize.width, 60);
         toolbar.backgroundColor = FT_GRAY;
         
         [self.contentView addSubview:toolbar];
@@ -83,13 +85,22 @@
         buttons = otherButtons;
         
         //location label
-        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, BUTTONS_TOP_PADDING, 130, 20)];
+        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, BUTTONS_TOP_PADDING+30, 240, 20)];
         [locationLabel setText:EMPTY_STRING];
         [locationLabel setBackgroundColor:[UIColor clearColor]];
         [locationLabel setTextColor:FT_RED];
-        [locationLabel setFont:BENDERSOLID(13)];
+        [locationLabel setFont:MULIREGULAR(13)];
         
         [toolbar addSubview:locationLabel];
+        
+        //distance label
+        distanceLabel = [[UILabel alloc] initWithFrame:CGRectMake(toolbar.frame.size.width-80, BUTTONS_TOP_PADDING+30, 80, 20)];
+        [distanceLabel setText:EMPTY_STRING];
+        [distanceLabel setBackgroundColor:[UIColor clearColor]];
+        [distanceLabel setTextColor:FT_RED];
+        [distanceLabel setFont:MULIREGULAR(13)];
+        
+        [toolbar addSubview:distanceLabel];
         
         moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
         //[moreButton setBackgroundImage:[UIImage imageNamed:@"more_button"] forState:UIControlStateNormal];
@@ -111,7 +122,7 @@
             [commentCounter setBackgroundImage:COUNTER_BOX forState:UIControlStateNormal];
             [commentCounter setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [commentCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
-            [commentCounter.titleLabel setFont:BENDERSOLID(18)];
+            [commentCounter.titleLabel setFont:MULIREGULAR(18)];
             [commentCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
             [commentCounter setTitleColor:FT_RED forState:UIControlStateNormal];
             [commentCounter setTitleColor:FT_RED forState:UIControlStateSelected];
@@ -126,7 +137,8 @@
             [self.commentButton setFrame:CGRectMake(commentButtonX, BUTTONS_TOP_PADDING, BUTTON_WIDTH, BUTTON_HEIGHT)];
             [self.commentButton setBackgroundColor:[UIColor clearColor]];
             //[self.commentButton setBackgroundImage:[UIImage imageNamed:@"comment_bubble"] forState:UIControlStateNormal];
-            [self.commentButton setBackgroundImage:COMMENT_BUBBLE forState:UIControlStateNormal];
+            //[self.commentButton setBackgroundImage:COMMENT_BUBBLE forState:UIControlStateNormal];
+            [self.commentButton setBackgroundImage:COMMENT_BUTTON forState:UIControlStateNormal];
             [self.commentButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
             [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
@@ -148,7 +160,7 @@
             [likeCounter setBackgroundImage:COUNTER_BOX forState:UIControlStateNormal];
             [likeCounter setTitle:@"0" forState:UIControlStateNormal];
             [likeCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
-            [likeCounter.titleLabel setFont:BENDERSOLID(18)];
+            [likeCounter.titleLabel setFont:MULIREGULAR(18)];
             [likeCounter.titleLabel setTextAlignment:NSTextAlignmentCenter];
             [likeCounter setTitleColor:FT_RED forState:UIControlStateNormal];
             [likeCounter setTitleColor:FT_RED forState:UIControlStateSelected];
@@ -166,10 +178,15 @@
             //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_white"] forState:UIControlStateNormal];
             //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateSelected];
             //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateHighlighted];
-            
+            /*
             [self.likeButton setBackgroundImage:HEART_UNSELECTED forState:UIControlStateNormal];
             [self.likeButton setBackgroundImage:HEART_SELECTED forState:UIControlStateSelected];
             [self.likeButton setBackgroundImage:HEART_SELECTED forState:UIControlStateHighlighted];
+            */
+                        
+            [self.likeButton setBackgroundImage:ENCOURAGE_BUTTON_UNSELECTED forState:UIControlStateNormal];
+            [self.likeButton setBackgroundImage:ENCOURAGE_BUTTON_SELECTED forState:UIControlStateSelected];
+            [self.likeButton setBackgroundImage:ENCOURAGE_BUTTON_SELECTED forState:UIControlStateHighlighted];
             
             [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
             [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
@@ -228,30 +245,35 @@
             [swiperView setCenter:CGPointMake(gallerySize.width/2, gallerySize.height-5)];
             
             for (PFObject *post in objects) {
-                [[post objectForKey:kFTPostImageKey] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-                    if (!error) {
-                        
-                        UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapImageInGalleryAction:)];
-                        singleTap.numberOfTapsRequired = 1;
-                        
-                        CGFloat xOrigin = i * self.frame.size.width;
-                        
-                        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, self.frame.size.width, self.frame.size.width)];
-                        [imageView setBackgroundColor:[UIColor clearColor]];
-                        
-                        UIImage *image = [UIImage imageWithData:data];
-                        [imageView setImage:image];
-                        [imageView setClipsToBounds:YES];
-                        [imageView setContentMode:CONTENTMODE];
-                        [imageView setUserInteractionEnabled:YES];
-                        [imageView addGestureRecognizer:singleTap];
-                        [carousel addSubview:imageView];
-                    }
-                }];
                 
-                //[[FTCache sharedCache] setAttributesForPost:post likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
-                //[[FTCache sharedCache] setImagesForGallery:gallery];
-                i++;
+                PFFile *file = [post objectForKey:kFTPostImageKey];
+                
+                if (file && ![file isEqual:[NSNull null]]) {
+                    [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                        if (!error) {
+                            
+                            UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapImageInGalleryAction:)];
+                            singleTap.numberOfTapsRequired = 1;
+                            
+                            CGFloat xOrigin = i * self.frame.size.width;
+                            
+                            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin, 0, self.frame.size.width, self.frame.size.width)];
+                            [imageView setBackgroundColor:[UIColor clearColor]];
+                            
+                            UIImage *image = [UIImage imageWithData:data];
+                            [imageView setImage:image];
+                            [imageView setClipsToBounds:YES];
+                            [imageView setContentMode:CONTENTMODE];
+                            [imageView setUserInteractionEnabled:YES];
+                            [imageView addGestureRecognizer:singleTap];
+                            [carousel addSubview:imageView];
+                        }
+                    }];
+                    
+                    //[[FTCache sharedCache] setAttributesForPost:post likers:[NSArray array] commenters:[NSArray array] likedByCurrentUser:NO];
+                    //[[FTCache sharedCache] setImagesForGallery:gallery];
+                    i++;
+                }
             }
             
             if (objects.count > 1) {
@@ -301,6 +323,20 @@
             }
         }];
         
+        PFGeoPoint *geoPoint = [self.gallery objectForKey:kFTPostLocationKey];
+        
+        // Calculate distance
+        if (geoPoint && [[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
+            CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
+            
+            // Get the current users location
+            PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
+            CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
+            
+            // Current users distance to the item
+            [self.distanceLabel setText:[NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
+        }
+        /*
     } else if ([self.gallery objectForKey:kFTPostLocationKey]) {
         
         PFGeoPoint *geoPoint = [self.gallery objectForKey:kFTPostLocationKey];
@@ -324,8 +360,22 @@
             }
         }];
         
+        // Calculate distance
+        if (geoPoint && [[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
+            CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
+            
+            // Get the current users location
+            PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
+            CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
+            
+            // Current users distance to the item
+            [self.distanceLabel setText:[NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
+        }
+         
+         */
     } else {
         [locationLabel setText:EMPTY_STRING];
+        [distanceLabel setText:EMPTY_STRING];
     }
     
     [self performSelector:@selector(showCarousel) withObject:nil afterDelay:1];
@@ -384,6 +434,10 @@
 }
 
 #pragma mark - ()
+
+- (CLLocationDistance)distanceFrom:(CLLocation *)postLocation to:(CLLocation *)userLocation {
+    return [postLocation distanceFromLocation:userLocation];
+}
 
 + (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize {
     //UIGraphicsBeginImageContext(newSize);
