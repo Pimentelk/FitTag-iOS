@@ -16,7 +16,7 @@
 
 - (void)requestLocationAuthorization {
     // Update the users location
-    NSLog(@"requestLocationAuthorization:");
+    //NSLog(@"requestLocationAuthorization:");
     if (IS_OS_8_OR_LATER) {
         [[self locationManager] requestAlwaysAuthorization];
     }
@@ -36,7 +36,7 @@
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    NSLog(@"FTLocationManager::didFailWithError: %@", error);
+    //NSLog(@"FTLocationManager::didFailWithError: %@", error);
     
     /*
     [[[UIAlertView alloc] initWithTitle:@"Error"
@@ -54,7 +54,10 @@
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
     //NSLog(@"FTLocationManager::locationManager:didUpdateLocations:");
     [locationManager stopUpdatingLocation];
-    if ([PFUser currentUser]) {
+    
+    PFUser *currentUser = [PFUser currentUser];
+    
+    if (currentUser) {
         CLLocation *location = [locations lastObject];
         
         PFGeoPoint *geoPoint = [PFGeoPoint geoPointWithLatitude:location.coordinate.latitude
@@ -64,12 +67,17 @@
             [delegate locationManager:self didUpdateUserLocation:location geoPoint:geoPoint];
         }
         
-        [[PFUser currentUser] setValue:geoPoint forKey:kFTUserLocationKey];
-        [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            if (succeeded) {
-                //NSLog(@"%@::locationManager:didUpdateLocations: - User location updated successfully.",VIEWCONTROLLER_MAP);
-            }
-        }];
+        if (![[currentUser objectForKey:kFTUserTypeKey] isEqualToString:kFTUserTypeBusiness]) {
+            [[PFUser currentUser] setValue:geoPoint forKey:kFTUserLocationKey];
+            [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (succeeded) {
+                    //NSLog(@"%@::locationManager:didUpdateLocations: - User location updated successfully.",VIEWCONTROLLER_MAP);
+                }
+            }];
+        }
+        
+    } else {
+        //NSLog(@"skip user location update...");
     }
 }
 
