@@ -42,18 +42,18 @@
 }
 
 - (void)setCellSelection {
-    self.interestLabel.textColor = [UIColor redColor];
+    self.interestLabel.textColor = FT_RED;
     isSelected = YES;
 }
 
 - (void)clearCellSelected {
-    self.interestLabel.textColor = [UIColor grayColor];
+    self.interestLabel.textColor = FT_RED;
     isSelected = NO;
 }
 
 - (BOOL)isSelectedToggle {
     if (!isSelected) {
-        self.interestLabel.textColor = [UIColor redColor];
+        self.interestLabel.textColor = FT_RED;
     } else {
         self.interestLabel.textColor = [UIColor grayColor];
     }
