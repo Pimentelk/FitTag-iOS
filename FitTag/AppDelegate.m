@@ -138,6 +138,7 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    
     //NSLog(@"%@::application:didReceiveRemoteNotification:",APPDELEGATE_RESPONDER);
     //NSLog(@"userInfo:%@",userInfo);
     
@@ -289,7 +290,7 @@
     self.activityViewController = [[FTActivityFeedViewController alloc] initWithStyle:UITableViewStylePlain];
     
     // Map ViewController - Home
-    self.mapViewController = [[FTMapViewController alloc] init];
+    self.mapViewController = [[FTMapViewController alloc] initWithSearchBar:YES];
     
     self.userProfileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
     [self.userProfileViewController setUser:[PFUser currentUser]];
