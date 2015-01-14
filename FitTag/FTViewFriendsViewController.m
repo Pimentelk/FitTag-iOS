@@ -16,16 +16,10 @@
 @interface FTViewFriendsViewController()
 
 @property (nonatomic, strong) NSArray *objects;
-@property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
-@property (nonatomic, strong) FTUserProfileViewController *profileViewController;
-@property (nonatomic, strong) FTBusinessProfileViewController *businessViewController;
 @property (nonatomic, strong) UIBarButtonItem *backIndicator;
 @end
 
 @implementation FTViewFriendsViewController
-@synthesize flowLayout;
-@synthesize profileViewController;
-@synthesize businessViewController;
 @synthesize backIndicator;
 
 - (void)viewDidLoad {
@@ -54,13 +48,6 @@
     [backIndicator setAction:@selector(didTapBackButtonAction:)];
     [backIndicator setTintColor:[UIColor whiteColor]];
     
-    flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
-    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [flowLayout setMinimumInteritemSpacing:0];
-    [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -199,28 +186,34 @@
 #pragma mark - FTFollowCellDelegate
 
 - (void)followCell:(FTFollowCell *)inviteCell didTapProfileImage:(UIButton *)button user:(PFUser *)aUser {
-    //NSLog(@"%@::followCell:didTapProfileImage:user",VIEWCONTROLLER_INVITE);
+    NSLog(@"%@::followCell:didTapProfileImage:user",VIEWCONTROLLER_INVITE);
+    
     PFUser *selectedUser = aUser;
     NSString *userType = [selectedUser objectForKey:kFTUserTypeKey];
     
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
+    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+    [flowLayout setMinimumInteritemSpacing:0];
+    [flowLayout setMinimumLineSpacing:0];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+    
     if ([userType isEqualToString:kFTUserTypeBusiness]) {
-        if (businessViewController) {
-            businessViewController = nil;
-        }
         
-        businessViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-        [businessViewController.navigationItem setLeftBarButtonItem:backIndicator];
+        [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
+        
+        FTBusinessProfileViewController *businessViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
         [businessViewController setBusiness:selectedUser];
+        [businessViewController.navigationItem setLeftBarButtonItem:backIndicator];
         [self.navigationController pushViewController:businessViewController animated:YES];
         
     } else {
-        if (profileViewController) {
-            profileViewController = nil;
-        }
         
-        profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-        [profileViewController.navigationItem setLeftBarButtonItem:backIndicator];
+        [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
+        
+        FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
         [profileViewController setUser:selectedUser];
+        [profileViewController.navigationItem setLeftBarButtonItem:backIndicator];
         [self.navigationController pushViewController:profileViewController animated:YES];
     }
 }
