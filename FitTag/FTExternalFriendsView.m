@@ -96,10 +96,10 @@
         
         [headerViewContainer addSubview:topLineViewWhite];
         
-        UILabel *messageHeader = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, 24)];
+        UILabel *messageHeader = [[UILabel alloc] initWithFrame:CGRectMake(0, 4, frame.size.width, 24)];
         messageHeader.numberOfLines = 0;
-        messageHeader.text = @"INVITE YOUR FRIENDS TO FITTAG";
-        messageHeader.font = BENDERSOLID(22);
+        messageHeader.text = @"INVITE FRIENDS TO FITTAG";
+        messageHeader.font = MULIREGULAR(18);
         messageHeader.backgroundColor = [UIColor clearColor];
         messageHeader.textAlignment = NSTextAlignmentCenter;
 
@@ -151,7 +151,10 @@
         self.headerView = headerViewContainer;
         [self addSubview:self.headerView];
         
-        CGRect rect = CGRectMake(0, self.headerView.frame.size.height + self.headerView.frame.origin.y, self.headerView.frame.size.width, self.frame.size.height - self.headerView.frame.size.height - TABBAR_HEIGHT);
+        CGRect headerFrame = self.headerView.frame;
+        CGFloat rectY = headerFrame.size.height + headerFrame.origin.y;
+        CGFloat rectHeight = self.frame.size.height - headerFrame.size.height - TABBAR_HEIGHT;
+        CGRect rect = CGRectMake(0, rectY, headerFrame.size.width, rectHeight);
         
         shareItContainer = [[UIView alloc] initWithFrame:rect];
         [self addSubview:shareItContainer];
@@ -160,7 +163,7 @@
         [tableView setBackgroundColor:[UIColor clearColor]];
         [self addSubview:tableView];
         
-        NSLog(@"self.headerView.frame.size.height - self.frame.size.height: %f",self.headerView.frame.size.height - self.frame.size.height);
+        //NSLog(@"self.headerView.frame.size.height - self.frame.size.height: %f",self.headerView.frame.size.height - self.frame.size.height);
         
         [self didTapContactButtonAction:nil];
         [contactsButton setSelected:YES];
@@ -185,7 +188,7 @@
     [shareItContainer setHidden:YES];
     [self sendSubviewToBack:shareItContainer];
     
-    NSLog(@"didTapContactButtonAction:");
+    //NSLog(@"didTapContactButtonAction:");
     
     ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
     
@@ -207,7 +210,7 @@
     ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);
     
     if (error) {
-        NSLog(@"ABAddressBookCreateWithOptions error: %@", CFBridgingRelease(error));
+        //NSLog(@"ABAddressBookCreateWithOptions error: %@", CFBridgingRelease(error));
         if (addressBook) CFRelease(addressBook);
         return;
     }
@@ -217,7 +220,7 @@
         // present the user the UI that requests permission to contacts        
         ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
             if (error) {
-                NSLog(@"ABAddressBookRequestAccessWithCompletion error: %@", CFBridgingRelease(error));
+                //NSLog(@"ABAddressBookRequestAccessWithCompletion error: %@", CFBridgingRelease(error));
             }
             
             if (granted) {
@@ -269,7 +272,7 @@
         UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 0, 240, 40)];
         [contactLabel setTextAlignment: NSTextAlignmentLeft];
         [contactLabel setUserInteractionEnabled: YES];
-        [contactLabel setFont:BENDERSOLID(18)];
+        [contactLabel setFont:SYSTEMFONTBOLD(16)];
         [contactLabel setTextColor: [UIColor blackColor]];
         [contactLabel setAdjustsFontSizeToFitWidth:NO];
         [contactLabel setNumberOfLines:0];
@@ -326,7 +329,7 @@
     twitterTextView = [[UITextView alloc] initWithFrame:CGRectMake(SOCIALTEXTVIEWX(300,self.frame.size.width), 0, 300, 75)];
     [twitterTextView setBackgroundColor:[UIColor whiteColor]];
     [twitterTextView setText:@"I am ready to start my journey with fittag! I will earn rewards just by being healthy. Join me!"];
-    [twitterTextView setFont:BENDERSOLID(16)];
+    [twitterTextView setFont:MULIREGULAR(16)];
     [twitterTextView setTextAlignment:NSTextAlignmentCenter];
     [twitterTextView setEditable:YES];
     
@@ -365,7 +368,7 @@
     facebookTextView = [[UITextView alloc] initWithFrame:CGRectMake(SOCIALTEXTVIEWX(300, self.frame.size.width), 0, 300, 75)];
     [facebookTextView setBackgroundColor:[UIColor whiteColor]];
     [facebookTextView setText:@"I am ready to start my journey with #FitTag! I will earn rewards just by being healthy. Join me!"];
-    [facebookTextView setFont:BENDERSOLID(16)];
+    [facebookTextView setFont:MULIREGULAR(16)];
     [facebookTextView setTextAlignment:NSTextAlignmentCenter];
     [facebookTextView setEditable:NO];
     
@@ -382,8 +385,7 @@
 }
 
 - (void)didTapTwitterShareItButtonAction:(UIButton *)button {
-    
-    NSLog(@"didTapTwitterShareButtonAction:");
+    //NSLog(@"didTapTwitterShareButtonAction:");
     if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
         NSString *url = @"http://fittag.com";
         NSString *status = [NSString stringWithFormat:@"I am ready to start my journey with #FitTag! I will earn rewards just by being healthy. Join me! %@",url];
@@ -400,7 +402,7 @@
 }
 
 - (void)didTapFacebookShareItButtonAction:(UIButton *)button {
-    NSLog(@"didTapFacebookShareItButtonAction:");
+    //NSLog(@"didTapFacebookShareItButtonAction:");
     if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
         // Facebook account is linked
         NSString *description = facebookTextView.text;
