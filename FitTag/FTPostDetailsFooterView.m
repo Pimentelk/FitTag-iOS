@@ -68,7 +68,7 @@
         [shareLocationLabel setText:@"FitTag your location?"];
         [shareLocationLabel setTextColor:[UIColor whiteColor]];
         [shareLocationLabel setBackgroundColor:[UIColor clearColor]];
-        [shareLocationLabel setFont:BENDERSOLID(16)];
+        [shareLocationLabel setFont:MULIREGULAR(16)];
         [shareLocationView addSubview:shareLocationLabel];
         
         shareLocationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(commentRect.size.width - 80, 4, 0, 0)];
@@ -118,7 +118,7 @@
         [facebookButton setBackgroundImage:[UIImage imageNamed:IMAGE_SOCIAL_FACEBOOKOFF] forState:UIControlStateNormal];
         [facebookButton setBackgroundImage:[UIImage imageNamed:IMAGE_SOCIAL_FACEBOOK] forState:UIControlStateSelected];
         [facebookButton addTarget:self action:@selector(didTapFacebookShareButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        
+        [facebookButton setHidden:YES];
         [mainView addSubview:facebookButton];
          
         twitterButton = [UIButton buttonWithType: UIButtonTypeCustom];
