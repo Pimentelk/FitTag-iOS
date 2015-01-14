@@ -22,11 +22,11 @@
 }
 @property (nonatomic, strong) UIView *profileFilter;
 @property (nonatomic, strong) UIView *containerView;
-@property (nonatomic, strong) UIView *profilePictureBackgroundView;
+@property (nonatomic, strong) UIView *headerPhotosContainer;
 
 @property (nonatomic, strong) UILabel *followerCountLabel;
 @property (nonatomic, strong) UILabel *followingCountLabel;
-@property (nonatomic, strong) UILabel *userSettingsLabel;
+//@property (nonatomic, strong) UILabel *userSettingsLabel;
 @property (nonatomic, strong) UILabel *userDisplay;
 
 @property (nonatomic, strong) UIImageView *photoCountIconImageView;
@@ -37,18 +37,22 @@
 @property (nonatomic, strong) STTweetLabel *profileBiography;
 
 @property (nonatomic, strong) UIButton *gridViewButton;
+@property (nonatomic, strong) UIButton *userSettingsButton;
+@property (nonatomic, strong) UIButton *followStatusButton;
 //@property (nonatomic, strong) UIButton *businessButton;
 //@property (nonatomic, strong) UIButton *taggedInButton;
 @end
 
 @implementation FTUserProfileHeaderView
+@synthesize userSettingsButton;
 @synthesize profileFilter;
 @synthesize followerCountLabel;
 @synthesize photoCountIconImageView;
 @synthesize followingCountLabel;
-@synthesize userSettingsLabel;
+@synthesize followStatusButton;
+//@synthesize userSettingsLabel;
 @synthesize profilePictureImageView;
-@synthesize profilePictureBackgroundView;
+@synthesize headerPhotosContainer;
 @synthesize profileBiography;
 @synthesize gridViewButton;
 //@synthesize businessButton;
@@ -75,11 +79,11 @@
         CGFloat offsetY = 0;
         
         // Profile Picture & cover photo container
-        profilePictureBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, offsetY, size.width, size.width / 2)];
-        [profilePictureBackgroundView setBackgroundColor:FT_GRAY];
-        [profilePictureBackgroundView setAlpha:0.0f];
-        [profilePictureBackgroundView setClipsToBounds:YES];
-        [self.containerView addSubview:profilePictureBackgroundView];
+        headerPhotosContainer = [[UIView alloc] initWithFrame:CGRectMake(0, offsetY, size.width, size.width / 2)];
+        [headerPhotosContainer setBackgroundColor:FT_GRAY];
+        [headerPhotosContainer setAlpha:0.0f];
+        [headerPhotosContainer setClipsToBounds:YES];
+        [self.containerView addSubview:headerPhotosContainer];
         
         // Profile Picture Image
         profilePictureImageView = [[PFImageView alloc] initWithFrame:CGRectMake(5, (((size.height / 2) - PROFILE_IMAGE_HEIGHT)/2), PROFILE_IMAGE_WIDTH, PROFILE_IMAGE_HEIGHT)];
@@ -87,31 +91,51 @@
         [profilePictureImageView setClipsToBounds: YES];
         [profilePictureImageView setAlpha:0.0f];
         [profilePictureImageView.layer setCornerRadius:CORNERRADIUS(PROFILE_IMAGE_WIDTH)];
+        [profilePictureImageView setContentMode:UIViewContentModeScaleAspectFill];
         [self.containerView addSubview:profilePictureImageView];
         
-        NSLog(@"coverPhoto width:%f height:%f", size.width, size.width / 2);
+        //NSLog(@"coverPhoto width:%f height:%f", size.width, size.width / 2);
         
         // Cover Photo
         coverPhotoImageView = [[PFImageView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.width / 2)];
         [coverPhotoImageView setClipsToBounds:YES];
         [coverPhotoImageView setBackgroundColor:FT_GRAY];        
-        [coverPhotoImageView setContentMode:UIViewContentModeScaleAspectFill];
-        [self.profilePictureBackgroundView addSubview:coverPhotoImageView];
+        [coverPhotoImageView setContentMode:UIViewContentModeScaleAspectFit];
+        [self.headerPhotosContainer addSubview:coverPhotoImageView];
         
         // User settings UILabel
-        CGFloat userSettingsLabelY = profilePictureBackgroundView.frame.size.height + offsetY;
+        CGFloat userSettingsLabelY = headerPhotosContainer.frame.size.height + offsetY;
+        
+        // Settings button
+        userSettingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [userSettingsButton addTarget:self action:@selector(didTapSettingsButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [userSettingsButton setFrame:CGRectMake(0, userSettingsLabelY, self.containerView.bounds.size.width, 30)];
+        [userSettingsButton setBackgroundImage:[UIImage imageNamed:@"settings_button"] forState:UIControlStateNormal];
+        [userSettingsButton setHidden:YES];
+        [self.containerView addSubview:userSettingsButton];
+        
+        // Follow/Unfollow Label
+        followStatusButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [followStatusButton setFrame:CGRectMake(0, userSettingsLabelY, self.containerView.bounds.size.width, 30)];
+        [followStatusButton setBackgroundColor:FT_RED];
+        [followStatusButton setHidden:YES];
+        [self.containerView addSubview:followStatusButton];
+        
+        /*
         userSettingsLabel = [[UILabel alloc] init];
         [userSettingsLabel setFrame:CGRectMake(0, userSettingsLabelY, self.containerView.bounds.size.width, 30)];
         [userSettingsLabel setTextAlignment:NSTextAlignmentCenter];
-        [userSettingsLabel setFont:BENDERSOLID(18)];
+        [userSettingsLabel setFont:MULIREGULAR(18)];
         [userSettingsLabel setBackgroundColor:[UIColor whiteColor]];
         [userSettingsLabel setTextColor:[UIColor whiteColor]];
         [userSettingsLabel setAlpha:1.0f];
-        
+        [userSettingsLabel.layer setBorderWidth:1.0f];
+        [userSettingsLabel.layer setBorderColor:[FT_RED CGColor]];
         [self.containerView addSubview:userSettingsLabel];
+        */
         
         // Followers count UILabel
-        CGFloat followLabelsY = profilePictureBackgroundView.frame.size.height + offsetY + 30;
+        CGFloat followLabelsY = headerPhotosContainer.frame.size.height + offsetY + 30;
         CGFloat followLabelsWidth = self.containerView.bounds.size.width / 2;
         
         UITapGestureRecognizer *followedTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapFollowerAction:)];
@@ -122,7 +146,7 @@
         [followerCountLabel setTextAlignment:NSTextAlignmentCenter];
         [followerCountLabel setBackgroundColor:[UIColor whiteColor]];
         [followerCountLabel setTextColor:[UIColor blackColor]];
-        [followerCountLabel setFont:BENDERSOLID(14)];
+        [followerCountLabel setFont:MULIREGULAR(14)];
         [followerCountLabel.layer setBorderColor:FT_GRAY.CGColor];
         [followerCountLabel.layer setBorderWidth:1.0f];
         [followerCountLabel setUserInteractionEnabled:YES];
@@ -141,7 +165,7 @@
         [followingCountLabel setTextAlignment:NSTextAlignmentCenter];
         [followingCountLabel setBackgroundColor:[UIColor whiteColor]];
         [followingCountLabel setTextColor:[UIColor blackColor]];
-        [followingCountLabel setFont:BENDERSOLID(14)];
+        [followingCountLabel setFont:MULIREGULAR(14)];
         [followingCountLabel.layer setBorderColor:FT_GRAY.CGColor];
         [followingCountLabel.layer setBorderWidth:1.0f];
         [followingCountLabel setUserInteractionEnabled:YES];
@@ -154,7 +178,6 @@
         CGPoint settingsLabelOrgin = followerCountLabel.frame.origin;
         CGFloat bioHeight = self.frame.size.height - (settingsLabelOrgin.y + settingsLabelSize.height);
         
-        //profileBiography = [[UITextView alloc] init];
         profileBiography = [[STTweetLabel alloc] init];
         [profileBiography setFrame:CGRectMake(10, settingsLabelOrgin.y + settingsLabelSize.height, size.width-5, bioHeight)];
         [profileBiography setTextColor:[UIColor blackColor]];
@@ -263,7 +286,7 @@
 }
 
 - (void)fetchUserProfileData:(PFUser *)aUser {
-    NSLog(@"::- (void)fetchUserProfileData:(PFUser *)aUser: %@",aUser);
+    //NSLog(@"::- (void)fetchUserProfileData:(PFUser *)aUser: %@",aUser);
     
     if (!aUser) {
         [NSException raise:NSInvalidArgumentException format:@"user cannot be nil"];
@@ -277,39 +300,28 @@
     [self updateBiography:[self.user objectForKey:kFTUserBioKey]];
     
     // Set cover photo
-    PFFile *coverPhotoFile = [self.user objectForKey:kFTUserCoverPhotoKey];
-    if (coverPhotoFile) {
+    PFFile *coverPhotoFile = [self.user objectForKey:kFTUserCoverPhotoKey];    
+    if (coverPhotoFile && ![coverPhotoFile isEqual:[NSNull null]]) {
         [coverPhotoImageView setFile:coverPhotoFile];
-        [coverPhotoImageView loadInBackground:^(UIImage *image, NSError *error) {
-            if (!error) {
-                UIImageView *coverPhoto = [[UIImageView alloc] initWithImage:image];
-                coverPhoto.frame = self.coverPhotoImageView.bounds;
-                coverPhoto.alpha = 0.0f;
-                coverPhoto.clipsToBounds = YES;
-                
-                [self.profilePictureBackgroundView addSubview:coverPhoto];
-                
-                [UIView animateWithDuration:0.3f animations:^{
-                    coverPhoto.alpha = 1.0f;
-                }];
-            }
-        }];
+        [coverPhotoImageView loadInBackground];
+        [coverPhotoImageView setAlpha:1];
+        [headerPhotosContainer setAlpha:1];
     } else {
         UIImageView *coverImageView = [[UIImageView alloc] initWithFrame:coverPhotoImageView.frame];
         [coverImageView setImage:nil];
         [coverImageView setClipsToBounds:YES];
         [coverImageView setBackgroundColor:FT_GRAY];
-        [self.profilePictureBackgroundView addSubview:coverImageView];
+        [self.coverPhotoImageView addSubview:coverImageView];
     }
     
     // Set profile photo
     PFFile *imageFile = [self.user objectForKey:kFTUserProfilePicMediumKey];
-    if (imageFile) {
+    if (imageFile && ![imageFile isEqual:[NSNull null]]) {
         [profilePictureImageView setFile:imageFile];
         [profilePictureImageView loadInBackground:^(UIImage *image, NSError *error) {
             if (!error) {
                 [UIView animateWithDuration:0.3f animations:^{
-                    profilePictureBackgroundView.alpha = 1.0f;
+                    headerPhotosContainer.alpha = 1.0f;
                     profilePictureImageView.alpha = 1.0f;
                 }];
             }
@@ -324,13 +336,18 @@
     
     // check to see if it is not current users profile
     if (![[self.user objectId] isEqualToString:[[PFUser currentUser] objectId]]) {
+        
+        [userSettingsButton setHidden:YES];
+        [followStatusButton setHidden:NO];
+        
         //NSLog(@"Viewing someone elses profile.");
         UIActivityIndicatorView *loadingActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
         [loadingActivityIndicatorView startAnimating];
         //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:loadingActivityIndicatorView];
         
         // Clear the button
-        [userSettingsLabel setText:EMPTY_STRING];
+        //[userSettingsLabel setText:EMPTY_STRING];
+        [userSettingsButton setHidden:YES];
         
         // check if the currentUser is following this user
         PFQuery *queryIsFollowing = [PFQuery queryWithClassName:kFTActivityClassKey];
@@ -351,44 +368,36 @@
             }
         }];
     } else {
-        
-        //NSLog(@"Vieweing own profile.");
-        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapSettingsButtonAction:)];
-        tap.numberOfTapsRequired = 1;
-        
-        [userSettingsLabel setBackgroundColor:[UIColor colorWithRed:234/255.0f green:234/255.0f blue:234/255.0f alpha:1]];
-        [userSettingsLabel setTextColor:[UIColor colorWithRed:234/255.0f green:37/255.0f blue:37/255.0f alpha:1]];
-        [userSettingsLabel setText:NAVIGATION_TITLE_SETTINGS];
-        [userSettingsLabel addGestureRecognizer:tap];
-        [userSettingsLabel setUserInteractionEnabled:YES];
-        [userSettingsLabel setAlpha:1.0f];
+        [userSettingsButton setHidden:NO];
     }
-    
 }
 
 - (void)configureFollowButton {
-    //NSLog(@"NOT FOLLOWING USER");
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapFollowButtonAction:)];
-    tap.numberOfTapsRequired = 1;
+    
+    [followStatusButton removeTarget:self action:@selector(didTapFollowButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [followStatusButton removeTarget:self action:@selector(didTapUnfollowButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    NSString *titleString = [NSString stringWithFormat:@"FOLLOW %@",[self.user objectForKey: kFTUserDisplayNameKey]];
     
     [[FTCache sharedCache] setFollowStatus:NO user:self.user];
-    [userSettingsLabel setBackgroundColor:FT_RED];
-    [userSettingsLabel setTextColor:[UIColor whiteColor]];
-    [userSettingsLabel addGestureRecognizer:tap];
-    [userSettingsLabel setUserInteractionEnabled:YES];
-    [userSettingsLabel setText:[NSString stringWithFormat:@"FOLLOW %@",[self.user objectForKey: kFTUserDisplayNameKey]]];    
+    [followStatusButton setBackgroundColor:FT_RED];
+    [followStatusButton addTarget:self action:@selector(didTapFollowButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [followStatusButton.titleLabel setTextColor:[UIColor whiteColor]];
+    [followStatusButton setTitle:titleString forState:UIControlStateNormal];
 }
 
 - (void)configureUnfollowButton {
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapUnfollowButtonAction:)];
-    tap.numberOfTapsRequired = 1;
+    
+    [followStatusButton removeTarget:self action:@selector(didTapFollowButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [followStatusButton removeTarget:self action:@selector(didTapUnfollowButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    NSString *titleString = [NSString stringWithFormat:@"FOLLOWING %@",[self.user objectForKey: kFTUserDisplayNameKey]];
     
     [[FTCache sharedCache] setFollowStatus:YES user:self.user];
-    [userSettingsLabel setBackgroundColor:FT_RED];
-    [userSettingsLabel setTextColor:[UIColor whiteColor]];
-    [userSettingsLabel addGestureRecognizer:tap];
-    [userSettingsLabel setUserInteractionEnabled:YES];
-    [userSettingsLabel setText:[NSString stringWithFormat:@"FOLLOWING %@",[self.user objectForKey: kFTUserDisplayNameKey]]];
+    [followStatusButton setBackgroundColor:FT_RED];
+    [followStatusButton addTarget:self action:@selector(didTapUnfollowButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [followStatusButton.titleLabel setTextColor:[UIColor whiteColor]];
+    [followStatusButton setTitle:titleString forState:UIControlStateNormal];
 }
 
 - (void)didTapFollowButtonAction:(id)sender {
@@ -436,7 +445,7 @@
     [queryFollowerCount setCachePolicy:kPFCachePolicyCacheThenNetwork];
     [queryFollowerCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
-            NSLog(@"number %d",number);
+            //NSLog(@"number %d",number);
             [followerCountLabel setText:[NSString stringWithFormat:@"%d FOLLOWER%@", number, number==1?@"":@"S"]];
         }
     }];
@@ -455,7 +464,7 @@
     [queryFollowingCount whereKeyExists:kFTActivityToUserKey];
     [queryFollowingCount countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
-            NSLog(@"number %d",number);
+            //NSLog(@"number %d",number);
             [followingCountLabel setText:[NSString stringWithFormat:@"%d FOLLOWING", number]];
         }
     }];
@@ -463,15 +472,17 @@
 
 - (void)updateCoverPhoto:(UIImage *)photo {
     
-    for (UIView *subView in self.profilePictureBackgroundView.subviews) {
+    //NSLog(@"coverPhoto:%@",photo);
+    
+    for (UIView *subView in self.coverPhotoImageView.subviews) {
         [subView removeFromSuperview];
     }
     
-    UIImageView *coverImageView = [[UIImageView alloc] initWithFrame:coverPhotoImageView.frame];
-    [coverImageView setImage:photo];
-    [coverImageView setClipsToBounds:YES];
-    [coverImageView setBackgroundColor:FT_GRAY];
-    [self.profilePictureBackgroundView addSubview:coverImageView];
+    PFFile *coverPhotoFile = [self.user objectForKey:kFTUserCoverPhotoKey];
+    if (coverPhotoFile && ![coverPhotoFile isEqual:[NSNull null]]) {
+        [coverPhotoImageView setFile:coverPhotoFile];
+        [coverPhotoImageView loadInBackground];
+    }
 }
 
 - (void)updateProfilePicture:(UIImage *)photo {
@@ -494,6 +505,7 @@
     CGSize settingsLabelSize = followerCountLabel.frame.size;
     CGPoint settingsLabelOrgin = followerCountLabel.frame.origin;
     CGFloat bioHeight = self.frame.size.height - (settingsLabelOrgin.y + settingsLabelSize.height);
+    
     [profileBiography setFrame:CGRectMake(5, settingsLabelOrgin.y + settingsLabelSize.height, width-10, bioHeight)];
     [profileBiography setText:bio];
     
@@ -510,7 +522,7 @@
         /*
          NSString *detectionString = [NSString stringWithFormat:@"%@ [%d,%d]: %@%@", hotWords[hotWord], (int)range.location, (int)range.length, string, (protocol != nil) ? [NSString stringWithFormat:@" *%@*", protocol] : @""];
          */
-        
+                
         if ([hotWords[hotWord] isEqualToString:HOTWORD_HANDLE]) {
             if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(userProfileHeaderView:didTapUserMention:)]) {
                 [weakSelf.delegate userProfileHeaderView:weakSelf didTapUserMention:string];
