@@ -44,6 +44,7 @@ extern NSString *const FTProfileDidChangeCoverPhotoNotification;
 
 // Comment box text
 #define CAPTION_TEXT @"Write a caption"
+#define CAPTION_ABOUT @"Tell us about yourself"
 
 // Remote
 extern NSString *const FTAppDelegateApplicationDidReceiveRemoteNotification;
@@ -178,6 +179,7 @@ extern NSString *const kFTUserProfilePicMediumKey;
 extern NSString *const kFTUserFacebookFriendsKey;
 extern NSString *const kFTUserAlreadyAutoFollowedFacebookFriendsKey;
 extern NSString *const kFTUserLocationKey;
+extern NSString *const kFTUserPhoneKey;
 extern NSString *const kFTUserTypeKey;
 extern NSString *const kFTUserCompanyNameKey;
 extern NSString *const kFTUserAddressKey;

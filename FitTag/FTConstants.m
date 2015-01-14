@@ -121,6 +121,7 @@ NSString *const kFTUserProfilePicMediumKey                     = @"profilePictur
 NSString *const kFTUserFacebookFriendsKey                      = @"facebookFriends";
 NSString *const kFTUserAlreadyAutoFollowedFacebookFriendsKey   = @"userAlreadyAutoFollowedFacebookFriends";
 NSString *const kFTUserLocationKey                             = @"location";
+NSString *const kFTUserPhoneKey                                = @"phone";
 NSString *const kFTUserTypeKey                                 = @"type";
 NSString *const kFTUserCompanyNameKey                          = @"companyName";
 NSString *const kFTUserAddressKey                              = @"address";
