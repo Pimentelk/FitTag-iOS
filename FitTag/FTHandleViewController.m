@@ -65,12 +65,14 @@
     PFUser *currentUser = [PFUser currentUser];
     if ([currentUser objectForKey:kFTUserProfilePicSmallKey]) {
         PFFile *file = [currentUser objectForKey:kFTUserProfilePicSmallKey];
-        [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-            if (!error) {
-                UIImage *photo = [UIImage imageWithData:data];
-                [self.profileImageButton setImage:photo forState:UIControlStateNormal];
-            }
-        }];
+        if (file && ![file isEqual:[NSNull null]]) {
+            [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                if (!error) {
+                    UIImage *photo = [UIImage imageWithData:data];
+                    [self.profileImageButton setImage:photo forState:UIControlStateNormal];
+                }
+            }];
+        }
     }
     
     [self.scrollView addSubview:profileImageButton];
@@ -116,7 +118,7 @@
     [submitHandleButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [submitHandleButton setClipsToBounds:YES];
     [submitHandleButton.layer setCornerRadius:10];
-    [submitHandleButton.titleLabel setFont:BENDERSOLID(18)];
+    [submitHandleButton.titleLabel setFont:MULIREGULAR(18)];
     [submitHandleButton.titleLabel setTextColor:[UIColor whiteColor]];
     
     [self.scrollView addSubview:submitHandleButton];
