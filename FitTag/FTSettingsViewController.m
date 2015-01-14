@@ -13,10 +13,10 @@
 
 #define REUSEABLE_IDENTIFIER_DATA @"DataCell"
 
-#define SETTINGS_BUTTON @"settings_button"
-#define SETTINGS_BUTTON_X 0
-#define SETTINGS_BUTTON_Y 4
-#define SETTINGS_BUTTON_HEIGHT 32
+#define SIGNOUT_BUTTON @"signout_button"
+#define SIGNOUT_BUTTON_X 0
+#define SIGNOUT_BUTTON_Y 4
+#define SIGNOUT_BUTTON_HEIGHT 32
 
 @interface FTSettingsViewController ()
 @property NSDictionary *settingsDictionary;
@@ -91,8 +91,8 @@
     // Table view footer
     
     UIButton *signout = [UIButton buttonWithType:UIButtonTypeCustom];
-    [signout setFrame:CGRectMake(SETTINGS_BUTTON_X, SETTINGS_BUTTON_Y, self.tableView.frame.size.width, SETTINGS_BUTTON_HEIGHT)];
-    [signout setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:SETTINGS_BUTTON]]];
+    [signout setFrame:CGRectMake(SIGNOUT_BUTTON_X, SIGNOUT_BUTTON_Y, self.tableView.frame.size.width, SIGNOUT_BUTTON_HEIGHT)];
+    [signout setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:SIGNOUT_BUTTON]]];
     [signout addTarget:self action:@selector(didTapSignoutButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     
     UIView *footer = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.tableView.frame.size.width,40)];
@@ -144,7 +144,7 @@
     sectionName.textColor = FT_RED;
     
     sectionName.backgroundColor = [UIColor clearColor];
-    sectionName.font = BENDERSOLID(22);
+    sectionName.font = MULIREGULAR(22);
     NSString *sectionNameText = [settingsSectionTitles objectAtIndex:section];
     sectionName.text = NSLocalizedString(sectionNameText,sectionNameText);
     [headerView addSubview:sectionName];
@@ -159,7 +159,7 @@
     NSArray *sectionSettings = [settingsDictionary objectForKey:sectionTitle];
     NSString *setting = [sectionSettings objectAtIndex:indexPath.row];
     cell.textLabel.text = setting;
-    cell.textLabel.font = BENDERSOLID(18);
+    cell.textLabel.font = MULIREGULAR(18);
     return cell;
 }
 
