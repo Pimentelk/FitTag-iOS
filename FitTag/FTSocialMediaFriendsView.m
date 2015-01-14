@@ -42,10 +42,10 @@
         
         [headerViewContainer addSubview:topLineViewWhite];
         
-        UILabel *messageHeader = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, 24)];
+        UILabel *messageHeader = [[UILabel alloc] initWithFrame:CGRectMake(0, 4, frame.size.width, 24)];
         messageHeader.numberOfLines = 0;
-        messageHeader.text = @"YOUR FRIENDS ALREADY ON FITTAG";
-        messageHeader.font = BENDERSOLID(22);
+        messageHeader.text = @"FRIENDS ON FITTAG";
+        messageHeader.font = MULIREGULAR(20);
         messageHeader.backgroundColor = [UIColor clearColor];
         messageHeader.textAlignment = NSTextAlignmentCenter;
         
