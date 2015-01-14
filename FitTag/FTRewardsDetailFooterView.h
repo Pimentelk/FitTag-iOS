@@ -8,8 +8,13 @@
 
 @protocol FTRewardsDetailsFooterViewDelegate;
 @interface FTRewardsDetailFooterView : UIView
+
 @property (nonatomic,weak) id <FTRewardsDetailsFooterViewDelegate> delegate;
+@property (nonatomic, strong) UIButton *redeemButton;
 @property BOOL canRedeem;
+
+- (id)initWithFrame:(CGRect)frame reward:(PFObject *)reward;
+
 @end
 
 @protocol FTRewardsDetailsFooterViewDelegate <NSObject>

@@ -10,18 +10,15 @@
 
 @interface FTRewardsDetailFooterView ()
 @property (nonatomic, strong) UIView *contentView;
-@property (nonatomic, strong) UIButton *redeemButton;
 @end
 
 @implementation FTRewardsDetailFooterView
 @synthesize redeemButton;
 
-- (id)initWithFrame:(CGRect)frame {
+- (id)initWithFrame:(CGRect)frame reward:(PFObject *)reward {
     self = [super initWithFrame:frame];
     if (self) {
         NSLog(@"FTRewardsDetailFooterView");
-        
-        self.canRedeem = NO;
         
         self.contentView = [[UIView alloc] initWithFrame:frame];
         [self addSubview:self.contentView];
@@ -37,18 +34,22 @@
         [redeemButton setFrame:CGRectMake(paddingX, paddingY, redeemButtonW, redeemButtonH)];
         [redeemButton setBackgroundImage:[UIImage imageNamed:@"redeem_reward"] forState:UIControlStateNormal];
         [redeemButton addTarget:self action:@selector(didTapRedeemButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [self showRedeemButton];
+        [self showRedeemButton:reward];
     }
     return self;
 }
 
-- (void)showRedeemButton {
+- (void)showRedeemButton:(PFObject *)aReward {
+    
+    NSLog(@"reward:%@",aReward);
+    
     PFQuery *queryReward = [PFQuery queryWithClassName:kFTActivityClassKey];
     [queryReward whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
     [queryReward whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeRedeem];
-    [queryReward whereKeyExists:kFTActivityRewardKey];
+    [queryReward whereKey:kFTActivityRewardKey equalTo:aReward];
     [queryReward countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
+            NSLog(@"number:%d",number);
             if (number == 0) {
                 [self.contentView addSubview:redeemButton];
                 self.canRedeem = YES;
