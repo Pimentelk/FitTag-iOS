@@ -21,9 +21,11 @@
 
 @interface FTRewardsCollectionViewController () <UICollectionViewDataSource, UICollectionViewDelegate>
 @property (nonatomic, strong) NSArray *rewards;
+@property (nonatomic, assign) FTRewardType rewardType;
 @end
 
 @implementation FTRewardsCollectionViewController
+@synthesize rewardType;
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FTUtilityBusinessFollowingChangedNotification object:nil];
@@ -69,9 +71,18 @@
 - (void)queryForTable:(NSString *)status {
     //NSLog(@"%@::queryForTable",VIEWCONTROLLER_REWARDS);
     
+    if ([status isEqualToString:kFTRewardTypeUsed]) {
+        rewardType = FTRewardTypeUsed;
+    } else if ([status isEqualToString:kFTRewardTypeActive]) {
+        rewardType = FTRewardTypeActive;
+    } else if ([status isEqualToString:kFTRewardTypeExpired]) {
+        rewardType = FTRewardTypeExpired;
+    }
+    
     // Get a list of used rewards for the used tab
     if ([status isEqual:kFTRewardTypeUsed]) {
-        NSLog(@"Used...");
+        
+        //NSLog(@"Used...");
         PFQuery *usedQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
         [usedQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeRedeem];
         [usedQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
@@ -153,7 +164,7 @@
            viewForSupplementaryElementOfKind:(NSString *)kind
                                  atIndexPath:(NSIndexPath *)indexPath {
     
-    NSLog(@"%@::collectionView:viewForSupplementaryElementOfKind:atIndexPath:",VIEWCONTROLLER_REWARDS);
+    //NSLog(@"%@::collectionView:viewForSupplementaryElementOfKind:atIndexPath:",VIEWCONTROLLER_REWARDS);
     UICollectionReusableView *reusableview = nil;
     if (kind == UICollectionElementKindSectionHeader) {
         FTRewardsCollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
@@ -166,7 +177,7 @@
 }
 
 - (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    NSLog(@"%@::collectionView:numberOfItemsInSection:",VIEWCONTROLLER_REWARDS);
+    //NSLog(@"%@::collectionView:numberOfItemsInSection:",VIEWCONTROLLER_REWARDS);
     return self.rewards.count;
 }
 
@@ -183,8 +194,10 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     //NSLog(@"%@::collectionView:didSelectItemAtIndexPath:",VIEWCONTROLLER_REWARDS);
     
+    
     //NSLog(@"indexpath: %ld",(long)indexPath.row);
     FTRewardsDetailView *rewardsDetailView = [[FTRewardsDetailView alloc] initWithReward:self.rewards[indexPath.row]];
+    rewardsDetailView.rewardType = rewardType;
     [self.navigationController pushViewController:rewardsDetailView animated:YES];
 }
 
@@ -203,14 +216,17 @@
         PFObject *object = self.rewards[indexPath.row];
         PFFile *file = [object objectForKey:kFTRewardImageKey];
         
-        [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-            if (!error) {
-                [cell setImage:[UIImage imageWithData:data]];
-                [cell setLabelText:[object objectForKey:kFTRewardNameKey]];
-            } else {
-                NSLog(@"Error trying to download image..");
-            }
-        }];
+        if (file && ![file isEqual:[NSNull null]]) {
+            
+            [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                if (!error) {
+                    [cell setImage:[UIImage imageWithData:data]];
+                    [cell setLabelText:[object objectForKey:kFTRewardNameKey]];
+                } else {
+                    NSLog(@"Error trying to download image..");
+                }
+            }];
+        }
     }
     
     return cell;
@@ -220,16 +236,31 @@
 
 - (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapActiveTab:(id)tab {
     //NSLog(@"%@::rewardsHeaderView:didTapActiveButton:",VIEWCONTROLLER_REWARDS);
+    
+    // Skip if already FTRewardTypeUsed
+    if (rewardType & FTRewardTypeActive)
+        return;
+    
     [self queryForTable:REWARDS_FILTER_ACTIVE];
 }
 
 - (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapExpiredTab:(id)tab {
     //NSLog(@"%@::rewardsHeaderView:didTapExpiredButton:",VIEWCONTROLLER_REWARDS);
+    
+    // Skip if already FTRewardTypeUsed
+    if (rewardType & FTRewardTypeExpired)
+        return;
+    
     [self queryForTable:REWARDS_FILTER_EXPIRED];
 }
 
 - (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapUsedTab:(id)tab {
     //NSLog(@"%@::rewardsHeaderView:didTapUsedButton:",VIEWCONTROLLER_REWARDS);
+    
+    // Skip if already FTRewardTypeUsed
+    if (rewardType & FTRewardTypeUsed)
+        return;
+    
     [self queryForTable:REWARDS_FILTER_USED];
 }
 
