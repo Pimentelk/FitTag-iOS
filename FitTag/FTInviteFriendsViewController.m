@@ -45,7 +45,7 @@
     [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:BACKGROUND_FIND_FRIENDS]]];
     
     [self.navigationController setNavigationBarHidden:NO animated:NO];
-    [self.navigationController.navigationBar setBarTintColor:[UIColor redColor]];
+    [self.navigationController.navigationBar setBarTintColor:FT_RED];
     [self.navigationItem setTitleView: [[UIImageView alloc] initWithImage:[UIImage imageNamed:FITTAG_LOGO]]];
     
     // Back button
@@ -92,7 +92,7 @@
     continueMessage = [[UILabel alloc] initWithFrame:CGRectMake(10, 8, 280, 30)];
     continueMessage.numberOfLines = 0;
     continueMessage.text = @"YOUR JOURNEY STARTS HERE";
-    continueMessage.font = BENDERSOLID(22);
+    continueMessage.font = MULIREGULAR(18);
     continueMessage.backgroundColor = [UIColor clearColor];
     
     // Toolbar
@@ -144,7 +144,7 @@
             [recipients addObject:[externalFriendsView.contacts objectAtIndex:[contact integerValue]]];
         }
         
-        NSLog(@"recipients: %@",recipients);
+        //NSLog(@"recipients: %@",recipients);
         
         MFMessageComposeViewController *controller = [[MFMessageComposeViewController alloc] init];
         if([MFMessageComposeViewController canSendText]) {
