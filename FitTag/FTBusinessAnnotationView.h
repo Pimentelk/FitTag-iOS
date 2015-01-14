@@ -11,7 +11,6 @@
 @protocol FTBusinessAnnotationViewDelegate;
 @interface FTBusinessAnnotationView : MKAnnotationView <MKAnnotation>
 
-//- (id)initWithObject:(PFObject *)aObject;
 
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 @property (nonatomic, readonly, copy) NSString *title;
@@ -21,11 +20,14 @@
 @property (nonatomic) id<MKAnnotation> annotation;
 
 @property (nonatomic, weak) id<FTBusinessAnnotationViewDelegate> delegate;
+
 @end
 
 @protocol FTBusinessAnnotationViewDelegate <NSObject>
 @optional
 
-- (void)businessAnnotationView:(FTBusinessAnnotationView *)businessAnnotationView didTapBusinessAnnotationView:(id)sender;
+- (void)businessAnnotationView:(FTBusinessAnnotationView *)businessAnnotationView
+  didTapBusinessAnnotationView:(id)sender
+                    coordinate:(CLLocationCoordinate2D)coordinate;
 
 @end

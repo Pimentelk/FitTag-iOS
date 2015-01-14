@@ -7,7 +7,7 @@
 //
 
 #import "FTBusinessAnnotationView.h"
-#import "FTBusinessGeoPointAnnotation.h" 
+//#import "FTBusinessGeoPointAnnotation.h"
 
 #define BUSINESS_MAP_ICON @"business_map_icon"
 
@@ -34,7 +34,7 @@
 
 #pragma mark - Initialization
 
-- (instancetype)initWithAnnotation:(id<MKAnnotation>)aAnnotation
+- (id)initWithAnnotation:(id<MKAnnotation>)aAnnotation
                    reuseIdentifier:(NSString *)reuseIdentifier {
     
     //NSLog(@"%@::initWithAnnotation:reuseIdentifier:",VIEWCONTROLLER_BUSINESS_ANNOTATION);
@@ -59,19 +59,25 @@
     
     file = aFile;
     
-    [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-        if (!error) {
-            //self.image = [UIImage imageNamed:BUSINESS_MAP_ICON];
-            self.frame = CGRectMake(SELF_FRAME_Y, SELF_FRAME_X, SELF_FRAME_WIDTH, SELF_FRAME_HEIGHT);
-            
-            imageView.image = [UIImage imageWithData:data];
-            imageView.layer.cornerRadius = CORNERRADIUS(PROFILE_WIDTH);
-            imageView.clipsToBounds = YES;
-            
-            UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapBusinessAnnotationAction:)];
-            [self addGestureRecognizer:tapGesture];
-        }
-    }];
+    if (![file isEqual:[NSNull null]]) {
+        [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+            if (!error) {
+                
+                self.frame = CGRectMake(SELF_FRAME_Y, SELF_FRAME_X, SELF_FRAME_WIDTH, SELF_FRAME_HEIGHT);
+                
+                imageView.image = [UIImage imageWithData:data];
+                
+                for (UIGestureRecognizer *recognizer in self.gestureRecognizers) {
+                    [self removeGestureRecognizer:recognizer];
+                }
+                
+                UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapBusinessAnnotationAction:)];
+                [self addGestureRecognizer:tapGesture];
+            }
+        }];        
+    } else {
+        imageView.image = [UIImage imageNamed:IMAGE_PROFILE_EMPTY];
+    }
 }
 
 /*
@@ -85,16 +91,17 @@
 // Called when the annotation is dragged and dropped. We update the geoPoint with the new coordinates.
 - (void)setCoordinate:(CLLocationCoordinate2D)newCoordinate {
     //NSLog(@"%@::setCoordinate:",VIEWCONTROLLER_BUSINESS_ANNOTATION);
-    PFGeoPoint *geoPoint = [PFGeoPoint geoPointWithLatitude:newCoordinate.latitude
-                                                  longitude:newCoordinate.longitude];
+    PFGeoPoint *geoPoint = [PFGeoPoint geoPointWithLatitude:newCoordinate.latitude longitude:newCoordinate.longitude];
     [self setGeoPoint:geoPoint];
 }
 
 #pragma mark - ()
 
 - (void)didTapBusinessAnnotationAction:(UIButton *)sender {
-    if (delegate && [delegate respondsToSelector:@selector(businessAnnotationView:didTapBusinessAnnotationView:)]) {
-        [delegate businessAnnotationView:self didTapBusinessAnnotationView:sender];
+    if (delegate && [delegate respondsToSelector:@selector(businessAnnotationView:didTapBusinessAnnotationView:coordinate:)]) {
+        [delegate businessAnnotationView:self
+            didTapBusinessAnnotationView:sender
+                              coordinate:coordinate];
     }
 }
 
