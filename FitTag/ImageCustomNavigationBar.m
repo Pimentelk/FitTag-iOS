@@ -20,7 +20,7 @@
     if (self) {
         // Initialization code
         [self setTitleTextAttributes: [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:NSForegroundColorAttributeName]];
-        [self setBarTintColor:[UIColor redColor]];
+        [self setBarTintColor:FT_RED];
         [self setBackIndicatorImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
         [self setBackIndicatorTransitionMaskImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
     }
