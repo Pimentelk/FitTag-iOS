@@ -9,6 +9,7 @@
 #import "FTActivityFeedViewController.h"
 #import "FTActivityCell.h"
 #import "FTUserProfileViewController.h"
+#import "FTBusinessProfileViewController.h"
 #import "FTBaseTextCell.h"
 #import "FTLoadMoreCell.h"
 #import "FTPostDetailsViewController.h"
@@ -117,13 +118,14 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    NSLog(@"%@::tableView:didSelectRowAtIndexPath:",VIEWCONTROLLER_ACTIVITY);
+    //NSLog(@"%@::tableView:didSelectRowAtIndexPath:",VIEWCONTROLLER_ACTIVITY);
     if (indexPath.row < self.objects.count) {
         PFObject *activity = [self.objects objectAtIndex:indexPath.row];
         if ([activity objectForKey:kFTActivityPostKey]) {
             FTPostDetailsViewController *postDetailViewController = [[FTPostDetailsViewController alloc] initWithPost:[activity objectForKey:kFTActivityPostKey] AndType:nil];
             [self.navigationController pushViewController:postDetailViewController animated:YES];
         } else if ([activity objectForKey:kFTActivityFromUserKey]) {
+            
             // Push user profile
             UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
             [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
@@ -131,7 +133,6 @@
             [flowLayout setMinimumInteritemSpacing:0];
             [flowLayout setMinimumLineSpacing:0];
             [flowLayout setSectionInset:UIEdgeInsetsMake(0, 0, 0, 0)];
-            [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
             
             // Override the back idnicator
             UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
@@ -141,10 +142,25 @@
             [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
             [dismissProfileButton setTintColor:[UIColor whiteColor]];
             
-            FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-            [profileViewController setUser:[activity objectForKey:kFTActivityFromUserKey]];
-            [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
-            [self.navigationController pushViewController:profileViewController animated:YES];
+            PFUser *activityUser = [activity objectForKey:kFTActivityFromUserKey];
+            
+            // Check if selected user is a business
+            if ([[activityUser objectForKey:kFTUserTypeKey] isEqualToString:kFTUserTypeBusiness]) {
+                
+                [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
+                
+                FTBusinessProfileViewController *businessViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+                [businessViewController setBusiness:activityUser];
+                [businessViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
+                [self.navigationController pushViewController:businessViewController animated:YES];
+            } else {
+                [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
+                
+                FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+                [profileViewController setUser:activityUser];
+                [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
+                [self.navigationController pushViewController:profileViewController animated:YES];
+            }
         }
     } else if (self.paginationEnabled) {
         // load more
@@ -166,7 +182,7 @@
     NSString *displayName = [[PFUser currentUser] objectForKey:kFTUserDisplayNameKey];
     
     if (!displayName) {
-        NSLog(@"no displayname..");
+        //NSLog(@"no displayname..");
         PFQuery *query = [PFQuery queryWithClassName:self.parseClassName];
         [query whereKey:kFTActivityToUserKey equalTo:[PFUser currentUser]];
         [query whereKey:kFTActivityFromUserKey notEqualTo:[PFUser currentUser]];
@@ -218,7 +234,7 @@
 }
 
 - (void)objectsDidLoad:(NSError *)error {
-    NSLog(@"FTActivityFeedViewController::objectsDidLoad");
+    //NSLog(@"FTActivityFeedViewController::objectsDidLoad");
     [super objectsDidLoad:error];
     
     lastRefresh = [NSDate date];
@@ -240,7 +256,7 @@
             }];
         }
     } else {
-        NSLog(@"Cached results");
+        //NSLog(@"Cached results");
         self.tableView.tableHeaderView = nil;
         self.tableView.scrollEnabled = YES;
         
@@ -277,7 +293,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForNextPageAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *LoadMoreCellIdentifier = @"LoadMoreCell";
-    NSLog(@"FTActivityFeedViewController::tableView:cellForNextPageAtIndexPath:");
+    //NSLog(@"FTActivityFeedViewController::tableView:cellForNextPageAtIndexPath:");
     FTLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:LoadMoreCellIdentifier];
     if (!cell) {
         cell = [[FTLoadMoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:LoadMoreCellIdentifier];
@@ -289,7 +305,7 @@
 #pragma mark - FTActivityCellDelegate Methods
 
 - (void)cell:(FTActivityCell *)cellView didTapActivityButton:(PFObject *)activity {
-    NSLog(@"%@::didTapActivityButton:",VIEWCONTROLLER_ACTIVITY);
+    //NSLog(@"%@::didTapActivityButton:",VIEWCONTROLLER_ACTIVITY);
     // Get image associated with the activity
     PFObject *photo = [activity objectForKey:kFTActivityPostKey];
     FTPostDetailsViewController *postViewController = [[FTPostDetailsViewController alloc] initWithPost:photo AndType:kFTPostTypeImage];
@@ -297,15 +313,17 @@
 }
 
 - (void)cell:(FTBaseTextCell *)cellView didTapUserButton:(PFUser *)user {
-    NSLog(@"%@::didTapUserButton:",VIEWCONTROLLER_ACTIVITY);
+    //NSLog(@"%@::didTapUserButton:",VIEWCONTROLLER_ACTIVITY);
+    
+    //NSLog(@"user:%@",[user objectForKey:kFTUserTypeKey]);
+    
     // Push user profile
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
     [flowLayout setMinimumInteritemSpacing:0];
     [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(0, 0, 0, 0)];
     
     // Override the back idnicator
     UIBarButtonItem *dismissProfileButton = [[UIBarButtonItem alloc] init];
@@ -315,10 +333,23 @@
     [dismissProfileButton setAction:@selector(didTapPopProfileButtonAction:)];
     [dismissProfileButton setTintColor:[UIColor whiteColor]];
     
-    FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [profileViewController setUser:user];
-    [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
-    [self.navigationController pushViewController:profileViewController animated:YES];
+    // Check if selected user is a business
+    if ([[user objectForKey:kFTUserTypeKey] isEqualToString:kFTUserTypeBusiness]) {
+        
+        [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
+        
+        FTBusinessProfileViewController *businessViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+        [businessViewController setBusiness:user];
+        [businessViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
+        [self.navigationController pushViewController:businessViewController animated:YES];
+    } else {
+        [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
+        
+        FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
+        [profileViewController setUser:user];
+        [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
+        [self.navigationController pushViewController:profileViewController animated:YES];
+    }
 }
 
 
@@ -345,7 +376,7 @@
 #pragma mark - ()
 
 - (void)followFriendsButtonAction:(id)sender {
-    NSLog(@"FTActivityFeedViewController::followFriendsButtonAction:");
+    //NSLog(@"FTActivityFeedViewController::followFriendsButtonAction:");
     FTFollowFriendsViewController *followFriendsViewController = [[FTFollowFriendsViewController alloc] init];
     [self.navigationController pushViewController:followFriendsViewController animated:YES];
 }
