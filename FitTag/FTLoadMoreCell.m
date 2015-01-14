@@ -28,7 +28,7 @@
         [loadMoreLabel setTextAlignment:NSTextAlignmentCenter];
         [loadMoreLabel setBackgroundColor:[UIColor clearColor]];
         [loadMoreLabel setTextColor:[UIColor whiteColor]];
-        [loadMoreLabel setFont:BENDERSOLID(16)];
+        [loadMoreLabel setFont:MULIREGULAR(16)];
         [loadMoreLabel setText:@"Load More..."];
         
         [self.contentView addSubview:loadMoreLabel];
