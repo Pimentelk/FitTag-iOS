@@ -20,16 +20,17 @@
 @synthesize title;
 @synthesize subtitle;
 @synthesize file;
+@synthesize objectId;
 
 #pragma mark - Initialization
 
 - (id)initWithObject:(PFUser *)aObject {
-    NSLog(@"FTBusinessGeoPointAnnotation::initWithObject:");
+    //NSLog(@"FTBusinessGeoPointAnnotation::initWithObject:");
     self = [super init];
     if (self) {
         user = aObject;
+        objectId = user.objectId;
         file = [self.user objectForKey:kFTUserProfilePicSmallKey];
-        
         [self setGeoPoint:[self.user objectForKey:kFTUserLocationKey]];
     }
     return self;
@@ -39,16 +40,15 @@
 
 // Called when the annotation is dragged and dropped. We update the geoPoint with the new coordinates.
 - (void)setCoordinate:(CLLocationCoordinate2D)newCoordinate {
-    NSLog(@"FTBusinessGeoPointAnnotation::setCoordinate:");
-    PFGeoPoint *geoPoint = [PFGeoPoint geoPointWithLatitude:newCoordinate.latitude
-                                                  longitude:newCoordinate.longitude];
+    //NSLog(@"FTBusinessGeoPointAnnotation::setCoordinate:");
+    PFGeoPoint *geoPoint = [PFGeoPoint geoPointWithLatitude:newCoordinate.latitude longitude:newCoordinate.longitude];
     [self setGeoPoint:geoPoint];
 }
 
 #pragma mark - ()
 
 - (void)setGeoPoint:(PFGeoPoint *)geoPoint {
-    NSLog(@"FTBusinessGeoPointAnnotation::setGeoPoint:");
+    //NSLog(@"FTBusinessGeoPointAnnotation::setGeoPoint:%@",geoPoint);
     coordinate = CLLocationCoordinate2DMake(geoPoint.latitude, geoPoint.longitude);
     title = [self.user objectForKey:kFTUserCompanyNameKey];
 }

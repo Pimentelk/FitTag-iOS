@@ -10,10 +10,12 @@
 
 @interface FTBusinessGeoPointAnnotation : NSObject <MKAnnotation>
 
-- (id)initWithObject:(PFObject *)aObject;
-
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 @property (nonatomic, readonly, copy) NSString *title;
 @property (nonatomic, readonly, copy) NSString *subtitle;
 @property (nonatomic, strong) PFFile *file;
+@property (nonatomic, strong) NSString *objectId;
+
+- (id)initWithObject:(PFObject *)aObject;
+
 @end
