@@ -68,7 +68,7 @@
     [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:BACKGROUND_IMAGE_INTERESTS]]];
     [self.collectionView setBackgroundColor:[[UIColor clearColor] colorWithAlphaComponent:0]];
     [self.navigationController setNavigationBarHidden:NO animated:NO];
-    [self.navigationController.navigationBar setBarTintColor:[UIColor redColor]];
+    [self.navigationController.navigationBar setBarTintColor:FT_RED];
     [self.navigationItem setTitleView: [[UIImageView alloc] initWithImage:[UIImage imageNamed:FITTAG_LOGO]]];
     
     // Override the back idnicator
@@ -143,7 +143,7 @@
     continueMessage = [[UILabel alloc] initWithFrame:CGRectMake(10, 8, 280, 30)];
     continueMessage.numberOfLines = 0;
     continueMessage.text = @"SELECT AT LEAST 3 INTERESTS";
-    continueMessage.font = BENDERSOLID(22);
+    continueMessage.font = MULIREGULAR(16);
     continueMessage.backgroundColor = [UIColor clearColor];
     
     // Continue Button
@@ -282,7 +282,7 @@
         UILabel *messageHeader = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, self.view.frame.size.width, 15)];
         messageHeader.numberOfLines = 0;
         messageHeader.text = @"WHAT INSPIRES YOU?";
-        messageHeader.font = BENDERSOLID(24);
+        messageHeader.font = MULIREGULAR(18);
         messageHeader.backgroundColor = [UIColor clearColor];
         messageHeader.textAlignment = NSTextAlignmentCenter;
         
@@ -320,7 +320,7 @@
     if ([cell isKindOfClass:[FTInterestCell class]]) {
         cell.backgroundColor = [UIColor clearColor];
         cell.interestLabel.text = self.interests[indexPath.row];
-        cell.interestLabel.font = BENDERSOLID(16);
+        cell.interestLabel.font = MULIREGULAR(16);
         
         BOOL isFirstCell = NO;
         if(indexPath.row % 2 == 0){
