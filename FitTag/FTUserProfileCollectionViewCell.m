@@ -46,27 +46,31 @@
 }
 
 - (void)loadImageView:(PFFile *)file {
-    [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-        if (!error) {
-            
-            [imageView setImage:[UIImage imageWithData:data]];
-            [self addSubview:imageView];
-            
-            // If video show playbutton
-            if ([[post objectForKey:kFTPostTypeKey] isEqualToString:kFTPostTypeVideo]) {
+    
+    if (file && ![file isEqual:[NSNull null]]) {
+        
+        [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+            if (!error) {
                 
-                CGSize frameSize = self.frame.size;
+                [imageView setImage:[UIImage imageWithData:data]];
+                [self addSubview:imageView];
                 
-                UIImageView *playImageView = [[UIImageView alloc] initWithImage:IMAGE_PLAY_BUTTON];
-                [playImageView setFrame:CGRectMake(0, 0, 25, 25)];
-                [playImageView setCenter:CGPointMake(frameSize.width/2, frameSize.height/2)];
-                [self addSubview:playImageView];
+                // If video show playbutton
+                if ([[post objectForKey:kFTPostTypeKey] isEqualToString:kFTPostTypeVideo]) {
+                    
+                    CGSize frameSize = self.frame.size;
+                    
+                    UIImageView *playImageView = [[UIImageView alloc] initWithImage:IMAGE_PLAY_BUTTON];
+                    [playImageView setFrame:CGRectMake(0, 0, 25, 25)];
+                    [playImageView setCenter:CGPointMake(frameSize.width/2, frameSize.height/2)];
+                    [self addSubview:playImageView];
+                }
+                
+            } else {
+                NSLog(@"Error trying to download image..");
             }
-            
-        } else {
-            NSLog(@"Error trying to download image..");
-        }
-    }];
+        }];
+    }
 }
 
 @end
