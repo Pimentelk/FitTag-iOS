@@ -9,6 +9,8 @@
 #import "FTAddPlaceViewController.h"
 #import "FTCamViewController.h"
 
+#define CAPTION_DESCTIPTION @"Desctiption"
+
 @interface FTAddPlaceViewController () <FTCamViewControllerDelegate>
 @property (nonatomic,strong) UITextField *nameTextField;
 @property (nonatomic,strong) UITextField *contactTextField;
@@ -98,6 +100,7 @@
     [nameTextField setTextColor:[UIColor blackColor]];
     [nameTextField setBackgroundColor:[UIColor whiteColor]];
     [nameTextField setBorderStyle:UITextBorderStyleRoundedRect];
+    [nameTextField setFont:MULIREGULAR(14)];
     [formView addSubview:nameTextField];
     
     CGFloat namePointY = nameTextField.frame.size.height + nameTextField.frame.origin.y + 20;
@@ -105,7 +108,10 @@
     // UITextView - description
     descriptionTextView = [[UITextView alloc] initWithFrame:CGRectMake(10, namePointY, frameSize.width-20, 80)];
     [descriptionTextView setBackgroundColor:[UIColor whiteColor]];
-    [descriptionTextView setTextColor:[UIColor blackColor]];
+    [descriptionTextView setTextColor:[UIColor lightGrayColor]];
+    [descriptionTextView setDelegate:self];
+    [descriptionTextView setText:CAPTION_DESCTIPTION];
+    [descriptionTextView setFont:MULIREGULAR(14)];
     [descriptionTextView.layer setCornerRadius:15];
     [descriptionTextView.layer setBorderColor:[FT_GRAY CGColor]];
     [descriptionTextView.layer setBorderWidth:1];
@@ -116,6 +122,7 @@
     // FTAutoCompleteTextView - PFUser - Contact
     contactTextField = [[UITextField alloc] initWithFrame:CGRectMake(10, descriptionPointY, frameSize.width-20, 30)];
     [contactTextField setPlaceholder:@"Contact"];
+    [contactTextField setFont:MULIREGULAR(14)];
     [contactTextField setTextAlignment:NSTextAlignmentLeft];
     [contactTextField setTextColor:[UIColor blackColor]];
     [contactTextField setBackgroundColor:[UIColor whiteColor]];
@@ -181,6 +188,23 @@
         NSString *replaceString = [contactTextField.text stringByReplacingOccurrencesOfString:completeString withString:displayname];
         [contactTextField setText:replaceString];
     }
+}
+
+#pragma mark - UITextViewDelegate
+
+- (void)textViewDidEndEditing:(UITextView *)textView {
+    if (textView.text.length == 0) {
+        descriptionTextView.textColor = [UIColor lightGrayColor];
+        descriptionTextView.text = CAPTION_DESCTIPTION;
+    }
+}
+
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView {
+    if ([descriptionTextView.text isEqualToString:CAPTION_DESCTIPTION]) {
+        descriptionTextView.text = EMPTY_STRING;
+        descriptionTextView.textColor = [UIColor blackColor];
+    }
+    return YES;
 }
 
 #pragma mark - UITextFieldDelegate
@@ -371,7 +395,7 @@
                                 }
                             }];
                             
-                            NSLog(@"location:%@",location);
+                            //NSLog(@"location:%@",location);
                         }
                     }
                 } else {

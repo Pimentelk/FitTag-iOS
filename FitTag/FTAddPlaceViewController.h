@@ -11,7 +11,7 @@
 
 @protocol FTAddPlaceViewControllerDelegate;
 
-@interface FTAddPlaceViewController : UIViewController <UIScrollViewDelegate,UITextFieldDelegate,FTSuggestionTableViewDelegate>
+@interface FTAddPlaceViewController : UIViewController <UIScrollViewDelegate,UITextViewDelegate,UITextFieldDelegate,FTSuggestionTableViewDelegate>
 @property (nonatomic, weak) id<FTAddPlaceViewControllerDelegate> delegate;
 @property (nonatomic, strong) PFGeoPoint *geoPoint;
 @end
