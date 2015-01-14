@@ -61,11 +61,10 @@
         }
     } failureBlock:^(NSError *error) {
         self.chosenImages = nil;
-        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Error"
-                                                         message:[NSString stringWithFormat:@"Album Error: %@ - %@", [error localizedDescription], [error localizedRecoverySuggestion]] delegate:nil
-                                               cancelButtonTitle:@"Ok"
-                                               otherButtonTitles:nil];
-        [alert show];
+        [[[UIAlertView alloc] initWithTitle:@"Error"
+                                    message:[NSString stringWithFormat:@"Album Error: %@ - %@", [error localizedDescription], [error localizedRecoverySuggestion]] delegate:nil
+                          cancelButtonTitle:@"Ok"
+                          otherButtonTitles:nil] show];
         
         NSLog(@"A problem occured %@", [error description]);
         // an error here means that the asset groups were inaccessable.
@@ -187,8 +186,6 @@
     }
     
     [self dismissViewControllerAnimated:YES completion:nil];
-    
-    NSLog(@"Images: %@",images);
     
     self.chosenImages = images;
     
