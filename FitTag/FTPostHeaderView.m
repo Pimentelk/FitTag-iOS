@@ -66,7 +66,7 @@
         // This is the user's display name, on a button so that we can tap on it
         self.userButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [self.userButton setBackgroundColor:[UIColor clearColor]];
-        [[self.userButton titleLabel] setFont:BENDERSOLID(18)];
+        [[self.userButton titleLabel] setFont:MULIREGULAR(18)];
         [self.userButton setTitleColor:FT_RED forState:UIControlStateNormal];
         [self.userButton setTitleColor:FT_DARKGRAY forState:UIControlStateHighlighted];
         [[self.userButton titleLabel] setLineBreakMode:NSLineBreakByTruncatingTail];
@@ -76,7 +76,7 @@
         [containerView addSubview:self.userButton];
         
         self.timeLabel = [[UILabel alloc] init];
-        [self.timeLabel setFont:BENDERSOLID(14)];
+        [self.timeLabel setFont:MULIREGULAR(14)];
         [self.timeLabel setTextColor:[UIColor lightGrayColor]];
         [self.timeLabel setBackgroundColor:[UIColor clearColor]];
         [self.timeLabel setShadowColor:[UIColor colorWithWhite:1.0f alpha:0.70f]];
@@ -90,6 +90,7 @@
 }
 
 - (void)setPost:(PFObject *)aPost {
+    
     post = aPost;
     
     //NSLog(@"post:%@",[self.post objectForKey:kFTPostUserKey]);
@@ -119,7 +120,7 @@
     // we resize the button to fit the user's name to avoid having a huge touch area
     CGFloat constrainWidth = containerView.bounds.size.width;
     CGFloat userButtonPointWidth = self.avatarImageView.frame.size.width + self.avatarImageView.frame.origin.x + 10;
-    CGFloat userButtonPointHeight = (self.frame.size.height - 12) / 2;
+    CGFloat userButtonPointHeight = (self.frame.size.height - 18) / 2;
     CGPoint userButtonPoint = CGPointMake(userButtonPointWidth,userButtonPointHeight);
     constrainWidth -= userButtonPoint.x;
     CGSize constrainSize = CGSizeMake(constrainWidth, containerView.bounds.size.height - userButtonPoint.y*2.0f);
@@ -139,7 +140,7 @@
     if (date) {
         
         NSString *time = [timeFormatter stringForTimeIntervalFromDate:[NSDate date] toDate:date];
-        NSDictionary *userAttributes = @{NSFontAttributeName: BENDERSOLID(14)};
+        NSDictionary *userAttributes = @{NSFontAttributeName: MULIREGULAR(14)};
         CGSize stringBoundingBox = [time sizeWithAttributes:userAttributes];
         
         CGFloat frameWidth = self.frame.size.width;
