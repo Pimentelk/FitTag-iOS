@@ -16,7 +16,7 @@
 -(void)drawRect:(CGRect)rect {
     UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
     NSMutableArray *toolbarItems = [NSMutableArray array];
-    [toolbar setBarTintColor:[UIColor redColor]];
+    [toolbar setBarTintColor:FT_RED];
     
     [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"notifications"] style:UIBarButtonItemStyleBordered target:self action:@selector(loadCameraPreview)]];
     [toolbar setTintColor:[UIColor whiteColor]];
@@ -27,7 +27,7 @@
 }
 
 -(void)loadCameraPreview {
-    NSLog(@"FTCameraToolBar::loadCameraPreview");
+    //NSLog(@"FTCameraToolBar::loadCameraPreview");
     if ([self.delegate respondsToSelector:@selector(showCameraPreview)]) {
         [self.delegate showCameraPreview];
     }
