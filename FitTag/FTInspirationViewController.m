@@ -49,7 +49,7 @@
     [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:BACKGROUND_INSPIRATIONAL]]];
     [self.collectionView setBackgroundColor:[[UIColor clearColor] colorWithAlphaComponent:0]];
     [self.navigationController setNavigationBarHidden:NO animated:NO];
-    [self.navigationController.navigationBar setBarTintColor:[UIColor redColor]];
+    [self.navigationController.navigationBar setBarTintColor:FT_RED];
     [self.navigationItem setTitleView: [[UIImageView alloc] initWithImage:[UIImage imageNamed:FITTAG_LOGO]]];
     
     // Register Cell
@@ -99,7 +99,7 @@
     continueMessage = [[UILabel alloc] initWithFrame:CGRectMake(10, 8, 280, 30)];
     continueMessage.numberOfLines = 0;
     continueMessage.text = @"SELECT INSPIRING FOLLOWERS";
-    continueMessage.font = BENDERSOLID(22);
+    continueMessage.font = MULIREGULAR(22);
     continueMessage.backgroundColor = [UIColor clearColor];
     
     // Toolbar
@@ -187,7 +187,7 @@
             [sharedInterestQuery setCachePolicy:kPFCachePolicyCacheThenNetwork];
             [sharedInterestQuery findObjectsInBackgroundWithBlock:^(NSArray *users, NSError *error) {
                 if (!error) {
-                    NSLog(@"number of users:%lu",(unsigned long)users.count);
+                    //NSLog(@"number of users:%lu",(unsigned long)users.count);
                     self.usersToRecommend = users;
                     [self.collectionView reloadData];
                 }
@@ -212,7 +212,7 @@
         UILabel *messageHeader = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, self.view.frame.size.width, 24)];
         messageHeader.numberOfLines = 0;
         messageHeader.text = @"FIND THE PEOPLE THAT INSPIRE YOU";
-        messageHeader.font = BENDERSOLID(22);
+        messageHeader.font = MULIREGULAR(22);
         messageHeader.backgroundColor = [UIColor clearColor];
         messageHeader.textAlignment = NSTextAlignmentCenter;
         
