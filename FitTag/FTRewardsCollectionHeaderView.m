@@ -33,12 +33,10 @@
         self.containerView.clipsToBounds = NO;
         self.superview.clipsToBounds = NO;
         
-        self.selectedColor = [UIColor colorWithRed:FT_RED_COLOR_RED
-                                             green:FT_RED_COLOR_GREEN
-                                              blue:FT_RED_COLOR_BLUE alpha:1];
+        self.selectedColor = FT_RED;
         
         containerView = [[UIView alloc] initWithFrame:frame];
-        [containerView setBackgroundColor:[UIColor colorWithRed:234/255.0f green:234/255.0f blue:234/255.0f alpha:1]];
+        [containerView setBackgroundColor:FT_GRAY];
         [self addSubview:containerView];
         
         /*
@@ -119,7 +117,7 @@
         [self.activeTab setTextAlignment:NSTextAlignmentCenter];
         [self.activeTab setTextColor:[UIColor whiteColor]];
         [self.activeTab setBackgroundColor:self.selectedColor];
-        [self.activeTab setFont:BENDERSOLID(16)];
+        [self.activeTab setFont:MULIREGULAR(16)];
         [self.activeTab setUserInteractionEnabled:YES];
         [self.activeTab addGestureRecognizer:activeTapGesture];
         [menuContainer addSubview:self.activeTab];
@@ -131,7 +129,7 @@
         [self.usedTab setTextAlignment:NSTextAlignmentCenter];
         [self.usedTab setTextColor:[UIColor blackColor]];
         [self.usedTab setBackgroundColor:[UIColor lightGrayColor]];
-        [self.usedTab setFont:BENDERSOLID(16)];
+        [self.usedTab setFont:MULIREGULAR(16)];
         [self.usedTab setUserInteractionEnabled:YES];
         [self.usedTab addGestureRecognizer:usedTapGesture];
         [menuContainer addSubview:self.usedTab];
@@ -143,7 +141,7 @@
         [self.expiredTab setTextAlignment:NSTextAlignmentCenter];
         [self.expiredTab setTextColor:[UIColor blackColor]];
         [self.expiredTab setBackgroundColor:[UIColor lightGrayColor]];
-        [self.expiredTab setFont:BENDERSOLID(16)];
+        [self.expiredTab setFont:MULIREGULAR(16)];
         [self.expiredTab setUserInteractionEnabled:YES];
         [self.expiredTab addGestureRecognizer:expiredTapGesture];
         [menuContainer addSubview:self.expiredTab];
