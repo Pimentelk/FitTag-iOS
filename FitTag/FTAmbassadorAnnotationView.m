@@ -58,7 +58,7 @@
 #pragma mark - ()
 
 - (void)didTapAmbassadorAnnotationAction:(UIButton *)sender {
-    NSLog(@"didTapAmbassadorAnnotationAction");
+    //NSLog(@"didTapAmbassadorAnnotationAction");
     if (delegate && [delegate respondsToSelector:@selector(ambassadorAnnotationView:didTapAmbassadorAnnotationView:)]) {
         [delegate ambassadorAnnotationView:self didTapAmbassadorAnnotationView:sender];
     }
