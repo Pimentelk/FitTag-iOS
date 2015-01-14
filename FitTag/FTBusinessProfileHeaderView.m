@@ -26,7 +26,7 @@
 @interface FTBusinessProfileHeaderView()
 @property (nonatomic, strong) UIView *profileFilter;
 @property (nonatomic, strong) UIView *containerView;
-@property (nonatomic, strong) UIView *profilePictureBackgroundView;
+@property (nonatomic, strong) UIView *headerPhotosContainer;
 @property (nonatomic, strong) UIView *businessMenuBackground;
 
 @property (nonatomic, strong) UILabel *followerCountLabel;
@@ -37,7 +37,8 @@
 @property (nonatomic, strong) UIImageView *backgroundImageView;
 @property (nonatomic, strong) PFImageView *profilePictureImageView;
 
-@property (nonatomic, strong) UITextView *profileBiography;
+//@property (nonatomic, strong) UITextView *profileBiography;
+@property (nonatomic, strong) STTweetLabel *profileBiography;
 
 @property (nonatomic, strong) UIButton *gridViewButton;
 @property (nonatomic, strong) UIButton *businessButton;
@@ -56,7 +57,7 @@
 @synthesize photoCountIconImageView;
 @synthesize businessMenuBackground;
 @synthesize profilePictureImageView;
-@synthesize profilePictureBackgroundView;
+@synthesize headerPhotosContainer;
 @synthesize profileBiography;
 @synthesize gridViewButton;
 @synthesize businessButton;
@@ -68,6 +69,7 @@
 @synthesize unfollowButton;
 @synthesize followButton;
 @synthesize isFollowing;
+@synthesize business;
 
 - (id)initWithFrame:(CGRect)frame {
     
@@ -79,43 +81,40 @@
         self.superview.clipsToBounds = YES;
         
         self.containerView = [[UIView alloc] initWithFrame:frame];
-        [self.containerView setBackgroundColor:[UIColor whiteColor]];
+        [self.containerView setBackgroundColor:FT_GRAY];
+        [self setBackgroundColor:FT_GRAY];
         
-        // Profile Picture Backgroudn
-        profilePictureBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 160)];
-        [profilePictureBackgroundView setBackgroundColor:[UIColor clearColor]];
-        [profilePictureBackgroundView setAlpha: 0.0f];
-        [profilePictureBackgroundView setClipsToBounds: YES];
-        [self.containerView addSubview:profilePictureBackgroundView];
+        CGSize size = self.containerView.frame.size;
+        CGFloat offsetY = 0;
+        
+        // Profile Picture & cover photo container
+        headerPhotosContainer = [[UIView alloc] initWithFrame:CGRectMake(0, offsetY, size.width, size.width / 2)];
+        [headerPhotosContainer setBackgroundColor:FT_GRAY];
+        [headerPhotosContainer setAlpha:0.0f];
+        [headerPhotosContainer setClipsToBounds:YES];
+        [self.containerView addSubview:headerPhotosContainer];
         
         // Profile Picture Image
-        profilePictureImageView = [[PFImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 160)];
+        profilePictureImageView = [[PFImageView alloc] initWithFrame:CGRectMake(5, (((size.height / 2) - PROFILE_IMAGE_HEIGHT)/2), PROFILE_IMAGE_WIDTH, PROFILE_IMAGE_HEIGHT)];
+        [profilePictureImageView setBackgroundColor:[UIColor clearColor]];
         [profilePictureImageView setClipsToBounds: YES];
-        //[profilePictureImageView setContentMode:UIViewContentModeScaleAspectFill];
+        [profilePictureImageView setAlpha:0.0f];
+        [profilePictureImageView.layer setCornerRadius:CORNERRADIUS(PROFILE_IMAGE_WIDTH)];
+        [profilePictureImageView setContentMode:UIViewContentModeScaleAspectFill];
         [self.containerView addSubview:profilePictureImageView];
         
         // Cover Photo
-        coverPhotoImageView = [[PFImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 160)];
-        [coverPhotoImageView setClipsToBounds: YES];
-        [coverPhotoImageView setContentMode:UIViewContentModeScaleAspectFill];
-        [self.containerView addSubview:coverPhotoImageView];
-        
-        //UIImageView *profileHexagon = [FTUtility getProfileHexagonWithX:5 Y:40 width:100 hegiht:115];
-        //[profileHexagon setCenter:CGPointMake((self.frame.size.width / 2), 10 + (profileHexagon.frame.size.height / 2))];
-        [profilePictureImageView setContentMode:UIViewContentModeScaleAspectFill];
-        //profilePictureImageView.frame = profileHexagon.frame;
-        //profilePictureImageView.layer.mask = profileHexagon.layer.mask;
-        profilePictureImageView.frame = CGRectMake(5, 40, 100, 100);
-        profilePictureImageView.layer.cornerRadius = CORNERRADIUS(100);
-        profilePictureImageView.clipsToBounds = YES;
-        profilePictureImageView.alpha = 0.0;
-        
+        coverPhotoImageView = [[PFImageView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.width / 2)];
+        [coverPhotoImageView setClipsToBounds:YES];
+        [coverPhotoImageView setBackgroundColor:FT_GRAY];
+        [coverPhotoImageView setContentMode:UIViewContentModeScaleAspectFit];
+        [self.headerPhotosContainer addSubview:coverPhotoImageView];
+                
         // Followers count UILabel
-        CGFloat followLabelsY = profilePictureBackgroundView.frame.size.height;
+        CGFloat followLabelsY = headerPhotosContainer.frame.size.height;
         CGFloat followLabelsWidth = self.containerView.bounds.size.width / 2;
         
-        UITapGestureRecognizer *followerLabelTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                                  action:@selector(didTapFollowerAction:)];
+        UITapGestureRecognizer *followerLabelTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapFollowerAction:)];
         [followerLabelTapGesture setNumberOfTapsRequired:1];
         
         followerCountLabel = [[UILabel alloc] init];
@@ -149,9 +148,9 @@
         [self.containerView addSubview:followingCountLabel];
         
         // User menu background
-        businessMenuBackground = [[UIView alloc] initWithFrame:CGRectMake(0.0, followingCountLabel.frame.size.height + profilePictureBackgroundView.frame.size.height,
-                                                                          self.frame.size.width, 51)];
-        [businessMenuBackground setBackgroundColor:[UIColor redColor]];
+        CGFloat menuY = followingCountLabel.frame.size.height + headerPhotosContainer.frame.size.height;
+        businessMenuBackground = [[UIView alloc] initWithFrame:CGRectMake(0, menuY, size.width, 51)];
+        [businessMenuBackground setBackgroundColor:FT_RED];
         
         // User menu buttons
         UIButton *gethereButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -199,7 +198,8 @@
         CGFloat bioHeight = self.frame.size.height - bioY;
         
         // User bio text view
-        profileBiography = [[UITextView alloc] initWithFrame:CGRectMake(0, bioY, self.frame.size.width, bioHeight)];
+        profileBiography = [[STTweetLabel alloc] init];
+        [profileBiography setFrame:CGRectMake(0, bioY, self.frame.size.width, bioHeight)];
         [profileBiography setBackgroundColor:FT_GRAY];
         [profileBiography setTextColor:[UIColor blackColor]];
         [profileBiography setFont:[UIFont boldSystemFontOfSize:14.0f]];
@@ -265,7 +265,7 @@
 }
 
 - (void)didTapBusinessButtonAction:(UIButton *)button {
-    NSLog(@"didTapBusinessButtonAction");
+    //NSLog(@"didTapBusinessButtonAction");
     if (![businessButton isSelected]) {
         [self resetSelectedProfileFilterButtons];
         [businessButton setSelected:YES];
@@ -276,7 +276,7 @@
 }
 
 - (void)didTapTaggedButtonAction:(UIButton *)button {
-    NSLog(@"didTapTaggedButtonAction");
+    //NSLog(@"didTapTaggedButtonAction");
     if (![taggedInButton isSelected]) {
         [self resetSelectedProfileFilterButtons];
         [taggedInButton setSelected:YES];
@@ -287,7 +287,7 @@
 }
 
 - (void)didTapSettingsButtonAction:(id)sender {
-    NSLog(@"didTapSettingsButtonAction");
+    //NSLog(@"didTapSettingsButtonAction");
     if(delegate && [delegate respondsToSelector:@selector(businessProfileHeaderView:didTapSettingsButton:)]){
         [delegate businessProfileHeaderView:self didTapSettingsButton:sender];
     }
@@ -356,55 +356,47 @@
 }
 
 - (void)fetchBusinessProfileData:(PFUser *)aBusiness {
-    NSLog(@"fetchBusinessProfileData");
+    //NSLog(@"fetchBusinessProfileData");
     
     if (!aBusiness) {
         [NSException raise:NSInvalidArgumentException format:IF_USER_NOT_SET_MESSAGE];
     }
     
-    PFFile *coverPhotoFile = [self.business objectForKey:kFTUserCoverPhotoKey];
-    if (coverPhotoFile) {
-        [coverPhotoImageView setFile:coverPhotoFile];
-        [coverPhotoImageView loadInBackground:^(UIImage *image, NSError *error) {
-            if (!error) {
-                UIImageView *coverPhoto = [[UIImageView alloc] initWithImage:image];
-                coverPhoto.frame = self.bounds;
-                coverPhoto.alpha = 0.0f;
-                coverPhoto.clipsToBounds = YES;
-                
-                [self.containerView addSubview:coverPhoto];
-                [self.containerView sendSubviewToBack:coverPhoto];
-                
-                [UIView animateWithDuration:0.2f animations:^{
-                    coverPhoto.alpha = 1.0f;
-                }];
-            }
-        }];
-    }
+    business = aBusiness;
     
+    // Set cover photo
+    PFFile *coverPhotoFile = [self.business objectForKey:kFTUserCoverPhotoKey];
+    if (coverPhotoFile && ![coverPhotoFile isEqual:[NSNull null]]) {
+        [coverPhotoImageView setFile:coverPhotoFile];
+        [coverPhotoImageView loadInBackground];
+        [coverPhotoImageView setAlpha:1];
+        [headerPhotosContainer setAlpha:1];        
+    } else {
+        UIImageView *coverImageView = [[UIImageView alloc] initWithFrame:coverPhotoImageView.frame];
+        [coverImageView setImage:nil];
+        [coverImageView setClipsToBounds:YES];
+        [coverImageView setBackgroundColor:FT_GRAY];
+        [self.coverPhotoImageView addSubview:coverImageView];
+    }
+     
+    // Set profile photo
     PFFile *imageFile = [self.business objectForKey:kFTUserProfilePicMediumKey];
-    if (imageFile) {
+    if (imageFile && ![imageFile isEqual:[NSNull null]]) {
         [profilePictureImageView setFile:imageFile];
         [profilePictureImageView loadInBackground:^(UIImage *image, NSError *error) {
             if (!error) {
-                [UIView animateWithDuration:0.2f animations:^{
-                    profilePictureBackgroundView.alpha = 1.0f;
+                [UIView animateWithDuration:0.3f animations:^{
+                    headerPhotosContainer.alpha = 1.0f;
                     profilePictureImageView.alpha = 1.0f;
-                }];
-                
-                backgroundImageView = [[UIImageView alloc] initWithImage:image];
-                backgroundImageView.frame = self.bounds;
-                backgroundImageView.alpha = 0.0f;
-                backgroundImageView.clipsToBounds = YES;
-                
-                [self.containerView addSubview:backgroundImageView];
-                [self.containerView sendSubviewToBack:backgroundImageView];
-                
-                [UIView animateWithDuration:0.2f animations:^{
-                    backgroundImageView.alpha = 1.0f;
                 }];
             }
         }];
+    } else {
+        UIImageView *profileImageView = [[UIImageView alloc] initWithFrame:profilePictureImageView.frame];
+        [profileImageView setImage:[UIImage imageNamed:IMAGE_PROFILE_EMPTY]];
+        [profileImageView setClipsToBounds:YES];
+        [profileImageView.layer setCornerRadius:CORNERRADIUS(profileImageView.frame.size.width)];
+        [self addSubview:profileImageView];
     }
     
     [followerCountLabel setText:@"0 FOLLOWERS"];
@@ -455,8 +447,13 @@
                 [self configureFollowButtons];
             }
         }];
-    }    
-    [profileBiography setText:[self.business objectForKey:kFTUserBioKey]];
+    }
+    
+    if ([self.business objectForKey:kFTUserBioKey]) {
+        [self updateBiography:[self.business objectForKey:kFTUserBioKey]];
+    } else {
+        [self updateBiography:EMPTY_STRING];
+    }
 }
 
 - (void)configureFollowButtons {
@@ -519,5 +516,44 @@
     }];
 }
 
+- (void)updateBiography:(NSString *)bio {
+    
+    // Biography
+    CGFloat width = self.frame.size.width;
+    CGFloat bioY = businessMenuBackground.frame.origin.y + businessMenuBackground.frame.size.height;
+    CGFloat bioHeight = self.frame.size.height - bioY;
+    
+    [profileBiography setFrame:CGRectMake(5, bioY, width-10, bioHeight)];
+    [profileBiography setText:bio];
+    
+    NSString *website = [self.business objectForKey:kFTUserWebsiteKey];
+    if (website) {
+        // Website
+        [profileBiography setText:[NSString stringWithFormat:@"%@\n%@",profileBiography.text,website]];
+    }
+    
+    __unsafe_unretained typeof(self) weakSelf = self;
+    
+    [profileBiography setDetectionBlock:^(STTweetHotWord hotWord, NSString *string, NSString *protocol, NSRange range) {
+        NSArray *hotWords = @[ HOTWORD_HANDLE, HOTWORD_HASHTAG, HOTWORD_LINK ];
+        /*
+         NSString *detectionString = [NSString stringWithFormat:@"%@ [%d,%d]: %@%@", hotWords[hotWord], (int)range.location, (int)range.length, string, (protocol != nil) ? [NSString stringWithFormat:@" *%@*", protocol] : @""];
+         */
+        
+        if ([hotWords[hotWord] isEqualToString:HOTWORD_HANDLE]) {
+            if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(businessProfileHeaderView:didTapUserMention:)]) {
+                [weakSelf.delegate businessProfileHeaderView:weakSelf didTapUserMention:string];
+            }
+        } else if ([hotWords[hotWord] isEqualToString:HOTWORD_HASHTAG]) {
+            if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(businessProfileHeaderView:didTapHashtag:)]) {
+                [weakSelf.delegate businessProfileHeaderView:weakSelf didTapHashtag:string];
+            }
+        } else if ([hotWords[hotWord] isEqualToString:HOTWORD_LINK]) {
+            if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(businessProfileHeaderView:didTapLink:)]) {
+                [weakSelf.delegate businessProfileHeaderView:weakSelf didTapLink:string];
+            }
+        }
+    }];
+}
 
 @end

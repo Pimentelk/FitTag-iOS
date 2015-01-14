@@ -5,6 +5,9 @@
 //  Created by Kevin Pimentel on 10/8/14.
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
+
+#import "STTweetLabel.h"
+
 @protocol FTBusinessProfileHeaderViewDelegate;
 
 @interface FTBusinessProfileHeaderView : UICollectionReusableView
@@ -15,10 +18,11 @@
 /*! @name isFollowing */
 @property (nonatomic) BOOL isFollowing;
 
-- (void)configureFollowButtons;
-
 /*! @name Delegate */
 @property (nonatomic,weak) id <FTBusinessProfileHeaderViewDelegate> delegate;
+
+- (void)configureFollowButtons;
+
 - (void)fetchBusinessProfileData:(PFUser *)aBusiness;
 @end
 
@@ -39,4 +43,23 @@
 
 - (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapFollowersButton:(id)sender;
 - (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapFollowingButton:(id)sender;
+
+/*!
+ Sent to the delegate when a hashtag is tapped
+ @param Hashtag the Hashtag that was tapped
+ */
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapHashtag:(NSString *)Hashtag;
+
+/*!
+ Sent to the delegate when a user button is tapped
+ @param link the link that was tapped
+ */
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapLink:(NSString *)link;
+
+/*!
+ Sent to the delegate when a user mention is tapped
+ @param aUser the PFUser of the user that was tapped
+ */
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapUserMention:(NSString *)mention;
+
 @end
