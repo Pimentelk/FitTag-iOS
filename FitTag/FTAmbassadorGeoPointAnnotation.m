@@ -19,6 +19,7 @@
 @synthesize coordinate;
 @synthesize title;
 @synthesize subtitle;
+@synthesize objectId;
 
 #pragma mark - Initialization
 
@@ -26,6 +27,7 @@
     self = [super init];
     if (self) {
         post = aPost;
+        objectId = post.objectId;
         user = [post objectForKey:kFTPostUserKey];
         
         PFGeoPoint *geoPoint = [self.post objectForKey:kFTPostLocationKey];
