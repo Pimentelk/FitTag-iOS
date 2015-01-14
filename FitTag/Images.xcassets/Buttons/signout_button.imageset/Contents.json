@@ -3,11 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "logoandmotto.png"
+      "filename" : "settings_button.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x"
+      "scale" : "2x",
+      "filename" : "signout_button.png"
     },
     {
       "idiom" : "universal",
