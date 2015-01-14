@@ -44,7 +44,7 @@
 
 @end
 
-static const CGFloat kFTCellInsetWidth = 10.0f;
+static const CGFloat kFTCellInsetWidth = 0;
 
 @implementation FTPostDetailsViewController
 @synthesize commentTextField;
@@ -672,7 +672,7 @@ static const CGFloat kFTCellInsetWidth = 10.0f;
                          post:(PFObject *)aPost {
     //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
     // Map Home View
-    FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
+    FTMapViewController *mapViewController = [[FTMapViewController alloc] initWithSearchBar:NO];
     if ([aPost objectForKey:kFTPostLocationKey]) {
         [mapViewController setInitialLocationObject:aPost];
     }
@@ -693,17 +693,16 @@ static const CGFloat kFTCellInsetWidth = 10.0f;
                                                   delegate:self
                                          cancelButtonTitle:@"Cancel"
                                     destructiveButtonTitle:nil
-                                         otherButtonTitles:ACTION_SHARE_ON_FACEBOOK,
+                                         otherButtonTitles:/*ACTION_SHARE_ON_FACEBOOK,*/
                        ACTION_SHARE_ON_TWITTER,
                        ACTION_REPORT_INAPPROPRIATE,
                        ACTION_DELETE_POST, nil];
     } else {
-        NSLog(@"!=");
         actionSheet = [[UIActionSheet alloc] initWithTitle:nil
                                                   delegate:self
                                          cancelButtonTitle:@"Cancel"
                                     destructiveButtonTitle:nil
-                                         otherButtonTitles:ACTION_SHARE_ON_FACEBOOK,
+                                         otherButtonTitles:/*ACTION_SHARE_ON_FACEBOOK,*/
                        ACTION_SHARE_ON_TWITTER,
                        ACTION_REPORT_INAPPROPRIATE, nil];
     }
