@@ -141,8 +141,9 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    NSLog(@"%@::viewWillAppear:",VIEWCONTROLLER_USER);
+    //NSLog(@"%@::viewWillAppear:",VIEWCONTROLLER_USER);
     [super viewWillAppear:animated];
+    
     [self.navigationController setToolbarHidden:YES];
     
     // Toolbar & Navigationbar Setup
@@ -154,16 +155,18 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    NSLog(@"%@::viewDidAppear:",VIEWCONTROLLER_USER);
+    //NSLog(@"%@::viewDidAppear:",VIEWCONTROLLER_USER);
     [super viewDidAppear:animated];
+    
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_USER];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
-    NSLog(@"%@::viewWillDisappear:",VIEWCONTROLLER_USER);
+    //NSLog(@"%@::viewWillDisappear:",VIEWCONTROLLER_USER);
     [super viewWillDisappear:animated];
+    
     // Get the classname of the next view controller
     NSUInteger numberOfViewControllersOnStack = [self.navigationController.viewControllers count];
     UIViewController *parentViewController = self.navigationController.viewControllers[numberOfViewControllersOnStack-1];
@@ -175,7 +178,7 @@
 }
 
 - (void)queryForTable:(PFUser *)aUser {
-    NSLog(@"%@::queryForTable:",VIEWCONTROLLER_USER);
+    //NSLog(@"%@::queryForTable:",VIEWCONTROLLER_USER);
     // Show HUD view
     PFQuery *postsFromUserQuery = [PFQuery queryWithClassName:kFTPostClassKey];
     [postsFromUserQuery whereKey:kFTPostUserKey equalTo:aUser];
@@ -224,6 +227,7 @@
     
     CGFloat height = [FTUtility findHeightForText:content havingWidth:self.view.frame.size.width AndFont:SYSTEMFONTBOLD(14)];
     CGSize headerSize = CGSizeMake(self.view.frame.size.width, height + PROFILE_HEADER_VIEW_HEIGHT + 15);
+    
     return headerSize;
 }
 
@@ -250,6 +254,7 @@
     //NSLog(@"%@::collectionView:cellForItemAtIndexPath:",VIEWCONTROLLER_USER);
     // Set up cell identifier that matches the Storyboard cell name
     static NSString *identifier = DATACELL;
+    
     FTUserProfileCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
     if ([cell isKindOfClass:[FTUserProfileCollectionViewCell class]]) {
         cell.backgroundColor = [UIColor clearColor];
@@ -353,7 +358,9 @@
 - (void)userProfileHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView
          didTapSettingsButton:(id)sender {
     //NSLog(@"%@::userProfileHeaderView:didTapSettingsButton:",VIEWCONTROLLER_USER);
+    
     FTSettingsViewController *settingsViewController = [[FTSettingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    
     UINavigationController *navController = [[UINavigationController alloc] init];
     [navController setViewControllers:@[settingsViewController] animated:NO];
     [self presentViewController:navController animated:YES completion:^(){
@@ -376,6 +383,7 @@
 }
 
 - (void)userProfileHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapHashtag:(NSString *)Hashtag {
+    
     if (searchViewController) {
         [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
         [searchViewController setSearchString:Hashtag];
@@ -425,7 +433,6 @@
 - (void)userProfileHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapLink:(NSString *)link {
     
     // Clean the string
-    
     NSString *cleanLink;
     cleanLink = [link lowercaseString];
     cleanLink = [cleanLink stringByReplacingOccurrencesOfString:@"www." withString:@""];
