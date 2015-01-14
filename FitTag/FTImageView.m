@@ -22,21 +22,24 @@
 
 - (void) setFile:(PFFile *)file {
     
-    NSString *requestURL = file.url; // Save copy of url locally (will not change in block)
-    
-    [self setUrl:file.url]; // Save copy of url on the instance
-    
-    [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-        if (!error) {
-            UIImage *image = [UIImage imageWithData:data];
-            if ([requestURL isEqualToString:self.url]) {
-                [self setImage:image];
-                [self setNeedsDisplay];
+    if (file && ![file isEqual:[NSNull null]]) {
+        
+        NSString *requestURL = file.url; // Save copy of url locally (will not change in block)
+        
+        [self setUrl:file.url]; // Save copy of url on the instance
+        
+        [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+            if (!error) {
+                UIImage *image = [UIImage imageWithData:data];
+                if ([requestURL isEqualToString:self.url]) {
+                    [self setImage:image];
+                    [self setNeedsDisplay];
+                }
+            } else {
+                NSLog(@"Error on fetching file");
             }
-        } else {
-            NSLog(@"Error on fetching file");
-        }
-    }];
+        }];
+    }
 }
 
 @end
