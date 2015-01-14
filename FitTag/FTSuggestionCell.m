@@ -47,7 +47,7 @@
         
         displayName = [[UILabel alloc] initWithFrame:CGRectMake(viewHeight+10, 0, frameSize.width-viewHeight-10, viewHeight+5)];
         [displayName setTextAlignment:NSTextAlignmentLeft];
-        [displayName setFont:BENDERSOLID(14)];
+        [displayName setFont:MULIREGULAR(14)];
         [self.view addSubview:displayName];
         
         [self addSubview:view];
@@ -61,13 +61,17 @@
     
     if ([user objectForKey:kFTUserProfilePicSmallKey]) {
         PFFile *file = [user objectForKey:kFTUserProfilePicSmallKey];
-        [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-            if (!error) {
-                // profile image
-                UIImage *image = [UIImage imageWithData:data];
-                [suggestionView setImage:image];
-            }
-        }];
+        
+        if (file && ![file isEqual:[NSNull null]]) {
+            
+            [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                if (!error) {
+                    // profile image
+                    UIImage *image = [UIImage imageWithData:data];
+                    [suggestionView setImage:image];
+                }
+            }];
+        }
     } else {
         // profile image is empty
         //[UIImage imageNamed:IMAGE_PROFILE_EMPTY];
