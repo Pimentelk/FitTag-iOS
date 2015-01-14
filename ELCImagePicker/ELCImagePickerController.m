@@ -94,7 +94,7 @@
 
 - (void)selectedAssets:(NSArray *)assets
 {
-    NSLog(@"selectedAssets");
+    //NSLog(@"selectedAssets");
 	NSMutableArray *returnArray = [[NSMutableArray alloc] init];
 	
 	for(ELCAsset *elcasset in assets) {
