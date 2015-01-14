@@ -48,9 +48,11 @@
     //[self.logInView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     //[self.logInView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"login_background_image_01"]]];
     
+    UIImageView *logoImageView = [[UIImageView alloc] initWithImage:LOGIN_IMAGE_LOGO];
+    [logoImageView setFrame:CGRectMake(0, 0, 320, 79)];
+    
     // Set logo image
-    [self.logInView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:FITTAG_LOGO]]];
-
+    [self.logInView setLogo:logoImageView];
     [self.logInView.externalLogInLabel setText:EMPTY_STRING];
     
     // Set motto
