@@ -65,6 +65,7 @@
 		2DACD97B196578DA00833C14 /* FTInspirationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACD97A196578DA00833C14 /* FTInspirationViewController.m */; };
 		2DACE8141966FF7200154504 /* FTCollectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DACE8131966FF7200154504 /* FTCollectionHeaderView.m */; };
 		2DAF5BA119B2A28E00E5E10B /* FTEditVideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF5BA019B2A28E00E5E10B /* FTEditVideoViewController.m */; };
+		2DB70D051A5749F100026700 /* Muli-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2DB70D041A5749F100026700 /* Muli-Regular.ttf */; };
 		2DBC6E5A195C783C008B5AD3 /* FTCamRollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBC6E59195C783C008B5AD3 /* FTCamRollViewController.m */; };
 		2DBC6EA1195CBCE2008B5AD3 /* FTInterestsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBC6EA0195CBCE2008B5AD3 /* FTInterestsViewController.m */; };
 		2DBE020619D0C62D00CD278C /* FTRewardsCollectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE020519D0C62D00CD278C /* FTRewardsCollectionHeaderView.m */; };
@@ -259,6 +260,7 @@
 		2DACE8131966FF7200154504 /* FTCollectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCollectionHeaderView.m; sourceTree = "<group>"; };
 		2DAF5B9F19B2A28E00E5E10B /* FTEditVideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTEditVideoViewController.h; sourceTree = "<group>"; };
 		2DAF5BA019B2A28E00E5E10B /* FTEditVideoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTEditVideoViewController.m; sourceTree = "<group>"; };
+		2DB70D041A5749F100026700 /* Muli-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-Regular.ttf"; sourceTree = "<group>"; };
 		2DBC6E58195C783C008B5AD3 /* FTCamRollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTCamRollViewController.h; sourceTree = "<group>"; };
 		2DBC6E59195C783C008B5AD3 /* FTCamRollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTCamRollViewController.m; sourceTree = "<group>"; };
 		2DBC6E9F195CBCE2008B5AD3 /* FTInterestsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTInterestsViewController.h; sourceTree = "<group>"; };
@@ -460,6 +462,7 @@
 		2D054DAA1A0293B700A2886F /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				2DB70D041A5749F100026700 /* Muli-Regular.ttf */,
 				2D054DA11A02935D00A2886F /* Bender-Solid.otf */,
 			);
 			name = Fonts;
@@ -604,12 +607,12 @@
 		2D429A1D197B2D2600F8A9A0 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				2D429A1E197B2F4C00F8A9A0 /* FTTabBarController.h */,
+				2D429A1F197B2F4C00F8A9A0 /* FTTabBarController.m */,
 				2DD2B6591983FDAC00600A42 /* Activity */,
 				2DBC6E57195C77FF008B5AD3 /* Camera */,
 				2DD2B65A1983FDB800600A42 /* Detail */,
 				2DD31E0219AF4F41000A6D2D /* Friends */,
-				2D429A1E197B2F4C00F8A9A0 /* FTTabBarController.h */,
-				2D429A1F197B2F4C00F8A9A0 /* FTTabBarController.m */,
 				2D0A53AD1971AC240091FFCA /* Home */,
 				2DD691951949B1EB00B59E75 /* Login */,
 				2DD2B65D1983FDF400600A42 /* MKMap */,
@@ -1174,6 +1177,7 @@
 				2DBE024019D6FB7F00CD278C /* Overlay.png in Resources */,
 				2DBE023D19D6FB7F00CD278C /* ELCAlbumPickerController.xib in Resources */,
 				2DBE023E19D6FB7F00CD278C /* ELCAssetPicker.xib in Resources */,
+				2DB70D051A5749F100026700 /* Muli-Regular.ttf in Resources */,
 				2DBE023F19D6FB7F00CD278C /* ELCAssetTablePicker.xib in Resources */,
 				2DD691651949AF5B00B59E75 /* Images.xcassets in Resources */,
 				2DBE024119D6FB7F00CD278C /* Overlay@2x.png in Resources */,
