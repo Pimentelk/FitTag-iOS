@@ -30,7 +30,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.0.13</string>
+	<string>1.0.19</string>
 	<key>FacebookAppID</key>
 	<string>651390654944945</string>
 	<key>FacebookDisplayName</key>
@@ -44,6 +44,7 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>Bender-Solid.otf</string>
+		<string>Muli-Regular.ttf</string>
 	</array>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
