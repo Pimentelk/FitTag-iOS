@@ -59,9 +59,9 @@ static FTCameraEngine *theEngine;
 }
 
 - (void)startup {
-    NSLog(@"startUp");
+    //NSLog(@"startUp");
     if (self.session == nil) {
-        NSLog(@"Starting up server");
+        //NSLog(@"Starting up server");
         self.isCapturing = NO;
         self.isPaused = NO;
         _currentFile = 0;
@@ -131,7 +131,7 @@ static FTCameraEngine *theEngine;
         
         // start capture and a preview layer
         [self.session startRunning];
-        NSLog(@"session:%@",self.session);
+        //NSLog(@"session:%@",self.session);
         self.preview = [AVCaptureVideoPreviewLayer layerWithSession:self.session];
         self.preview.videoGravity = AVLayerVideoGravityResizeAspectFill;
     }
@@ -153,7 +153,7 @@ static FTCameraEngine *theEngine;
 
 
 - (void)startCapture {
-    NSLog(@"startCapture");
+    //NSLog(@"startCapture");
     @synchronized(self){
             if (!self.isCapturing) {
                     // create the encoder once we have the audio params
@@ -170,7 +170,7 @@ static FTCameraEngine *theEngine;
 }
 
 - (void)endCapture {
-    NSLog(@"endCapture");
+    //NSLog(@"endCapture");
     _lastVideo.flags = 0;
     _lastAudio.flags = 0;
     seconds = 0;
@@ -180,7 +180,7 @@ static FTCameraEngine *theEngine;
 }
 
 - (void)stopCapture {
-    NSLog(@"stopCapture");
+    //NSLog(@"stopCapture");
         
     _lastVideo.flags = 0;
     _lastAudio.flags = 0;
@@ -208,7 +208,7 @@ static FTCameraEngine *theEngine;
                         [library writeVideoAtPathToSavedPhotosAlbum:url
                                                     completionBlock:^(NSURL *assetURL, NSError *error){
                                                         if (error) {
-                                                            NSLog(@"error: %@",error);
+                                                            //NSLog(@"error: %@",error);
                                                             return;
                                                         }
                                                         
@@ -243,7 +243,7 @@ static FTCameraEngine *theEngine;
 }
 
 - (void)pauseCapture {
-    NSLog(@"pauseCapture");
+    //NSLog(@"pauseCapture");
     @synchronized(self) {
         if (self.isCapturing) {
             self.isPaused = YES;
@@ -253,7 +253,7 @@ static FTCameraEngine *theEngine;
 }
 
 - (void)resumeCapture {
-    NSLog(@"resumeCapture");
+    //NSLog(@"resumeCapture");
     @synchronized(self) {
         if (self.isPaused) {
             self.isPaused = NO;
@@ -300,7 +300,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
         if ((_encoder == nil) && !bVideo) {
             CMFormatDescriptionRef fmt = CMSampleBufferGetFormatDescription(sampleBuffer);
-            NSLog(@"fmt: %@",fmt);
+            //NSLog(@"fmt: %@",fmt);
             [self setAudioFormat:fmt];
             NSString *filename = [NSString stringWithFormat:@"capture%d.mp4", _currentFile];
             NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:filename];
@@ -416,13 +416,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 - (void)shutdown {
-    NSLog(@"shutting down server");
+    //NSLog(@"shutting down server");
     if (self.session) {
         [self.session stopRunning];
         self.session = nil;
     }
     [_encoder finishWithCompletionHandler:^{
-        NSLog(@"Capture completed");
+        //NSLog(@"Capture completed");
     }];
 }
 
@@ -431,7 +431,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 - (void)switchCamera {
-    NSLog(@"switchCamera");
+    //NSLog(@"switchCamera");
     dispatch_async(self.captureQueue, ^{
         // * Capture Device * //
         AVCaptureDevice *currentVideoDevice = [[self videoDeviceInput] device];
@@ -495,7 +495,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
         [[self videoDataOutput] setSampleBufferDelegate:self queue:self.captureQueue];
         
-        NSLog(@"session:%@",self.session);
+        //NSLog(@"session:%@",self.session);
         [self.session commitConfiguration];
     });
 }
@@ -523,7 +523,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 - (void)subjectAreaDidChange:(NSNotification *)notification {
-    NSLog(@"subjectAreaDidChange");
+    //NSLog(@"subjectAreaDidChange");
     CGPoint devicePoint = CGPointMake(.5, .5);
     [self focusWithMode:AVCaptureFocusModeContinuousAutoFocus
          exposeWithMode:AVCaptureExposureModeContinuousAutoExposure
@@ -534,7 +534,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        exposeWithMode:(AVCaptureExposureMode)exposureMode
         atDevicePoint:(CGPoint)point monitorSubjectAreaChange:(BOOL)monitorSubjectAreaChange {
     
-    NSLog(@"focusWithMode:exposeWithMode:atDevicePoint:monitorSubjectAreaChange:");
+    //NSLog(@"focusWithMode:exposeWithMode:atDevicePoint:monitorSubjectAreaChange:");
     dispatch_async(self.captureQueue, ^{
         AVCaptureDevice *device = [[self videoDeviceInput] device];
         NSError *error = nil;
