@@ -264,58 +264,6 @@
 
 #pragma mark Facebook
 
-/*
-+ (void)processFacebookProfilePictureData:(NSData *)newProfilePictureData {
-    if (newProfilePictureData.length == 0) {
-        return;
-    }
-    
-    // The user's Facebook profile picture is cached to disk. Check if the cached profile picture data matches the incoming profile picture. If it does, avoid uploading this data to Parse.
-    
-    NSURL *cachesDirectoryURL = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject]; // iOS Caches directory
-    
-    NSURL *profilePictureCacheURL = [cachesDirectoryURL URLByAppendingPathComponent:@"FacebookProfilePicture.jpg"];
-    
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[profilePictureCacheURL path]]) {
-        // We have a cached Facebook profile picture
-        
-        NSData *oldProfilePictureData = [NSData dataWithContentsOfFile:[profilePictureCacheURL path]];
-        
-        if ([oldProfilePictureData isEqualToData:newProfilePictureData]) {
-            return;
-        }
-    }
-    
-    UIImage *image = [UIImage imageWithData:newProfilePictureData];
-    
-    UIImage *mediumImage = [image thumbnailImage:280 transparentBorder:0 cornerRadius:0 interpolationQuality:kCGInterpolationHigh];
-    UIImage *smallRoundedImage = [image thumbnailImage:64 transparentBorder:0 cornerRadius:9 interpolationQuality:kCGInterpolationLow];
-    
-    NSData *mediumImageData = UIImageJPEGRepresentation(mediumImage, 0.5); // using JPEG for larger pictures
-    NSData *smallRoundedImageData = UIImagePNGRepresentation(smallRoundedImage);
-    
-    if (mediumImageData.length > 0) {
-        PFFile *fileMediumImage = [PFFile fileWithData:mediumImageData];
-        [fileMediumImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            if (!error) {
-                [[PFUser currentUser] setObject:fileMediumImage forKey:kFTUserProfilePicMediumKey];
-                [[PFUser currentUser] saveEventually];
-            }
-        }];
-    }
-    
-    if (smallRoundedImageData.length > 0) {
-        PFFile *fileSmallRoundedImage = [PFFile fileWithData:smallRoundedImageData];
-        [fileSmallRoundedImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            if (!error) {
-                [[PFUser currentUser] setObject:fileSmallRoundedImage forKey:kFTUserProfilePicSmallKey];
-                [[PFUser currentUser] saveEventually];
-            }
-        }];
-    }
-}
-*/
-
 + (BOOL)userHasValidFacebookData:(PFUser *)user {
     NSString *facebookId = [user objectForKey:kFTUserFacebookIDKey];
     return (facebookId && facebookId.length > 0);
@@ -874,60 +822,6 @@
     navigationController.navigationBar.clipsToBounds = NO;
     [navigationController.navigationBar addSubview:gradientView];	    
 }
-
-#pragma mark Profile Hexagons
-
-/*
-+ (UIImageView *)getProfileHexagonWithFrame:(CGRect)rect {
-    return [self getProfileHexagonWithX:rect.origin.x
-                                      Y:rect.origin.y
-                                  width:rect.size.width
-                                 hegiht:rect.size.height];
-}
-
-+ (UIImageView *)getProfileHexagonWithX:(CGFloat)hexX
-                                      Y:(CGFloat)hexY
-                                  width:(CGFloat)hexW
-                                 hegiht:(CGFloat)hexH {
-    
-    UIImageView *imageView = [[UIImageView alloc] init];
-    //imageView.frame = CGRectMake( 5.0f, 8.0f, 57.0f, 57.0f);
-    imageView.frame = CGRectMake(hexX, hexY, hexW, hexH);
-    imageView.backgroundColor = [UIColor redColor];
-    
-    CGRect rect = CGRectMake(hexX, hexY, hexW, hexH);
-    
-    CAShapeLayer *hexagonMask = [CAShapeLayer layer];
-    CAShapeLayer *hexagonBorder = [CAShapeLayer layer];
-    hexagonBorder.frame = imageView.layer.bounds;
-    UIBezierPath *hexagonPath = [UIBezierPath bezierPath];
-    
-    CGFloat sideWidth = 2 * ( 0.5 * rect.size.width / 2 );
-    CGFloat lcolumn = rect.size.width - sideWidth;
-    CGFloat height = rect.size.height;
-    CGFloat ty = (rect.size.height - height) / 2;
-    CGFloat tmy = rect.size.height / 4;
-    CGFloat bmy = rect.size.height - tmy;
-    CGFloat by = rect.size.height;
-    CGFloat rightmost = rect.size.width;
-    
-    [hexagonPath moveToPoint:CGPointMake(lcolumn, ty)];
-    [hexagonPath addLineToPoint:CGPointMake(rightmost, tmy)];
-    [hexagonPath addLineToPoint:CGPointMake(rightmost, bmy)];
-    [hexagonPath addLineToPoint:CGPointMake(lcolumn, by)];
-    
-    [hexagonPath addLineToPoint:CGPointMake(0, bmy)];
-    [hexagonPath addLineToPoint:CGPointMake(0, tmy)];
-    [hexagonPath addLineToPoint:CGPointMake(lcolumn, ty)];
-    
-    hexagonMask.path = hexagonPath.CGPath;
-    
-    imageView.layer.mask = hexagonMask;
-    [imageView.layer addSublayer:hexagonBorder];
-    
-    return imageView;
-}
-*/
 
 #pragma mark Hashtags & Mentions
 

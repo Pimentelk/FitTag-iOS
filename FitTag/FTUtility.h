@@ -48,8 +48,5 @@
 
 + (void)showHudMessage:(NSString *)message WithDuration:(NSTimeInterval)duration;
 
-//+ (PFQuery *)queryForActivitiesOnPhoto:(PFObject *)photo cachePolicy:(PFCachePolicy)cachePolicy;
-//+ (PFQuery *)queryForActivitiesOnVideo:(PFObject *)video cachePolicy:(PFCachePolicy)cachePolicy;
-//+ (PFQuery *)queryForActivitiesOnGallery:(PFObject *)gallery cachePolicy:(PFCachePolicy)cachePolicy;
 + (PFQuery *)queryForActivitiesOnPost:(PFObject *)post cachePolicy:(PFCachePolicy)cachePolicy;
 @end
