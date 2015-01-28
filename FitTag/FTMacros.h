@@ -167,31 +167,11 @@
 #define FITTAG_BLOG @"FitTag Blog"
 
 // FT COLORS
-
-#define FT_TOOLBAR [UIColor colorWithRed:FT_TOOLBAR_COLOR_RED green:FT_TOOLBAR_COLOR_GREEN blue:FT_TOOLBAR_COLOR_BLUE alpha:1]
-#define FT_TOOLBAR_COLOR_RED 209/255.0f
-#define FT_TOOLBAR_COLOR_BLUE 209/255.0f
-#define FT_TOOLBAR_COLOR_GREEN 209/255.0f
-
-#define FT_RED [UIColor colorWithRed:FT_RED_COLOR_RED green:FT_RED_COLOR_GREEN blue:FT_RED_COLOR_BLUE alpha:1]
-#define FT_RED_COLOR_RED 234.0f/255.0f
-#define FT_RED_COLOR_BLUE 37.0f/255.0f
-#define FT_RED_COLOR_GREEN 37.0f/255.0f
-
-#define FT_GRAY [UIColor colorWithRed:FT_GRAY_COLOR_RED green:FT_GRAY_COLOR_GREEN blue:FT_GRAY_COLOR_BLUE alpha:1]
-#define FT_GRAY_COLOR_RED 234/255.0f
-#define FT_GRAY_COLOR_BLUE 234/255.0f
-#define FT_GRAY_COLOR_GREEN 234/255.0f
-
-#define FT_DARKGRAY [UIColor colorWithRed:FT_DARKGRAY_COLOR_RED green:FT_DARKGRAY_COLOR_GREEN blue:FT_DARKGRAY_COLOR_BLUE alpha:1]
-#define FT_DARKGRAY_COLOR_RED 154/255.0f
-#define FT_DARKGRAY_COLOR_BLUE 154/255.0f
-#define FT_DARKGRAY_COLOR_GREEN 154/255.0f
-
-#define FT_LINKBLUE [UIColor colorWithRed:FT_LINKBLUE_COLOR_RED green:FT_LINKBLUE_COLOR_GREEN blue:FT_LINKBLUE_COLOR_BLUE alpha:1]
-#define FT_LINKBLUE_COLOR_RED 84/255.0f
-#define FT_LINKBLUE_COLOR_BLUE 255/255.0f
-#define FT_LINKBLUE_COLOR_GREEN 164/255.0f
+#define FT_TOOLBAR [UIColor colorWithRed:209/255.0f green:209/255.0f blue:209/255.0f alpha:1]
+#define FT_RED [UIColor colorWithRed:234.0f/255.0f green:37.0f/255.0f blue:37.0f/255.0f alpha:1]
+#define FT_GRAY [UIColor colorWithRed:234/255.0f green:234/255.0f blue:234/255.0f alpha:1]
+#define FT_DARKGRAY [UIColor colorWithRed:154/255.0f green:154/255.0f blue:154/255.0f alpha:1]
+#define FT_LINKBLUE [UIColor colorWithRed:84/255.0f green:255/255.0f blue:164/255.0f alpha:1]
 
 // Timeline Cells Tool bar items
 #define COMMENT_BUTTON [UIImage imageNamed:@"comment_button"]
