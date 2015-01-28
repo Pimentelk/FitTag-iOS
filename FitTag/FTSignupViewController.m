@@ -26,34 +26,30 @@
 #define PLACEHOLDER_PASSWORD @"Password"
 #define SIGNUP_SCREEN_TEXT @"signup_screen_terms_text"
 
-@interface FTSignupViewController ()
-@property (nonatomic,strong) UIImageView *separators;
-@property (nonatomic,strong) UILabel *defaultLabel;
+@interface FTSignupViewController () <UITextViewDelegate, UITextFieldDelegate,FTCamViewControllerDelegate,TTTAttributedLabelDelegate>
+
+@property (nonatomic, strong) UIImageView *separators;
+@property (nonatomic, strong) UIImageView *signupWithText;
+
+@property (nonatomic, strong) UILabel *defaultLabel;
+@property (nonatomic, strong) UILabel *aLabel;
+
 @property (nonatomic, strong) TTTAttributedLabel *termsLabel;
-//@property (nonatomic,strong) UITextField *firstnameTextField;
-//@property (nonatomic,strong) UITextField *lastnameTextField;
-//@property (nonatomic,strong) UITextView *aboutTextView;
-@property (nonatomic,strong) UIImageView *signupWithText;
-@property (nonatomic,strong) UIButton *profileImageButton;
-@property (nonatomic,strong) UIButton *facebookButton;
-@property (nonatomic,strong) UIButton *twitterButton;
-//@property (nonatomic,strong) UITextField *confirmPasswordTextField;
-//@property (nonatomic,strong) UIImageView *termsText;
-@property (nonatomic,strong) UITextField *activeField;
-@property (nonatomic,strong) UILabel *aLabel;
+
+@property (nonatomic, strong) UIButton *profileImageButton;
+@property (nonatomic, strong) UIButton *facebookButton;
+@property (nonatomic, strong) UIButton *twitterButton;
+
+@property (nonatomic, strong) UITextField *activeField;
+
 @end
 
 @implementation FTSignupViewController
 @synthesize separators;
 @synthesize termsLabel;
 @synthesize defaultLabel;
-//@synthesize firstnameTextField;
-//@synthesize lastnameTextField;
-//@synthesize aboutTextView;
 @synthesize signupWithText;
 @synthesize profileImageButton;
-//@synthesize confirmPasswordTextField;
-//@synthesize termsText;
 @synthesize aLabel;
 @synthesize facebookButton;
 @synthesize twitterButton;
@@ -81,29 +77,10 @@
     swipeGesture.direction = UISwipeGestureRecognizerDirectionDown;
     [self.view setGestureRecognizers:@[swipeGesture, tapGesture]];
     
-    /*
-    if (profileImageButton) {
-        [profileImageButton removeFromSuperview];
-        profileImageButton = nil;
-    }
-    */
-    
-    CGFloat padding = (self.signUpView.logo.frame.size.height + 10);
-    NSLog(@"logoTop:%f",padding);
-    
-    /*
-    profileImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    //[profileImageButton setFrame:CGRectMake((frameSize.width - TAKE_PHOTO_BUTTON) / 2, (((origin - TAKE_PHOTO_BUTTON) / 2) - padding), TAKE_PHOTO_BUTTON, TAKE_PHOTO_BUTTON)];
-    [profileImageButton setBackgroundColor:FT_GRAY];
-    [profileImageButton addTarget:self action:@selector(didTapLoadCameraButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-    [profileImageButton setClipsToBounds:YES];
-    [profileImageButton.layer setCornerRadius:CORNERRADIUS(TAKE_PHOTO_BUTTON)];
-    [profileImageButton setImage:[UIImage imageNamed:IMAGE_PROFILE_EMPTY] forState:UIControlStateNormal];
-    [self.signUpView addSubview:profileImageButton];
-    */
+    //CGFloat padding = (self.signUpView.logo.frame.size.height + 10);
+    //NSLog(@"logoTop:%f",padding);
     
     // Terms
-    
     termsLabel = [[TTTAttributedLabel alloc] init];
     [termsLabel setDelegate:self];
     [termsLabel setUserInteractionEnabled:YES];
@@ -118,9 +95,6 @@
 
 - (void)viewDidLayoutSubviews{
     [super viewDidLayoutSubviews];
-    
-    //CGRect profileImageButtonRect = CGRectMake(0, 0, TAKE_PHOTO_BUTTON, TAKE_PHOTO_BUTTON);
-    //[profileImageButton setFrame:profileImageButtonRect];
     
     [self.signUpView.logo setCenter:CGPointMake(160, 80)];
     
@@ -180,15 +154,6 @@
     [self.signUpView setBounces:YES];
     [self.signUpView setDelegate:self];
     
-    // Profile button position
-    
-    //CGFloat logoEnds = self.signUpView.logo.frame.size.height + self.signUpView.logo.center.y;
-    //CGFloat profileImageButtonY = (((usernameFieldRect.origin.y - logoEnds) - TAKE_PHOTO_BUTTON) / 2) + logoEnds + self.signUpView.logo.frame.size.height;
-    
-    //CGFloat imageButtonX = self.signUpView.logo.center.x;
-    
-    //[self.profileImageButton setCenter:CGPointMake(imageButtonX, profileImageButtonY)];
-    
     // Terms and condition
     
     CGRect termsFrame = self.signUpView.signUpButton.frame;
@@ -217,22 +182,21 @@
 #pragma mark - TTTAttributedLabelDelegate
 
 - (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithURL:(NSURL *)url {
-    NSLog(@"attributedLabel");
-    
+    //NSLog(@"attributedLabel");
     [[UIApplication sharedApplication] openURL:url];
 }
 
 #pragma mark - UITextViewDelegate
 
-- (void)textViewDidBeginEditing:(UITextView *)textView{
+- (void)textViewDidBeginEditing:(UITextView *)textView {
     self.defaultLabel.hidden = YES;
 }
 
-- (void)textViewDidChange:(UITextView *)textView{
+- (void)textViewDidChange:(UITextView *)textView {
     self.defaultLabel.hidden = ([textView.text length] > 0);
 }
 
-- (void)textViewDidEndEditing:(UITextView *)textView{
+- (void)textViewDidEndEditing:(UITextView *)textView {
     self.defaultLabel.hidden = ([textView.text length] > 0);
 }
 
@@ -248,7 +212,7 @@
     return (newLength > 30) ? NO : YES;
 }
 
-#pragma mark - ()
+#pragma mark
 
 - (void)didTapURLAction:(id)sender {
     NSURL *url = [NSURL URLWithString:@"http://fittag.com/terms.php"];
@@ -293,15 +257,5 @@
     [navController setViewControllers:@[camViewController] animated:NO];
     [self presentViewController:navController animated:YES completion:nil];
 }
-
-#pragma mark - FTEditPhotoViewController
-
-/*
-- (void)camViewController:(FTCamViewController *)camViewController profilePicture:(UIImage *)photo {
-    //NSLog(@"%@::camViewController:photo:",VIEWCONTROLLER_SIGNUP);
-    self.profilePhoto = photo;
-    [self.profileImageButton setImage:photo forState:UIControlStateNormal];
-}
-*/
 
 @end
