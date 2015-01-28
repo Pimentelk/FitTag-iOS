@@ -228,7 +228,7 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
     
     NSDictionary *titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], NSForegroundColorAttributeName, nil];
     [self.navigationController.navigationBar setTitleTextAttributes:titleTextAttributes];
-    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:FT_RED_COLOR_RED green:FT_RED_COLOR_GREEN blue:FT_RED_COLOR_BLUE alpha:1.0f]];
+    [self.navigationController.navigationBar setBarTintColor:FT_RED];
     
     nextBarButton = [[UIBarButtonItem alloc] init];
     [nextBarButton setTitle:BUTTON_TITTLE_NEXT];
