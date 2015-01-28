@@ -21,22 +21,15 @@
 @synthesize locationButton;
 @synthesize interestButton;
 
-- (id)initWithFrame:(CGRect)frame{
+- (id)initWithFrame:(CGRect)frame {
     
     self = [super initWithFrame:frame];
     if (self) {
         
         self.clipsToBounds = YES;
         
-        baseRedColor = [UIColor colorWithRed:FT_RED_COLOR_RED
-                                       green:FT_RED_COLOR_GREEN
-                                        blue:FT_RED_COLOR_BLUE
-                                       alpha:1.0f];
-        
-        [self setBackgroundColor:[UIColor colorWithRed:FT_GRAY_COLOR_RED
-                                                 green:FT_GRAY_COLOR_GREEN
-                                                  blue:FT_GRAY_COLOR_BLUE
-                                                 alpha:1.0f]];
+        baseRedColor = FT_RED;        
+        [self setBackgroundColor:FT_GRAY];
         
         CGFloat locationButtonWidth = self.frame.size.width / 2;
 
