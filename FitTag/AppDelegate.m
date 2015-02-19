@@ -10,13 +10,13 @@
 #import "Reachability.h"
 #import "UIImage+ResizeAdditions.h"
 #import "FTConfigViewController.h"
-#import "FTActivityFeedViewController.h"
 #import "FTFeedViewController.h"
 #import "FTUserProfileViewController.h"
 #import "FTMapViewController.h"
-#import "FTRewardsViewController.h"
 #import "FTNavigationController.h"
 #import "FTPostDetailsViewController.h"
+#import "FTSettingsViewController.h"
+#import "FTMainViewController.h"
 
 @interface AppDelegate() {
     NSMutableData *_data;
@@ -26,12 +26,15 @@
 // Welcome View Controller
 @property (nonatomic, strong) FTConfigViewController *welcomeViewController;
 
+// Settings View Controller
+@property (nonatomic, strong) FTSettingsViewController *settingsViewController;
+
 // TabBar ViewControllers
-@property (nonatomic, strong) FTActivityFeedViewController *activityViewController;
+//@property (nonatomic, strong) FTActivityFeedViewController *activityViewController;
 @property (nonatomic, strong) FTMapViewController *mapViewController;
 @property (nonatomic, strong) FTFeedViewController *feedViewController;
-@property (nonatomic, strong) FTRewardsCollectionViewController *rewardsViewController;
-@property (nonatomic, strong) FTUserProfileViewController *userProfileViewController;
+//@property (nonatomic, strong) FTRewardsCollectionViewController *rewardsViewController;
+//@property (nonatomic, strong) FTUserProfileViewController *userProfileViewController;
 @property (nonatomic, strong) UINavigationController *pushFeedNavigationController;
 
 // Progress HUD (Notification/Loader)
@@ -51,6 +54,15 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     //NSLog(@"%@::application:didFinishLaunchingWithOptions:",APPDELEGATE_RESPONDER);
+    
+    // Parse initialization
+    [Parse setApplicationId:PARSE_APPLICATION_ID
+                  clientKey:PARSE_CLIENT_KEY];
+    
+    [PFFacebookUtils initializeFacebook];
+    [PFTwitterUtils initializeWithConsumerKey:TWITTER_CONSUMER_KEY
+                               consumerSecret:TWITTER_CONSUMER_SECRET];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     bounds = [[[[UIApplication sharedApplication] delegate] window] bounds];
@@ -63,11 +75,7 @@
     [flowLayout setMinimumLineSpacing:0];
     [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
     [flowLayout setHeaderReferenceSize:CGSizeMake(bounds.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
-    
-    // Parse initialization
-    [Parse setApplicationId:PARSE_APPLICATION_ID
-                  clientKey:PARSE_CLIENT_KEY];
-    
+        
     if (application.applicationIconBadgeNumber != 0) {
         application.applicationIconBadgeNumber = 0;
         [[PFInstallation currentInstallation] saveInBackground];
@@ -99,15 +107,12 @@
     
     self.navController = [[UINavigationController alloc] initWithRootViewController:self.welcomeViewController];
     [self.navController setNavigationBarHidden: NO];
+    [self.navController setToolbarHidden:YES];
     
     self.window.rootViewController = self.navController;
     [self.window makeKeyAndVisible];
     
     [self handlePush:launchOptions];
-    
-    [PFFacebookUtils initializeFacebook];
-    [PFTwitterUtils initializeWithConsumerKey:TWITTER_CONSUMER_KEY
-                               consumerSecret:TWITTER_CONSUMER_SECRET];
     
     // Google Analytics
     [GAI sharedInstance].trackUncaughtExceptions = YES;
@@ -279,96 +284,38 @@
     
     //NSLog(@"%@::presentTabBarController:",APPDELEGATE_RESPONDER);
     
-    /** START TAB VIEW CONTROLLERS INIT **/
+    // Start TabView Controllers init
     self.tabBarController = [[FTTabBarController alloc] init];
     
     // Feed ViewController
     self.feedViewController = [[FTFeedViewController alloc] initWithClassName:kFTPostClassKey];
     [self.feedViewController setFirstLaunch:firstLaunch];
     
-    // Activity ViewController
-    self.activityViewController = [[FTActivityFeedViewController alloc] initWithStyle:UITableViewStylePlain];
-    
-    // Map ViewController - Home
-    self.mapViewController = [[FTMapViewController alloc] initWithSearchBar:YES];
-    
-    self.userProfileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [self.userProfileViewController setUser:[PFUser currentUser]];
-    
-    // Rewards View Controller
-    UICollectionViewFlowLayout *layoutFlow = [[UICollectionViewFlowLayout alloc] init];
-    [layoutFlow setItemSize:CGSizeMake(bounds.size.width/2,185)];
-    [layoutFlow setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [layoutFlow setMinimumInteritemSpacing:0];
-    [layoutFlow setMinimumLineSpacing:0];
-    [layoutFlow setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-    [layoutFlow setHeaderReferenceSize:CGSizeMake(bounds.size.width,REWARDS_MENU_HEIGHT)];
-    
-    self.rewardsViewController = [[FTRewardsCollectionViewController alloc] initWithCollectionViewLayout:layoutFlow];
-    
-    /** END TAB VIEW CONTROLLERS INIT **/
-    FTNavigationController *emptyNavigationController           = [[FTNavigationController alloc] init];
-    FTNavigationController *feedNavigationController            = [[FTNavigationController alloc] initWithRootViewController:self.feedViewController];
-    FTNavigationController *activityFeedNavigationController    = [[FTNavigationController alloc] initWithRootViewController:self.activityViewController];
-    FTNavigationController *mapNavigationController             = [[FTNavigationController alloc] initWithRootViewController:self.mapViewController];
-    FTNavigationController *rewardsFeedNavigationController     = [[FTNavigationController alloc] initWithRootViewController:self.rewardsViewController];
-    FTNavigationController *userProfileNavigationController     = [[FTNavigationController alloc] initWithRootViewController:self.userProfileViewController];
-    
-    [FTUtility addBottomDropShadowToNavigationBarForNavigationController:emptyNavigationController];
-    [FTUtility addBottomDropShadowToNavigationBarForNavigationController:feedNavigationController];
-    [FTUtility addBottomDropShadowToNavigationBarForNavigationController:activityFeedNavigationController];
-    [FTUtility addBottomDropShadowToNavigationBarForNavigationController:mapNavigationController];
-    [FTUtility addBottomDropShadowToNavigationBarForNavigationController:rewardsFeedNavigationController];
-    [FTUtility addBottomDropShadowToNavigationBarForNavigationController:userProfileNavigationController];
-    
-    // Feed ViewController
-    UITabBarItem *feedTabBarItem = [[UITabBarItem alloc] initWithTitle:nil
-                                                                 image:[[UIImage imageNamed:BUTTON_IMAGE_FEED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
-                                                         selectedImage:[[UIImage imageNamed:BUTTON_IMAGE_FEED_SELECTED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
-
-    // Notifications ViewController
-    UITabBarItem *activityFeedTabBarItem = [[UITabBarItem alloc] initWithTitle:nil
-                                                                         image:[[UIImage imageNamed:BUTTON_IMAGE_NOTIFICATIONS] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
-                                                                 selectedImage:[[UIImage imageNamed:BUTTON_IMAGE_NOTIFICATIONS_SELECTED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
-    
-    // Rewards ViewController
-    UITabBarItem *rewardsFeedTabBarItem = [[UITabBarItem alloc] initWithTitle:nil
-                                                                        image:[[UIImage imageNamed:BUTTON_IMAGE_REWARDS] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
-                                                                selectedImage:[[UIImage imageNamed:BUTTON_IMAGE_REWARDS_SELECTED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
-    
     // Map ViewController
-    UITabBarItem *mapTabBarItem = [[UITabBarItem alloc] initWithTitle:nil
-                                                                image:[[UIImage imageNamed:BUTTON_IMAGE_SEARCH] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
-                                                        selectedImage:[[UIImage imageNamed:BUTTON_IMAGE_SEARCH_SELECTED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+    self.mapViewController = [[FTMapViewController alloc] init];
+    
+    // Navigation controllers
+    FTNavigationController *feedNavigationController    = [[FTNavigationController alloc] initWithFeedViewController:self.feedViewController];
+    FTNavigationController *mapNavigationController     = [[FTNavigationController alloc] initWithMapViewController:self.mapViewController];
+    
+    // Main controllers
+    FTMainViewController *feedMainViewController        = [[FTMainViewController alloc] initWithViewController:feedNavigationController];
+    FTMainViewController *mapMainViewController         = [[FTMainViewController alloc] initWithViewController:mapNavigationController];
 
-    // User Profile ViewController
-    UITabBarItem *userProfileTabBarItem = [[UITabBarItem alloc] initWithTitle:nil
-                                                                        image:[[UIImage imageNamed:BUTTON_IMAGE_USER_PROFILE] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
-                                                                selectedImage:[[UIImage imageNamed:BUTTON_IMAGE_USER_PROFILE_SELECTED] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
-
-    [feedNavigationController setTabBarItem:feedTabBarItem];
-    [activityFeedNavigationController setTabBarItem:activityFeedTabBarItem];
-    [rewardsFeedNavigationController setTabBarItem:rewardsFeedTabBarItem];
-    [mapNavigationController setTabBarItem:mapTabBarItem];
-    [userProfileNavigationController setTabBarItem:userProfileTabBarItem];
+    feedNavigationController.myDelegate = feedMainViewController;
+    mapNavigationController.myDelegate = mapMainViewController;
     
     self.tabBarController.delegate = self;
-    self.tabBarController.viewControllers = @[ activityFeedNavigationController,
-                                               mapNavigationController,
-                                               feedNavigationController,
-                                               userProfileNavigationController,
-                                               rewardsFeedNavigationController ];
+    self.tabBarController.viewControllers = @[ mapMainViewController, feedMainViewController ];
     self.tabBarController.selectedIndex = TAB_FEED;
     
-    for (int i = 0; i < [self.tabBarController.tabBar items].count; i++) {
-        [[[self.tabBarController.tabBar items] objectAtIndex:i] setImageInsets:UIEdgeInsetsMake(TAB_BAR_INSET_TOP, 0, TAB_BAR_INSET_BOTTOM, 0)];
-    }
-    
     [self.navController setViewControllers:@[ self.welcomeViewController, self.tabBarController ] animated:NO];
+    
     [self registerForRemoteNotification];
 }
 
-- (void)logOut {
+- (void)logOut
+{
     //NSLog(@"%@::logOut:",APPDELEGATE_RESPONDER);
     // clear cache
     [[FTCache sharedCache] clear];
@@ -394,10 +341,7 @@
     //[self presentLoginViewController];
     
     self.feedViewController         = nil;
-    self.activityViewController     = nil;
     self.mapViewController          = nil;
-    self.rewardsViewController      = nil;
-    self.userProfileViewController  = nil;
 }
 
 #pragma mark - ()
@@ -410,15 +354,17 @@
         [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
         [[UIApplication sharedApplication] registerForRemoteNotifications];
     } else {
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];        
     }
 }
 
-- (void)monitorReachability {
+- (void)monitorReachability
+{
     //NSLog(@"%@::monitorReachability:",APPDELEGATE_RESPONDER);
     Reachability *hostReach = [Reachability reachabilityWithHostname:PARSE_HOST];
     
-    hostReach.reachableBlock = ^(Reachability *reach) {
+    hostReach.reachableBlock = ^(Reachability *reach)
+    {
         _networkStatus = [reach currentReachabilityStatus];
         
         //if ([self isParseReachable] && [PFUser currentUser] && self.homeViewController.objects.count == 0) {
@@ -429,19 +375,21 @@
         }
     };
     
-    hostReach.unreachableBlock = ^(Reachability*reach) {
+    hostReach.unreachableBlock = ^(Reachability *reach)
+    {
         _networkStatus = [reach currentReachabilityStatus];
     };
     
     [hostReach startNotifier];
 }
 
-- (void)handlePush:(NSDictionary *)launchOptions {
+- (void)handlePush:(NSDictionary *)launchOptions
+{
     //NSLog(@"%@::handlePush:",APPDELEGATE_RESPONDER);
     // If the app was launched in response to a push notification, we'll handle the payload here
     NSDictionary *remoteNotificationPayload = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-    if (remoteNotificationPayload) {
-        
+    if (remoteNotificationPayload)
+    {
         [[NSNotificationCenter defaultCenter] postNotificationName:FTAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:remoteNotificationPayload];
         
         if (![PFUser currentUser]) {

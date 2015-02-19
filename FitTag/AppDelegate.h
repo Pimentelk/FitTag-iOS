@@ -16,8 +16,19 @@
 
 @property (nonatomic, readonly) int networkStatus;
 
+/*!
+ Used to check if the parse network status is reachable
+ */
 - (BOOL)isParseReachable;
+
+/*!
+ Presents the tabbar controller
+ */
 - (void)presentTabBarController;
+
+/*!
+ Clear cache and logout the user
+ */
 - (void)logOut;
 
 @end
