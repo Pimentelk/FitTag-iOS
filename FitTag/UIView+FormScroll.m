@@ -11,16 +11,13 @@
 
 @implementation UIView (FormScroll)
 
-
 -(void)scrollToY:(float)y
 {
-    
     [UIView beginAnimations:@"registerScroll" context:NULL];
     [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
     [UIView setAnimationDuration:0.3];
     self.transform = CGAffineTransformMakeTranslation(0, y);
     [UIView commitAnimations];
-    
 }
 
 -(void)scrollToView:(UIView *)view
@@ -43,7 +40,6 @@
     else {
         [self scrollToY:0];
     }
-    
 }
 
 @end
