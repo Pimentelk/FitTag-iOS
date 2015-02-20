@@ -79,7 +79,7 @@
 // UITabBar Tabs
 #define TAB_NOTIFICATIONS 0
 #define TAB_MAP 1
-#define TAB_FEED 2
+#define TAB_FEED 1
 #define TAB_PROFILE 3
 #define TAB_Rewards 4
 
@@ -175,8 +175,8 @@
 
 // Timeline Cells Tool bar items
 #define COMMENT_BUTTON [UIImage imageNamed:@"comment_button"]
-#define ENCOURAGE_BUTTON_UNSELECTED [UIImage imageNamed:@"encourage_button_unselected"]
-#define ENCOURAGE_BUTTON_SELECTED [UIImage imageNamed:@"encourage_button_selected"]
+#define INSPIRED_BUTTON_UNSELECTED [UIImage imageNamed:@"inspired_button_unselected"]
+#define INSPIRED_BUTTON_SELECTED [UIImage imageNamed:@"inspired_button_selected"]
 
 #define COMMENT_BUBBLE_WHITE [UIImage imageNamed:@"commentbubble_white"]
 #define COMMENT_BUBBLE [UIImage imageNamed:@"commentbubble"]
@@ -233,10 +233,15 @@
 #define BUTTON_IMAGE_REWARDS_SELECTED @"rewards_selected"
 #define BUTTON_IMAGE_FEED_SELECTED @"feed_selected"
 
-#define BUTTON_IMAGE_NOTIFICATIONS @"notifications_unselected"
+#define BUTTON_IMAGE_SETTING [UIImage imageNamed:@"setting"]
+#define BUTTON_IMAGE_REVEAL [UIImage imageNamed:@"reveal-icon"]
+#define BUTTON_IMAGE_CAMERA @"camicon"
+
+#define BUTTON_IMAGE_NOTIFICATIONS [UIImage imageNamed:@"notifications"]
+#define BUTTON_IMAGE_REWARDS [UIImage imageNamed:@"reward"]
+#define BUTTON_IMAGE_ADD_FRIENDS [UIImage imageNamed:@"add-friends"]
 #define BUTTON_IMAGE_SEARCH @"search_unselected"
 #define BUTTON_IMAGE_USER_PROFILE @"profile_unselected"
-#define BUTTON_IMAGE_REWARDS @"rewards_unselected"
 #define BUTTON_IMAGE_FEED @"feed_unselected"
 
 // TAB NAVIGATION VIEW CONTROLLER TITLES
@@ -253,7 +258,7 @@
 
 // NAVIGATION BAR BUTTONS
 #define NAVIGATION_BAR_BUTTON_BACK @"navigate_back"
-#define NAVIGATION_BAR_BUTTON_ADD_CONTACTS @"add_contacts"
+#define NAVIGATION_BAR_BUTTON_ADD_CONTACTS [UIImage imageNamed:@"add_contacts"]
 #define NAVIGATION_BAR_BUTTON_CAMERA @"fittag_button"
 #define NAVIGATION_BAR_BUTTON_TRASH @"trash"
 
