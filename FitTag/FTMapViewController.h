@@ -7,7 +7,6 @@
 //
 
 #import "FTSearchHeaderView.h"
-#import <MapKit/MapKit.h>
 #import <CoreLocation/CoreLocation.h>
 #import "FTToolbar.h"
 #import "FTMapScrollViewItem.h"
@@ -25,14 +24,18 @@
                                                    UITextFieldDelegate,
                                                    FTAmbassadorAnnotationViewDelegate,
                                                    FTBusinessAnnotationViewDelegate,
-                                                   UITableViewDataSource,
                                                    FTSuggestionCellDelegate,
-                                                   UITableViewDelegate,
                                                    FTLocationManagerDelegate>
 @property (nonatomic, strong) PFObject *user;
 @property (nonatomic, strong) MKMapView *mapView;
+@property (nonatomic) BOOL skipAnimation;
 
 - (void)setInitialLocation:(CLLocation *)aLocation;
 - (void)setInitialLocationObject:(PFObject *)object;
-- (id)initWithSearchBar:(BOOL)show;
+
+
+- (void)didTapSearchUsers:(PFUser *)aUser;
+- (void)didTapSearchHashtags:(NSString *)hashtag;
+- (void)didTapSearch:(NSString *)searchText forUser:(BOOL)isUser;
+
 @end
