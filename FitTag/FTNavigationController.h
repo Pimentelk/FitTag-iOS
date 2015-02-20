@@ -19,11 +19,6 @@
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 
-/*
-- (id)initWithRootViewController:(UIViewController *)rootViewController
-                   selectedIndex:(int)index;
-*/
-
 - (id)initWithMapViewController:(FTMapViewController *)mapViewController;
 - (id)initWithFeedViewController:(FTFeedViewController *)feedViewController;
 
