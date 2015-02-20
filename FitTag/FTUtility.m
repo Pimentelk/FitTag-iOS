@@ -303,7 +303,7 @@
                                           NSLog(@"%@", error.description);
                                           
                                           [[[UIAlertView alloc] initWithTitle:@"Error Posting"
-                                                                      message:@"Oh oh! Something went very wrong, contact support and give them this code: BOOMPOW"
+                                                                      message:@"Oh oh! Something went very wrong, contact support@fittag.com and give them this code: BOOMPOW"
                                                                      delegate:nil
                                                             cancelButtonTitle:@"OK"
                                                             otherButtonTitles:nil] show];
@@ -837,7 +837,7 @@
         NSRange wordRange = [match rangeAtIndex:1];
         NSString *word = [text substringWithRange:wordRange];
         
-        [matchedResults addObject:word];
+        [matchedResults addObject:[word lowercaseString]];
     }
     return matchedResults;
 }
@@ -866,7 +866,7 @@
         NSRange wordRange = [match rangeAtIndex:1];
         NSString *word = [text substringWithRange:wordRange];
         
-        [matchedResults addObject:word];
+        [matchedResults addObject:[word lowercaseString]];
     }
     return matchedResults;
 }
