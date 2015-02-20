@@ -17,5 +17,9 @@
 @end
 
 @protocol FTAddPlaceViewControllerDelegate <NSObject>
-- (void)addPlaceViewController:(FTAddPlaceViewController *)addPlaceViewController didAddNewplace:(PFObject *)place location:(PFObject *)location;
+
+- (void)addPlaceViewController:(FTAddPlaceViewController *)addPlaceViewController
+                didAddNewplace:(PFObject *)place
+                      location:(PFGeoPoint *)geoLocation;
+
 @end

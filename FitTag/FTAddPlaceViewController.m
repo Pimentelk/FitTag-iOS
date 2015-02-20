@@ -8,15 +8,15 @@
 
 #import "FTAddPlaceViewController.h"
 #import "FTCamViewController.h"
+#import "UIImage+ResizeAdditions.h"
 
-#define CAPTION_DESCTIPTION @"Desctiption"
+#define CAPTION_DESCTIPTION @"Description"
 
 @interface FTAddPlaceViewController () <FTCamViewControllerDelegate>
 @property (nonatomic,strong) UITextField *nameTextField;
 @property (nonatomic,strong) UITextField *contactTextField;
 @property (nonatomic,strong) UITextView *descriptionTextView;
 @property (nonatomic,strong) FTLocationManager *locationManager;
-@property (nonatomic,strong) UIImage *icon;
 @property (nonatomic,strong) PFUser *contact;
 @property (nonatomic,strong) UIScrollView *scrollView;
 @property (nonatomic,strong) UIScrollView *originalScrollView;
@@ -30,7 +30,6 @@
 @synthesize nameTextField;
 @synthesize descriptionTextView;
 @synthesize locationManager;
-@synthesize icon;
 @synthesize contact;
 @synthesize contactTextField;
 @synthesize scrollView;
@@ -65,6 +64,8 @@
     [self setEdgesForExtendedLayout:UIRectEdgeNone];
     
     [self.scrollView setBackgroundColor:[UIColor whiteColor]];
+    
+    self.businessPhoto = nil;
     
     UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
     [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
@@ -175,17 +176,24 @@
 
 #pragma mark - FTSuggestionTableViewDelegate
 
-- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView didSelectHashtag:(NSString *)hashtag completeString:(NSString *)completeString {
+- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView
+           didSelectHashtag:(NSString *)hashtag
+             completeString:(NSString *)completeString {
+    
     if (hashtag) {
         NSString *replaceString = [contactTextField.text stringByReplacingOccurrencesOfString:completeString withString:hashtag];
         [contactTextField setText:replaceString];
     }
 }
 
-- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView didSelectUser:(PFUser *)user completeString:(NSString *)completeString {
+- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView
+              didSelectUser:(PFUser *)user
+             completeString:(NSString *)completeString {
+    
     if ([user objectForKey:kFTUserDisplayNameKey]) {
         NSString *displayname = [user objectForKey:kFTUserDisplayNameKey];
-        NSString *replaceString = [contactTextField.text stringByReplacingOccurrencesOfString:completeString withString:displayname];
+        NSString *replaceString = [contactTextField.text stringByReplacingOccurrencesOfString:completeString
+                                                                                   withString:displayname];
         [contactTextField setText:replaceString];
     }
 }
@@ -249,7 +257,7 @@
         }
     }
     
-    if (currentMention){
+    if (currentMention) {
         
         // Fade in
         [UIView animateWithDuration:0.4 animations:^{
@@ -266,7 +274,7 @@
             [suggestionTableView updateSuggestionWithText:text AndType:SUGGESTION_TYPE_USERS];
         }
         
-    } else if (currentHashtag){
+    } else if (currentHashtag) {
         
         // Fade in
         [UIView animateWithDuration:0.4 animations:^{
@@ -299,12 +307,14 @@
 }
 
 - (void)didTapPlaceImageButtonAction:(UIButton *)button {
+    
     FTCamViewController *camViewController = [[FTCamViewController alloc] init];
     camViewController.delegate = self;
     camViewController.isProfilePciture = YES;
     
     UINavigationController *navController = [[UINavigationController alloc] init];
     [navController setViewControllers:@[camViewController] animated:NO];
+    
     [self presentViewController:navController animated:YES completion:nil];
 }
 
@@ -323,7 +333,9 @@
     // Align the bottom edge of the photo with the keyboard
     
     scrollViewContentOffset.y = 0;
-    scrollViewContentOffset.y += keyboardFrameEnd.size.height - (self.originalScrollView.frame.size.height - (20 + contactTextField.frame.size.height + contactTextField.frame.origin.y));
+    scrollViewContentOffset.y += keyboardFrameEnd.size.height - (self.originalScrollView.frame.size.height -
+                                                                 (20 + contactTextField.frame.size.height +
+                                                                  contactTextField.frame.origin.y));
     
     [self.scrollView setContentOffset:scrollViewContentOffset animated:NO];
 }
@@ -340,6 +352,15 @@
 
 - (void)didTapSaveButtonAction:(id)sender {
     
+    if (self.businessPhoto == nil) {
+        [[[UIAlertView alloc] initWithTitle:@"Photo is required"
+                                    message:@"Please be sure to upload a photo for this location."
+                                   delegate:nil
+                          cancelButtonTitle:@"Okay"
+                          otherButtonTitles:nil] show];
+        return;
+    }
+    
     [contactTextField resignFirstResponder];
     [nameTextField resignFirstResponder];
     [descriptionTextView resignFirstResponder];
@@ -348,61 +369,37 @@
         
         if (geoPoint) {
             
-            CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-            CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
-            [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+            UIImage *resizedImage = [self.businessPhoto resizedImageWithContentMode:CONTENTMODE
+                                                                             bounds:CGSizeMake(160, 160)
+                                                               interpolationQuality:kCGInterpolationHigh];
+            
+            NSData *imageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
+            
+            PFFile *icon = [PFFile fileWithName:@"icon.jpg" data:imageData];
+            
+            PFObject *place = [PFObject objectWithClassName:kFTPlaceClassKey];
+            [place setObject:nameTextField.text forKey:kFTPlaceNameKey];
+            [place setObject:descriptionTextView.text forKey:kFTPlaceDescriptionKey];
+            [place setObject:geoPoint forKey:kFTPlaceLocationKey];
+            [place setObject:[NSNumber numberWithBool:NO] forKey:kFTPlaceVerifiedKey];
+            [place setObject:icon forKey:kFTPlaceIconKey];
+            
+            if (contact) {
+                [place setObject:contact forKey:kFTPlaceContactKey];
+            }
+            
+            [place saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (!error) {
+                    [FTUtility showHudMessage:@"Place submitted" WithDuration:2];
                     
-                    //NSLog(@"placemarks:%@",placemarks);
+                    [self.navigationController popViewControllerAnimated:NO];
                     
-                    for (CLPlacemark *placemark in placemarks) {
-                        
-                        NSString *postLocation = [NSString stringWithFormat:@" %@, %@", [placemark locality], [placemark administrativeArea]];
-                        
-                        if (postLocation) {
-                            
-                            //NSLog(@"postLocation:%@",postLocation);
-                            
-                            PFObject *location = [PFObject objectWithClassName:kFTLocationClassKey];
-                            [location setObject:[placemark thoroughfare] forKey:kFTLocationAddressKey];
-                            [location setObject:[placemark locality] forKey:kFTLocationCityKey];
-                            [location setObject:[placemark administrativeArea] forKey:kFTLocationStateKey];
-                            [location setObject:[placemark postalCode] forKey:kFTLocationPostalCodeKey];
-                            [location setObject:[placemark country] forKey:kFTLocationCountryKey];
-                            [location setObject:geoPoint forKey:kFTLocationGeoPointKey];
-                            [location saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                
-                                if (!error) {
-                                    
-                                    PFObject *place = [PFObject objectWithClassName:kFTPlaceClassKey];
-                                    [place setObject:nameTextField.text forKey:kFTPlaceNameKey];
-                                    [place setObject:descriptionTextView.text forKey:kFTPlaceDescriptionKey];
-                                    [place setObject:location forKey:kFTPlaceLocationKey];
-                                    [place setObject:[NSNumber numberWithBool:NO] forKey:kFTPlaceVerifiedKey];
-                                    
-                                    if (contact) {
-                                        [place setObject:contact forKey:kFTPlaceContactKey];
-                                    }
-                                    
-                                    [place saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        if (!error) {
-                                            [FTUtility showHudMessage:@"Place submitted" WithDuration:2];
-                                            if (delegate && [delegate respondsToSelector:@selector(addPlaceViewController:didAddNewplace:location:)]) {
-                                                [delegate addPlaceViewController:self didAddNewplace:place location:location];
-                                            }
-                                        }
-                                    }];
-                                }
-                            }];
-                            
-                            //NSLog(@"location:%@",location);
-                        }
-                    }
-                } else {
-                    NSLog(@"ERROR: %@",error);
+                    if (delegate && [delegate respondsToSelector:@selector(addPlaceViewController:didAddNewplace:location:)]) {
+                        [delegate addPlaceViewController:self didAddNewplace:place location:geoPoint];
+                    }                    
                 }
             }];
-            
+                        
         } else {
             
             [[[UIAlertView alloc] initWithTitle:@"Location not available"
@@ -431,7 +428,9 @@
 
 #pragma mark - FTEditPhotoViewControllerDelegate
 
-- (void)camViewController:(FTCamViewController *)camViewController profilePicture:(UIImage *)photo {
+- (void)camViewController:(FTCamViewController *)camViewController
+           profilePicture:(UIImage *)photo {
+    
     //NSLog(@"%@::camViewController:photo:",VIEWCONTROLLER_SIGNUP);
     self.businessPhoto = photo;
     [self.placeImageButton setImage:photo forState:UIControlStateNormal];
