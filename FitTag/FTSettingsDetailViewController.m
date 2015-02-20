@@ -53,6 +53,7 @@
 @property (nonatomic, strong) UIWebView *webView;
 @property (nonatomic, strong) UIView *webViewNavigationBar;
 @property (nonatomic, strong) NSArray *objects;
+
 @property (nonatomic, strong) UIBarButtonItem *doneButtonItem;
 @property (nonatomic, strong) UIBarButtonItem *backButtonItem;
 
@@ -77,6 +78,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_SETTINGS_DETAIL];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
@@ -112,7 +114,7 @@
         [self.view.subviews makeObjectsPerformSelector: @selector(removeFromSuperview)];
         
         // Check for config type
-        NSLog(@"%@ self.detailItem: %@",VIEWCONTROLLER_SETTINGS_DETAIL, self.detailItem);
+        //NSLog(@"%@ self.detailItem: %@",VIEWCONTROLLER_SETTINGS_DETAIL, self.detailItem);
         
         if ([self.detailItem isEqualToString:PROFILE_PICTURE]) {
             [self configureProfilePicture];
@@ -135,36 +137,31 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    // Navigation bar ends
-    navigationBarEnd = self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y;
-    
-    self.automaticallyAdjustsScrollViewInsets = NO;
-    
     // Set Background
-    
-    [self.view setBackgroundColor:FT_GRAY];
+    [self.view setBackgroundColor:[UIColor whiteColor]];
     
     // Override the back idnicator
-    
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     [self.navigationController.navigationBar setBarTintColor:FT_RED];
+    [self.navigationController.navigationBar setTranslucent:NO];
     
     // Back button
-    
     backButtonItem = [[UIBarButtonItem alloc] init];
     [backButtonItem setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
     [backButtonItem setStyle:UIBarButtonItemStylePlain];
     [backButtonItem setTarget:self];
     [backButtonItem setAction:@selector(didTapBackButtonAction:)];
     [backButtonItem setTintColor:[UIColor whiteColor]];
+    
     [self.navigationItem setLeftBarButtonItem:backButtonItem];
     
     // Done button
-    
-    doneButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self
+    doneButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                   target:self
                                                                    action:@selector(didTapDoneButtonAction:)];
     [doneButtonItem setStyle:UIBarButtonItemStylePlain];
     [doneButtonItem setTintColor:[UIColor whiteColor]];
+    
     [self.navigationItem setRightBarButtonItem:doneButtonItem];
 }
 
@@ -189,9 +186,7 @@
     PFUser *user = [PFUser currentUser];
     PFFile *file = [user objectForKey:kFTUserProfilePicMediumKey];
     
-    
     if (file && ![file isEqual:[NSNull null]]) {
-        
         [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
             if (!error) {
                 UIImage *profileImage = [UIImage imageWithData:data];
@@ -201,6 +196,7 @@
             }
         }];
     }
+    
     // Setup and position the profile buttons
     CGFloat profileImageViewEnd = userProfileImageView.frame.size.height + userProfileImageView.frame.origin.y;
     CGFloat frameWidth = self.view.frame.size.width;
@@ -345,7 +341,8 @@
     PFUser *user = [PFUser currentUser];
     
     // Navigation bar ends
-    navigationBarEnd = self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y;
+    CGRect navFrame = self.navigationController.navigationBar.frame;
+    navigationBarEnd = navFrame.size.height + navFrame.origin.y;
     
     // Navigation bar ends
     CGSize frameSize = self.view.frame.size;
@@ -365,7 +362,7 @@
     
     userFirstname = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, TOP_PADDING, textViewWidth, textViewHeight)];
     [userFirstname setPlaceholder:@"FIRST NAME"];
-    [userFirstname setBackgroundColor:[UIColor whiteColor]];
+    [userFirstname setBackgroundColor:FT_GRAY];
     [userFirstname setFont:HelveticaNeue(14)];
     [userFirstname setDelegate:self];
     if ([user objectForKey:kFTUserFirstnameKey]) {
@@ -373,32 +370,38 @@
     }
     [scrollView addSubview:userFirstname];
     
-    userLastname = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, userFirstname.frame.size.height+userFirstname.frame.origin.y+TOP_PADDING,
-                                                                 textViewWidth, textViewHeight)];
+    CGFloat userLastnameY = userFirstname.frame.size.height + userFirstname.frame.origin.y + TOP_PADDING;
+    userLastname = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, userLastnameY, textViewWidth, textViewHeight)];
     [userLastname setPlaceholder:@"LAST NAME"];
-    [userLastname setBackgroundColor:[UIColor whiteColor]];
+    [userLastname setBackgroundColor:FT_GRAY];
     [userLastname setFont:HelveticaNeue(14)];
     [userLastname setDelegate:self];
+    
     if ([user objectForKey:kFTUserLastnameKey]) {
         [userLastname setText:[user objectForKey:kFTUserLastnameKey]];
     }
+    
     [scrollView addSubview:userLastname];
     
-    userHandle = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, userLastname.frame.size.height+userLastname.frame.origin.y+TOP_PADDING, textViewWidth, textViewHeight)];
+    CGFloat userHandleY = userLastname.frame.size.height + userLastname.frame.origin.y + TOP_PADDING;
+    userHandle = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, userHandleY, textViewWidth, textViewHeight)];
     [userHandle setPlaceholder:@"USER HANDLE"];
-    [userHandle setBackgroundColor:[UIColor whiteColor]];
+    [userHandle setBackgroundColor:FT_GRAY];
     [userHandle setFont:HelveticaNeue(14)];
     [userHandle setDelegate:self];
+    
     if ([user objectForKey:kFTUserDisplayNameKey]) {
         [userHandle setText:[user objectForKey:kFTUserDisplayNameKey]];
     }
+    
     [userHandle setAutocorrectionType:UITextAutocorrectionTypeNo];
     [userHandle setAutocapitalizationType:UITextAutocapitalizationTypeNone];
     [scrollView addSubview:userHandle];
     
-    userWebsite = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, userHandle.frame.size.height+userHandle.frame.origin.y+TOP_PADDING, textViewWidth, textViewHeight)];
+    CGFloat userWebsiteY = userHandle.frame.size.height + userHandle.frame.origin.y + TOP_PADDING;
+    userWebsite = [[UITextField alloc] initWithFrame:CGRectMake(textViewX, userWebsiteY, textViewWidth, textViewHeight)];
     [userWebsite setPlaceholder:@"WEBSITE"];
-    [userWebsite setBackgroundColor:[UIColor whiteColor]];
+    [userWebsite setBackgroundColor:FT_GRAY];
     [userWebsite setFont:HelveticaNeue(14)];
     if ([user objectForKey:kFTUserWebsiteKey]) {
         [userWebsite setText:[user objectForKey:kFTUserWebsiteKey]];
@@ -406,15 +409,18 @@
     [scrollView addSubview:userWebsite];
     
     // User bio text view
-    userBiography = [[UITextView alloc] initWithFrame:CGRectMake(textViewX, userWebsite.frame.size.height+userWebsite.frame.origin.y+TOP_PADDING, textViewWidth, 150)];
-    [userBiography setBackgroundColor:[UIColor whiteColor]];
+    CGFloat userBiographyY = userWebsite.frame.size.height + userWebsite.frame.origin.y + TOP_PADDING;
+    userBiography = [[UITextView alloc] initWithFrame:CGRectMake(textViewX, userBiographyY, textViewWidth, 150)];
+    [userBiography setBackgroundColor:FT_GRAY];
     [userBiography setTextColor:[UIColor blackColor]];
     [userBiography setFont:HelveticaNeue(14)];
     [userBiography setUserInteractionEnabled:YES];
     [userBiography setDelegate:self];
+    
     if ([user objectForKey:kFTUserBioKey]) {
         [userBiography setText:[user objectForKey:kFTUserBioKey]];
     }
+    
     [scrollView addSubview:userBiography];
     
     [self.view addSubview:scrollView];
@@ -798,7 +804,7 @@
                 NSLog(@"%@ %@",ERROR_MESSAGE,error);
                 [lever setOn:NO];
                 [[[UIAlertView alloc] initWithTitle:@"Facebook Error"
-                                            message:@"Failed to link with your facebook account. Please try again, if the problem continues contact support. :("
+                                            message:@"Failed to link with your facebook account. Please try again, if the problem continues contact support@fittag.com. :("
                                            delegate:nil
                                   cancelButtonTitle:@"ok"
                                   otherButtonTitles:nil] show];
@@ -838,7 +844,7 @@
                 NSLog(@"%@ %@",ERROR_MESSAGE,error);
                 [lever setOn:NO];
                 [[[UIAlertView alloc] initWithTitle:@"Twitter Error"
-                                            message:@"Failed to link with your twitter account. Please try again, if the problem continues contact support. :("
+                                            message:@"Failed to link with your twitter account. Please try again, if the problem continues contact support@fittag.com. :("
                                            delegate:nil
                                   cancelButtonTitle:@"ok"
                                   otherButtonTitles:nil] show];
@@ -855,7 +861,7 @@
                 NSLog(@"%@ %@",ERROR_MESSAGE,error);
                 [lever setOn:YES];
                 [[[UIAlertView alloc] initWithTitle:@"Twitter Error"
-                                            message:@"Failed to unlink with your twitter account. Please try again, if the problem continues contact support. :("
+                                            message:@"Failed to unlink with your twitter account. Please try again, if the problem continues contact support@fittag.com. :("
                                            delegate:nil
                                   cancelButtonTitle:@"ok"
                                   otherButtonTitles:nil] show];
@@ -909,7 +915,7 @@
             }
             
             [[[UIAlertView alloc] initWithTitle:@"Network Problems"
-                                        message:@"Unable to save your profile picture. Please try again later, if the problem continues contact support."
+                                        message:@"Unable to save your profile picture. Please try again later, if the problem continues contact support@fittag.com."
                                        delegate:self
                               cancelButtonTitle:@"ok"
                               otherButtonTitles:nil] show];
@@ -941,7 +947,7 @@
             [userProfileImageView setImage:nil];
             
             [[[UIAlertView alloc] initWithTitle:@"Error"
-                                        message:@"Unable to save your profile picture. Please try again later, if the problem continues contact support."
+                                        message:@"Unable to save your profile picture. Please try again later, if the problem continues contact support@fittag.com."
                                        delegate:self
                               cancelButtonTitle:@"ok"
                               otherButtonTitles:nil] show];
@@ -971,7 +977,7 @@
         
         if (error) {
             [[[UIAlertView alloc] initWithTitle:@"Error"
-                                        message:@"Unable to save your profile picture. Please try again later, if the problem continues contact support."
+                                        message:@"Unable to save your profile picture. Please try again later, if the problem continues contact support@fittag.com."
                                        delegate:self
                               cancelButtonTitle:@"ok"
                               otherButtonTitles:nil] show];
@@ -1049,7 +1055,7 @@
                     if (error) {
                         [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
                         [[[UIAlertView alloc] initWithTitle:@"Error"
-                                                    message:@"Unable to update your profile picture. Please try again later, if the problem continues contact support."
+                                                    message:@"Unable to update your profile picture. Please try again later, if the problem continues contact support@fittag.com."
                                                    delegate:self
                                           cancelButtonTitle:@"ok"
                                           otherButtonTitles:nil] show];
@@ -1060,7 +1066,7 @@
                 NSLog(@"Facebook%@%@",ERROR_MESSAGE,error);
                 [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
                 [[[UIAlertView alloc] initWithTitle:@"Error"
-                                            message:@"Unable to update your profile picture. Please try again later, if the problem continues contact support."
+                                            message:@"Unable to update your profile picture. Please try again later, if the problem continues contact support@fittag.com."
                                            delegate:self
                                   cancelButtonTitle:@"ok"
                                   otherButtonTitles:nil] show];
@@ -1105,7 +1111,7 @@
                     NSLog(@"%@%@",ERROR_MESSAGE,error);
                     [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
                     [[[UIAlertView alloc] initWithTitle:@"Error"
-                                                message:@"Unable to update your profile picture. Please try again later, if the problem continues contact support."
+                                                message:@"Unable to update your profile picture. Please try again later, if the problem continues contact support@fittag.com."
                                                delegate:self
                                       cancelButtonTitle:@"ok"
                                       otherButtonTitles:nil] show];
@@ -1135,7 +1141,7 @@
             NSLog(@"Twitter%@%@",ERROR_MESSAGE,error);
             [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
             [[[UIAlertView alloc] initWithTitle:@"Error"
-                                        message:@"Unable to update your profile picture. Please try again later, if the problem continues contact support."
+                                        message:@"Unable to update your profile picture. Please try again later, if the problem continues contact support@fittag.com."
                                        delegate:self
                               cancelButtonTitle:@"ok"
                               otherButtonTitles:nil] show];
@@ -1336,7 +1342,7 @@
     }
     
     if (doneEditing) {
-        [self.navigationController popViewControllerAnimated:NO];
+        [self.navigationController popViewControllerAnimated:YES];
     }    
 }
 
