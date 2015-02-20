@@ -175,18 +175,10 @@
             [self.likeButton setFrame:CGRectMake(likeButtonX, BUTTONS_TOP_PADDING, BUTTON_WIDTH, BUTTON_HEIGHT)];
             [self.likeButton setBackgroundColor:[UIColor clearColor]];
             [self.likeButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
-            //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_white"] forState:UIControlStateNormal];
-            //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateSelected];
-            //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateHighlighted];
-            /*
-            [self.likeButton setBackgroundImage:HEART_UNSELECTED forState:UIControlStateNormal];
-            [self.likeButton setBackgroundImage:HEART_SELECTED forState:UIControlStateSelected];
-            [self.likeButton setBackgroundImage:HEART_SELECTED forState:UIControlStateHighlighted];
-            */
-                        
-            [self.likeButton setBackgroundImage:ENCOURAGE_BUTTON_UNSELECTED forState:UIControlStateNormal];
-            [self.likeButton setBackgroundImage:ENCOURAGE_BUTTON_SELECTED forState:UIControlStateSelected];
-            [self.likeButton setBackgroundImage:ENCOURAGE_BUTTON_SELECTED forState:UIControlStateHighlighted];
+                                    
+            [self.likeButton setBackgroundImage:INSPIRED_BUTTON_UNSELECTED forState:UIControlStateNormal];
+            [self.likeButton setBackgroundImage:INSPIRED_BUTTON_SELECTED forState:UIControlStateSelected];
+            [self.likeButton setBackgroundImage:INSPIRED_BUTTON_SELECTED forState:UIControlStateHighlighted];
             
             [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
             [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
@@ -314,65 +306,35 @@
         PFObject *place = [self.gallery objectForKey:kFTPostPlaceKey];
         [place fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
             if (!error) {
-                [locationLabel setText:[place objectForKey:kFTPlaceNameKey]];
-                [locationLabel setUserInteractionEnabled:YES];
                 
-                UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
-                locationTapRecognizer.numberOfTapsRequired = 1;
-                [locationLabel addGestureRecognizer:locationTapRecognizer];
-            }
-        }];
-        
-        PFGeoPoint *geoPoint = [self.gallery objectForKey:kFTPostLocationKey];
-        
-        // Calculate distance
-        if (geoPoint && [[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
-            CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-            
-            // Get the current users location
-            PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
-            CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
-            
-            // Current users distance to the item
-            [self.distanceLabel setText:[NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
-        }
-        /*
-    } else if ([self.gallery objectForKey:kFTPostLocationKey]) {
-        
-        PFGeoPoint *geoPoint = [self.gallery objectForKey:kFTPostLocationKey];
-        CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-        CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
-        [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
-            if (!error) {
-                for (CLPlacemark *placemark in placemarks) {
-                    NSString *postLocation = [NSString stringWithFormat:@" %@, %@", [placemark locality], [placemark administrativeArea]];
-                    if (postLocation) {
-                        [locationLabel setText:postLocation];
-                        [locationLabel setUserInteractionEnabled:YES];
+                // Check if the place has a geopoint associated with it
+                if ([place objectForKey:kFTPlaceLocationKey]) {
+                    
+                    // Set the name for this location
+                    [locationLabel setText:[place objectForKey:kFTPlaceNameKey]];
+                    [locationLabel setUserInteractionEnabled:YES];
+                    
+                    // When tapped show this location on the map
+                    UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
+                    locationTapRecognizer.numberOfTapsRequired = 1;
+                    [locationLabel addGestureRecognizer:locationTapRecognizer];
+                    
+                    // Calculate distance
+                    PFGeoPoint *geoPoint = [place objectForKey:kFTPlaceLocationKey];
+                    if (geoPoint && [[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
+                        CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
                         
-                        UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
-                        locationTapRecognizer.numberOfTapsRequired = 1;
-                        [locationLabel addGestureRecognizer:locationTapRecognizer];
+                        // Get the current users location
+                        PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
+                        CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
+                        
+                        // Current users distance to the item
+                        [self.distanceLabel setText:[NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
                     }
                 }
-            } else {
-                NSLog(@"ERROR: %@",error);
             }
         }];
         
-        // Calculate distance
-        if (geoPoint && [[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
-            CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-            
-            // Get the current users location
-            PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
-            CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
-            
-            // Current users distance to the item
-            [self.distanceLabel setText:[NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
-        }
-         
-         */
     } else {
         [locationLabel setText:EMPTY_STRING];
         [distanceLabel setText:EMPTY_STRING];
