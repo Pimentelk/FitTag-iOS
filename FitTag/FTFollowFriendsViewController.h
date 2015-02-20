@@ -20,11 +20,10 @@ typedef enum {
 } FTFollowUserQueryType;
 
 #import "FTFollowCell.h"
-#import "FTInviteTableHeaderView.h"
 #import "FTLocationManager.h"
 
 @class FTLocationManager;
-@interface FTFollowFriendsViewController : UITableViewController <FTFollowCellDelegate,FTInviteTableHeaderViewDelegate,FTLocationManagerDelegate>
+@interface FTFollowFriendsViewController : UITableViewController <FTFollowCellDelegate,FTLocationManagerDelegate>
 @property (nonatomic, assign) FTFollowUserQueryType followUserQueryType;
 @property (nonatomic, strong) NSString *searchString;
 
