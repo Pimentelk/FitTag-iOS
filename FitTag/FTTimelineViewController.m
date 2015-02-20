@@ -12,30 +12,30 @@
 #import "FTUtility.h"
 #import "FTLoadMoreCell.h"
 #import "FTMapViewController.h"
-#import "FTBusinessProfileViewController.h"
+#import "FTPlaceProfileViewController.h"
 #import "FTViewFriendsViewController.h"
 
 @interface FTTimelineViewController ()
+
 @property (nonatomic, assign) BOOL shouldReloadOnAppear;
 @property (nonatomic, strong) NSMutableSet *reusableSectionHeaderViews;
 @property (nonatomic, strong) NSMutableDictionary *outstandingSectionHeaderQueries;
 @property (nonatomic, strong) UIBarButtonItem *dismissProfileButton;
-@property (nonatomic, strong) FTUserProfileViewController *profileViewController;
-@property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
 @property (nonatomic, strong) PFObject *currentPostMoreOption;
 @property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
 @property (nonatomic, strong) FTViewFriendsViewController *viewFriendsViewController;
+
 @property CGRect originalFrame;
 @property CGFloat previousScrollViewYOffset;
+
 @end
 
 @implementation FTTimelineViewController
+
 @synthesize reusableSectionHeaderViews;
 @synthesize shouldReloadOnAppear;
 @synthesize outstandingSectionHeaderQueries;
 @synthesize dismissProfileButton;
-@synthesize flowLayout;
-@synthesize profileViewController;
 @synthesize moviePlayer;
 @synthesize viewFriendsViewController;
 
@@ -89,11 +89,12 @@
     [moviePlayer setScalingMode:SCALINGMODE];
     [moviePlayer setMovieSourceType:MPMovieSourceTypeFile];
     [moviePlayer setShouldAutoplay:NO];
-    [moviePlayer.view setFrame:CGRectMake(0,0,320,320)];
+    [moviePlayer.view setFrame:CGRectMake(0,0,self.view.frame.size.width,self.view.frame.size.width)];
     [moviePlayer.view setBackgroundColor:[UIColor clearColor]];
     [moviePlayer.view setUserInteractionEnabled:NO];
     [moviePlayer.view setAlpha:1];
     [moviePlayer.backgroundView setBackgroundColor:[UIColor clearColor]];
+    
     for(UIView *aSubView in moviePlayer.view.subviews) {
         aSubView.backgroundColor = [UIColor clearColor];
     }
@@ -117,18 +118,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLikeOrUnlikePost:) name:FTPostDetailsViewControllerUserLikedUnlikedPhotoNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLikeOrUnlikePhoto:) name:FTUtilityUserLikedUnlikedPhotoCallbackFinishedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidCommentOnPhoto:) name:FTPostDetailsViewControllerUserCommentedOnPhotoNotification object:nil];
-
-    // Go to selected user profile
-    
-    flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
-    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [flowLayout setMinimumInteritemSpacing:0];
-    [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
-    
-    profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -149,9 +138,10 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    CGRect tmpFram = self.originalFrame;
-    tmpFram.origin.y = 20;
-    self.navigationController.navigationBar.frame = tmpFram;
+    //CGRect tmpFram = self.originalFrame;
+    //tmpFram.origin.y = 20;
+    //self.navigationController.navigationBar.frame = tmpFram;
+    
     /*
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         NSString *className = NSStringFromClass([view class]);
@@ -669,9 +659,10 @@ didTapLikeGalleryButton:(UIButton *)button
     
     //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
     // Map Home View
-    FTMapViewController *mapViewController = [[FTMapViewController alloc] initWithSearchBar:NO];
+    FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
     if ([gallery objectForKey:kFTPostLocationKey]) {
         [mapViewController setInitialLocationObject:gallery];
+        [mapViewController setSkipAnimation:YES];
     }
     [mapViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:mapViewController animated:YES];
@@ -756,9 +747,10 @@ didTapLikeVideoButton:(UIButton *)button
     //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
     // Map Home View
     
-    FTMapViewController *mapViewController = [[FTMapViewController alloc] initWithSearchBar:NO];
+    FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
     if ([video objectForKey:kFTPostLocationKey]) {
         [mapViewController setInitialLocationObject:video];
+        [mapViewController setSkipAnimation:YES];
     }
     [mapViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:mapViewController animated:YES];
@@ -779,7 +771,7 @@ didTapVideoPlayButton:(UIButton *)button
     
     [FTUtility showHudMessage:@"loading.." WithDuration:1];
     
-    NSLog(@"videoCellView:didTapVideoPlayButton:video:");
+    //NSLog(@"videoCellView:didTapVideoPlayButton:video:");
     PFFile *videoFile = [video objectForKey:kFTPostVideoKey];
     
     [moviePlayer setContentURL:[NSURL URLWithString:videoFile.url]];
@@ -867,9 +859,10 @@ didTapLikePhotoButton:(UIButton *)button
                 photo:(PFObject *)photo {
     //NSLog(@"FTPhotoTimelineViewController::galleryCellView:didTapLocation:gallery:");
     // Map Home View
-    FTMapViewController *mapViewController = [[FTMapViewController alloc] initWithSearchBar:NO];
+    FTMapViewController *mapViewController = [[FTMapViewController alloc] init];
     if ([photo objectForKey:kFTPostLocationKey]) {
         [mapViewController setInitialLocationObject:photo];
+        [mapViewController setSkipAnimation:YES];
     }
     [mapViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
     [self.navigationController pushViewController:mapViewController animated:YES];
@@ -1036,25 +1029,26 @@ didTapLikeCountButton:(UIButton *)button
     
     if ([userType isEqualToString:kFTUserTypeBusiness]) {
         
-        //NSLog(@"user:%@",user);
-        //NSLog(@"userType:%@",userType);
+        FTPlaceProfileViewController *placeViewController = [[FTPlaceProfileViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        [placeViewController setContact:user];
         
-        UICollectionViewFlowLayout *businessFloyLayout = [[UICollectionViewFlowLayout alloc] init];
-        [businessFloyLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
-        [businessFloyLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-        [businessFloyLayout setMinimumInteritemSpacing:0];
-        [businessFloyLayout setMinimumLineSpacing:0];
-        [businessFloyLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-        [businessFloyLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
-        
-        FTBusinessProfileViewController *businessViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:businessFloyLayout];
-        [businessViewController setBusiness:user];
-        [businessViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
-        [self.navigationController pushViewController:businessViewController animated:YES];
+        [self.navigationController pushViewController:placeViewController animated:YES];
         
     } else if ([userType isEqualToString:kFTUserTypeUser]) {
+        // Go to selected user profile
+        
+        UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+        [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
+        [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+        [flowLayout setMinimumInteritemSpacing:0];
+        [flowLayout setMinimumLineSpacing:0];
+        [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+        [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
+        
+        FTUserProfileViewController *profileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
         [profileViewController setUser:user];
         [profileViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
+        
         [self.navigationController pushViewController:profileViewController animated:YES];
     }
 }
@@ -1079,6 +1073,7 @@ didTapLikeCountButton:(UIButton *)button
         [viewFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
         [viewFriendsViewController setUser:[PFUser currentUser]];
         [viewFriendsViewController queryForLickersOf:object];
+        
         [self.navigationController pushViewController:viewFriendsViewController animated:YES];
     }
 }
