@@ -13,20 +13,16 @@
 
 @interface FTPhotoCell ()
 @property (nonatomic, strong) UIButton *moreButton;
-//@property (nonatomic, strong) FTProfileImageView *avatarImageView;
 @property (nonatomic, strong) UIButton *userButton;
 @property (nonatomic, strong) UILabel *locationLabel;
 @property (nonatomic, strong) UILabel *distanceLabel;
-//@property (nonatomic, strong) TTTTimeIntervalFormatter *timeIntervalFormatter;
 @end
 
 @implementation FTPhotoCell
 @synthesize photoButton;
-//@synthesize avatarImageView;
 @synthesize userButton;
 @synthesize locationLabel;
 @synthesize distanceLabel;
-//@synthesize timeIntervalFormatter;
 @synthesize photo;
 @synthesize buttons;
 @synthesize likeButton;
@@ -35,15 +31,14 @@
 @synthesize commentCounter;
 @synthesize likeCounter;
 @synthesize moreButton;
-//@synthesize usernameRibbon;
 
 #pragma mark - NSObject
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    
-    if (self) {
-        
+    if (self)
+    {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.accessoryType = UITableViewCellAccessoryNone;
         
@@ -100,7 +95,6 @@
         [toolbar addSubview:distanceLabel];
         
         moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        //[moreButton setBackgroundImage:[UIImage imageNamed:@"more_button"] forState:UIControlStateNormal];
         [moreButton setBackgroundImage:MORE_BUTTON forState:UIControlStateNormal];
         [moreButton setFrame:CGRectMake(frameSize.width - 45, BUTTONS_TOP_PADDING, 35, 19)];
         [moreButton setBackgroundColor:[UIColor clearColor]];
@@ -108,14 +102,13 @@
         
         [toolbar addSubview:moreButton];
         
-        if (self.buttons & FTPhotoCellButtonsComment) {
-            
+        if (self.buttons & FTPhotoCellButtonsComment)
+        {
             CGFloat commentCounterX = moreButton.frame.origin.x - COUNTER_WIDTH - BUTTON_PADDING;
             
             commentCounter = [UIButton buttonWithType:UIButtonTypeCustom];
             [commentCounter setFrame:CGRectMake(commentCounterX, BUTTONS_TOP_PADDING, COUNTER_WIDTH, COUNTER_HEIGHT)];
             [commentCounter setBackgroundColor:[UIColor clearColor]];
-            //[commentCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
             [commentCounter setBackgroundImage:COUNTER_BOX forState:UIControlStateNormal];
             [commentCounter setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [commentCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
@@ -133,8 +126,6 @@
             commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
             [self.commentButton setFrame:CGRectMake(commentButtonX, BUTTONS_TOP_PADDING, BUTTON_WIDTH, BUTTON_HEIGHT)];
             [self.commentButton setBackgroundColor:[UIColor clearColor]];
-            //[self.commentButton setBackgroundImage:[UIImage imageNamed:@"comment_bubble"] forState:UIControlStateNormal];
-            //[self.commentButton setBackgroundImage:COMMENT_BUBBLE forState:UIControlStateNormal];
             [self.commentButton setBackgroundImage:COMMENT_BUTTON forState:UIControlStateNormal];
             [self.commentButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
             [self.commentButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
@@ -145,15 +136,14 @@
             [toolbar addSubview:self.commentButton];
         }
         
-        if (self.buttons & FTPhotoCellButtonsLike) {
-            
+        if (self.buttons & FTPhotoCellButtonsLike)
+        {
             CGFloat likeCounterX = commentButton.frame.origin.x - COUNTER_WIDTH - BUTTON_PADDING;
             
             // like counter
             likeCounter = [UIButton buttonWithType:UIButtonTypeCustom];
             [likeCounter setFrame:CGRectMake(likeCounterX, BUTTONS_TOP_PADDING, COUNTER_WIDTH, COUNTER_HEIGHT)];
             [likeCounter setBackgroundColor:[UIColor clearColor]];
-            //[likeCounter setBackgroundImage:[UIImage imageNamed:@"like_comment_box"] forState:UIControlStateNormal];
             [likeCounter setBackgroundImage:COUNTER_BOX forState:UIControlStateNormal];
             [likeCounter setTitle:@"0" forState:UIControlStateNormal];
             [likeCounter setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
@@ -172,17 +162,10 @@
             [self.likeButton setFrame:CGRectMake(likeButtonX, BUTTONS_TOP_PADDING, BUTTON_WIDTH, BUTTON_HEIGHT)];
             [self.likeButton setBackgroundColor:[UIColor clearColor]];
             [self.likeButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
-            //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_white"] forState:UIControlStateNormal];
-            //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateSelected];
-            //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateHighlighted];
             
-            //[self.likeButton setBackgroundImage:HEART_UNSELECTED forState:UIControlStateNormal];
-            //[self.likeButton setBackgroundImage:HEART_SELECTED forState:UIControlStateSelected];
-            //[self.likeButton setBackgroundImage:HEART_SELECTED forState:UIControlStateHighlighted];
-            
-            [self.likeButton setBackgroundImage:ENCOURAGE_BUTTON_UNSELECTED forState:UIControlStateNormal];
-            [self.likeButton setBackgroundImage:ENCOURAGE_BUTTON_SELECTED forState:UIControlStateSelected];
-            [self.likeButton setBackgroundImage:ENCOURAGE_BUTTON_SELECTED forState:UIControlStateHighlighted];
+            [self.likeButton setBackgroundImage:INSPIRED_BUTTON_UNSELECTED forState:UIControlStateNormal];
+            [self.likeButton setBackgroundImage:INSPIRED_BUTTON_SELECTED forState:UIControlStateSelected];
+            [self.likeButton setBackgroundImage:INSPIRED_BUTTON_SELECTED forState:UIControlStateHighlighted];
             
             [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
             [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
@@ -192,125 +175,84 @@
             [toolbar addSubview:self.likeButton];
         }
     }
-    
     return self;
 }
 
 #pragma mark - UIView
 
-- (void)layoutSubviews {
+- (void)layoutSubviews
+{
     [super layoutSubviews];
+    
     self.imageView.frame = CGRectMake(0,0,320,320);
     self.photoButton.frame = CGRectMake(0,0,320,320);
 }
 
 #pragma mark - FTPhotoCellView
 
-- (void)setPhoto:(PFObject *)aPhoto {
-    
+- (void)setPhoto:(PFObject *)aPhoto
+{
     // reset text
     [locationLabel setText:EMPTY_STRING];
     
     photo = aPhoto;
-    //NSLog(@"setPhoto FTPhotoViewCell::photo %@",photo);
     
     // User profile image
     PFUser *user = [self.photo objectForKey:kFTPostUserKey];
-    //PFFile *profilePictureSmall = [user objectForKey:kFTUserProfilePicSmallKey];
-    //[self.avatarImageView setFile:profilePictureSmall];
     
     NSString *authorName = [user objectForKey:kFTUserDisplayNameKey];
     [self.userButton setTitle:authorName forState:UIControlStateNormal];
     
-    //CGFloat constrainWidth = containerView.bounds.size.width;
-    
-    /*
-    if (self.buttons & FTPhotoCellButtonsUser){
-        [self.userButton addTarget:self action:@selector(didTapUserButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-    }
-    */
-    
     if (self.buttons & FTPhotoCellButtonsComment){
-        //constrainWidth = self.commentButton.frame.origin.x;
         [self.commentButton addTarget:self action:@selector(didTapCommentOnPhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTPhotoCellButtonsLike){
-        //constrainWidth = self.likeButton.frame.origin.x;
         [self.likeButton addTarget:self action:@selector(didTapLikePhotoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [self.likeCounter addTarget:self action:@selector(didTapLikeCountButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
     if (self.buttons & FTPhotoCellButtonsMore){
-        //constrainWidth = self.likeButton.frame.origin.x;
         [self.moreButton addTarget:self action:@selector(didTapMoreButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
-    if ([self.photo objectForKey:kFTPostPlaceKey]) {
-        
+    if ([self.photo objectForKey:kFTPostPlaceKey])
+    {
         PFObject *place = [self.photo objectForKey:kFTPostPlaceKey];
-        [place fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-            if (!error) {
-                [locationLabel setText:[place objectForKey:kFTPlaceNameKey]];
-                [locationLabel setUserInteractionEnabled:YES];
-                
-                UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
-                locationTapRecognizer.numberOfTapsRequired = 1;
-                [locationLabel addGestureRecognizer:locationTapRecognizer];
-            }
-        }];
-        
-        PFGeoPoint *geoPoint = [self.photo objectForKey:kFTPostLocationKey];
-        
-        // Calculate distance
-        if (geoPoint && [[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
-            CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-            
-            // Get the current users location
-            PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
-            CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
-            
-            // Current users distance to the item
-            [self.distanceLabel setText:[NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
-        }
-        /*
-    } else if ([self.photo objectForKey:kFTPostLocationKey]) {
-        
-        PFGeoPoint *geoPoint = [self.photo objectForKey:kFTPostLocationKey];
-        CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-        CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
-        [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
-            if (!error) {
-                for (CLPlacemark *placemark in placemarks) {
-                    NSString *postLocation = [NSString stringWithFormat:@" %@, %@", [placemark locality], [placemark administrativeArea]];
-                    if (postLocation) {
-                        [locationLabel setText:postLocation];
-                        [locationLabel setUserInteractionEnabled:YES];
+        [place fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error)
+        {
+            if (!error)
+            {                
+                // Check if the place has a geopoint associated with it
+                if ([place objectForKey:kFTPlaceLocationKey]) {
+                    
+                    // Set the name for this location
+                    [locationLabel setText:[place objectForKey:kFTPlaceNameKey]];
+                    [locationLabel setUserInteractionEnabled:YES];
+                    
+                    // When tapped show this location on the map
+                    UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
+                    locationTapRecognizer.numberOfTapsRequired = 1;
+                    [locationLabel addGestureRecognizer:locationTapRecognizer];
+                    
+                    // Calculate distance
+                    PFGeoPoint *geoPoint = [place objectForKey:kFTPlaceLocationKey];
+                    if (geoPoint && [[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
+                        CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
                         
-                        UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
-                        locationTapRecognizer.numberOfTapsRequired = 1;
-                        [locationLabel addGestureRecognizer:locationTapRecognizer];
+                        // Get the current users location
+                        PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
+                        CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
+                        
+                        // Current users distance to the item
+                        [self.distanceLabel setText:[NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
                     }
                 }
-            } else {
-                NSLog(@"ERROR: %@",error);
             }
         }];
-        
-        // Calculate distance
-        if (geoPoint && [[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
-            CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-            
-            // Get the current users location
-            PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
-            CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
-            
-            // Current users distance to the item
-            [self.distanceLabel setText:[NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
-        }
-         
-         */
-    } else {
+    }
+    else
+    {
         [locationLabel setText:EMPTY_STRING];
         [distanceLabel setText:EMPTY_STRING];
     }
@@ -318,12 +260,17 @@
     [self setNeedsDisplay];
 }
 
-- (void)setLikeStatus:(BOOL)liked {
+- (void)setLikeStatus:(BOOL)liked
+{
     [self.likeButton setSelected:liked];
-    if (liked) {
+    
+    if (liked)
+    {
         [self.likeButton setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
         [[self.likeButton titleLabel] setShadowOffset:CGSizeMake(0,0)];
-    } else {
+    }
+    else
+    {
         [self.likeButton setTitleEdgeInsets:UIEdgeInsetsMake(1,1,-1,-1)];
         [[self.likeButton titleLabel] setShadowOffset:CGSizeMake(0,0)];
     }
