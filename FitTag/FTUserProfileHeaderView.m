@@ -86,15 +86,13 @@
         [self.containerView addSubview:headerPhotosContainer];
         
         // Profile Picture Image
-        profilePictureImageView = [[PFImageView alloc] initWithFrame:CGRectMake(5, (((size.height / 2) - PROFILE_IMAGE_HEIGHT)/2), PROFILE_IMAGE_WIDTH, PROFILE_IMAGE_HEIGHT)];
+        profilePictureImageView = [[PFImageView alloc] initWithFrame:CGRectMake(5, 20, PROFILE_IMAGE_WIDTH, PROFILE_IMAGE_HEIGHT)];
         [profilePictureImageView setBackgroundColor:FT_RED];
         [profilePictureImageView setClipsToBounds: YES];
         [profilePictureImageView setAlpha:0.0f];
         [profilePictureImageView.layer setCornerRadius:CORNERRADIUS(PROFILE_IMAGE_WIDTH)];
         [profilePictureImageView setContentMode:UIViewContentModeScaleAspectFill];
         [self.containerView addSubview:profilePictureImageView];
-        
-        //NSLog(@"coverPhoto width:%f height:%f", size.width, size.width / 2);
         
         // Cover Photo
         coverPhotoImageView = [[PFImageView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.width / 2)];
@@ -120,19 +118,6 @@
         [followStatusButton setBackgroundColor:FT_RED];
         [followStatusButton setHidden:YES];
         [self.containerView addSubview:followStatusButton];
-        
-        /*
-        userSettingsLabel = [[UILabel alloc] init];
-        [userSettingsLabel setFrame:CGRectMake(0, userSettingsLabelY, self.containerView.bounds.size.width, 30)];
-        [userSettingsLabel setTextAlignment:NSTextAlignmentCenter];
-        [userSettingsLabel setFont:MULIREGULAR(18)];
-        [userSettingsLabel setBackgroundColor:[UIColor whiteColor]];
-        [userSettingsLabel setTextColor:[UIColor whiteColor]];
-        [userSettingsLabel setAlpha:1.0f];
-        [userSettingsLabel.layer setBorderWidth:1.0f];
-        [userSettingsLabel.layer setBorderColor:[FT_RED CGColor]];
-        [self.containerView addSubview:userSettingsLabel];
-        */
         
         // Followers count UILabel
         CGFloat followLabelsY = headerPhotosContainer.frame.size.height + offsetY + 30;
@@ -187,59 +172,6 @@
         [profileBiography setUserInteractionEnabled:NO];
         
         [self.containerView addSubview:profileBiography];
-        
-        /*
-        // Image filter
-        profileFilter = [[UIView alloc] initWithFrame:CGRectMake(0, profileBiography.frame.size.height + profileBiography.frame.origin.y,self.frame.size.width, 60)];
-        [profileFilter setBackgroundColor:[UIColor whiteColor]];
-        
-        gridViewButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [gridViewButton setTranslatesAutoresizingMaskIntoConstraints:NO];
-        [gridViewButton setBackgroundImage:[UIImage imageNamed:GRID_IMAGE] forState:UIControlStateNormal];
-        [gridViewButton setBackgroundImage:[UIImage imageNamed:GRID_IMAGE_ACTIVE] forState:UIControlStateSelected];
-        [gridViewButton setFrame:CGRectMake(0, 0, 35, 35)];
-        [gridViewButton setCenter:CGPointMake( 20 + gridViewButton.frame.size.width, profileFilter.frame.size.height / 2)];
-        [gridViewButton addTarget:self action:@selector(didTapGridButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [gridViewButton setSelected:YES];
-        [profileFilter addSubview:gridViewButton];
-        */
-        
-        /*
-        businessButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [businessButton setTranslatesAutoresizingMaskIntoConstraints:NO];
-        [businessButton setBackgroundImage:[UIImage imageNamed:POSTS_IMAGE] forState:UIControlStateNormal];
-        [businessButton setBackgroundImage:[UIImage imageNamed:POSTS_IMAGE_ACTIVE] forState:UIControlStateSelected];
-        [businessButton setFrame:CGRectMake(0, 0, 30, 35)];
-        [businessButton setCenter:CGPointMake(self.frame.size.width / 2, profileFilter.frame.size.height / 2)];
-        [businessButton addTarget:self action:@selector(didTapBusinessButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [businessButton setSelected:NO];
-        [profileFilter addSubview:businessButton];
-        */
-        
-        /*
-        taggedInButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [taggedInButton setTranslatesAutoresizingMaskIntoConstraints:NO];
-        [taggedInButton setBackgroundImage:[UIImage imageNamed:TAGGED_IMAGE] forState:UIControlStateNormal];
-        [taggedInButton setBackgroundImage:[UIImage imageNamed:TAGGED_IMAGE_ACTIVE] forState:UIControlStateSelected];
-        [taggedInButton setFrame:CGRectMake(0, 0, 30, 35)];
-        [taggedInButton setCenter:CGPointMake(self.frame.size.width - taggedInButton.frame.size.width - 20, profileFilter.frame.size.height / 2)];
-        [taggedInButton addTarget:self action:@selector(didTapTaggedButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [taggedInButton setSelected:NO];
-        [profileFilter addSubview:taggedInButton];
-        */
-        
-        /* // User display label
-        userDisplay = [[UILabel alloc] initWithFrame:CGRectMake(0,0,self.frame.size.width,30)];
-        [userDisplay setTextAlignment:NSTextAlignmentCenter];
-        [userDisplay setBackgroundColor:[UIColor clearColor]];
-        [userDisplay setTextColor:[UIColor whiteColor]];
-        [userDisplay setFont:[UIFont boldSystemFontOfSize:14.0f]];
-        [userDisplay setText:@"Test"];
-        [userDisplay setCenter:CGPointMake((self.containerView.frame.size.width / 2),130)];
-        [self.containerView addSubview:userDisplay];
-        */
-        
-        //[self.containerView addSubview:profileFilter];
         [self addSubview:self.containerView]; // Add the view
     }
     return self;
@@ -347,7 +279,6 @@
         
         // Clear the button
         //[userSettingsLabel setText:EMPTY_STRING];
-        [userSettingsButton setHidden:YES];
         
         // check if the currentUser is following this user
         PFQuery *queryIsFollowing = [PFQuery queryWithClassName:kFTActivityClassKey];
