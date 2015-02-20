@@ -110,6 +110,7 @@ NSString *const kFTUserPromoVideo                              = @"promoVideo";
 NSString *const kFTUserObjectIdKey                             = @"objectId";
 NSString *const kFTUserUsernameKey                             = @"username";
 NSString *const kFTUserDisplayNameKey                          = @"displayName";
+NSString *const kFTUserDisplayNameLowerKey                     = @"displayNameLower";
 NSString *const kFTUserFirstnameKey                            = @"firstname";
 NSString *const kFTUserLastnameKey                             = @"lastname";
 NSString *const kFTUserInterestsKey                            = @"interests";
@@ -133,7 +134,8 @@ NSString *const kFTUserRewardsEarnedKey                        = @"rewardsEarned
 NSString *const kFTUserLastLoginKey                            = @"lastLogin";
 NSString *const kFTUserTwitterIdKey                            = @"twitterId";
 NSString *const kFTUserCoverPhotoKey                           = @"coverPhoto";
-// Type values
+
+// User Type values
 NSString *const kFTUserTypeUser                                = @"user";
 NSString *const kFTUserTypeAmbassador                          = @"ambassador";
 NSString *const kFTUserTypeBusiness                            = @"business";
@@ -198,23 +200,10 @@ NSString *const kFTPlaceClassKey            = @"Place";
 // Field keys
 NSString *const kFTPlaceNameKey             = @"name";
 NSString *const kFTPlaceDescriptionKey      = @"description";
-NSString *const kFTPlaceLocationKey         = @"location";
+NSString *const kFTPlaceLocationKey         = @"geoLocation";
 NSString *const kFTPlaceVerifiedKey         = @"verified";
 NSString *const kFTPlaceIconKey             = @"icon";
 NSString *const kFTPlaceContactKey          = @"contact";
-
-#pragma mark - PFObject Location Class
-
-// Class key
-NSString *const kFTLocationClassKey         = @"Location";
-
-// Field keys
-NSString *const kFTLocationAddressKey       = @"address";
-NSString *const kFTLocationCityKey          = @"city";
-NSString *const kFTLocationStateKey         = @"state";
-NSString *const kFTLocationPostalCodeKey    = @"postalcode";
-NSString *const kFTLocationCountryKey       = @"country";
-NSString *const kFTLocationGeoPointKey      = @"location";
 
 #pragma mark - Cached Post Attributes
 
