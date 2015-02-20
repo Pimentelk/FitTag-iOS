@@ -141,7 +141,7 @@
     
     originalScrollView = self.scrollView;
     
-    // Cancel button
+    // Done button
     doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(didTapDoneButtonAction:)];
     [doneButton setTintColor:[UIColor whiteColor]];
     
@@ -164,7 +164,10 @@
 
 #pragma mark - FTSuggestionTableViewDelegate
 
-- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView didSelectHashtag:(NSString *)hashtag completeString:(NSString *)completeString {
+- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView
+           didSelectHashtag:(NSString *)hashtag
+             completeString:(NSString *)completeString {
+    
     if (hashtag) {
         //NSString *hashtagString = [@"#" stringByAppendingString:hashtag];
         NSString *replaceString = [commentTextView.text stringByReplacingOccurrencesOfString:completeString withString:hashtag];
@@ -172,7 +175,10 @@
     }
 }
 
-- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView didSelectUser:(PFUser *)user completeString:(NSString *)completeString {
+- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView
+              didSelectUser:(PFUser *)user
+             completeString:(NSString *)completeString {
+    
     if ([user objectForKey:kFTUserDisplayNameKey]) {
         NSString *displayname = [user objectForKey:kFTUserDisplayNameKey];
         //NSString *mentionString = [@"@" stringByAppendingString:displayname];
@@ -292,6 +298,7 @@
     } else {
         //NSLog(@"Not showing auto complete...");
         [self.scrollView setScrollEnabled:YES];
+        
         [UIView animateWithDuration:0.4 animations:^{
             [suggestionTableView setAlpha:0];
         }];
@@ -305,16 +312,18 @@
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     [commentTextView resignFirstResponder];
     [suggestionTableView setAlpha:0];
+    
     [self.navigationItem setRightBarButtonItem:nil];
 }
 
 #pragma mark - FTPlacesViewControllerDelegate
 
-- (void)placesViewController:(FTPlacesViewController *)placesViewController didTapSelectPlace:(PFObject *)aPlace {
+- (void)placesViewController:(FTPlacesViewController *)placesViewController
+           didTapSelectPlace:(PFObject *)aPlace {
 
     place = aPlace;
     
-    NSLog(@"placesViewController:didTapSelectPlace:%@",place);
+    //NSLog(@"placesViewController:didTapSelectPlace:%@",place);
     
     if ([place objectForKey:kFTPlaceNameKey]) {
         NSLog(@"place selected:%@",[place objectForKey:kFTPlaceNameKey]);
@@ -322,7 +331,9 @@
     }
 }
 
-- (void)placesViewController:(FTPlacesViewController *)placesViewController didTapCancelButton:(UIButton *)button {
+- (void)placesViewController:(FTPlacesViewController *)placesViewController
+          didTapCancelButton:(UIButton *)button {
+    
     place = nil;
 }
 
@@ -330,9 +341,11 @@
 
 - (void)postDetailsFooterView:(FTPostDetailsFooterView *)postDetailsFooterView
  didChangeShareLocationSwitch:(UISwitch *)lever {
+    
     FTPlacesViewController *placesTableViewController = [[FTPlacesViewController alloc] init];
     [placesTableViewController setGeoPoint:self.geoPoint];
     [placesTableViewController setDelegate:self];
+    
     [self.navigationController pushViewController:placesTableViewController animated:YES];
 }
 
@@ -366,34 +379,6 @@
     }];
 }
 
-- (NSArray *)checkForHashtag {
-    NSError *error = nil;
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)" options:0 error:&error];
-    NSArray *matches = [regex matchesInString:self.commentTextView.text options:0 range:NSMakeRange(0,self.commentTextView.text.length)];
-    NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
-    for (NSTextCheckingResult *match in matches) {
-        NSRange wordRange = [match rangeAtIndex:1];
-        NSString *word = [self.commentTextView.text substringWithRange:wordRange];
-        //NSLog(@"Found tag %@", word);
-        [matchedResults addObject:word];
-    }
-    return matchedResults;
-}
-
-- (NSMutableArray *)checkForMention {
-    NSError *error = nil;
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@(\\w+)" options:0 error:&error];
-    NSArray *matches = [regex matchesInString:self.commentTextView.text options:0 range:NSMakeRange(0,self.commentTextView.text.length)];
-    NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
-    for (NSTextCheckingResult *match in matches) {
-        NSRange wordRange = [match rangeAtIndex:1];
-        NSString *word = [self.commentTextView.text substringWithRange:wordRange];
-        //NSLog(@"Found mention %@", word);
-        [matchedResults addObject:word];
-    }
-    return matchedResults;
-}
-
 - (void)hideCameraView:(id)sender{
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -403,7 +388,11 @@
     UIImage *resizedImage = [anImage resizedImageWithContentMode:CONTENTMODE
                                                           bounds:CGSizeMake(640, 640)
                                             interpolationQuality:kCGInterpolationHigh];
-    UIImage *thumbnailImage = [anImage thumbnailImage:86.0f transparentBorder:0.0f cornerRadius:10.0f interpolationQuality:kCGInterpolationDefault];
+    
+    UIImage *thumbnailImage = [anImage thumbnailImage:86.0f
+                                    transparentBorder:0.0f
+                                         cornerRadius:10.0f
+                                 interpolationQuality:kCGInterpolationDefault];
     
     // JPEG to decrease file size and enable faster uploads & downloads
     NSData *imageData = UIImageJPEGRepresentation(resizedImage, 0.8f);
@@ -444,14 +433,17 @@
     return YES;
 }
 
-- (void)didTapDoneButtonAction:(id)sender {
-    
+- (void)didTapDoneButtonAction:(id)sender
+{
     [self.scrollView setScrollEnabled:YES];
     
     [commentTextView resignFirstResponder];
     [suggestionTableView setAlpha:0];
+    
     [self.navigationItem setRightBarButtonItem:nil];
+    
     CGSize scrollViewContentSize = CGSizeMake(self.scrollView.frame.size.width,scrollViewHeight);
+    
     [UIView animateWithDuration:0.200f animations:^{
         [self.scrollView setContentSize:scrollViewContentSize];
     }];
@@ -502,12 +494,13 @@
         return;
     }
     
-    if ([PFUser currentUser]) {
-    
+    if ([PFUser currentUser])
+    {
         NSDictionary *userInfo = [NSDictionary dictionary];
         NSString *trimmedComment = [self.commentTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     
-        if (trimmedComment.length > 0 && ![trimmedComment isEqualToString:CAPTION_TEXT]) {
+        if (trimmedComment.length > 0 && ![trimmedComment isEqualToString:CAPTION_TEXT])
+        {
             userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment,kFTEditPostViewControllerUserInfoCommentKey,nil];
         }
         
@@ -525,8 +518,8 @@
         
         // both files have finished uploading
         
-        NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[self checkForHashtag]];
-        NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[self checkForMention]];
+        NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[FTUtility extractHashtagsFromText:self.commentTextView.text]];
+        NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[FTUtility extractMentionsFromText:self.commentTextView.text]];
         
         // create a photo object
         PFObject *photo = [PFObject objectWithClassName:kFTPostClassKey];
@@ -618,8 +611,11 @@
         }];
     
         // Dismiss this screen
-        [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
-    } else {
+        [self.parentViewController dismissViewControllerAnimated:YES completion:nil];         
+        
+    }
+    else
+    {
         [self.navigationController dismissViewControllerAnimated:NO completion:nil];
     }
 }
