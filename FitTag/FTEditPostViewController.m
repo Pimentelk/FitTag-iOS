@@ -235,7 +235,8 @@
     [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, scrollViewHeight)];
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
     // Start Updating Location
@@ -334,7 +335,9 @@
     originalScrollView = self.scrollView;
     
     // Cancel button
-    doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(didTapDoneButtonAction:)];
+    doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                               target:self
+                                                               action:@selector(didTapDoneButtonAction:)];
     [doneButton setTintColor:[UIColor whiteColor]];
     
     suggestionTableView = [[FTSuggestionTableView alloc] initWithFrame:CGRectMake(0, 150, 320, 150) style:UITableViewStylePlain];
@@ -346,7 +349,8 @@
     [self.view addSubview:suggestionTableView];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
     
     id tracker = [[GAI sharedInstance] defaultTracker];
@@ -356,7 +360,8 @@
 
 #pragma mark - FTSuggestionTableViewDelegate
 
-- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView didSelectHashtag:(NSString *)hashtag completeString:(NSString *)completeString {
+- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView didSelectHashtag:(NSString *)hashtag completeString:(NSString *)completeString
+{
     if (hashtag) {
         //NSString *hashtagString = [@"#" stringByAppendingString:hashtag];
         NSString *replaceString = [commentTextView.text stringByReplacingOccurrencesOfString:completeString withString:hashtag];
@@ -364,7 +369,8 @@
     }
 }
 
-- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView didSelectUser:(PFUser *)user completeString:(NSString *)completeString {
+- (void)suggestionTableView:(FTSuggestionTableView *)suggestionTableView didSelectUser:(PFUser *)user completeString:(NSString *)completeString
+{
     if ([user objectForKey:kFTUserDisplayNameKey]) {
         NSString *displayname = [user objectForKey:kFTUserDisplayNameKey];
         //NSString *mentionString = [@"@" stringByAppendingString:displayname];
@@ -375,14 +381,16 @@
 
 #pragma mark - UITextViewDelegate
 
-- (void)textViewDidEndEditing:(UITextView *)textView {
+- (void)textViewDidEndEditing:(UITextView *)textView
+{
     if (textView.text.length == 0) {
         commentTextView.textColor = [UIColor lightGrayColor];
         commentTextView.text = CAPTION_TEXT;
     }
 }
 
-- (BOOL)textViewShouldBeginEditing:(UITextView *)textView {
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView
+{
     if ([commentTextView.text isEqualToString:CAPTION_TEXT]) {
         commentTextView.text = EMPTY_STRING;
         commentTextView.textColor = [UIColor blackColor];
@@ -390,7 +398,8 @@
     return YES;
 }
 
-- (void)textViewDidBeginEditing:(UITextView *)textView {
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
     CGRect tableViewRect = CGRectMake(0, self.postDetailsFooterView.frame.origin.y-210, self.scrollView.frame.size.width, 210);
     [suggestionTableView setFrame:tableViewRect];
     [self.navigationItem setRightBarButtonItem:doneButton];
@@ -492,47 +501,7 @@
     return YES;
 }
 
-#pragma mark - checkForHashTag & Mention
-
-- (NSArray *)checkForHashtag {
-    NSError *error = nil;
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)"
-                                                                           options:0 error:&error];
-    
-    NSArray *matches = [regex matchesInString:self.commentTextView.text
-                                      options:0
-                                        range:NSMakeRange(0,self.commentTextView.text.length)];
-    
-    NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
-    for (NSTextCheckingResult *match in matches) {
-        NSRange wordRange = [match rangeAtIndex:1];
-        NSString *word = [self.commentTextView.text substringWithRange:wordRange];
-        //NSLog(@"Found tag %@", word);
-        [matchedResults addObject:word];
-    }
-    return matchedResults;
-}
-
-- (NSMutableArray *)checkForMention {
-    NSError *error = nil;
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@(\\w+)"
-                                                                           options:0 error:&error];
-    
-    NSArray *matches = [regex matchesInString:self.commentTextView.text
-                                      options:0
-                                        range:NSMakeRange(0,self.commentTextView.text.length)];
-    
-    NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
-    for (NSTextCheckingResult *match in matches) {
-        NSRange wordRange = [match rangeAtIndex:1];
-        NSString *word = [self.commentTextView.text substringWithRange:wordRange];
-        //NSLog(@"Found mention %@", word);
-        [matchedResults addObject:word];
-    }
-    return matchedResults;
-}
-
-#pragma mark - ()
+#pragma mark -
 
 - (void)didTapDoneButtonAction:(id)sender {
     
@@ -540,8 +509,11 @@
     
     [commentTextView resignFirstResponder];
     [suggestionTableView setAlpha:0];
+    
     [self.navigationItem setRightBarButtonItem:nil];
+    
     CGSize scrollViewContentSize = CGSizeMake(self.scrollView.frame.size.width,scrollViewHeight);
+    
     [UIView animateWithDuration:0.200f animations:^{
         [self.scrollView setContentSize:scrollViewContentSize];
     }];
@@ -549,8 +521,10 @@
 
 #pragma mark - Done Action Handlers
 
-- (void)incrementUserPostCount {
+- (void)incrementUserPostCount
+{
     NSLog(@"Increment user post count");
+    
     PFUser *user = [PFUser currentUser];
     [user incrementKey:kFTUserPostCountKey byAmount:[NSNumber numberWithInt:1]];
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -571,8 +545,9 @@
                         ThumbFiles:(NSArray *)thumbs
                           Mentions:(NSArray *)mentions
                           Hashtags:(NSArray *)hashtags
-                       AndUserInfo:(NSDictionary *)userInfo {
-            NSLog(@"postMultipleWithPhotoFiles;");
+                       AndUserInfo:(NSDictionary *)userInfo
+{
+    NSLog(@"postMultipleWithPhotoFiles;");
 
     NSMutableArray *posts = [[NSMutableArray alloc] init];
     for (int i = 0; i < photos.count; i++) {
@@ -1112,8 +1087,8 @@
             userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment, kFTEditPostViewControllerUserInfoCommentKey, nil];
         }
         
-        NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[self checkForHashtag]];
-        NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[self checkForMention]];
+        NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[FTUtility extractHashtagsFromText:self.commentTextView.text]];
+        NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[FTUtility extractMentionsFromText:self.commentTextView.text]];
         
         if ([self.postType isEqualToString:@"MULTI"]) {
             

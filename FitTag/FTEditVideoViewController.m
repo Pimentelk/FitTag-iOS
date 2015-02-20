@@ -554,44 +554,6 @@
     }];
 }
 
-- (NSArray *)checkForHashtag {
-    NSError *error = nil;
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"#(\\w+)"
-                                                                           options:0 error:&error];
-    
-    NSArray *matches = [regex matchesInString:self.commentTextView.text
-                                      options:0
-                                        range:NSMakeRange(0,self.commentTextView.text.length)];
-    
-    NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
-    for (NSTextCheckingResult *match in matches) {
-        NSRange wordRange = [match rangeAtIndex:1];
-        NSString *word = [self.commentTextView.text substringWithRange:wordRange];
-        //NSLog(@"Found tag %@", word);
-        [matchedResults addObject:word];
-    }
-    return matchedResults;
-}
-
-- (NSMutableArray *) checkForMention {
-    NSError *error = nil;
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@(\\w+)"
-                                                                           options:0 error:&error];
-    
-    NSArray *matches = [regex matchesInString:self.commentTextView.text
-                                      options:0
-                                        range:NSMakeRange(0,self.commentTextView.text.length)];
-    
-    NSMutableArray *matchedResults = [[NSMutableArray alloc] init];
-    for (NSTextCheckingResult *match in matches) {
-        NSRange wordRange = [match rangeAtIndex:1];
-        NSString *word = [self.commentTextView.text substringWithRange:wordRange];
-        //NSLog(@"Found mention %@", word);
-        [matchedResults addObject:word];
-    }
-    return matchedResults;
-}
-
 - (void)didTapBackButtonAction:(id)sender {
     //[self.navigationController popViewControllerAnimated:YES];
     [[[UIAlertView alloc] initWithTitle:@"Video Alert"
@@ -668,9 +630,9 @@
             userInfo = [NSDictionary dictionaryWithObjectsAndKeys:trimmedComment,kFTEditPostViewControllerUserInfoCommentKey,nil];
         }
         
-        NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[self checkForHashtag]];
-        NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[self checkForMention]];
-        
+        NSMutableArray *hashtags = [[NSMutableArray alloc] initWithArray:[FTUtility extractHashtagsFromText:self.commentTextView.text]];
+        NSMutableArray *mentions = [[NSMutableArray alloc] initWithArray:[FTUtility extractMentionsFromText:self.commentTextView.text]];
+                
         // create a video object
         PFObject *video = [PFObject objectWithClassName:kFTPostClassKey];
         [video setObject:[PFUser currentUser] forKey:kFTPostUserKey];
@@ -694,13 +656,15 @@
             }
         }
         
-        if ([self.shareLocationSwitch isOn]) {
-            
-            if (self.geoPoint) {
+        if ([self.shareLocationSwitch isOn])
+        {
+            if (self.geoPoint)
+            {
                 [video setObject:self.geoPoint forKey:kFTPostLocationKey];
             }
             
-            if (place) {
+            if (place)
+            {
                 [video setObject:place forKey:kFTPostPlaceKey];
             }
         }
@@ -726,7 +690,8 @@
                 NSString *link = [NSString stringWithFormat:@"http://fittag.com/viewer.php?pid=%@",video.objectId];
                 
                 PFFile *caption = nil;
-                if ([video objectForKey:kFTPostImageKey]) {
+                if ([video objectForKey:kFTPostImageKey])
+                {
                     caption = [video objectForKey:kFTPostImageKey];
                 }
                 
