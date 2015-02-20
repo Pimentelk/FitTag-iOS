@@ -18,23 +18,19 @@
 #define SIGNOUT_BUTTON_Y 4
 #define SIGNOUT_BUTTON_HEIGHT 32
 
-@interface FTSettingsViewController ()
+@interface FTSettingsViewController () <MFMailComposeViewControllerDelegate>
+
 @property NSDictionary *settingsDictionary;
 @property NSArray *settingsSectionTitles;
-@property (nonatomic, strong) MFMailComposeViewController *mailer;
 @property (nonatomic, strong) MBProgressHUD *hud;
 
-@property (strong, nonatomic) FTSettingsDetailViewController *settingsDetailViewController;
-@property (strong, nonatomic) FTFollowFriendsViewController *followFriendsViewController;
-@property (strong, nonatomic) FTInterestsViewController *interestsViewController;
-@property (strong, nonatomic) FTInviteFriendsViewController *inviteFriendsViewController;
 @end
 
 @implementation FTSettingsViewController
 @synthesize settingsDictionary;
 @synthesize settingsSectionTitles;
-@synthesize mailer;
 @synthesize hud;
+@synthesize delegate;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -51,15 +47,7 @@
     // Override the back idnicator
     [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], NSForegroundColorAttributeName,nil]];
     [self.navigationController.navigationBar setBarTintColor:FT_RED];
-    
-    // Back button
-    UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] init];
-    [backButtonItem setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
-    [backButtonItem setStyle:UIBarButtonItemStylePlain];
-    [backButtonItem setTarget:self];
-    [backButtonItem setAction:@selector(didTapBackButtonAction:)];
-    [backButtonItem setTintColor:[UIColor whiteColor]];
-    [self.navigationItem setLeftBarButtonItem:backButtonItem];
+    [self.navigationController.navigationBar setTranslucent:NO];
     
     [self.tableView registerClass:[FTSettingsCell class] forCellReuseIdentifier:REUSEABLE_IDENTIFIER_DATA];
     
@@ -70,24 +58,6 @@
                             SECTION_APP_SETTINGS : @[ REVIEW_US, GIVE_FEEDBACK, FITTAG_BLOG ] };
     settingsSectionTitles = [settingsDictionary allKeys];
     
-    // Interests flow layout
-    
-    FTInterestViewFlowLayout *interestFlowLayout = [[FTInterestViewFlowLayout alloc] init];
-    [interestFlowLayout setItemSize:CGSizeMake(self.view.frame.size.width/2,42)];
-    [interestFlowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [interestFlowLayout setMinimumInteritemSpacing:0];
-    [interestFlowLayout setMinimumLineSpacing:0];
-    [interestFlowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-    [interestFlowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,80)];
-    
-    // View controllers
-    
-    self.interestsViewController = [[FTInterestsViewController alloc] initWithCollectionViewLayout:interestFlowLayout];
-    self.followFriendsViewController = [[FTFollowFriendsViewController alloc] init];
-    self.settingsDetailViewController = [[FTSettingsDetailViewController alloc] init];
-    self.inviteFriendsViewController = [[FTInviteFriendsViewController alloc] init];
-    self.inviteFriendsViewController.isSettingsChild = YES;
-    
     // Table view footer
     
     UIButton *signout = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -95,14 +65,34 @@
     [signout setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:SIGNOUT_BUTTON]]];
     [signout addTarget:self action:@selector(didTapSignoutButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     
-    UIView *footer = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.tableView.frame.size.width,40)];
+    UIView *footer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 40)];
     [footer setBackgroundColor:FT_GRAY];
     [footer addSubview:signout];
+    
     self.tableView.tableFooterView = footer;
+    
+    // Navigation back button
+    UIBarButtonItem *backbutton = [[UIBarButtonItem alloc] init];
+    [backbutton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backbutton setStyle:UIBarButtonItemStylePlain];
+    [backbutton setTarget:self];
+    [backbutton setAction:@selector(didTapPopButtonAction:)];
+    [backbutton setTintColor:[UIColor whiteColor]];
+    
+    [self.navigationItem setLeftBarButtonItem:backbutton];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    if (delegate && [delegate respondsToSelector:@selector(settingsViewController:viewWillAppear:)]) {
+        [delegate settingsViewController:self viewWillAppear:YES];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_SETTINGS];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
@@ -168,56 +158,94 @@
     NSString *sectionTitle = [settingsSectionTitles objectAtIndex:indexPath.section];
     NSArray *sectionSettings = [settingsDictionary objectForKey:sectionTitle];
     NSString *setting = [sectionSettings objectAtIndex:indexPath.row];
-
+    
+    if (delegate && [delegate respondsToSelector:@selector(settingsViewController:didTapSetting:)]) {
+        [delegate settingsViewController:self didTapSetting:setting];
+    }
+    
     if ([setting isEqualToString:ADD_INTERESTS]) {
-        [self.interestsViewController setDelegate:self];
-        [self.navigationController pushViewController:self.interestsViewController animated:YES];
-        [self.settingsDetailViewController setDetailItem:setting];
+        
+        // Interests flow layout
+        FTInterestViewFlowLayout *interestFlowLayout = [[FTInterestViewFlowLayout alloc] init];
+        [interestFlowLayout setItemSize:CGSizeMake(self.view.frame.size.width/2,42)];
+        [interestFlowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+        [interestFlowLayout setMinimumInteritemSpacing:0];
+        [interestFlowLayout setMinimumLineSpacing:0];
+        [interestFlowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+        [interestFlowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,80)];
+        
+        FTInterestsViewController *interestsViewController = [[FTInterestsViewController alloc] initWithCollectionViewLayout:interestFlowLayout];
+        //[interestsViewController setDelegate:self];
+        
+        [self.navigationController pushViewController:interestsViewController animated:YES];
+        
+        //FTSettingsDetailViewController *settingsDetailViewController = [[FTSettingsDetailViewController alloc] init];
+        //[settingsDetailViewController setDetailItem:setting];
+        
     } else if([setting isEqualToString:INVITE_FRIENDS]) {
-        [self.navigationController pushViewController:self.inviteFriendsViewController animated:YES];
-        [self.settingsDetailViewController setDetailItem:setting];
+        
+        FTInviteFriendsViewController *inviteFriendsViewController = [[FTInviteFriendsViewController alloc] init];
+        inviteFriendsViewController.isSettingsChild = YES;
+        
+        [self.navigationController pushViewController:inviteFriendsViewController animated:YES];
+        
+        FTSettingsDetailViewController *settingsDetailViewController = [[FTSettingsDetailViewController alloc] init];
+        [settingsDetailViewController setDetailItem:setting];
+        
     } else if([setting isEqualToString:GIVE_FEEDBACK]) {
-        [self presentFeedbackMessage];
+        
+        if ([MFMailComposeViewController canSendMail]) {
+            
+            MFMailComposeViewController *mailer = [[MFMailComposeViewController alloc] init];
+            mailer.mailComposeDelegate = self;
+            [mailer setSubject:MAIL_FEEDBACK_SUBJECT];
+            //[mailer setToRecipients:[NSArray arrayWithObjects:MAIL_FEEDBACK_EMAIL, nil]];
+            [mailer setToRecipients:[NSArray arrayWithObjects:MAIL_TECH_EMAIL, nil]];
+            [mailer setMessageBody:EMPTY_STRING isHTML:NO];
+            
+            [self presentViewController:mailer animated:YES completion:nil];
+            
+        } else {
+            [[[UIAlertView alloc] initWithTitle:MAIL_FAIL
+                                        message:MAIL_NOT_SUPPORTED
+                                       delegate:nil
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles: nil] show];
+        }
+        
     } else if([setting isEqualToString:REVIEW_US]) {
+        
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:iOS7AppStoreURLFormat,APP_STORE_ID]];
         [[UIApplication sharedApplication] openURL:url];
+        
     } else if([setting isEqualToString:REWARD_SETTIGNS]) {
-        [self.navigationController pushViewController:self.settingsDetailViewController animated:YES];
-        [self.settingsDetailViewController setDetailItem:setting];
+        
+        FTSettingsDetailViewController *settingsDetailViewController = [[FTSettingsDetailViewController alloc] init];
+        [settingsDetailViewController setDetailItem:setting];
+        
+        [self.navigationController pushViewController:settingsDetailViewController animated:YES];
+        
     } else {
-        [self.navigationController pushViewController:self.settingsDetailViewController animated:YES];
-        [self.settingsDetailViewController setDetailItem:setting];
+        
+        FTSettingsDetailViewController *settingsDetailViewController = [[FTSettingsDetailViewController alloc] init];
+        [settingsDetailViewController setDetailItem:setting];
+        
+        [self.navigationController pushViewController:settingsDetailViewController animated:YES];
     }
 }
 
 #pragma mark - FTInterestsViewControllerDelegate
 
-- (void)interestsViewController:(FTInterestsViewController *)interestsViewController didUpdateUserInterests:(NSArray *)interests {
+- (void)interestsViewController:(FTInterestsViewController *)interestsViewController
+         didUpdateUserInterests:(NSArray *)interests {
     [self.navigationController popViewControllerAnimated:YES];
     [FTUtility showHudMessage:HUD_MESSAGE_INTERESTS_UPDATED WithDuration:3];
 }
 
 #pragma mark - ()
 
-- (void)presentFeedbackMessage {
-    if ([MFMailComposeViewController canSendMail]) {
-        
-        mailer = [[MFMailComposeViewController alloc] init];
-        self.mailer.mailComposeDelegate = self;
-        [mailer setSubject:MAIL_FEEDBACK_SUBJECT];
-        //[mailer setToRecipients:[NSArray arrayWithObjects:MAIL_FEEDBACK_EMAIL, nil]];
-        [mailer setToRecipients:[NSArray arrayWithObjects:MAIL_TECH_EMAIL, nil]];
-        [mailer setMessageBody:EMPTY_STRING isHTML:NO];
-        
-        [self presentViewController:mailer animated:YES completion:nil];
-        
-    } else {
-        [[[UIAlertView alloc] initWithTitle:MAIL_FAIL
-                                    message:MAIL_NOT_SUPPORTED
-                                   delegate:nil
-                          cancelButtonTitle:@"OK"
-                          otherButtonTitles: nil] show];
-    }
+- (void)didTapPopButtonAction:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)didTapSignoutButtonAction:(UIButton *)button {
@@ -231,7 +259,10 @@
 
 #pragma mark - MFMailComposeViewControllerDelegate
 
-- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error {
+- (void)mailComposeController:(MFMailComposeViewController *)controller
+          didFinishWithResult:(MFMailComposeResult)result
+                        error:(NSError*)error {
+    
     switch (result) {
         case MFMailComposeResultCancelled:
             NSLog(MAIL_CANCELLED);

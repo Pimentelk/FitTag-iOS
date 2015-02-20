@@ -12,6 +12,28 @@
 #import "FTInterestViewFlowLayout.h"
 #import <MessageUI/MessageUI.h>
 
-@interface FTSettingsViewController : UITableViewController <UITableViewDataSource,UITableViewDelegate,MFMailComposeViewControllerDelegate,FTInterestsViewControllerDelegate>
+@protocol FTSettingsViewControllerDelegate;
+
+@interface FTSettingsViewController : UITableViewController <UITableViewDataSource,UITableViewDelegate,FTInterestsViewControllerDelegate>
+
+@property (nonatomic, weak) id<FTSettingsViewControllerDelegate> delegate;
+
+@end
+
+@protocol FTSettingsViewControllerDelegate <NSObject>
+
+/*
+ * @param setting that was pressed
+ * Called when setting has been selected
+ */
+- (void)settingsViewController:(FTSettingsViewController *)settingsViewController
+                 didTapSetting:(NSString *)setting;
+
+/*
+ * @param sender the pressed button
+ * Called when detail view is dismissed
+ */
+- (void)settingsViewController:(FTSettingsViewController *)settingsViewController
+                viewWillAppear:(BOOL)visible;
 
 @end
