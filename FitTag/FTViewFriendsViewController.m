@@ -8,7 +8,7 @@
 
 #import "FTViewFriendsViewController.h"
 #import "FTUserProfileViewController.h"
-#import "FTBusinessProfileViewController.h"
+#import "FTPlaceProfileViewController.h"
 
 #define DATACELL_IDENTIFIER @"DataCell"
 #define TABLE_VIEW_HEIGHT 80
@@ -48,6 +48,15 @@
     [backIndicator setAction:@selector(didTapBackButtonAction:)];
     [backIndicator setTintColor:[UIColor whiteColor]];
     
+    // Navigation back button
+    UIBarButtonItem *backbutton = [[UIBarButtonItem alloc] init];
+    [backbutton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backbutton setStyle:UIBarButtonItemStylePlain];
+    [backbutton setTarget:self];
+    [backbutton setAction:@selector(didTapBackButtonAction:)];
+    [backbutton setTintColor:[UIColor whiteColor]];
+    
+    [self.navigationItem setLeftBarButtonItem:backbutton];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -200,12 +209,10 @@
     
     if ([userType isEqualToString:kFTUserTypeBusiness]) {
         
-        [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
+        FTPlaceProfileViewController *placeViewController = [[FTPlaceProfileViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        [placeViewController setContact:selectedUser];
         
-        FTBusinessProfileViewController *businessViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-        [businessViewController setBusiness:selectedUser];
-        [businessViewController.navigationItem setLeftBarButtonItem:backIndicator];
-        [self.navigationController pushViewController:businessViewController animated:YES];
+        [self.navigationController pushViewController:placeViewController animated:YES];
         
     } else {
         
