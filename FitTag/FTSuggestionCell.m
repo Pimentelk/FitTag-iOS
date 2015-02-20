@@ -88,7 +88,7 @@
 
 - (void)setHashtag:(NSString *)aHashtag {
     
-    UIImage *image = [UIImage imageNamed:@"search_hashtag"];
+    UIImage *image = [UIImage imageNamed:@"hashtag-icon"];
     [suggestionView setImage:image];
     
     hashtag = aHashtag;    
@@ -101,16 +101,16 @@
 
 - (void)didSelectUserAction:(id)sender {
     if (user) {
-        if (delegate && [delegate respondsToSelector:@selector(suggestionView:didSelectUser:)]) {
-            [delegate suggestionView:self didSelectUser:user];
+        if (delegate && [delegate respondsToSelector:@selector(suggestionCell:didSelectUser:)]) {
+            [delegate suggestionCell:self didSelectUser:user];
         }
     }
 }
 
 - (void)didSelectHashtagAction:(id)sender {
     if (hashtag) {
-        if (delegate && [delegate respondsToSelector:@selector(suggestionView:didSelectHashtag:)]) {
-            [delegate suggestionView:self didSelectHashtag:hashtag];
+        if (delegate && [delegate respondsToSelector:@selector(suggestionCell:didSelectHashtag:)]) {
+            [delegate suggestionCell:self didSelectHashtag:hashtag];
         }
     }
 }

@@ -20,12 +20,12 @@
  Sent to the delegate when the cell view is tapped
  @param user the user that was selected
  */
-- (void)suggestionView:(FTSuggestionCell *)suggestionView didSelectUser:(PFUser *)user;
+- (void)suggestionCell:(FTSuggestionCell *)suggestionCell didSelectUser:(PFUser *)user;
 
 /*!
  Sent to the delegate when the cell view is tapped
  @param hashtag the hashtag that was selected
  */
-- (void)suggestionView:(FTSuggestionCell *)suggestionView didSelectHashtag:(NSString *)hashtag;
+- (void)suggestionCell:(FTSuggestionCell *)suggestionCell didSelectHashtag:(NSString *)hashtag;
 
 @end
