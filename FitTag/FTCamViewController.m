@@ -217,8 +217,8 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
 
 #pragma mark - configure
 
-- (void)configureView {
-    
+- (void)configureView
+{
     // Background color
     [self.view setBackgroundColor:[UIColor blackColor]];
     
@@ -229,6 +229,7 @@ static void * DeviceAuthorizedContext = &DeviceAuthorizedContext;
     NSDictionary *titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], NSForegroundColorAttributeName, nil];
     [self.navigationController.navigationBar setTitleTextAttributes:titleTextAttributes];
     [self.navigationController.navigationBar setBarTintColor:FT_RED];
+    //[self.navigationController.navigationBar setTranslucent:NO];
     
     nextBarButton = [[UIBarButtonItem alloc] init];
     [nextBarButton setTitle:BUTTON_TITTLE_NEXT];
