@@ -492,8 +492,6 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [toolbar addSubview:distanceLabel];
     
     // Get loction
-    
-    //[self configLocation:[self.post objectForKey:kFTPostLocationKey]];
     [self configPlace];
     
     // Buttons
@@ -567,19 +565,10 @@ static TTTTimeIntervalFormatter *timeFormatter;
     [self.likeButton setFrame:CGRectMake(likeButtonX, BUTTONS_TOP_PADDING, BUTTON_WIDTH, BUTTON_HEIGHT)];
     [self.likeButton setBackgroundColor:[UIColor clearColor]];
     [self.likeButton setTitle:EMPTY_STRING forState:UIControlStateNormal];
-    //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_white"] forState:UIControlStateNormal];
-    //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateSelected];
-    //[self.likeButton setBackgroundImage:[UIImage imageNamed:@"heart_selected"] forState:UIControlStateHighlighted];
-    
-    /*
-    [self.likeButton setBackgroundImage:HEART_UNSELECTED forState:UIControlStateNormal];
-    [self.likeButton setBackgroundImage:HEART_SELECTED forState:UIControlStateSelected];
-    [self.likeButton setBackgroundImage:HEART_SELECTED forState:UIControlStateHighlighted];
-    */
-    
-    [self.likeButton setBackgroundImage:ENCOURAGE_BUTTON_UNSELECTED forState:UIControlStateNormal];
-    [self.likeButton setBackgroundImage:ENCOURAGE_BUTTON_SELECTED forState:UIControlStateSelected];
-    [self.likeButton setBackgroundImage:ENCOURAGE_BUTTON_SELECTED forState:UIControlStateHighlighted];
+   
+    [self.likeButton setBackgroundImage:INSPIRED_BUTTON_UNSELECTED forState:UIControlStateNormal];
+    [self.likeButton setBackgroundImage:INSPIRED_BUTTON_SELECTED forState:UIControlStateSelected];
+    [self.likeButton setBackgroundImage:INSPIRED_BUTTON_SELECTED forState:UIControlStateHighlighted];
     
     [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [self.likeButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
@@ -842,105 +831,77 @@ static TTTTimeIntervalFormatter *timeFormatter;
     NSLog(@"%@::configImage:",VIEWCONTROLLER_POST_HEADER);
 }
 
-- (void)configLocation:(PFGeoPoint *)geoPoint {
-    if (geoPoint) {
-        CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-        CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
-        [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
-            if (!error) {
-                for (CLPlacemark *placemark in placemarks) {
-                    NSString *postLocation = [NSString stringWithFormat:@" %@, %@", [placemark locality], [placemark administrativeArea]];
-                    if (postLocation) {                        
-                        UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
-                        locationTapRecognizer.numberOfTapsRequired = 1;
-                        [locationLabel addGestureRecognizer:locationTapRecognizer];
-                        [locationLabel setUserInteractionEnabled:YES];
-                        [locationLabel setText:postLocation];
+- (void)configPlace
+{
+    if ([self.post objectForKey:kFTPostPlaceKey])
+    {
+        PFObject *place = [self.post objectForKey:kFTPostPlaceKey];
+        [place fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error)
+        {
+            if (!error)
+            {
+                // Check if the place has a geopoint associated with it
+                if ([place objectForKey:kFTPlaceLocationKey])
+                {
+                    // Set the name for this location
+                    [locationLabel setText:[place objectForKey:kFTPlaceNameKey]];
+                    [locationLabel setUserInteractionEnabled:YES];
+                    
+                    // When tapped show this location on the map
+                    UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
+                    locationTapRecognizer.numberOfTapsRequired = 1;
+                    [locationLabel addGestureRecognizer:locationTapRecognizer];
+                    
+                    // Calculate distance
+                    PFGeoPoint *geoPoint = [place objectForKey:kFTPlaceLocationKey];
+                    if (geoPoint && [[PFUser currentUser] objectForKey:kFTUserLocationKey])
+                    {
+                        CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
+                        
+                        // Get the current users location
+                        PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
+                        CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
+                        
+                        // Current users distance to the item
+                        [self.distanceLabel setText:[NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
                     }
                 }
-            } else {
-                NSLog(@"ERROR: %@",error);
             }
         }];
-    } else {
-        NSLog(@"No geopoint...");
-    }
-    
-    // Calculate distance
-    if (geoPoint && [[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
-
-        CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-        // Get the current users location
-        PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
-        CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
-        
-        // Current users distance to the item
-        NSString *distanceString = [NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)];
-        [self.distanceLabel setText:distanceString];
-        
-    } else {
-        [self.distanceLabel setText:EMPTY_STRING];
-    }
-}
-
-- (void)configPlace {
-    if ([self.post objectForKey:kFTPostPlaceKey]) {
-        
-        PFObject *place = [self.post objectForKey:kFTPostPlaceKey];
-        [place fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-            if (!error) {
-                [locationLabel setText:[place objectForKey:kFTPlaceNameKey]];
-                [locationLabel setUserInteractionEnabled:YES];
-                
-                UITapGestureRecognizer *locationTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLocationAction:)];
-                locationTapRecognizer.numberOfTapsRequired = 1;
-                [locationLabel addGestureRecognizer:locationTapRecognizer];
-            }
-        }];
-        
-        PFGeoPoint *geoPoint = [self.post objectForKey:kFTPostLocationKey];
-        
-        // Calculate distance
-        if (geoPoint && [[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
-            CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
-            
-            // Get the current users location
-            PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
-            CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
-            
-            // Current users distance to the item
-            [self.distanceLabel setText:[NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
-            
-        } else {
-            [self.distanceLabel setText:EMPTY_STRING];
-        }
     }
 }
 
 #pragma mark - ()
 
-- (CLLocationDistance)distanceFrom:(CLLocation *)postLocation to:(CLLocation *)userLocation {
+- (CLLocationDistance)distanceFrom:(CLLocation *)postLocation to:(CLLocation *)userLocation
+{
     return [postLocation distanceFromLocation:userLocation];
 }
 
-- (void)didTapCommentButtonAction:(UIButton *)button {
-    if (delegate && [delegate respondsToSelector:@selector(postDetailsHeaderView:didTapCommentButton:)]) {
+- (void)didTapCommentButtonAction:(UIButton *)button
+{
+    if (delegate && [delegate respondsToSelector:@selector(postDetailsHeaderView:didTapCommentButton:)])
+    {
         [delegate postDetailsHeaderView:self didTapCommentButton:button];
     }
 }
 
-- (void)didTapMoreButtonAction:(UIButton *)button {
-    if (delegate && [delegate respondsToSelector:@selector(postDetailsHeaderView:didTapMoreButton:)]) {
+- (void)didTapMoreButtonAction:(UIButton *)button
+{
+    if (delegate && [delegate respondsToSelector:@selector(postDetailsHeaderView:didTapMoreButton:)])
+    {
         [delegate postDetailsHeaderView:self didTapMoreButton:button];
     }
 }
 
-- (void)killScroll {
+- (void)killScroll
+{
     self.carousel.scrollEnabled = NO;
     self.carousel.scrollEnabled = YES;
 }
 
-- (void)didTapLikePhotoButtonAction:(UIButton *)button {
+- (void)didTapLikePhotoButtonAction:(UIButton *)button
+{
     NSLog(@"FTPostDetailsHeaderView::didTapLikePhotoButtonAction:");
     
     BOOL liked = !button.selected;
