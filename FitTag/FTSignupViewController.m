@@ -93,7 +93,7 @@
 }
 
 
-- (void)viewDidLayoutSubviews{
+- (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     
     [self.signUpView.logo setCenter:CGPointMake(160, 80)];
@@ -108,7 +108,7 @@
     [self.signUpView.usernameField setBorderStyle:UITextBorderStyleRoundedRect];
     [self.signUpView.usernameField setBackgroundColor:[UIColor whiteColor]];
     [self.signUpView.usernameField setDelegate:self];
-    
+
     CGRect passwordFieldRect = self.signUpView.passwordField.frame;
     passwordFieldRect.origin.y = usernameFieldRect.size.height + usernameFieldRect.origin.y + 10;
     
@@ -160,7 +160,7 @@
     termsFrame.origin.y += termsFrame.size.height + 5;
     [termsLabel setFrame:termsFrame];
     
-    NSString *termsText = @"By clicking next you agree to the terms and conditions";
+    NSString *termsText = @"By pressing Sign up you agree to FitTag's terms and conditions";
     [termsLabel setText:termsText];
     
     NSRange highlight = [termsText rangeOfString:@"terms and conditions"];
@@ -198,6 +198,14 @@
 
 - (void)textViewDidEndEditing:(UITextView *)textView {
     self.defaultLabel.hidden = ([textView.text length] > 0);
+}
+
+- (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
+    if (textField == self.signUpView.usernameField) { 
+        textField.text = [textField.text lowercaseString];
+        return YES;
+    }
+    return YES;
 }
 
 #pragma mark - UITextFieldDelegate

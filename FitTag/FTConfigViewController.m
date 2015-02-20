@@ -232,7 +232,7 @@
 
 - (void)logInViewController:(PFLogInViewController *)logInController
                didLogInUser:(PFUser *)user {
-    NSLog(@"%@::logInViewController:didLogInUser:",VIEWCONTROLLER_CONFIG);
+    //NSLog(@"%@::logInViewController:didLogInUser:",VIEWCONTROLLER_CONFIG);
     if ([PFUser currentUser] && user) {
         [self presentTabBarController:user];
         
@@ -245,20 +245,29 @@
 }
 
 // Sent to the delegate to determine whether the log in request should be submitted to the server.
-- (BOOL)logInViewController:(PFLogInViewController *)logInController
-shouldBeginLogInWithUsername:(NSString *)username
-                   password:(NSString *)password {
+- (BOOL)    logInViewController:(PFLogInViewController *)logInController
+   shouldBeginLogInWithUsername:(NSString *)username
+                       password:(NSString *)password {
     
-    NSLog(@"logInViewController shouldBeginLogInWithUsername");
+    username = [username lowercaseString];
+        
+    //NSLog(@"logInViewController shouldBeginLogInWithUsername");
     if (username && password && username.length && password.length) {
-        
-        id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-        [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
-                                                              action:kFTTrackEventActionTypeUserLogIn
-                                                               label:kFTTrackEventLabelTypeShould
-                                                               value:nil] build]];
-        
-        return YES;
+                
+        // Return yes if no uppercase letters are found, no otherwise
+        if ([username rangeOfCharacterFromSet:[NSCharacterSet uppercaseLetterCharacterSet]].location == NSNotFound)
+        {
+            id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+            [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
+                                                                  action:kFTTrackEventActionTypeUserLogIn
+                                                                   label:kFTTrackEventLabelTypeShould
+                                                                   value:nil] build]];
+            return YES;
+        }
+        else
+        {
+            return NO;
+        }
     }
     
     [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Missing Information", nil)
@@ -273,22 +282,11 @@ shouldBeginLogInWithUsername:(NSString *)username
 // Sent to the delegate when the log in attempt fails.
 - (void)logInViewController:(PFLogInViewController *)logInController
     didFailToLogInWithError:(NSError *)error {
-    //NSLog(@"%@::logInViewController:loInController:didFailToLogInWithError:",VIEWCONTROLLER_CONFIG);
-    //NSLog(@"Failed to log in%@%@",ERROR_MESSAGE,error);
-    
-    /*
-    switch (error.code) {
-        case 200:
-            
-            break;
-            
-        default:
-            break;
-    }
-    */
-    
+    NSLog(@"%@::logInViewController:loInController:didFailToLogInWithError:",VIEWCONTROLLER_CONFIG);
+    NSLog(@"Failed to log in%@%@",ERROR_MESSAGE,error);
+        
     [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"LogIn Error", nil)
-                                message:NSLocalizedString(@"The operation couldn't be completed. Invalid username or password, please try again. If the problem continues contact support.", nil)
+                                message:NSLocalizedString(@"The operation couldn't be completed. Invalid username or password, please try again. If the problem continues contact support@fittag.com.", nil)
                                delegate:nil
                       cancelButtonTitle:NSLocalizedString(@"OK", nil)
                       otherButtonTitles:nil] show];
@@ -302,8 +300,8 @@ shouldBeginLogInWithUsername:(NSString *)username
 
 // Sent to the delegate when the log in screen is dismissed.
 - (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController {
-    //NSLog(@"%@::logInViewControllerDidCancelLogIn:",VIEWCONTROLLER_CONFIG);
-    //NSLog(@"User dismissed the logInViewController");
+    NSLog(@"%@::logInViewControllerDidCancelLogIn:",VIEWCONTROLLER_CONFIG);
+    NSLog(@"User dismissed the logInViewController");
     id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
     [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
                                                           action:kFTTrackEventActionTypeUserLogIn
@@ -316,32 +314,11 @@ shouldBeginLogInWithUsername:(NSString *)username
 // Sent to the delegate to determine whether the sign up request should be submitted to the server.
 - (BOOL)signUpViewController:(PFSignUpViewController *)signUpController
            shouldBeginSignUp:(NSDictionary *)info {
-    NSLog(@"%@::signUpViewController:shouldBeginSignUp:",VIEWCONTROLLER_CONFIG);
+    //NSLog(@"%@::signUpViewController:shouldBeginSignUp:",VIEWCONTROLLER_CONFIG);
     
     if (signUpViewController) {
         
         BOOL informationComplete = YES;
-        
-        /*
-        NSString *firstname = EMPTY_STRING;
-        NSString *lastname = EMPTY_STRING;
-        BOOL isPasswordConfirmed = NO;
-        
-        if (signUpViewController.firstname) {
-            NSLog(@"firstname is valid signUpViewController.firstname");
-            firstname = signUpViewController.firstname;
-        }
-        
-        if (signUpViewController.lastname) {
-            NSLog(@"lastname is valid signUpViewController.lastname");
-            lastname = signUpViewController.lastname;
-        }
-        
-        if (signUpViewController.isPasswordConfirmed) {
-            NSLog(@"isPasswordConfirmed is valid signUpViewController.isPasswordConfirmed");
-            isPasswordConfirmed = signUpViewController.isPasswordConfirmed;
-        }
-        */
         
         for (id key in info) {
             NSString *field = [info objectForKey:key];
@@ -351,57 +328,29 @@ shouldBeginLogInWithUsername:(NSString *)username
             }
         }
         
+        // Set the username to lowercase
+        NSString *username = [info objectForKey:@"username"];
+        [info setValue:[username lowercaseString] forKey:@"username"];
+        
         // If user information is not complete email | username | password are missing
         if (!informationComplete) {
-            /*
-            dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-                dispatch_async(dispatch_get_main_queue(), ^(void){
-                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(MESSAGE_TITTLE_MISSING_INFO, nil)
-                                                message:NSLocalizedString(MESSAGE_MISSING_INFORMATION, nil)
-                                               delegate:nil
-                                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                                      otherButtonTitles:nil] show];
-                });
-            });
-            */
-            
             [FTUtility showHudMessage:MESSAGE_TITTLE_MISSING_INFO WithDuration:3];
-            
             return NO;
         }
         
-        /*
-        // If password confirm does not match
-        if (!isPasswordConfirmed) {
-            NSLog(@"If password confirm does not match");
-            [[[UIAlertView alloc] initWithTitle:NSLocalizedString(MESSAGE_TITTLE_MISSING_INFO, nil)
-                                        message:NSLocalizedString(MESSAGE_CONFIRMED_MATCH, nil)
-                                       delegate:nil
-                              cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                              otherButtonTitles:nil] show];
-            
+        if ([[info objectForKey:@"username"] rangeOfCharacterFromSet:[NSCharacterSet uppercaseLetterCharacterSet]].location == NSNotFound)
+        {
+            id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+            [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
+                                                                  action:kFTTrackEventActionTypeUserSignUp
+                                                                   label:kFTTrackEventLabelTypeBegin
+                                                                   value:nil] build]];
+            return YES;
+        }
+        else
+        {
             return NO;
         }
-        
-        // If firstname or lastname are empty
-        if (lastname.length <= 0 && firstname.length <= 0) {
-            NSLog(@"If firstname or lastname are empty");
-            [[[UIAlertView alloc] initWithTitle:NSLocalizedString(MESSAGE_TITTLE_MISSING_INFO, nil)
-                                        message:NSLocalizedString(MESSAGE_NAME_EMPTY, nil)
-                                       delegate:nil
-                              cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                              otherButtonTitles:nil] show];
-            return NO;
-        }
-        */
-        
-        id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-        [tracker send:[[GAIDictionaryBuilder createEventWithCategory:kFTTrackEventCatagoryTypeInterface
-                                                              action:kFTTrackEventActionTypeUserSignUp
-                                                               label:kFTTrackEventLabelTypeBegin
-                                                               value:nil] build]];
-        
-        return YES;
     }
     return NO;
 }
@@ -498,8 +447,8 @@ shouldBeginLogInWithUsername:(NSString *)username
 - (void)signUpViewController:(PFSignUpViewController *)signUpController
     didFailToSignUpWithError:(NSError *)error {
     
-    //NSLog(@"%@::signUpViewController:didFailToSignUpWithError:",VIEWCONTROLLER_CONFIG);
-    //NSLog(@"%@%@",ERROR_MESSAGE,error);
+    NSLog(@"%@::signUpViewController:didFailToSignUpWithError:",VIEWCONTROLLER_CONFIG);
+    NSLog(@"%@%@",ERROR_MESSAGE,error);
     
     NSNumber *value = [[NSNumber alloc] initWithInteger:error.code];
     

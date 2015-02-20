@@ -27,7 +27,6 @@
 @synthesize signupMessage;
 @synthesize redSignupButton;
 
-
 - (void)viewDidLoad {
     
     [super viewDidLoad];
@@ -88,6 +87,10 @@
     [passwordView setBackgroundColor:[UIColor whiteColor]];
     [passwordView setDelegate:self];
     
+    [self.logInView.logInButton setTitle:@"Login" forState:UIControlStateNormal];
+    [self.logInView.logInButton setTitle:@"Login" forState:UIControlStateSelected];
+    [self.logInView.logInButton setTitle:@"Login" forState:UIControlStateHighlighted];
+    
     // Signup button
     UIButton *signupButton = self.logInView.logInButton;
     
@@ -134,7 +137,7 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-    // Prevent crashing undo bug – see note below.
+    // Prevent crashing undo bug
     if(range.length + range.location > textField.text.length) {
         return NO;
     }
@@ -143,7 +146,15 @@
     return (newLength > 30) ? NO : YES;
 }
 
-#pragma mark - ()
+- (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
+    if (textField == self.logInView.usernameField) {
+        textField.text = [textField.text lowercaseString];
+        return YES;
+    }
+    return YES;
+}
+
+#pragma mark
 
 - (void)didTapCancelButtonAction:(UIButton *)button {
     [self dismissViewControllerAnimated:YES completion:nil];
