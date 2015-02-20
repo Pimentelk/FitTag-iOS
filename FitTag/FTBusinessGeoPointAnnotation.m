@@ -26,13 +26,19 @@
 
 - (id)initWithObject:(PFUser *)aObject {
     //NSLog(@"FTBusinessGeoPointAnnotation::initWithObject:");
+    
     self = [super init];
+    
     if (self) {
+        
+        NSLog(@"aObject:%@",aObject);
+        
         user = aObject;
         objectId = user.objectId;
         file = [self.user objectForKey:kFTUserProfilePicSmallKey];
         [self setGeoPoint:[self.user objectForKey:kFTUserLocationKey]];
     }
+    
     return self;
 }
 
