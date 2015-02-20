@@ -9,7 +9,7 @@
 #import "FTActivityFeedViewController.h"
 #import "FTActivityCell.h"
 #import "FTUserProfileViewController.h"
-#import "FTBusinessProfileViewController.h"
+#import "FTPlaceProfileViewController.h"
 #import "FTBaseTextCell.h"
 #import "FTLoadMoreCell.h"
 #import "FTPostDetailsViewController.h"
@@ -58,14 +58,25 @@
     //NSLog(@"%@::viewDidLoad",VIEWCONTROLLER_ACTIVITY);
     [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     
-    [super viewDidLoad];
+    [super viewDidLoad];    
     
     // Toolbar & Navigationbar Setup
     [self.navigationItem setTitle:NAVIGATION_TITLE_NOTIFICATIONS];
     [self.navigationController setNavigationBarHidden:NO animated:NO];
+    [self.navigationController setToolbarHidden:YES];
     
     // Set Background
     [self.tableView setBackgroundColor:[UIColor whiteColor]];
+    
+    // Navigation back button
+    UIBarButtonItem *backbutton = [[UIBarButtonItem alloc] init];
+    [backbutton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backbutton setStyle:UIBarButtonItemStylePlain];
+    [backbutton setTarget:self];
+    [backbutton setAction:@selector(didTapBackButtonAction:)];
+    [backbutton setTintColor:[UIColor whiteColor]];
+    
+    [self.navigationItem setLeftBarButtonItem:backbutton];
     
     lastRefresh = [[NSUserDefaults standardUserDefaults] objectForKey:kFTUserDefaultsActivityFeedViewControllerLastRefreshKey];
 }
@@ -146,13 +157,12 @@
             
             // Check if selected user is a business
             if ([[activityUser objectForKey:kFTUserTypeKey] isEqualToString:kFTUserTypeBusiness]) {
+                                
+                FTPlaceProfileViewController *placeViewController = [[FTPlaceProfileViewController alloc] initWithStyle:UITableViewStyleGrouped];
+                [placeViewController setContact:activityUser];
                 
-                [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
+                [self.navigationController pushViewController:placeViewController animated:YES];
                 
-                FTBusinessProfileViewController *businessViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-                [businessViewController setBusiness:activityUser];
-                [businessViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
-                [self.navigationController pushViewController:businessViewController animated:YES];
             } else {
                 [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
                 
@@ -338,10 +348,11 @@
         
         [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
         
-        FTBusinessProfileViewController *businessViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-        [businessViewController setBusiness:user];
-        [businessViewController.navigationItem setLeftBarButtonItem:dismissProfileButton];
-        [self.navigationController pushViewController:businessViewController animated:YES];
+        FTPlaceProfileViewController *placeViewController = [[FTPlaceProfileViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        [placeViewController setContact:user];
+        
+        [self.navigationController pushViewController:placeViewController animated:YES];
+        
     } else {
         [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
         
@@ -374,6 +385,10 @@
 }
 
 #pragma mark - ()
+
+- (void)didTapBackButtonAction:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
+}
 
 - (void)followFriendsButtonAction:(id)sender {
     //NSLog(@"FTActivityFeedViewController::followFriendsButtonAction:");
