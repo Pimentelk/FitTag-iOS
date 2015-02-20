@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-#import "FTBusinessProfileViewController.h"
+#import "FTPlaceProfileViewController.h"
 #import "FTUserProfileViewController.h"
 #import "FTUserProfileCollectionViewCell.h"
 #import "FTPostDetailsViewController.h"
@@ -26,25 +26,15 @@
 @interface FTUserProfileViewController() <UICollectionViewDataSource,UICollectionViewDelegate> {
     NSString *cellTab;
 }
+
 @property (nonatomic, strong) NSArray *cells;
-@property (nonatomic, strong) FTViewFriendsViewController *viewFriendsViewController;
 @property (nonatomic, strong) FTUserProfileHeaderView *headerView;
-@property (nonatomic, strong) FTSearchViewController *searchViewController;
-@property (nonatomic, strong) FTBusinessProfileViewController *businessProfileViewController;
-@property (nonatomic, strong) FTUserProfileViewController *userProfileViewController;
-@property (nonatomic, strong) FTFollowFriendsViewController *followFriendsViewController;
-//@property int threshold;
+
 @end
 
 @implementation FTUserProfileViewController
 @synthesize user;
-@synthesize viewFriendsViewController;
-@synthesize searchViewController;
-@synthesize businessProfileViewController;
-@synthesize followFriendsViewController;
-@synthesize userProfileViewController;
 @synthesize headerView;
-//@synthesize threshold;
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FTUtilityUserFollowersChangedNotification object:nil];
@@ -77,15 +67,6 @@
     
     cellTab = GRID_SMALL;
     
-    // tresh hold
-    //threshold = 3;
-    
-    // Show navigation bar
-    [self.navigationController setNavigationBarHidden:NO animated:NO];
-    
-    self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], NSForegroundColorAttributeName,nil];
-    self.navigationController.navigationBar.barTintColor = FT_RED;
-    
     // Set Background
     [self.collectionView setBackgroundColor:[UIColor whiteColor]];
     
@@ -100,39 +81,15 @@
     [self.collectionView setDelegate:self];
     [self.collectionView setDataSource:self];
     
-    UIBarButtonItem *backIndicator = [[UIBarButtonItem alloc] init];
-    [backIndicator setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
-    [backIndicator setStyle:UIBarButtonItemStylePlain];
-    [backIndicator setTarget:self];
-    [backIndicator setAction:@selector(didTapBackButtonAction:)];
-    [backIndicator setTintColor:[UIColor whiteColor]];
-        
-    viewFriendsViewController = [[FTViewFriendsViewController alloc] init];
-    [viewFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
-    [viewFriendsViewController setUser:self.user];
+    // Navigation back button
+    UIBarButtonItem *backbutton = [[UIBarButtonItem alloc] init];
+    [backbutton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backbutton setStyle:UIBarButtonItemStylePlain];
+    [backbutton setTarget:self];
+    [backbutton setAction:@selector(didTapBackButtonAction:)];
+    [backbutton setTintColor:[UIColor whiteColor]];
     
-    searchViewController = [[FTSearchViewController alloc] init];
-    [searchViewController.navigationItem setLeftBarButtonItem:backIndicator];
-    
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
-    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [flowLayout setMinimumInteritemSpacing:0];
-    [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
-    
-    // Business profile
-    businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [businessProfileViewController.navigationItem setLeftBarButtonItem:backIndicator];
-    
-    // User profile
-    userProfileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [userProfileViewController.navigationItem setLeftBarButtonItem:backIndicator];
-    
-    // Show suggestions if mention not found
-    followFriendsViewController = [[FTFollowFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
-    [followFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
+    [self.navigationItem setLeftBarButtonItem:backbutton];
 }
 
 - (void)setUser:(PFUser *)aUser {
@@ -170,8 +127,11 @@
     // Get the classname of the next view controller
     NSUInteger numberOfViewControllersOnStack = [self.navigationController.viewControllers count];
     UIViewController *parentViewController = self.navigationController.viewControllers[numberOfViewControllersOnStack-1];
+    
     Class parentVCClass = [parentViewController class];
+    
     NSString *className = NSStringFromClass(parentVCClass);
+    
     if([className isEqual:VIEWCONTROLLER_CAM]){
         [self.navigationController setToolbarHidden:YES];
     }
@@ -241,8 +201,12 @@
         PFUser *business = self.cells[indexPath.row];
         //NSLog(@"FTUserProfileCollectionViewController:: business: %@",business);
         if (business) {
-            [businessProfileViewController setBusiness:business];
-            [self.navigationController pushViewController:businessProfileViewController animated:YES];
+            
+            FTPlaceProfileViewController *placeViewController = [[FTPlaceProfileViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            [placeViewController setContact:business];
+            
+            [self.navigationController pushViewController:placeViewController animated:YES];
+            
         }
     } else {
         FTPostDetailsViewController *postDetailView = [[FTPostDetailsViewController alloc] initWithPost:self.cells[indexPath.row] AndType:nil];
@@ -274,6 +238,7 @@
 
 - (void)didTapLoadCameraButtonAction:(id)sender {
     //NSLog(@"%@::didTapLoadCameraButtonAction:",VIEWCONTROLLER_USER);
+    
     FTCamViewController *camViewController = [[FTCamViewController alloc] init];
     [self.navigationController pushViewController:camViewController animated:YES];
 }
@@ -284,93 +249,23 @@
 
 #pragma mark - FTUserProfileCollectionHeaderViewDelegate
 
-/*
-- (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileCollectionHeaderView
-                       didTapGridButton:(UIButton *)button {
-    //NSLog(@"%@::userProfileCollectionHeaderView:didTapGridButton:",VIEWCONTROLLER_USER);
-    cellTab = GRID_SMALL;
-    [self queryForTable:self.user];
-}
-
-- (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileCollectionHeaderView
-                   didTapBusinessButton:(UIButton *)button {
-    //NSLog(@"%@::userProfileCollectionHeaderView:didTapBusinessButton:",VIEWCONTROLLER_USER);
-    
-    cellTab = kFTUserTypeBusiness; // kFTUserTypeBusiness | SMALLGRID | FULLGRID | TAGGED
-    //[MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
-    PFQuery *followingBusinessActivitiesQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [followingBusinessActivitiesQuery whereKey:kFTActivityTypeKey equalTo:kFTActivityTypeFollow];
-    [followingBusinessActivitiesQuery whereKey:kFTActivityFromUserKey equalTo:[PFUser currentUser]];
-    [followingBusinessActivitiesQuery includeKey:kFTActivityToUserKey];
-    followingBusinessActivitiesQuery.cachePolicy = kPFCachePolicyNetworkOnly;
-    [followingBusinessActivitiesQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if (!error) {
-            NSMutableArray *businesses = [[NSMutableArray alloc] init];
-            for (PFObject *object in objects){
-                PFUser *business = [object objectForKey:kFTActivityToUserKey];
-                if ([[business objectForKey:kFTUserTypeKey] isEqualToString:kFTUserTypeBusiness]) {
-                    [businesses addObject:business];
-                }
-            }
-            self.cells = businesses;
-            //[MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
-            [self.collectionView reloadData];
-        } else {
-            NSLog(@"Error: %@ %@", error, [error userInfo]);
-        }
-    }];
-}
-
-- (void)userProfileCollectionHeaderView:(FTUserProfileHeaderView *)userProfileCollectionHeaderView
-                     didTapTaggedButton:(UIButton *)button {
-    //NSLog(@"%@::userProfileCollectionHeaderView:didTapTaggedButton:",VIEWCONTROLLER_USER);
-    
-    cellTab = GRID_TAGGED;
-    NSMutableString *displayName = [[self.user objectForKey:kFTUserDisplayNameKey] mutableCopy];
-    NSString *mentionTag = [displayName stringByReplacingOccurrencesOfString:@"@"
-                                                                  withString:EMPTY_STRING];
-    
-    NSMutableArray *userMention = [[NSMutableArray alloc] init];
-    [userMention addObject:[NSString stringWithFormat:@"%@",mentionTag]];
-    
-    //[MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
-    PFQuery *postsWhereMentionedQuery = [PFQuery queryWithClassName:kFTActivityClassKey];
-    [postsWhereMentionedQuery whereKey:kFTActivityMentionKey containedIn:userMention];
-    [postsWhereMentionedQuery includeKey:kFTActivityPostKey];
-    [postsWhereMentionedQuery setCachePolicy: kPFCachePolicyNetworkOnly];
-    [postsWhereMentionedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if (!error) {
-            NSMutableArray *posts = [[NSMutableArray alloc] init];
-            for (PFObject *activity in objects) {
-                if ([activity objectForKey:kFTActivityPostKey]) {
-                    [posts addObject:[activity objectForKey:kFTActivityPostKey]];
-                }
-            }
-            self.cells = posts;
-            //[MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
-            [self.collectionView reloadData];
-        } else {
-            NSLog(@"Error: %@ %@", error, [error userInfo]);
-        }
-    }];
-}
-*/
 - (void)userProfileHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView
          didTapSettingsButton:(id)sender {
     //NSLog(@"%@::userProfileHeaderView:didTapSettingsButton:",VIEWCONTROLLER_USER);
     
     FTSettingsViewController *settingsViewController = [[FTSettingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    [self.navigationController pushViewController:settingsViewController animated:YES];
     
-    UINavigationController *navController = [[UINavigationController alloc] init];
-    [navController setViewControllers:@[settingsViewController] animated:NO];
-    [self presentViewController:navController animated:YES completion:^(){
-        
-    }];
+    //UINavigationController *navController = [[UINavigationController alloc] init];
+    //[navController setViewControllers:@[settingsViewController] animated:NO];
+    //[self presentViewController:navController animated:YES completion:nil];
 }
 
 - (void)userProfileHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView
         didTapFollowersButton:(id)sender {
     
+    FTViewFriendsViewController *viewFriendsViewController = [[FTViewFriendsViewController alloc] init];
+    [viewFriendsViewController setUser:self.user];
     [viewFriendsViewController queryForFollowers];
     [self.navigationController pushViewController:viewFriendsViewController animated:YES];
 }
@@ -378,17 +273,19 @@
 - (void)userProfileHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView
         didTapFollowingButton:(id)sender {
     
+    FTViewFriendsViewController *viewFriendsViewController = [[FTViewFriendsViewController alloc] init];
+    [viewFriendsViewController setUser:self.user];
     [viewFriendsViewController queryForFollowing];
     [self.navigationController pushViewController:viewFriendsViewController animated:YES];
 }
 
-- (void)userProfileHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapHashtag:(NSString *)Hashtag {
+- (void)userProfileHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView
+                didTapHashtag:(NSString *)Hashtag {
     
-    if (searchViewController) {
-        [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
-        [searchViewController setSearchString:Hashtag];
-        [self.navigationController pushViewController:searchViewController animated:YES];
-    }
+    FTSearchViewController *searchViewController = [[FTSearchViewController alloc] init];
+    [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
+    [searchViewController setSearchString:Hashtag];
+    [self.navigationController pushViewController:searchViewController animated:YES];
 }
 
 - (void)userProfileHeaderView:(FTUserProfileHeaderView *)userProfileHeaderView didTapUserMention:(NSString *)mention {
@@ -410,16 +307,33 @@
                 PFUser *mentionedUser = [users objectAtIndex:0];
                 //NSLog(@"mentionedUser:%@",mentionedUser);
                 
+                UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+                [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
+                [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+                [flowLayout setMinimumInteritemSpacing:0];
+                [flowLayout setMinimumLineSpacing:0];
+                [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+                
                 if ([mentionedUser objectForKey:kFTUserTypeBusiness]) {
-                    [businessProfileViewController setBusiness:mentionedUser];
-                    [self.navigationController pushViewController:businessProfileViewController animated:YES];
+                    
+                    FTPlaceProfileViewController *placeViewController = [[FTPlaceProfileViewController alloc] initWithStyle:UITableViewStyleGrouped];
+                    [placeViewController setContact:mentionedUser];
+                    
+                    [self.navigationController pushViewController:placeViewController animated:YES];
+                    
                 } else {
+                    
+                    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT)];
+                    
+                    FTUserProfileViewController *userProfileViewController = [[FTUserProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
                     [userProfileViewController setUser:mentionedUser];
+                    
                     [self.navigationController pushViewController:userProfileViewController animated:YES];
                 }
                 
             } else {
                 
+                FTFollowFriendsViewController *followFriendsViewController = [[FTFollowFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
                 [followFriendsViewController setFollowUserQueryType:FTFollowUserQueryTypeTagger];
                 [followFriendsViewController setSearchString:lowercaseStringWithoutSymbols];
                 [followFriendsViewController querySearchForUser];
