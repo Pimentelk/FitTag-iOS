@@ -22,17 +22,19 @@
 @interface FTRewardsCollectionViewController () <UICollectionViewDataSource, UICollectionViewDelegate>
 @property (nonatomic, strong) NSArray *rewards;
 @property (nonatomic, assign) FTRewardType rewardType;
+@property (nonatomic, strong) UISegmentedControl *segmentedControl;
 @end
 
 @implementation FTRewardsCollectionViewController
 @synthesize rewardType;
+@synthesize segmentedControl;
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FTUtilityBusinessFollowingChangedNotification object:nil];
 }
 
 - (void)viewDidLoad {
-    NSLog(@"%@::viewDidLoad",VIEWCONTROLLER_REWARDS);
+    //NSLog(@"%@::viewDidLoad",VIEWCONTROLLER_REWARDS);
     [super viewDidLoad];
     
     // User followed business
@@ -40,27 +42,48 @@
     
     // Toolbar & Navigationbar Setup
     [self.navigationItem setTitle:NAVIGATION_TITLE_REWARDS];
-
+    
+    // Navigation back button
+    UIBarButtonItem *backbutton = [[UIBarButtonItem alloc] init];
+    [backbutton setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [backbutton setStyle:UIBarButtonItemStylePlain];
+    [backbutton setTarget:self];
+    [backbutton setAction:@selector(didTapBackButtonAction:)];
+    [backbutton setTintColor:[UIColor whiteColor]];
+    
+    [self.navigationItem setLeftBarButtonItem:backbutton];
+    
     // Set Background
     [self.collectionView setBackgroundColor:FT_GRAY];
+    
     
     [self.collectionView registerClass:[FTRewardsCollectionHeaderView class]
             forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
                    withReuseIdentifier:REUSE_IDENTIFIER_HEADERVIEW];
     
+    
     // Data view
     [self.collectionView registerClass:[FTRewardsCollectionViewCell class]
             forCellWithReuseIdentifier:REUSE_IDENTIFIER_DATACELL];
-    
     
     [self.collectionView setDelegate:self];
     [self.collectionView setDataSource:self];
     
     [self queryForTable:REWARDS_FILTER_ACTIVE];
+    
+    segmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"Active", @"Used", @"Expired"]];
+    segmentedControl.frame = CGRectMake(0, 0, 180, 22);
+    segmentedControl.selectedSegmentIndex = 0;
+    segmentedControl.tintColor = [UIColor whiteColor];
+    [segmentedControl addTarget:self
+                         action:@selector(didChangeSegmentedControl:)
+               forControlEvents: UIControlEventValueChanged];
+    
+    self.navigationItem.titleView = segmentedControl;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    NSLog(@"%@::viewDidAppear",VIEWCONTROLLER_REWARDS);
+    //NSLog(@"%@::viewDidAppear",VIEWCONTROLLER_REWARDS);
     [super viewDidAppear:animated];
     
     id tracker = [[GAI sharedInstance] defaultTracker];
@@ -159,7 +182,7 @@
 }
 
 #pragma mark - UICollectionView
-
+/*
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView
            viewForSupplementaryElementOfKind:(NSString *)kind
                                  atIndexPath:(NSIndexPath *)indexPath {
@@ -175,23 +198,27 @@
     }
     return reusableview;
 }
-
-- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+*/
+- (NSInteger) collectionView:(UICollectionView *)collectionView
+      numberOfItemsInSection:(NSInteger)section {
     //NSLog(@"%@::collectionView:numberOfItemsInSection:",VIEWCONTROLLER_REWARDS);
     return self.rewards.count;
 }
 
-- (CGFloat) collectionView:(UICollectionView *)collectionView
-                    layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+- (CGFloat)             collectionView:(UICollectionView *)collectionView
+                                layout:(UICollectionViewLayout *)collectionViewLayout
+   minimumLineSpacingForSectionAtIndex:(NSInteger)section {
     return 0;
 }
 
-- (CGFloat) collectionView:(UICollectionView *)collectionView
-                    layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+- (CGFloat)                   collectionView:(UICollectionView *)collectionView
+                                      layout:(UICollectionViewLayout *)collectionViewLayout
+    minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
     return 0;
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+- (void)    collectionView:(UICollectionView *)collectionView
+  didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     //NSLog(@"%@::collectionView:didSelectItemAtIndexPath:",VIEWCONTROLLER_REWARDS);
     
     
@@ -232,9 +259,11 @@
     return cell;
 }
 
+/*
 #pragma mark - FTRewardsHeaderViewDelegate
 
-- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapActiveTab:(id)tab {
+- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView
+          didTapActiveTab:(id)tab {
     //NSLog(@"%@::rewardsHeaderView:didTapActiveButton:",VIEWCONTROLLER_REWARDS);
     
     // Skip if already FTRewardTypeUsed
@@ -244,7 +273,8 @@
     [self queryForTable:REWARDS_FILTER_ACTIVE];
 }
 
-- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapExpiredTab:(id)tab {
+- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView
+         didTapExpiredTab:(id)tab {
     //NSLog(@"%@::rewardsHeaderView:didTapExpiredButton:",VIEWCONTROLLER_REWARDS);
     
     // Skip if already FTRewardTypeUsed
@@ -254,7 +284,8 @@
     [self queryForTable:REWARDS_FILTER_EXPIRED];
 }
 
-- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView didTapUsedTab:(id)tab {
+- (void)rewardsHeaderView:(FTRewardsCollectionHeaderView *)rewardsHeaderView
+            didTapUsedTab:(id)tab {
     //NSLog(@"%@::rewardsHeaderView:didTapUsedButton:",VIEWCONTROLLER_REWARDS);
     
     // Skip if already FTRewardTypeUsed
@@ -263,12 +294,42 @@
     
     [self queryForTable:REWARDS_FILTER_USED];
 }
+*/
 
-#pragma mark - ()
+#pragma mark
 
 - (void)userFollowingChanged:(NSNotification *)note {
-    NSLog(@"FTRewardsViewController::userFollowingChanged");
+    //NSLog(@"FTRewardsViewController::userFollowingChanged");
     [self queryForTable:REWARDS_FILTER_ACTIVE];
+}
+
+- (void)didTapBackButtonAction:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)didChangeSegmentedControl:(UISegmentedControl *)control {
+    if (control.selectedSegmentIndex == 0) {
+        
+        if (rewardType & FTRewardTypeActive)
+            return;
+        
+        [self queryForTable:REWARDS_FILTER_ACTIVE];
+        
+    } else if (control.selectedSegmentIndex == 1) {
+        
+        if (rewardType & FTRewardTypeUsed)
+            return;
+        
+        [self queryForTable:REWARDS_FILTER_USED];
+        
+    } else if (control.selectedSegmentIndex == 2) {
+        
+        if (rewardType & FTRewardTypeExpired)
+            return;
+        
+        [self queryForTable:REWARDS_FILTER_EXPIRED];
+        
+    }
 }
 
 @end
