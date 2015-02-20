@@ -6,9 +6,8 @@
 //  Copyright (c) 2014 Kevin Pimentel. All rights reserved.
 //
 
-#import "FTBusinessProfileHeaderView.h"
 #import <MessageUI/MessageUI.h>
 
-@interface FTBusinessProfileViewController : UICollectionViewController <FTBusinessProfileHeaderViewDelegate,MFMailComposeViewControllerDelegate,UICollectionViewDelegateFlowLayout>
+@interface FTBusinessProfileViewController : UICollectionViewController <MFMailComposeViewControllerDelegate,UICollectionViewDelegateFlowLayout>
 @property (nonatomic, strong) PFUser *business;
 @end

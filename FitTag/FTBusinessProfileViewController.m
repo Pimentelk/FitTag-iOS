@@ -7,6 +7,7 @@
 //
 
 #import "FTBusinessProfileViewController.h"
+#import "FTBusinessProfileHeaderView.h"
 #import "FTUserProfileCollectionViewCell.h"
 #import "FTPostDetailsViewController.h"
 #import "FTCamViewController.h"
@@ -22,9 +23,10 @@
 #define REUSEABLE_IDENTIFIER_DATA @"DataCell"
 #define REUSEABLE_IDENTIFIER_HEADER @"HeaderView"
 
-@interface FTBusinessProfileViewController() <UICollectionViewDataSource,UICollectionViewDelegate> {
+@interface FTBusinessProfileViewController() <UICollectionViewDataSource,UICollectionViewDelegate,FTBusinessProfileHeaderViewDelegate> {
     NSString *cellTab;
 }
+
 @property (nonatomic, strong) NSArray *cells;
 @property (nonatomic, strong) MFMailComposeViewController *mailer;
 @property (nonatomic, strong) MBProgressHUD *hud;
@@ -118,7 +120,8 @@
     [followFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
     
     id tracker = [[GAI sharedInstance] defaultTracker];
@@ -153,6 +156,7 @@
     
     UICollectionReusableView *reusableview = nil;
     if (kind == UICollectionElementKindSectionHeader) {
+        
         FTBusinessProfileHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
                                                                                      withReuseIdentifier:REUSEABLE_IDENTIFIER_HEADER
                                                                                             forIndexPath:indexPath];
@@ -180,11 +184,14 @@
     return headerSize;
 }
 
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+- (NSInteger)collectionView:(UICollectionView *)collectionView
+     numberOfItemsInSection:(NSInteger)section {
     return self.cells.count;
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+- (void)    collectionView:(UICollectionView *)collectionView
+  didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    
     //NSLog(@"indexpath: %ld",(long)indexPath.row);
     if ([cellTab isEqualToString:kFTUserTypeBusiness]) {
         
@@ -223,28 +230,33 @@
 
 #pragma mark - Navigation Bar
 
-- (void)loadCameraAction:(id)sender {
+- (void)loadCameraAction:(id)sender
+{
     FTCamViewController *camViewController = [[FTCamViewController alloc] init];
     [self.navigationController pushViewController:camViewController animated:YES];
 }
 
-- (void)didTapBackButtonAction:(id)sender {
+- (void)didTapBackButtonAction:(id)sender
+{
     [self.navigationController popViewControllerAnimated:NO];
 }
 
 #pragma mark - FTBusinessProfileHeaderViewDelegate
 
-- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapHashtag:(NSString *)Hashtag {
-    
-    if (searchViewController) {
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
+                    didTapHashtag:(NSString *)Hashtag
+{
+    if (searchViewController)
+    {
         [searchViewController setSearchQueryType:FTSearchQueryTypeFitTag];
         [searchViewController setSearchString:Hashtag];
         [self.navigationController pushViewController:searchViewController animated:YES];
     }
 }
 
-- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapUserMention:(NSString *)mention {
-    
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
+                didTapUserMention:(NSString *)mention
+{
     NSString *lowercaseStringWithoutSymbols = [FTUtility getLowercaseStringWithoutSymbols:mention];
     
     //****** Display Name ********//
@@ -252,27 +264,28 @@
     [queryStringMatchHandle whereKeyExists:kFTUserDisplayNameKey];
     [queryStringMatchHandle whereKey:kFTUserDisplayNameKey equalTo:lowercaseStringWithoutSymbols];
     [queryStringMatchHandle findObjectsInBackgroundWithBlock:^(NSArray *users, NSError *error) {
-        if (!error) {
-            
+        if (!error)
+        {
             //NSLog(@"users:%@",users);
             //NSLog(@"users.count:%lu",(unsigned long)users.count);
-            
-            if (users.count == 1) {
-                
+            if (users.count == 1)
+            {
                 PFUser *mentionedUser = [users objectAtIndex:0];
                 //NSLog(@"mentionedUser:%@",mentionedUser);
                 
-                if ([mentionedUser objectForKey:kFTUserTypeBusiness]) {
-                    
+                if ([mentionedUser objectForKey:kFTUserTypeBusiness])
+                {
                     [businessProfileViewController setBusiness:mentionedUser];
                     [self.navigationController pushViewController:businessProfileViewController animated:YES];
-                } else {
+                }
+                else
+                {
                     [userProfileViewController setUser:mentionedUser];
                     [self.navigationController pushViewController:userProfileViewController animated:YES];
                 }
-                
-            } else {
-                
+            }
+            else
+            {
                 [followFriendsViewController setFollowUserQueryType:FTFollowUserQueryTypeTagger];
                 [followFriendsViewController setSearchString:lowercaseStringWithoutSymbols];
                 [followFriendsViewController querySearchForUser];
@@ -283,8 +296,9 @@
     }];
 }
 
-- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView didTapLink:(NSString *)link {
-    
+- (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
+                       didTapLink:(NSString *)link
+{
     // Clean the string
     NSString *cleanLink;
     cleanLink = [link lowercaseString];
@@ -297,27 +311,30 @@
 }
 
 - (void)businessProfileHeaderView:(FTBusinessProfileHeaderView *)businessProfileHeaderView
-             didTapGetThereButton:(UIButton *)button {
+             didTapGetThereButton:(UIButton *)button
+{
+    //NSLog(@"didTapGetThereButton:");
+    //NSLog(@"kFTUserLocationKey:%@",[self.business objectForKey:kFTUserLocationKey]);
     
-    NSLog(@"didTapGetThereButton:");
-    
-    NSLog(@"kFTUserLocationKey:%@",[self.business objectForKey:kFTUserLocationKey]);
-    
-    if ([self.business objectForKey:kFTUserLocationKey]) {
-        
+    if ([self.business objectForKey:kFTUserLocationKey])
+    {
         PFGeoPoint *geoPoint = [self.business objectForKey:kFTUserLocationKey];
         
         CLLocation *location = [[CLLocation alloc] initWithLatitude:geoPoint.latitude longitude:geoPoint.longitude];
         CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
-        [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
-            if (!error) {
-                
-                for (CLPlacemark *placemark in placemarks) {
+        [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error)
+        {
+            if (!error)
+            {
+                for (CLPlacemark *placemark in placemarks)
+                {
+                    NSString *address = [NSString stringWithFormat:@"%@ %@ %@ %@",[placemark thoroughfare],
+                                                                                  [placemark locality],
+                                                                                  [placemark administrativeArea],
+                                                                                  [placemark country]];
                     
-                    NSString *address = [NSString stringWithFormat:@"%@ %@ %@ %@",[placemark thoroughfare],[placemark locality],[placemark administrativeArea],[placemark country]];
-                    
-                    if (address) {
-                        
+                    if (address)
+                    {
                         NSString *currentLocation = @"Current Location";
                         NSString *url = [NSString stringWithFormat:@"maps://?saddr=%@&daddr=%@&directionsmode=driving",
                                          [currentLocation stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
@@ -325,26 +342,28 @@
                         
                         BOOL opened = [[UIApplication sharedApplication] openURL: [NSURL URLWithString: url]];
                         
-                        if (!opened) {
+                        if (!opened)
+                        {
                             [[[UIAlertView alloc]initWithTitle:@"Message"
                                                        message:@"Something went wrong. Could not open your local maps GPS."
                                                       delegate:nil
                                              cancelButtonTitle:@"ok"
                                              otherButtonTitles:nil, nil] show];
                         }
-                        
-                    } else {
+                    }
+                    else
+                    {
                         [[[UIAlertView alloc]initWithTitle:@"Message"
                                                    message:@"Location is not available."
                                                   delegate:nil
                                          cancelButtonTitle:@"ok"
                                          otherButtonTitles:nil, nil] show];
                     }
-                    
                 }
             }
             
-            if (error) {
+            if (error)
+            {
                 NSLog(@"error:%@",error);
                 [[[UIAlertView alloc]initWithTitle:@"Message"
                                            message:@"Location is not available."
@@ -353,8 +372,9 @@
                                  otherButtonTitles:nil, nil] show];
             }
         }];
-    } else {
-        
+    }
+    else
+    {
         [[[UIAlertView alloc]initWithTitle:@"Message"
                                    message:@"Location is not available."
                                   delegate:nil
