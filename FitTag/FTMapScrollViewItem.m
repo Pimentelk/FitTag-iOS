@@ -10,205 +10,166 @@
 #import "FTPostDetailsViewController.h"
 
 @interface FTMapScrollViewItem()
-@property (nonatomic, strong) PFObject *post;
-@property (nonatomic, strong) PFObject *item;
-@property (nonatomic, strong) PFUser *user;
-@property (nonatomic, strong) UIView *containerView;
-@property (nonatomic, strong) UIImageView *itemImageView;
-@property (nonatomic, strong) UILabel *titleLabel;
+
+@property (nonatomic, strong) PFUser *contact;
+@property (nonatomic, strong) PFObject *place;
+
 @property (nonatomic, strong) UILabel *locationLabel;
-@property (nonatomic, strong) UILabel *descriptionLabel;
 @property (nonatomic, strong) UILabel *distanceLabel;
+
 @end
 
 @implementation FTMapScrollViewItem
-@synthesize containerView;
-@synthesize itemImageView;
-@synthesize titleLabel;
-@synthesize locationLabel;
-@synthesize descriptionLabel;
-@synthesize item;
-@synthesize user;
 @synthesize delegate;
-@synthesize post;
+@synthesize contact;
+@synthesize place;
+@synthesize locationLabel;
 @synthesize distanceLabel;
 
-- (id)initWithFrame:(CGRect)frame AndMapItem:(PFObject *)aItem {
+- (id)initWithFrame:(CGRect)frame
+              place:(PFObject *)aPlace {
+    
     self = [super initWithFrame:frame];
+    
     if (self) {
-        
-        item = aItem;
         
         self.clipsToBounds = YES;
         self.userInteractionEnabled = YES;
         
-        PFFile *file;
-        NSString *title;
-        NSString *biography;
-        PFGeoPoint *itemGeoPoint;
-        UITapGestureRecognizer *itemSingleTap;
+        place = aPlace;
+        contact = nil;
+        PFFile *file = nil;
+        NSString *title = EMPTY_STRING;
+        NSString *biography = EMPTY_STRING;
+        PFGeoPoint *itemGeoPoint = nil;
         
-        if ([item objectForKey:kFTUserProfilePicSmallKey]) {
-            user = (PFUser *)item;
-            file = [item objectForKey:kFTUserProfilePicSmallKey];
-            title = [NSString stringWithFormat:@"@%@",[user objectForKey:kFTUserDisplayNameKey]];
-            itemGeoPoint = [item objectForKey:kFTUserLocationKey];
-            biography = [item objectForKey:kFTUserBioKey];
-            
-            itemSingleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapBusinessItemAction:)];
-            itemSingleTap.numberOfTapsRequired = 1;
-            
-        } else if ([item objectForKey:kFTPostImageKey]) {
-            post = (PFObject *)item;
-            file = [item objectForKey:kFTPostImageKey];
-            PFUser *postUser = [item objectForKey:kFTPostUserKey];
-            title = [NSString stringWithFormat:@"@%@",[postUser objectForKey:kFTUserDisplayNameKey]];
-            itemGeoPoint = [item objectForKey:kFTPostLocationKey];
-            biography = nil;
-            
-            itemSingleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapPostItemAction:)];
-            itemSingleTap.numberOfTapsRequired = 1;
+        if ([place objectForKey:kFTPlaceIconKey]) {
+            file = [place objectForKey:kFTPlaceIconKey];
         }
         
-        [self addGestureRecognizer:itemSingleTap];
+        if ([place objectForKey:kFTPlaceContactKey]) {
+            contact = [place objectForKey:kFTPlaceContactKey];
+        }
         
-        CGSize frameSize = self.frame.size;
+        if ([place objectForKey:kFTPlaceNameKey]) {
+            title = [place objectForKey:kFTPlaceNameKey];
+        }
         
-        containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frameSize.width, frameSize.height)];
-        [self addSubview:containerView];
+        if ([place objectForKey:kFTPlaceDescriptionKey]) {
+            biography = [place objectForKey:kFTPlaceDescriptionKey];
+        }
         
-        itemImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, frameSize.height, frameSize.height)];
-        [itemImageView setContentMode: UIViewContentModeScaleAspectFill];
-        [itemImageView setBackgroundColor:[UIColor clearColor]];
-        [itemImageView setClipsToBounds:YES];
-        [self.containerView addSubview:itemImageView];
+        if ([place objectForKey:kFTPlaceLocationKey]) {
+            itemGeoPoint = [place objectForKey:kFTPlaceLocationKey];
+        }
         
-        titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(frameSize.height+10, 2, frameSize.width - frameSize.height, 18)];
-        [titleLabel setText:EMPTY_STRING];
-        [titleLabel setFont:MULIREGULAR(14)];
-        [self.containerView addSubview:titleLabel];
-        
-        locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(frameSize.height+10, titleLabel.frame.size.height, frameSize.width - frameSize.height, 15)];
-        [locationLabel setFont:MULIREGULAR(12)];
-        [locationLabel setNumberOfLines:1];
-        [locationLabel setText:EMPTY_STRING];
-        [self.containerView addSubview:locationLabel];
-        
-        CGFloat descriptionLabelY = locationLabel.frame.size.height + locationLabel.frame.origin.y;
-        
-        descriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(frameSize.height+10, descriptionLabelY, frameSize.width - frameSize.height, 15)];
-        [descriptionLabel setFont:MULIREGULAR(12)];
-        [descriptionLabel setNumberOfLines:1];
-        [descriptionLabel setText:EMPTY_STRING];
-        [self.containerView addSubview:descriptionLabel];
-        
-        CGFloat distanceLabelY = descriptionLabel.frame.size.height + descriptionLabel.frame.origin.y;
-        
-        distanceLabel = [[UILabel alloc] initWithFrame:CGRectMake(frameSize.height+10, distanceLabelY, frameSize.width - frameSize.height, 15)];
-        [distanceLabel setFont:MULIREGULAR(12)];
-        [distanceLabel setNumberOfLines:1];
-        [distanceLabel setText:EMPTY_STRING];
-        [self.containerView addSubview:distanceLabel];
-        
+        // fetch image data
         if (![file isEqual:[NSNull null]]) {
             [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
                 if (!error) {
                     
-                    UIImage *image = [UIImage imageWithData:data];
-                    [self.itemImageView setImage:image];
-                    [self.titleLabel setText:[title lowercaseString]];
-                    [self.locationLabel setText:EMPTY_STRING];
+                    // Configure the views
+                    CGSize frameSize = self.frame.size;
                     
-                    if (biography) {
-                        [self.descriptionLabel setText:biography];
-                    }
+                    UIView *containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frameSize.width, frameSize.height)];
+                    [self addSubview:containerView];
                     
-                    // Convert Location
-                    if (itemGeoPoint) {
-                        CLLocation *location = [[CLLocation alloc] initWithLatitude:itemGeoPoint.latitude longitude:itemGeoPoint.longitude];
-                        CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
-                        [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
-                            if (!error) {
-                                for (CLPlacemark *placemark in placemarks) {
-                                    NSString *postLocation = [NSString stringWithFormat:@"%@, %@", [placemark locality], [placemark administrativeArea]];
-                                    if (postLocation) {
-                                        [self.locationLabel setText:postLocation];
-                                    }
-                                }
-                            } else {
-                                NSLog(@"ERROR: %@",error);
-                            }
-                        }];
-                    }
+                    // Icon Image
+                    CGFloat frameSizeX = frameSize.height + 10;
+                    CGFloat frameSizeW = frameSize.width - frameSize.height;
                     
-                    // Calculate distance
-                    if (itemGeoPoint && [[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
-                        CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:itemGeoPoint.latitude longitude:itemGeoPoint.longitude];
-                        
-                        // Get the current users location
-                        PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
-                        CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
-                        
-                        // Current users distance to the item
-                        [self.distanceLabel setText:[NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
-                    }
+                    UIImageView *iconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, frameSize.height, frameSize.height)];
+                    [iconImageView setImage:nil];
+                    [iconImageView setContentMode: UIViewContentModeScaleAspectFill];
+                    [iconImageView setBackgroundColor:[UIColor clearColor]];
+                    [iconImageView setClipsToBounds:YES];
+                    [containerView addSubview:iconImageView];
+                    [iconImageView setImage:[UIImage imageWithData:data]];
+                    
+                    // Title Label
+                    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(frameSizeX, 2, frameSizeW, 18)];
+                    [titleLabel setText:title];
+                    [titleLabel setFont:MULIREGULAR(14)];
+                    [containerView addSubview:titleLabel];
+                    
+                    // Location Label
+                    locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(frameSizeX, titleLabel.frame.size.height, frameSizeW, 15)];
+                    [locationLabel setFont:MULIREGULAR(12)];
+                    [locationLabel setNumberOfLines:1];
+                    [locationLabel setText:EMPTY_STRING];
+                    [containerView addSubview:locationLabel];
+                    
+                    // Description Label
+                    CGFloat descriptionLabelY = locationLabel.frame.size.height + locationLabel.frame.origin.y;
+                    
+                    UILabel *descriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(frameSizeX, descriptionLabelY, frameSizeW, 15)];
+                    [descriptionLabel setFont:MULIREGULAR(12)];
+                    [descriptionLabel setNumberOfLines:1];
+                    [descriptionLabel setText:biography];
+                    [containerView addSubview:descriptionLabel];
+                    
+                    // Distance Label
+                    CGFloat distanceLabelY = descriptionLabel.frame.size.height + descriptionLabel.frame.origin.y;
+                    
+                    distanceLabel = [[UILabel alloc] initWithFrame:CGRectMake(frameSizeX, distanceLabelY, frameSizeW, 15)];
+                    [distanceLabel setFont:MULIREGULAR(12)];
+                    [distanceLabel setNumberOfLines:1];
+                    [distanceLabel setText:EMPTY_STRING];
+                    [containerView addSubview:distanceLabel];
+                    
+                    [self convertLocationForPoint:itemGeoPoint];
+                    [self calculateDistanceForPoint:itemGeoPoint];
                 }
             }];
-        } else {
-            
-            [self.itemImageView setImage:[UIImage imageNamed:IMAGE_PROFILE_EMPTY]];
-            [self.titleLabel setText:[title lowercaseString]];
-            [self.locationLabel setText:EMPTY_STRING];
-            
-            if (biography) {
-                [self.descriptionLabel setText:biography];
-            }
-            
-            // Convert Location
-            if (itemGeoPoint) {
-                CLLocation *location = [[CLLocation alloc] initWithLatitude:itemGeoPoint.latitude longitude:itemGeoPoint.longitude];
-                CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
-                [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
-                    if (!error) {
-                        for (CLPlacemark *placemark in placemarks) {
-                            NSString *postLocation = [NSString stringWithFormat:@"%@, %@", [placemark locality], [placemark administrativeArea]];
-                            if (postLocation) {
-                                [self.locationLabel setText:postLocation];
-                            }
-                        }
-                    } else {
-                        NSLog(@"ERROR: %@",error);
-                    }
-                }];
-            }
-            
-            // Calculate distance
-            if (itemGeoPoint && [[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
-                CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:itemGeoPoint.latitude longitude:itemGeoPoint.longitude];
-                
-                // Get the current users location
-                PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
-                CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
-                
-                // Current users distance to the item
-                [self.distanceLabel setText:[NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
-            }
         }
+        
+        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapPlaceAction:)];
+        tapGesture.numberOfTapsRequired = 1;
+        [self addGestureRecognizer:tapGesture];
     }
+    
     return self;
 }
 
-- (void)didTapPostItemAction:(id)sender {
-    NSLog(@"didTapPostItemAction:");
-    if (delegate && [delegate respondsToSelector:@selector(mapScrollViewItem:didTapPostItem:post:)]){
-        [delegate mapScrollViewItem:self didTapPostItem:sender post:post];
+- (void)convertLocationForPoint:(PFGeoPoint *)point {
+    
+    if (point) {
+        CLLocation *location = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
+        CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
+        [geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+            if (!error) {
+                for (CLPlacemark *placemark in placemarks) {
+                    NSString *postLocation = [NSString stringWithFormat:@"%@, %@", [placemark locality], [placemark administrativeArea]];
+                    if (postLocation) {
+                        [locationLabel setText:postLocation];
+                    }
+                }
+            } else {
+                NSLog(@"ERROR: %@",error);
+            }
+        }];
     }
 }
 
-- (void)didTapBusinessItemAction:(id)sender {
-    NSLog(@"didTapBusinessItemAction:");
-    if (delegate && [delegate respondsToSelector:@selector(mapScrollViewItem:didTapUserItem:user:)]){
-        [delegate mapScrollViewItem:self didTapUserItem:sender user:user];
+- (void)calculateDistanceForPoint:(PFGeoPoint *)point {
+    
+    if (point && [[PFUser currentUser] objectForKey:kFTUserLocationKey]) {
+        
+        CLLocation *itemLocation = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
+        
+        // Get the current users location
+        PFGeoPoint *currentUserGeoPoint = [[PFUser currentUser] objectForKey:kFTUserLocationKey];
+        CLLocation *currentUserLocation = [[CLLocation alloc] initWithLatitude:currentUserGeoPoint.latitude longitude:currentUserGeoPoint.longitude];
+        
+        // Current users distance to the item
+        [distanceLabel setText:[NSString stringWithFormat:@"%.02f miles",([self distanceFrom:currentUserLocation to:itemLocation]/1609.34)]];
+    }
+}
+
+- (void)didTapPlaceAction:(id)sender {
+    //NSLog(@"didTapBusinessItemAction:");
+    if (delegate && [delegate respondsToSelector:@selector(mapScrollViewItem:didTapPlace:contact:)]){
+        [delegate mapScrollViewItem:self didTapPlace:place contact:self.contact];
     }
 }
 

@@ -12,7 +12,8 @@
 /*! @name Delegate */
 @property (nonatomic, weak) id <FTMapScrollViewItemDelegate> delegate;
 
-- (id)initWithFrame:(CGRect)frame AndMapItem:(PFObject *)item;
+- (id)initWithFrame:(CGRect)frame place:(PFObject *)place;
+//- (id)initWithFrame:(CGRect)frame AndMapItem:(PFObject *)item;
 
 @end
 
@@ -24,15 +25,10 @@
 @optional
 
 /*!
- Sent to the delegate when the scroll view item is tapped
- @param post the PFObject associated with this gesture
+ Sent to the delegate when a gallery item is tapped
+ @param place the PFObject associated with this gesture
+ @param contact the PFUser assiciated with this gesture
  */
-- (void)mapScrollViewItem:(FTMapScrollViewItem *)mapScrollViewItem didTapPostItem:(UIButton *)button post:(PFObject *)aPost;
-
-/*!
- Sent to the delegate when the gallery is tapped
- @param user the PFObject associated with this gesture
- */
-- (void)mapScrollViewItem:(FTMapScrollViewItem *)mapScrollViewItem didTapUserItem:(UIButton *)button user:(PFUser *)aUser;
+- (void)mapScrollViewItem:(FTMapScrollViewItem *)mapScrollViewItem didTapPlace:(PFObject *)place contact:(PFUser *)contact;
 
 @end
