@@ -12,7 +12,6 @@
 #define DATACELL_IDENTIFIER @"DataCell"
 
 @interface FTSearchViewController()
-
 @property (nonatomic, strong) NSMutableDictionary *outstandingSectionHeaderQueries;
 @end
 
@@ -21,6 +20,7 @@
 @synthesize searchString;
 
 - (void)viewDidLoad {
+    //NSLog(@"%@,searchQueryForTable::viewDidLoad",VIEWCONTROLLER_SEARCH);
     [super viewDidLoad];
     
     [self.tableView setSeparatorColor:[UIColor clearColor]];
@@ -39,10 +39,12 @@
     [backIndicator setAction:@selector(didTapBackButtonAction:)];
     [backIndicator setTintColor:[UIColor whiteColor]];
     [backIndicator setTintColor:[UIColor whiteColor]];
+    
     [self.navigationItem setLeftBarButtonItem:backIndicator];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    //NSLog(@"%@,searchQueryForTable::viewWillAppear",VIEWCONTROLLER_SEARCH);
     [super viewWillAppear:animated];
     
     if (searchString.length > 0) {
@@ -52,6 +54,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    //NSLog(@"%@,searchQueryForTable::viewDidAppear",VIEWCONTROLLER_SEARCH);
     [super viewDidAppear:animated];
 
     id tracker = [[GAI sharedInstance] defaultTracker];
@@ -61,12 +64,14 @@
 
 #pragma mark - ()
 
-- (PFQuery *)queryForTable {
+- (PFQuery *)queryForTable
+{
     //NSLog(@"%@,searchQueryForTable::queryForTable",VIEWCONTROLLER_SEARCH);
-    switch (searchQueryType) {
-        case FTSearchQueryTypeFitTag: {
-            
-            // Remove hashtags & mentions
+    switch (searchQueryType)
+    {
+        case FTSearchQueryTypeFitTag:
+        {
+            // Remove hashtags & mentions, lowercase the string
             NSString *cleanedSearchString = [[searchString stringByReplacingOccurrencesOfString:@"#" withString:EMPTY_STRING] lowercaseString];
                       cleanedSearchString = [[cleanedSearchString stringByReplacingOccurrencesOfString:@"@" withString:EMPTY_STRING] lowercaseString];
             
@@ -74,6 +79,7 @@
             [hashtagQuery whereKey:kFTPostHashTagKey equalTo:cleanedSearchString];
             [hashtagQuery orderByDescending:@"createdAt"];
             [hashtagQuery includeKey:kFTPostUserKey];
+            
             return hashtagQuery;
         }
             break;
@@ -86,14 +92,18 @@
     return query;
 }
 
-- (void)didTapBackButtonAction:(UIButton *)button {
+- (void)didTapBackButtonAction:(UIButton *)button
+{
     [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - UITableViewDelegate
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForNextPageAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForNextPageAtIndexPath:(NSIndexPath *)indexPath
+{
+    //NSLog(@"%@,searchQueryForTable::cellForNextPageAtIndexPath",VIEWCONTROLLER_SEARCH);
     static NSString *LoadMoreCellIdentifier = @"LoadMoreCell";
+    
     FTLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:LoadMoreCellIdentifier];
     if (!cell) {
         cell = [[FTLoadMoreCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:LoadMoreCellIdentifier];
