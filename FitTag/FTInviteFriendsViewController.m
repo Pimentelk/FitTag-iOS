@@ -46,7 +46,6 @@
     
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     [self.navigationController.navigationBar setBarTintColor:FT_RED];
-    [self.navigationItem setTitleView: [[UIImageView alloc] initWithImage:[UIImage imageNamed:FITTAG_LOGO]]];
     
     // Back button
     UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] init];
@@ -58,29 +57,30 @@
     
     [self.navigationItem setLeftBarButtonItem:backButtonItem];
     
-    // Friends already on fittag
+    // save button
+    UIBarButtonItem *saveButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(didTapSaveButtonAction:)];
+    [saveButtonItem setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [saveButtonItem setStyle:UIBarButtonItemStylePlain];
+    [saveButtonItem setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setRightBarButtonItem:saveButtonItem];
     
+    // Friends already on fittag
     CGFloat toolBarHeight = self.navigationController.toolbar.frame.size.height;
     CGFloat followFriendsX = 0;
-    CGFloat followFriendsY = self.navigationController.navigationBar.frame.size.height + self.navigationController.navigationBar.frame.origin.y;
+    CGFloat followFriendsY = 0;
     CGFloat followFriendsWidth = self.view.frame.size.width;
     CGFloat followFriendsHeight = ((self.view.frame.size.height - followFriendsY - toolBarHeight) / 2) ;
     
-    NSLog(@"followFriendsHeight:%f",followFriendsHeight);
-    NSLog(@"self.view.frame.size.height:%f",self.view.frame.size.height);
-    NSLog(@"followFriendsY:%f",followFriendsY);
-    
     // Social media friends already on the app component
     socialMediaFriendsView = [[FTSocialMediaFriendsView alloc] initWithFrame:CGRectMake(followFriendsX, followFriendsY, followFriendsWidth, followFriendsHeight)
-                                                                                 reuseIdentifier:REUSABLE_IDENTIFIER_FOLLOW];
+                                                             reuseIdentifier:REUSABLE_IDENTIFIER_FOLLOW];
     [socialMediaFriendsView setBackgroundColor:[[UIColor whiteColor] colorWithAlphaComponent:0.8]];
     [socialMediaFriendsView setDelegate:self];
     [self.view addSubview:socialMediaFriendsView];
     
     // Invite external friends
-    externalFriendsView = [[FTExternalFriendsView alloc] initWithFrame:CGRectMake(followFriendsX, followFriendsY+followFriendsHeight,
-                                                                                               followFriendsWidth, followFriendsHeight)
-                                                                           reuseIdentifier:REUSABLE_IDENTIFIER_EXTERN];
+    externalFriendsView = [[FTExternalFriendsView alloc] initWithFrame:CGRectMake(followFriendsX, followFriendsY + followFriendsHeight, followFriendsWidth, followFriendsHeight)
+                                                       reuseIdentifier:REUSABLE_IDENTIFIER_EXTERN];
     [externalFriendsView setBackgroundColor:[[UIColor whiteColor] colorWithAlphaComponent:0.8]];
     [self.view addSubview:externalFriendsView];
 }
@@ -88,23 +88,6 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    // Label
-    continueMessage = [[UILabel alloc] initWithFrame:CGRectMake(10, 8, 280, 30)];
-    continueMessage.numberOfLines = 0;
-    continueMessage.text = @"YOUR JOURNEY STARTS HERE";
-    continueMessage.font = MULIREGULAR(18);
-    continueMessage.backgroundColor = [UIColor clearColor];
-    
-    // Toolbar
-    continueButton = [[UIButton alloc] initWithFrame:CGRectMake((self.navigationController.toolbar.frame.size.width - 38.0f), 4, 34, 37)];
-    [continueButton setBackgroundImage:[UIImage imageNamed:IMAGE_SIGNUP_BUTTON] forState:UIControlStateNormal];
-    [continueButton addTarget:self action:@selector(didTapContinueButtonAction:) forControlEvents:UIControlEventTouchDown];
-    
-    [self.navigationController.toolbar addSubview:continueMessage];
-    [self.navigationController.toolbar addSubview:continueButton];
-    
-    [self.navigationController setToolbarHidden:NO animated:NO];
-    [self.navigationController.toolbar setTintColor:[UIColor grayColor]];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -135,7 +118,7 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (void)didTapContinueButtonAction:(UIButton *)button {
+- (void)didTapSaveButtonAction:(UIButton *)button {
     
     if (externalFriendsView.selectedContacts.count > 0) {
         //NSLog(@"selectedContacts.count:%ld",externalViewController.selectedContacts.count);
@@ -187,7 +170,7 @@
 
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
     
-    NSLog(@"messageComposeViewController");
+    //NSLog(@"messageComposeViewController");
     
     switch (result) {
         case MFMailComposeResultCancelled:
@@ -229,7 +212,7 @@
             didTapProfileImage:(UIButton *)button
                           user:(PFUser *)aUser {
     
-    NSLog(@"%@::followCell:didTapProfileImage:user",VIEWCONTROLLER_INVITE);
+    //NSLog(@"%@::followCell:didTapProfileImage:user",VIEWCONTROLLER_INVITE);
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
