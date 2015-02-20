@@ -7,7 +7,7 @@
 //
 
 #import "FTRewardsDetailView.h"
-#import "FTBusinessProfileViewController.h"
+#import "FTPlaceProfileViewController.h"
 
 #define CLOUD_SUCESS_MESSAGE @"Email has been sent!"
 #define CLOUD_ERROR_MESSAGE @"Email could not be sent, make sure your email has been submitted in settings."
@@ -172,6 +172,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
     id tracker = [[GAI sharedInstance] defaultTracker];
     [tracker set:kGAIScreenName value:VIEWCONTROLLER_REWARDS_DETAIL];
     [tracker send:[[GAIDictionaryBuilder createAppView] build]];
@@ -331,17 +332,10 @@
 
 - (void)rewardsDetailHeaderView:(FTRewardsDetailHeaderView *)rewardsDetailHeaderView didTapBusinessButton:(UIButton *)button business:(PFUser *)business {
     
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setItemSize:CGSizeMake(self.view.frame.size.width/3,105)];
-    [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
-    [flowLayout setMinimumInteritemSpacing:0];
-    [flowLayout setMinimumLineSpacing:0];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
-    [flowLayout setHeaderReferenceSize:CGSizeMake(self.view.frame.size.width,PROFILE_HEADER_VIEW_HEIGHT_BUSINESS)];
+    FTPlaceProfileViewController *placeViewController = [[FTPlaceProfileViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    [placeViewController setContact:business];
     
-    FTBusinessProfileViewController *businessProfileViewController = [[FTBusinessProfileViewController alloc] initWithCollectionViewLayout:flowLayout];
-    [businessProfileViewController setBusiness:business];
-    [self.navigationController pushViewController:businessProfileViewController animated:YES];
+    [self.navigationController pushViewController:placeViewController animated:YES];
 }
 
 #pragma mark - ()
