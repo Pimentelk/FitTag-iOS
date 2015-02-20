@@ -264,23 +264,29 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"didSelectRowAtIndexPath:%@",[matches objectAtIndex:indexPath.row]);
+    //NSLog(@"didSelectRowAtIndexPath:%@",[matches objectAtIndex:indexPath.row]);
     PFObject *place = (PFObject *)[matches objectAtIndex:indexPath.row];
     selectedPlace = place;
 }
 
 #pragma mark - FTAddPlaceViewController
 
-- (void)addPlaceViewController:(FTAddPlaceViewController *)addPlaceViewController didAddNewplace:(PFObject *)place location:(PFObject *)location {
-    NSLog(@"addPlaceViewController:didAddNewplace:location:");
-    
-    [self.navigationController popViewControllerAnimated:YES];
+- (void)addPlaceViewController:(FTAddPlaceViewController *)addPlaceViewController
+                didAddNewplace:(PFObject *)place
+                      location:(PFGeoPoint *)geoLocation {
+    //NSLog(@"addPlaceViewController:didAddNewplace:location:");
     
     selectedPlace = place;
     [placesSearchbar setText:[place objectForKey:kFTPlaceNameKey]];
     [places addObject:place];
     
-    [self.tableView reloadData];
+    if (selectedPlace) {
+        if (delegate && [delegate respondsToSelector:@selector(placesViewController:didTapSelectPlace:)]) {
+            [delegate placesViewController:self didTapSelectPlace:selectedPlace];
+        }
+    }
+    
+    [self.navigationController popViewControllerAnimated:NO];
 }
 
 @end
