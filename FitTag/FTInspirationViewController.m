@@ -47,7 +47,9 @@
     // View layout
     [self.view setBackgroundColor:[UIColor lightGrayColor]];
     [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:BACKGROUND_INSPIRATIONAL]]];
+    
     [self.collectionView setBackgroundColor:[[UIColor clearColor] colorWithAlphaComponent:0]];
+    
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     [self.navigationController.navigationBar setBarTintColor:FT_RED];
     [self.navigationItem setTitleView: [[UIImageView alloc] initWithImage:[UIImage imageNamed:FITTAG_LOGO]]];
