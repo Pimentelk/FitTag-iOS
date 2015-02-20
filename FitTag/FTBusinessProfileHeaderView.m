@@ -95,7 +95,7 @@
         [self.containerView addSubview:headerPhotosContainer];
         
         // Profile Picture Image
-        profilePictureImageView = [[PFImageView alloc] initWithFrame:CGRectMake(5, (((size.height / 2) - PROFILE_IMAGE_HEIGHT)/2), PROFILE_IMAGE_WIDTH, PROFILE_IMAGE_HEIGHT)];
+        profilePictureImageView = [[PFImageView alloc] initWithFrame:CGRectMake(5, 20, PROFILE_IMAGE_WIDTH, PROFILE_IMAGE_HEIGHT)];
         [profilePictureImageView setBackgroundColor:[UIColor clearColor]];
         [profilePictureImageView setClipsToBounds: YES];
         [profilePictureImageView setAlpha:0.0f];
@@ -206,46 +206,7 @@
         [profileBiography setText:DEFAULT_BIO_TEXT_B];
         [profileBiography setUserInteractionEnabled:NO];
         [self.containerView addSubview:profileBiography];
-        
-        /*
-        // Image filter
-        profileFilter = [[UIView alloc] initWithFrame:CGRectMake(0, profileBiography.frame.size.height + profileBiography.frame.origin.y,self.frame.size.width, 60)];
-        [profileFilter setBackgroundColor:[UIColor whiteColor]];
-        
-        gridViewButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [gridViewButton setTranslatesAutoresizingMaskIntoConstraints:NO];
-        [gridViewButton setBackgroundImage:[UIImage imageNamed:GRID_IMAGE] forState:UIControlStateNormal];
-        [gridViewButton setBackgroundImage:[UIImage imageNamed:GRID_IMAGE_ACTIVE] forState:UIControlStateSelected];
-        [gridViewButton setFrame:CGRectMake(0, 0, 35, 35)];
-        [gridViewButton setCenter:CGPointMake( 20 + gridViewButton.frame.size.width, profileFilter.frame.size.height / 2)];
-        [gridViewButton addTarget:self action:@selector(didTapGridButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [gridViewButton setSelected:YES];
-        [profileFilter addSubview:gridViewButton];
-        
-        businessButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [businessButton setTranslatesAutoresizingMaskIntoConstraints:NO];
-        [businessButton setBackgroundImage:[UIImage imageNamed:POSTS_IMAGE] forState:UIControlStateNormal];
-        [businessButton setBackgroundImage:[UIImage imageNamed:POSTS_IMAGE_ACTIVE] forState:UIControlStateSelected];
-        [businessButton setFrame:CGRectMake(0, 0, 30, 35)];
-        [businessButton setCenter:CGPointMake(self.frame.size.width / 2, profileFilter.frame.size.height / 2)];
-        [businessButton addTarget:self action:@selector(didTapBusinessButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [businessButton setSelected:NO];
-        [profileFilter addSubview:businessButton];
-        
-        taggedInButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [taggedInButton setTranslatesAutoresizingMaskIntoConstraints:NO];
-        [taggedInButton setBackgroundImage:[UIImage imageNamed:TAGGED_IMAGE] forState:UIControlStateNormal];
-        [taggedInButton setBackgroundImage:[UIImage imageNamed:TAGGED_IMAGE_ACTIVE] forState:UIControlStateSelected];
-        [taggedInButton setFrame:CGRectMake(0, 0, 30, 35)];
-        [taggedInButton setCenter:CGPointMake(self.frame.size.width - taggedInButton.frame.size.width - 20, profileFilter.frame.size.height / 2)];
-        [taggedInButton addTarget:self action:@selector(didTapTaggedButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [taggedInButton setSelected:NO];
-        [profileFilter addSubview:taggedInButton];
-        
-        
-        [self.containerView addSubview:profileFilter];
-         */
-        
+                
         [self addSubview:self.containerView]; // Add the view
     }
     return self;
