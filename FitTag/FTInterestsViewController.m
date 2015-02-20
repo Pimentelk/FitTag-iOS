@@ -8,7 +8,6 @@
 
 #import "FTInterestsViewController.h"
 #import "FTInterestCell.h"
-//#import "FTInspirationViewController.h"
 #import "FTFollowFriendsViewController.h"
 #import "FTCollectionHeaderView.h"
 #import "FTFlowLayout.h"
@@ -25,22 +24,14 @@
 
 @property (nonatomic, strong) NSArray *interests;
 @property (nonatomic, strong) PFUser *user;
-@property (nonatomic, strong) UILabel *continueMessage;
-@property (nonatomic, strong) UIButton *continueButton;
 @property (nonatomic, strong) FTLocationManager *locationManager;
-@property (nonatomic, strong) FTFollowFriendsViewController *followFriendsViewController;
-//@property (nonatomic, strong) FTInspirationViewController *inspirationViewController;
 @property (nonatomic) BOOL locationUpdated;
 @end
 
 @implementation FTInterestsViewController
 @synthesize user;
 @synthesize delegate;
-@synthesize continueMessage;
-@synthesize continueButton;
 @synthesize locationManager;
-//@synthesize inspirationViewController;
-@synthesize followFriendsViewController;
 @synthesize locationUpdated;
 
 - (void)viewDidLoad {
@@ -66,10 +57,11 @@
     // View layout
     [self.view setBackgroundColor:[UIColor lightGrayColor]];
     [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:BACKGROUND_IMAGE_INTERESTS]]];
+    
     [self.collectionView setBackgroundColor:[[UIColor clearColor] colorWithAlphaComponent:0]];
+    
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     [self.navigationController.navigationBar setBarTintColor:FT_RED];
-    [self.navigationItem setTitleView: [[UIImageView alloc] initWithImage:[UIImage imageNamed:FITTAG_LOGO]]];
     
     // Override the back idnicator
     [self.navigationController setNavigationBarHidden:NO animated:NO];
@@ -84,6 +76,16 @@
     [backButtonItem setTintColor:[UIColor whiteColor]];
     [self.navigationItem setLeftBarButtonItem:backButtonItem];
     
+    // Set title
+    [self.navigationItem setTitle:@"Interest"];
+    
+    // save button
+    UIBarButtonItem *saveButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(didTapSaveButtonAction:)];
+    [saveButtonItem setImage:[UIImage imageNamed:NAVIGATION_BAR_BUTTON_BACK]];
+    [saveButtonItem setStyle:UIBarButtonItemStylePlain];
+    [saveButtonItem setTintColor:[UIColor whiteColor]];
+    [self.navigationItem setRightBarButtonItem:saveButtonItem];
+    
     // Data view
     [self.collectionView registerClass:[FTInterestCell class] forCellWithReuseIdentifier:DATACELL];
     [self.collectionView registerClass:[FTCollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:HEADERVIEW];
@@ -91,24 +93,24 @@
     [self.collectionView setDataSource:self];
     
     // Collection view
-    [self.collectionView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    //[self.collectionView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     [self.collectionView setBackgroundColor:[[UIColor whiteColor] colorWithAlphaComponent:0.8]];
     
     [user fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         if (!error) {
             
-            NSLog(@"%@:object: %@",VIEWCONTROLLER_INTERESTS,object);
+            //NSLog(@"%@:object: %@",VIEWCONTROLLER_INTERESTS,object);
             
             if ([object objectForKey:kFTUserInterestsKey]) {
                 userInterests = [[NSMutableArray alloc] initWithArray:[object objectForKey:kFTUserInterestsKey]];
-                NSLog(@"userInterests: %@",userInterests);
+                //NSLog(@"userInterests: %@",userInterests);
             }
             
             PFQuery *query = [PFQuery queryWithClassName:kFTInterestsClassKey];
             [query findObjectsInBackgroundWithBlock:^(NSArray *interests, NSError *error) {
                 if (!error) {
                     // The find succeeded.
-                    NSLog(@"Successfully retrieved %lu scores.", (unsigned long)interests.count);
+                    //NSLog(@"Successfully retrieved %lu scores.", (unsigned long)interests.count);
                     // Do something with the found objects
                     
                     NSMutableArray *tmpInterests = [NSMutableArray array];
@@ -134,25 +136,6 @@
     [super viewWillAppear:animated];
     
     [locationManager requestLocationAuthorization];
-    
-    // Toolbar
-    [self.navigationController setToolbarHidden:NO animated:NO];
-    [self.navigationController.toolbar setTintColor:[UIColor grayColor]];
-    
-    // Label
-    continueMessage = [[UILabel alloc] initWithFrame:CGRectMake(10, 8, 280, 30)];
-    continueMessage.numberOfLines = 0;
-    continueMessage.text = @"SELECT AT LEAST 3 INTERESTS";
-    continueMessage.font = MULIREGULAR(16);
-    continueMessage.backgroundColor = [UIColor clearColor];
-    
-    // Continue Button
-    continueButton = [[UIButton alloc] initWithFrame:CGRectMake((self.navigationController.toolbar.frame.size.width - 38.0f), 4, 34, 37)];
-    [continueButton setBackgroundImage:[UIImage imageNamed:IMAGE_SIGNUP_BUTTON] forState:UIControlStateNormal];
-    [continueButton addTarget:self action:@selector(didTapContinueButtonAction:) forControlEvents:UIControlEventTouchDown];
-    
-    [self.navigationController.toolbar addSubview:continueMessage];
-    [self.navigationController.toolbar addSubview:continueButton];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -166,28 +149,137 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
-    [continueMessage removeFromSuperview];
-    [continueButton removeFromSuperview];
-    
-    continueButton = nil;
-    continueMessage = nil;
-    
     [self.navigationController setToolbarHidden:YES animated:NO];
 }
 
 #pragma mark - FTLocationManagerDelegate
 
-- (void)locationManager:(FTLocationManager *)locationManager didUpdateUserLocation:(CLLocation *)location geoPoint:(PFGeoPoint *)aGeoPoint {
+- (void)locationManager:(FTLocationManager *)locationManager
+  didUpdateUserLocation:(CLLocation *)location
+               geoPoint:(PFGeoPoint *)aGeoPoint {
     locationUpdated = YES;
 }
 
-- (void)locationManager:(FTLocationManager *)locationManager didFailWithError:(NSError *)error {
+- (void)locationManager:(FTLocationManager *)locationManager
+       didFailWithError:(NSError *)error {
     locationUpdated = NO;
 }
 
-#pragma mark - InterestViewController
+#pragma mark - collection view data source
 
-- (void)didTapContinueButtonAction:(UIButton *)button {
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView
+           viewForSupplementaryElementOfKind:(NSString *)kind
+                                 atIndexPath:(NSIndexPath *)indexPath {
+    
+    UICollectionReusableView *reusableview = nil;
+    
+    if (kind == UICollectionElementKindSectionHeader) {
+        FTCollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+                                                                                withReuseIdentifier:HEADERVIEW
+                                                                                       forIndexPath:indexPath];
+        
+        UILabel *messageHeader = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, self.view.frame.size.width, 15)];
+        messageHeader.numberOfLines = 0;
+        messageHeader.text = @"WHAT INSPIRES YOU?";
+        messageHeader.font = MULIREGULAR(18);
+        messageHeader.backgroundColor = [UIColor clearColor];
+        messageHeader.textAlignment = NSTextAlignmentCenter;
+        
+        UILabel *messageText = [[UILabel alloc] initWithFrame:CGRectMake(0, 23, self.view.frame.size.width, 55)];
+        messageText.numberOfLines = 0;
+        messageText.text = @"What inspires you to reach your fitness goals? A new healthy recipe, a muscle building exercise? Tell us and we will find content you'll love!";
+        messageText.backgroundColor = [UIColor clearColor];
+        messageText.textAlignment = NSTextAlignmentCenter;
+        messageText.font = [UIFont systemFontOfSize:12];
+        
+        headerView.messageHeader = messageHeader;
+        headerView.messageText = messageText;
+        
+        reusableview = headerView;
+    }
+    
+    if (kind == UICollectionElementKindSectionFooter) {
+        
+        UICollectionReusableView *footerview = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter
+                                                                                  withReuseIdentifier:FOOTERVIEW
+                                                                                         forIndexPath:indexPath];
+        
+        reusableview = footerview;
+    }
+    
+    return reusableview;
+}
+
+- (NSInteger) collectionView:(UICollectionView *)collectionView
+      numberOfItemsInSection:(NSInteger)section {
+    return self.interests.count;
+}
+
+- (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView
+                   cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    FTInterestCell *cell = (FTInterestCell *)[collectionView dequeueReusableCellWithReuseIdentifier:DATACELL forIndexPath:indexPath];
+    if ([cell isKindOfClass:[FTInterestCell class]]) {
+        cell.backgroundColor = [UIColor clearColor];
+        cell.interestLabel.text = self.interests[indexPath.row];
+        cell.interestLabel.font = MULIREGULAR(16);
+        
+        BOOL isFirstCell = NO;
+        if(indexPath.row % 2 == 0){
+            isFirstCell = YES;
+        }
+        
+        if (isFirstCell){
+            UIView *divider = [[UIView alloc] initWithFrame:CGRectMake(cell.frame.size.width, 0, 1, cell.frame.size.height)];
+            divider.backgroundColor = [UIColor lightGrayColor];
+            [cell addSubview:divider];
+        }
+        
+        if ([userInterests containsObject:self.interests[indexPath.row]]) {
+            [cell setCellSelection];
+            [selectedInterests addObject:self.interests[indexPath.row]];
+        }
+    }
+    return cell;
+}
+
+- (CGFloat)             collectionView:(UICollectionView *)collectionView
+                                layout:(UICollectionViewLayout *)collectionViewLayout
+   minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+    return 0;
+}
+
+- (CGFloat)                   collectionView:(UICollectionView *)collectionView
+                                      layout:(UICollectionViewLayout *)collectionViewLayout
+    minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+    return 0;
+}
+
+- (void)    collectionView:(UICollectionView *)collectionView
+  didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    FTInterestCell *cell = (FTInterestCell *)[collectionView cellForItemAtIndexPath:indexPath];
+    if ([cell isSelectedToggle]) {
+        [selectedInterests addObject:self.interests[indexPath.row]];
+    } else {
+        [selectedInterests removeObject:self.interests[indexPath.row]];
+    }
+}
+
+#pragma mark - ()
+
+- (void)didTapPopButtonAction:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)didTapBackButtonAction:(id)sender {
+    if (self != [self.navigationController.viewControllers objectAtIndex:0]) {
+        [self.navigationController popViewControllerAnimated:YES];
+    } else {
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
+- (void)didTapSaveButtonAction:(id)sender {
     
     if (selectedInterests.count < 3) {
         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Missing Information", nil)
@@ -237,12 +329,11 @@
             [doneIndicator setStyle:UIBarButtonItemStylePlain];
             [doneIndicator setTintColor:[UIColor whiteColor]];
             
-            followFriendsViewController = [[FTFollowFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+            FTFollowFriendsViewController *followFriendsViewController = [[FTFollowFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
             followFriendsViewController.followUserQueryType = FTFollowUserQueryTypeInterest;
             [followFriendsViewController.navigationItem setLeftBarButtonItem:backIndicator];
             [followFriendsViewController.navigationItem setRightBarButtonItem:doneIndicator];
             [self.navigationController pushViewController:followFriendsViewController animated:YES];
-            
         }
         
         if (error) {
@@ -260,113 +351,6 @@
         return;
     }
     
-    if (self != [self.navigationController.viewControllers objectAtIndex:0]) {
-        [self.navigationController popViewControllerAnimated:YES];
-    } else {
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-    }
-}
-
-#pragma mark - collection view data source
-
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView
-           viewForSupplementaryElementOfKind:(NSString *)kind
-                                 atIndexPath:(NSIndexPath *)indexPath {
-    
-    UICollectionReusableView *reusableview = nil;
-    if (kind == UICollectionElementKindSectionHeader) {
-        FTCollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-                                                                              withReuseIdentifier:HEADERVIEW
-                                                                                     forIndexPath:indexPath];
-        
-        UILabel *messageHeader = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, self.view.frame.size.width, 15)];
-        messageHeader.numberOfLines = 0;
-        messageHeader.text = @"WHAT INSPIRES YOU?";
-        messageHeader.font = MULIREGULAR(18);
-        messageHeader.backgroundColor = [UIColor clearColor];
-        messageHeader.textAlignment = NSTextAlignmentCenter;
-        
-        UILabel *messageText = [[UILabel alloc] initWithFrame:CGRectMake(0, 23, self.view.frame.size.width, 55)];
-        messageText.numberOfLines = 0;
-        messageText.text = @"What inspires you to reach your fitness goals? A new healthy recipe, a muscle building exercise? Tell us and we will find content you'll love!";
-        messageText.backgroundColor = [UIColor clearColor];
-        messageText.textAlignment = NSTextAlignmentCenter;
-        messageText.font = [UIFont systemFontOfSize:12];
-        
-        headerView.messageHeader = messageHeader;
-        headerView.messageText = messageText;
-        
-        reusableview = headerView;
-    }
-    
-    if (kind == UICollectionElementKindSectionFooter) {
-        UICollectionReusableView *footerview = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter
-                                                                                  withReuseIdentifier:FOOTERVIEW
-                                                                                         forIndexPath:indexPath];
-        reusableview = footerview;
-    }
-    return reusableview;
-}
-
-- (NSInteger) collectionView:(UICollectionView *)collectionView
-      numberOfItemsInSection:(NSInteger)section {
-    return self.interests.count;
-}
-
-- (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView
-                   cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    
-    FTInterestCell *cell = (FTInterestCell *)[collectionView dequeueReusableCellWithReuseIdentifier:DATACELL forIndexPath:indexPath];
-    if ([cell isKindOfClass:[FTInterestCell class]]) {
-        cell.backgroundColor = [UIColor clearColor];
-        cell.interestLabel.text = self.interests[indexPath.row];
-        cell.interestLabel.font = MULIREGULAR(16);
-        
-        BOOL isFirstCell = NO;
-        if(indexPath.row % 2 == 0){
-            isFirstCell = YES;
-        }
-        
-        if (isFirstCell){
-            UIView *divider = [[UIView alloc] initWithFrame:CGRectMake(cell.frame.size.width, 0, 1, cell.frame.size.height)];
-            divider.backgroundColor = [UIColor lightGrayColor];
-            [cell addSubview:divider];
-        }
-        
-        if ([userInterests containsObject:self.interests[indexPath.row]]) {
-            [cell setCellSelection];
-            [selectedInterests addObject:self.interests[indexPath.row]];
-        }
-    }
-    return cell;
-}
-
-- (CGFloat) collectionView:(UICollectionView *)collectionView
-                    layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 0;
-}
-
-- (CGFloat) collectionView:(UICollectionView *)collectionView
-                    layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    return 0;
-}
-
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    FTInterestCell *cell = (FTInterestCell *)[collectionView cellForItemAtIndexPath:indexPath];
-    if ([cell isSelectedToggle]) {
-        [selectedInterests addObject:self.interests[indexPath.row]];
-    } else {
-        [selectedInterests removeObject:self.interests[indexPath.row]];
-    }
-}
-
-#pragma mark - ()
-
-- (void)didTapPopButtonAction:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
-- (void)didTapBackButtonAction:(id)sender {
     if (self != [self.navigationController.viewControllers objectAtIndex:0]) {
         [self.navigationController popViewControllerAnimated:YES];
     } else {
