@@ -59,7 +59,7 @@
         mainView.clipsToBounds = YES;
         [self addSubview:mainView];
         
-        UIImageView *commentBox = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"comment_bar"]];
+        UIImageView *commentBox = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"comment-bar"]];
         commentBox.frame = CGRectMake(COMMENT_BOX_X, COMMENT_BOX_Y, self.frame.size.width, COMMENT_BOX_HEIGHT);
         [mainView addSubview:commentBox];
         
@@ -104,7 +104,7 @@
 #pragma mark - ()
 
 - (void)didTapSendButtonAction:(UIButton *)button {
-    NSLog(@"FTPhotoDetailsFooterView::didTapSendButtonAction");
+    //NSLog(@"FTPhotoDetailsFooterView::didTapSendButtonAction");
     if (delegate && [delegate respondsToSelector:@selector(photoDetailsFooterView:didTapSendButton:)]){
         [delegate photoDetailsFooterView:self didTapSendButton:button];
     }
