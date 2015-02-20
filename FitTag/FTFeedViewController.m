@@ -72,6 +72,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     /*
     //https://maps.googleapis.com/maps/api/place/search/json?location=40.757787,-74.035871&radius=500&types=gym&sensor=true&key=AIzaSyDLrDeCCYwFjiu_rW8ni72bWwurwChhZQU
     //https://maps.googleapis.com/maps/api/place/queryautocomplete/json?key=AddYourOwnKeyHere&input=pizza+near%20par
@@ -93,9 +94,6 @@
                                                  name:kReachabilityChangedNotification
                                                object:nil];
     */
-    
-    // Toolbar & Navigationbar Setup
-    [self.navigationItem setTitle:NAVIGATION_TITLE_FEED];
     
     // Set Background
     [self.tableView setBackgroundColor:[UIColor whiteColor]];
@@ -192,7 +190,7 @@
 }
 
 - (BOOL)isFirstTimeUser:(PFUser *)user {
-    NSLog(@"%@::isFirstTimeUser:",VIEWCONTROLLER_FEED);
+    //NSLog(@"%@::isFirstTimeUser:",VIEWCONTROLLER_FEED);
     // Check if the user has logged in before
     if (![user objectForKey:kFTUserLastLoginKey]) {
         
@@ -346,7 +344,7 @@
 }
 
 - (BOOL)didLogInWithFacebook:(PFObject *)user {
-    NSLog(@"%@::didLogInWithFacebook:",VIEWCONTROLLER_FEED);
+    //NSLog(@"%@::didLogInWithFacebook:",VIEWCONTROLLER_FEED);
     
     if ([PFFacebookUtils isLinkedWithUser:[PFUser currentUser]]) {
         NSLog(USER_DID_LOGIN_FACEBOOK);
@@ -420,16 +418,15 @@
                 
                 PFUser *fittagUser = [objects objectAtIndex:0];
                 if (fittagUser) {
-                    [FTUtility followUserEventually:fittagUser block:^(BOOL succeeded, NSError *error) {
+                    
+                    [FTUtility followUserInBackground:fittagUser block:^(BOOL succeeded, NSError *error) {
                         if (error) {
                             NSLog(@"Error following fittag: %@",error);
                         } else {
                             [[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityUserFollowingChangedNotification object:nil];
-                            //if ([[self.user objectForKey:kFTUserTypeKey] isEqualToString:kFTUserTypeBusiness]) {
-                            //[[NSNotificationCenter defaultCenter] postNotificationName:FTUtilityBusinessFollowingChangedNotification object:nil];
-                            //}
                         }
                     }];
+                    
                 } else {
                     NSLog(@"No fittag user...");
                 }
@@ -440,22 +437,6 @@
         }
     }];
     
-    /*
-    PFObject *follow = [[PFObject alloc] initWithClassName:kFTActivityClassKey];
-    [follow setObject:user forKey:kFTActivityFromUserKey];
-    [follow setObject:@"" forKey:kFTActivityToUserKey];
-    [follow setObject:kFTActivityTypeFollow forKey:kFTActivityTypeKey];
-    
-    // photos are public, but may only be modified by the user who uploaded them
-    PFACL *followACL = [PFACL ACLWithUser:[PFUser currentUser]];
-    [followACL setPublicReadAccess:YES];
-    follow.ACL = followACL;
-    [follow saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (!error) {
-            
-        }
-    }];
-    */
 }
 
 - (void)didTapBackButtonAction:(UIButton *)button {
