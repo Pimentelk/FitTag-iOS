@@ -7,14 +7,19 @@
 //
 
 #import "FTTabBarController.h"
+#import "FTSettingsViewController.h"
+
+#define CENTER_TAG 1
+#define LEFT_PANEL_TAG 2
 
 @interface FTTabBarController ()
 @property (nonatomic,strong) UINavigationController *navController;
+@property (nonatomic, strong) FTSettingsViewController *settingsViewController;
+@property (nonatomic, assign) BOOL showingLeftPanel;
 @end
 
 @implementation FTTabBarController
 @synthesize navController;
-
 
 #pragma mark - UIViewController
 
@@ -22,12 +27,16 @@
     //NSLog(@"%@::viewDidLoad",VIEWCONTROLLER_TABBAR);
     [super viewDidLoad];
     
-    self.tabBar.tintColor = FT_RED;    
-    self.tabBar.barTintColor = [UIColor whiteColor];
+    self.tabBar.tintColor = FT_RED;
+    self.tabBar.barTintColor = FT_RED;
+    self.tabBar.hidden = YES;
     
-    self.navController = [[UINavigationController alloc] init];
-    [FTUtility addBottomDropShadowToNavigationBarForNavigationController:self.navController];
+    [self.view setFrame:CGRectZero];
+    
+    //self.navController = [[UINavigationController alloc] init];
+    //[FTUtility addBottomDropShadowToNavigationBarForNavigationController:self.navController];
 }
+
 
 #pragma mark - UITabBarController
 
