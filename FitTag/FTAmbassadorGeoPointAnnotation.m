@@ -24,15 +24,28 @@
 #pragma mark - Initialization
 
 - (id)initWithObject:(PFObject *)aPost {
+    
     self = [super init];
+    
     if (self) {
+        
         post = aPost;
         objectId = post.objectId;
         user = [post objectForKey:kFTPostUserKey];
         
-        PFGeoPoint *geoPoint = [self.post objectForKey:kFTPostLocationKey];
-        [self setGeoPoint:geoPoint];
+        if ([post objectForKey:kFTPostPlaceKey]) {
+            PFObject *place = [self.post objectForKey:kFTPostPlaceKey];
+            [place fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                if (!error) {
+                    if ([place objectForKey:kFTPlaceLocationKey]) {
+                        PFGeoPoint *geoPoint = [place objectForKey:kFTPlaceLocationKey];
+                        [self setGeoPoint:geoPoint];
+                    }
+                }
+            }];
+        }
     }
+    
     return self;
 }
 
